@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDistinctQueries extends SingleEMTestCase {
+class TestDistinctQueries extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -61,28 +61,28 @@ public class TestDistinctQueries extends SingleEMTestCase {
     }
 
     @Test
-    public void testDuplicateResultsInNonDistinctJoinFetchQuery() {
+    void duplicateResultsInNonDistinctJoinFetchQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join fetch o.items").getResultList();
         assertEquals(3, l.size());
     }
 
     @Test
-    public void testDuplicateResultsInNonDistinctJoinQuery() {
+    void duplicateResultsInNonDistinctJoinQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(3, l.size());
     }
 
     @Test
-    public void testNoDuplicateResultsInDistinctQuery() {
+    void noDuplicateResultsInDistinctQuery() {
         List l = em.createQuery("select distinct o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(1, l.size());
     }
 
     @Test
-    public void testDuplicateResultsInNonDistinctConstructorJoinQuery() {
+    void duplicateResultsInNonDistinctConstructorJoinQuery() {
         List l = em.createQuery("select new " +
             "org.apache.openjpa.persistence.query.TestDistinctQueries$Holder(" +
             "o.id) from LAZ_ProductOrder o " +
@@ -91,8 +91,8 @@ public class TestDistinctQueries extends SingleEMTestCase {
     }
 
     @Test
-    public void testNoDuplicateResultsInDistinctConstructorQuery()
-        throws NoSuchMethodException {
+    void noDuplicateResultsInDistinctConstructorQuery()
+        throws Exception {
         List l = em.createQuery("select distinct new " +
             "org.apache.openjpa.persistence.query.TestDistinctQueries$Holder(" +
             "o.id) from LAZ_ProductOrder o " +

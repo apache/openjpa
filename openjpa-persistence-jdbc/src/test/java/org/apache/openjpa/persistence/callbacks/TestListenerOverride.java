@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * - @EntityListeners annotation on entity should be overridden by XML
  * - Expected: [ListenerA, ListenerB, ListenerC] — each fires exactly once
  */
-public class TestListenerOverride extends SingleEMFTestCase {
+class TestListenerOverride extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
@@ -53,7 +53,7 @@ public class TestListenerOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDefaultListenerNotDuplicated() {
+    void defaultListenerNotDuplicated() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -75,7 +75,7 @@ public class TestListenerOverride extends SingleEMFTestCase {
      * Same test but creating a second EM to verify no accumulation across EMs.
      */
     @Test
-    public void testDefaultListenerNotDuplicatedSecondEM() {
+    void defaultListenerNotDuplicatedSecondEM() {
         // First persist
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

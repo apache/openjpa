@@ -60,7 +60,7 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAllIdsAreUsed() throws Exception {
+    void allIdsAreUsed() throws Exception {
         List<WorkerThread> threads = new ArrayList<>();
         for (int i = 0; i < THREADS; i++) {
             threads.add(new WorkerThread(emf));

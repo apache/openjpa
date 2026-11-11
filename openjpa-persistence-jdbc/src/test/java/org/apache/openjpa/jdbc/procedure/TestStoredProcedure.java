@@ -40,7 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-public class TestStoredProcedure extends SingleEMFTestCase {
+class TestStoredProcedure extends SingleEMFTestCase {
     @Override
     protected boolean isSupported(DBDictionary dict) {
         return dict instanceof DerbyDictionary;
@@ -54,7 +54,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimple() throws Exception  {
+    void simple() throws Exception  {
         Procedures.simpleCalled = false;
 
         EntityManager em = emf.createEntityManager();
@@ -69,7 +69,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInParams() throws Exception  {
+    void inParams() throws Exception  {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
 
@@ -97,7 +97,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOut() throws Exception  {
+    void out() throws Exception  {
         EntityManager em = emf.createEntityManager();
         exec(em, "DROP PROCEDURE XTWO", true);
         exec(em, "CREATE PROCEDURE XTWO(IN SOME_NUMBER INTEGER,OUT x2 INTEGER) " +
@@ -112,7 +112,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInOut() throws Exception  {
+    void inOut() throws Exception  {
         EntityManager em = emf.createEntityManager();
         exec(em, "DROP PROCEDURE XINOUT", true);
         exec(em, "CREATE PROCEDURE XINOUT(INOUT P INTEGER) " +
@@ -127,7 +127,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMapping() throws Exception {
+    void mapping() throws Exception {
         EntityManager em = emf.createEntityManager();
         {
             em.getTransaction().begin();

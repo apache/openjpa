@@ -26,8 +26,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 
@@ -42,9 +41,9 @@ import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestNamedQueries extends BaseQueryTest {
+class TestNamedQueries extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(QueryTest1.class);
 
         OpenJPAEntityManager pm = getEM();
@@ -63,7 +62,7 @@ public class TestNamedQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testNamedClassQuery() {
+    void namedClassQuery() {
         OpenJPAEntityManager pm = getEM();
 
         OpenJPAQuery query = pm.createQuery("SELECT o FROM QueryTest1 o");
@@ -85,13 +84,13 @@ public class TestNamedQueries extends BaseQueryTest {
             "named", pm.getClassLoader(), true);
         assertNotNull(meta);
         assertEquals("SELECT o FROM QueryTest1 o", meta.getQueryString());
-        assertEquals(null, meta.getResultType());
+        assertNull(meta.getResultType());
 
         endEm(pm);
     }
 
     @Test
-    public void testNamespace() {
+    void namespace() {
         OpenJPAEntityManager pm = getEM();
         OpenJPAQuery query = (OpenJPAQuery) pm.createNamedQuery("named");
         assertEquals("SELECT o FROM QueryTest1 o", query.getQueryString());
@@ -100,7 +99,7 @@ public class TestNamedQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testSystemJDOQL() {
+    void systemJDOQL() {
         // make sure local query metadata is parsed
         OpenJPAEntityManager pm = getEM();
 
@@ -113,7 +112,7 @@ public class TestNamedQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testInterfaceResultClass() {
+    void interfaceResultClass() {
         OpenJPAEntityManager pm = getEM();
 
         TypedQuery<EntityInterface> query = pm.createNamedQuery("named", EntityInterface.class);

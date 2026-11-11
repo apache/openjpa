@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
  * MappedSuperclass, it must not flag those inherited field-access fields
  * as violations.
  */
-public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
+class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -71,7 +71,7 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * the metadata setup doesn't throw an access type conflict error.
      */
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -103,7 +103,7 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * tests query the metamodel and fail during EMF setup.
      */
     @Test
-    public void testMetamodelAccess() {
+    void metamodelAccess() {
         Metamodel metamodel = emf.getMetamodel();
         assertNotNull(metamodel);
 
@@ -137,7 +137,7 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * scenario without needing truly unenhanced classes.
      */
     @Test
-    public void testEnhancerValidatesPropertyAccessSubclass() {
+    void enhancerValidatesPropertyAccessSubclass() {
         OpenJPAConfiguration conf = emf.getConfiguration();
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         repos.setSourceMode(MetaDataModes.MODE_META);

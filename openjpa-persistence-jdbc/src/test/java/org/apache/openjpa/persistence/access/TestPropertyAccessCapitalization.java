@@ -33,14 +33,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
+class TestPropertyAccessCapitalization extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, PropertyAccessCapitalization.class, PropertyAccessCapitalizationOldBehavior.class);
     }
 
     @Test
-    public void testCorrectCapitalization() {
+    void correctCapitalization() {
         EntityManager em = emf.createEntityManager();
 
         PropertyAccessCapitalization entity = new PropertyAccessCapitalization();
@@ -72,7 +72,7 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOldCapitalization() {
+    void oldCapitalization() {
         EntityManager em = emf.createEntityManager();
 
         PropertyAccessCapitalizationOldBehavior entity = new PropertyAccessCapitalizationOldBehavior();
@@ -105,7 +105,7 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBothAccessorSpellingsYieldTheSamePropertyNames() {
+    void bothAccessorSpellingsYieldTheSamePropertyNames() {
         ClassMetaData beanStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalization.class);
         ClassMetaData oldStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalizationOldBehavior.class);
         for (ClassMetaData meta : new ClassMetaData[] { beanStyle, oldStyle }) {

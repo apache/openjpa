@@ -18,12 +18,11 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -58,6 +57,7 @@ import org.apache.openjpa.persistence.inheritance.entity.SubclassI;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassJ;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassK;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -71,7 +71,7 @@ import org.junit.jupiter.api.Test;
  * @author Jeremy Bauer
  *
  */
-public class TestDefaultInheritanceStrategy
+class TestDefaultInheritanceStrategy
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -98,7 +98,7 @@ public class TestDefaultInheritanceStrategy
      * or discriminator column annotations defined.
      */
     @Test
-    public void testSimpleDefaultInheritance() {
+    void simpleDefaultInheritance() {
         EntityManager em = emf.createEntityManager();
 
         // Create some entities
@@ -132,10 +132,10 @@ public class TestDefaultInheritanceStrategy
         em.clear();
         String query = "select a from BaseClass a where TYPE(a) = BaseClass";
         List rs = em.createQuery(query).getResultList();
-        assertTrue(rs.get(0) instanceof BaseClass);
+        assertInstanceOf(BaseClass.class, rs.get(0));
         query = "select a from BaseClass a where TYPE(a) = SubclassA";
         rs = em.createQuery(query).getResultList();
-        assertTrue(rs.get(0) instanceof SubclassA);
+        assertInstanceOf(SubclassA.class, rs.get(0));
 
         em.clear();
 
@@ -158,7 +158,7 @@ public class TestDefaultInheritanceStrategy
      * production of a discriminator column.
      */
     @Test
-    public void testMappedSuperclass() {
+    void mappedSuperclass() {
         EntityManager em = emf.createEntityManager();
 
         // Add two entities, each extending the same mapped interface
@@ -202,7 +202,7 @@ public class TestDefaultInheritanceStrategy
      * a discriminator column at the root class level.
      */
     @Test
-    public void testTwoLevelInheritance() {
+    void twoLevelInheritance() {
         EntityManager em = emf.createEntityManager();
 
         // Add two entities, each extending the same mapped interface
@@ -231,15 +231,15 @@ public class TestDefaultInheritanceStrategy
         em.clear();
         String query = "select a from BaseClass2 a where TYPE(a) = MidClass";
         List rs = em.createQuery(query).getResultList();
-        for (Object value : rs) assertTrue(value instanceof MidClass);
+        for (Object value : rs) assertInstanceOf(MidClass.class, value);
 
         query = "select a from BaseClass2 a where TYPE(a) = SubclassE";
         rs = em.createQuery(query).getResultList();
-        for (Object o : rs) assertTrue(o instanceof SubclassE);
+        for (Object o : rs) assertInstanceOf(SubclassE.class, o);
 
         query = "select a from BaseClass2 a where TYPE(a) = BaseClass2";
         rs = em.createQuery(query).getResultList();
-        for (Object r : rs) assertTrue(r instanceof BaseClass2);
+        for (Object r : rs) assertInstanceOf(BaseClass2.class, r);
 
         em.clear();
 
@@ -271,7 +271,7 @@ public class TestDefaultInheritanceStrategy
      * does not use a discriminator column.
      */
     @Test
-    public void testManagedInterface() {
+    void managedInterface() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         // Add some entities
@@ -314,7 +314,7 @@ public class TestDefaultInheritanceStrategy
      * and a superclass DOES use a discriminator column.
      */
     @Test
-    public void testManagedInterfaceAndBase() {
+    void managedInterfaceAndBase() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         // Add some entities
@@ -372,7 +372,7 @@ public class TestDefaultInheritanceStrategy
      * annotation defined on the subclass.
      */
     @Test
-    public void testSubclassSpecifiedInheritance() {
+    void subclassSpecifiedInheritance() {
         EntityManager em = emf.createEntityManager();
 
         // Create some entities
@@ -419,7 +419,7 @@ public class TestDefaultInheritanceStrategy
      *    SubClassH extends MidClass2 has rel to BaseClass5
      */
     @Test
-    public void testCircularInheritedRelationships() {
+    void circularInheritedRelationships() {
         EntityManager em = emf.createEntityManager();
 
         // Create and persist some related & inherited entities
@@ -480,26 +480,26 @@ public class TestDefaultInheritanceStrategy
 
         // Validate entity relationships
         sch = em.find(SubclassH.class, 1);
-        assertEquals(sch.getName(),"SubclassHBaseClass5Name");
-        assertEquals(sch.getMidClass2Name(), "SubclassHMidClass2Name");
+        assertEquals("SubclassHBaseClass5Name", sch.getName());
+        assertEquals("SubclassHMidClass2Name", sch.getMidClass2Name());
         // SubclassH has relationship to BaseClass5
-        assertEquals(sch.getBaseclass5().getId(), 2);
+        assertEquals(2, sch.getBaseclass5().getId());
 
         bc5 = em.find(BaseClass5.class, 3);
-        assertEquals(bc5.getName(),"MidClass2BaseClass5Name");
+        assertEquals("MidClass2BaseClass5Name", bc5.getName());
         // BaseClass5 has relationship to SubclassH through MidClass2
-        assertEquals(bc5.getSubclassh().getId(), 1);
+        assertEquals(1, bc5.getSubclassh().getId());
 
         bc5 = em.find(BaseClass5.class, 2);
-        assertEquals(bc5.getName(),"BaseClass5Name");
+        assertEquals("BaseClass5Name", bc5.getName());
         // BaseClass5 has relationship to SubclassH
-        assertEquals(bc5.getSubclassh().getId(), 1);
+        assertEquals(1, bc5.getSubclassh().getId());
 
         mc2 = em.find(MidClass2.class, 3);
-        assertEquals(mc2.getName(),"MidClass2BaseClass5Name");
-        assertEquals(mc2.getMidClass2Name(), "MidClass2Name");
+        assertEquals("MidClass2BaseClass5Name", mc2.getName());
+        assertEquals("MidClass2Name", mc2.getMidClass2Name());
         // MidClass2 has relationship to SubclassH
-        assertEquals(bc5.getSubclassh().getId(), 1);
+        assertEquals(1, bc5.getSubclassh().getId());
 
         em.close();
     }
@@ -509,7 +509,7 @@ public class TestDefaultInheritanceStrategy
      * entity.
      */
     @Test
-    public void testAbstractEntityInheritance() {
+    void abstractEntityInheritance() {
         EntityManager em = emf.createEntityManager();
 
         SubclassI sci = new SubclassI();
@@ -562,7 +562,7 @@ public class TestDefaultInheritanceStrategy
      *   SubClassJ extends MidClass3
      */
     @Test
-    public void testMidNonEntityInheritance() {
+    void midNonEntityInheritance() {
         EntityManager em = emf.createEntityManager();
 
         SubclassK sck = new SubclassK();
@@ -603,7 +603,7 @@ public class TestDefaultInheritanceStrategy
     }
 
     @Test
-    public void testFinder() {
+    void finder() {
         EntityManager em = emf.createEntityManager();
         SubclassK sck = new SubclassK();
         sck.setId(479);
@@ -651,15 +651,11 @@ public class TestDefaultInheritanceStrategy
      */
     private void verifyDtypeColumnEntriesAndMapping(EntityManager em,
         String table, int entries, Class baseClass) {
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             Query qry = em.createNativeQuery("SELECT DTYPE FROM " + table);
             List vals = qry.getResultList();
-            assertTrue(vals.size() == entries,
-                "Query should have returned " + entries + " values");
-        }
-        catch (Exception e) {
-            fail("Exception querying DTYPE column: " + e.getMessage());
-        }
+            assertEquals(vals.size(), entries, "Query should have returned " + entries + " values");
+        }, "Exception querying DTYPE column: ");
 
         // Check the discriminator column of the class mapping.
         ClassMapping cm = getMapping(baseClass);
@@ -702,8 +698,7 @@ public class TestDefaultInheritanceStrategy
     	String jpql = "SELECT e FROM " + entity + " e";
         Query qry = em.createQuery(jpql);
         List col = qry.getResultList();
-        assertTrue(col.size() == expectedValues.length,
-            "Query should return " + expectedValues.length + " entities");
+        assertEquals(col.size(), expectedValues.length, "Query should return " + expectedValues.length + " entities");
         int count = 0;
         for (Object ent : col) {
             // If a list of supers or interfaces is provided, make sure
@@ -711,21 +706,18 @@ public class TestDefaultInheritanceStrategy
             if (types != null) {
                 for (Class type : types) assertTrue(type.isInstance(ent));
             }
-            int id = -1;
-            try {
+            AtomicInteger id = new AtomicInteger(-1);
+            Assertions.assertDoesNotThrow(() -> {
                 Method mth = ent.getClass().getMethod("getId", (Class[]) null);
-                id = (Integer) mth.invoke(ent, (Object[]) null);
-            }
-            catch (Exception e) {
-                fail("Caught unexepcted exception getting entity id: "
-                        + e.getMessage());
-            }
-            for (int expectedValue : expectedValues)
-                if (expectedValue == id)
+                id.set((Integer) mth.invoke(ent, (Object[]) null));
+            }, "Caught unexepcted exception getting entity id: ");
+            for (int expectedValue : expectedValues) {
+                if (expectedValue == id.get()) {
                     count++;
+                }
+            }
         }
-        assertTrue(count == expectedValues.length,
-                "Returned unexpected entities " + col + " for " + jpql);
+        assertEquals(count, expectedValues.length, "Returned unexpected entities " + col + " for " + jpql);
     }
 
     private void verifyInheritanceFinderResult(EntityManager em,

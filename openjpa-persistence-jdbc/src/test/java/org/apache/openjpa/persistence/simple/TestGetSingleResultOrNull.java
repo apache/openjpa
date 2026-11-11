@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link jakarta.persistence.TypedQuery#getSingleResultOrNull()}
  * added in JPA 3.2.
  */
-public class TestGetSingleResultOrNull extends SingleEMFTestCase {
+class TestGetSingleResultOrNull extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -43,7 +43,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReturnsNullWhenNoResult() {
+    void returnsNullWhenNoResult() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.intField = 99999",
@@ -54,7 +54,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReturnsSingleResult() {
+    void returnsSingleResult() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e = new AllFieldTypes();
@@ -75,7 +75,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReturnsNullValueFromProjection() {
+    void returnsNullValueFromProjection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e = new AllFieldTypes();
@@ -95,7 +95,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testThrowsNonUniqueResultException() {
+    void throwsNonUniqueResultException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e1 = new AllFieldTypes();
@@ -121,7 +121,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOnClosedEntityManagerThrows() {
+    void onClosedEntityManagerThrows() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o", AllFieldTypes.class);

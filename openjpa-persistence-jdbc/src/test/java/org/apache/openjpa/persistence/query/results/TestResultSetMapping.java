@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestResultSetMapping extends SQLListenerTestCase{
+class TestResultSetMapping extends SQLListenerTestCase{
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestResultSetMapping extends SQLListenerTestCase{
     }
 
     @Test
-    public void testQuery () {
+    void query() {
         EntityManager em = emf.createEntityManager();
         try
         {

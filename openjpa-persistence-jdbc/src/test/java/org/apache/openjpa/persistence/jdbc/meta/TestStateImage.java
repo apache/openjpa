@@ -66,7 +66,7 @@ public class TestStateImage extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testOptLock() {
+    void optLock() {
         OpenJPAEntityManager pm1 = getEm(true, true);
         OpenJPAEntityManager pm2 = getEm(true, true);
 
@@ -153,7 +153,7 @@ public class TestStateImage extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testOptLockOnVerticalClass() {
+    void optLockOnVerticalClass() {
         OpenJPAEntityManager pm1 = getEm(true, true);
         OpenJPAEntityManager pm2 = getEm(true, true);
 
@@ -204,7 +204,7 @@ public class TestStateImage extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testLockGroup()
+    void lockGroup()
         throws Exception {
         OpenJPAEntityManager pm = getEm(true, true);
         pm.getTransaction().begin();

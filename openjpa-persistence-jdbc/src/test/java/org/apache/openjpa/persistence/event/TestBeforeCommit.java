@@ -48,7 +48,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (emf == null) {
             emf = createEMF(AnEntity.class);
         }
@@ -77,7 +77,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) emf.createEntityManager();
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();
@@ -117,7 +117,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     }
 
     @Test
-    public void testEmptyTransaction() {
+    void emptyTransaction() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) emf.createEntityManager();
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();

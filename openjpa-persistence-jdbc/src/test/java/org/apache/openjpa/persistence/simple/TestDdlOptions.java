@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests JPA 3.2 options member on DDL annotations.
  */
-public class TestDdlOptions extends SingleEMFTestCase {
+class TestDdlOptions extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestDdlOptions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testColumnOptionsInMetadata() {
+    void columnOptionsInMetadata() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(OptionsEntity.class, null, true);
@@ -57,7 +57,7 @@ public class TestDdlOptions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testColumnOptionsInDdl() {
+    void columnOptionsInDdl() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(OptionsEntity.class, null, true);
@@ -75,7 +75,7 @@ public class TestDdlOptions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OptionsEntity e = new OptionsEntity();

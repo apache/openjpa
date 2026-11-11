@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -51,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestMultipleEntityProjection extends SingleEMFTestCase {
+class TestMultipleEntityProjection extends SingleEMFTestCase {
 	private static boolean INNER_JOIN = true;
 	private static String[][] MAGAZINE_PUBLISHER_NAME_PAIRS = {
 		new String[] {"Times",      "Publisher-0"},
@@ -104,7 +101,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testMultipleEntitiesInProjectionUsingOuterJoin() {
+    void multipleEntitiesInProjectionUsingOuterJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m left outer join m.publisher p " +
                       "where ((:useName = false) or (m.name like :name))";
@@ -121,10 +118,10 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
 		for (Object o : result) {
-			assertTrue(o instanceof Object[]);
+            assertInstanceOf(Object[].class, o);
 			Object[] row = (Object[])o;
 			assertEquals(2, row.length);
-			assertTrue(row[0] instanceof Magazine);
+            assertInstanceOf(Magazine.class, row[0]);
             assertTrue(row[1] == null || row[1] instanceof Publisher);
 			assertNotNull(row[0]);
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
@@ -132,7 +129,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testMultipleEntitiesInProjectionUsingInnerJoin() {
+    void multipleEntitiesInProjectionUsingInnerJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m inner join m.publisher p " +
                       "where ((:useName = false) or (m.name like :name))";
@@ -149,11 +146,11 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		assertFalse(result.isEmpty());
 		assertEquals(expecetedCount, result.size());
 		for (Object o : result) {
-			assertTrue(o instanceof Object[]);
+            assertInstanceOf(Object[].class, o);
 			Object[] row = (Object[])o;
 			assertEquals(2, row.length);
-			assertTrue(row[0] instanceof Magazine);
-			assertTrue(row[1] instanceof Publisher);
+            assertInstanceOf(Magazine.class, row[0]);
+            assertInstanceOf(Publisher.class, row[1]);
 			assertNotNull(row[0]);
 			assertNotNull(row[1]);
 			assertEquals(((Magazine)row[0]).getPublisher(), row[1]);
@@ -161,7 +158,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testAggregateExpressionInHavingExpression() {
+    void aggregateExpressionInHavingExpression() {
         String jpql = "select m.publisher, max(m.datePublished) " +
                       "from Magazine m group by m.publisher " +
 					  "having max(m.datePublished) is null";

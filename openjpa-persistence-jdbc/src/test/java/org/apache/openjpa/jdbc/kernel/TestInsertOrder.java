@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * Test that insert order is preserved when using the ConstraintUpdateManager
  * for entities which are not annotated with ForeignKey constraints.
  */
-public class TestInsertOrder extends SQLListenerTestCase {
+class TestInsertOrder extends SQLListenerTestCase {
     private String empTableName;
     private String taskTableName;
     private String storyTableName;
@@ -56,7 +56,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
      * </P>
      */
     @Test
-    public void testCascadePersist() {
+    void cascadePersist() {
         Employee e = newTree(10);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -73,7 +73,7 @@ public class TestInsertOrder extends SQLListenerTestCase {
      * The inserts should be executed in this order, Employee, Task, Story.
      */
     @Test
-    public void testCascadeMerge() {
+    void cascadeMerge() {
         Employee e = newTree(11);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

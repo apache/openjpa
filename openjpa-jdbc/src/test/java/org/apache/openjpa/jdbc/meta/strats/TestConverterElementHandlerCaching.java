@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * shared {@link ConverterElementHandler}; concurrent conversions must
  * construct and publish exactly one instance. See OPENJPA-2954.
  */
-public class TestConverterElementHandlerCaching {
+class TestConverterElementHandlerCaching {
 
     private static final int THREADS = 8;
 
@@ -63,7 +63,7 @@ public class TestConverterElementHandlerCaching {
     }
 
     @Test
-    public void testSingleConverterInstanceUnderConcurrency() throws Exception {
+    void singleConverterInstanceUnderConcurrency() throws Exception {
         CONSTRUCTED.set(0);
         SECOND_CONSTRUCTION = new CountDownLatch(2);
 

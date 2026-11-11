@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  * Test that @SequenceGenerators container annotation is properly parsed.
  * Corresponds to TCK sequenceGeneratorTest.
  */
-public class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
+class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -42,7 +42,7 @@ public class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
      * is properly recognized by the metadata repository.
      */
     @Test
-    public void testSequenceGeneratorsAnnotation() {
+    void sequenceGeneratorsAnnotation() {
         MetaDataRepository repos = emf.getConfiguration()
             .getMetaDataRepositoryInstance();
         // Ensure the class metadata is resolved (which triggers annotation parsing)

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * A test case that tests for incomplete foreign-key relationships and ensures
  * that proper database mechanics are enforced.
  */
-public class TestIncompleteRelationship extends SingleEMFTestCase {
+class TestIncompleteRelationship extends SingleEMFTestCase {
     private static final String CLIENT_ID = "00000-00000-00000-00000-00000-00000";
 
     private static final String DISCOUNTS[] = {
@@ -55,7 +55,7 @@ public class TestIncompleteRelationship extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIncompleteRelationship() {
+    void incompleteRelationship() {
         final EntityManager em = emf.createEntityManager();
         IncompleteRelationshipSubclass parent = null;
         IncompleteRelationshipChildEntity child = null;

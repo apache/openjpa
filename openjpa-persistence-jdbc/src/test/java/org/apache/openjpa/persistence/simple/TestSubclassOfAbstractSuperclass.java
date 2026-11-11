@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test persisting a class which has an abstract superclass.
  */
-public class TestSubclassOfAbstractSuperclass
+class TestSubclassOfAbstractSuperclass
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -36,7 +36,7 @@ public class TestSubclassOfAbstractSuperclass
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new SubclassPerson());

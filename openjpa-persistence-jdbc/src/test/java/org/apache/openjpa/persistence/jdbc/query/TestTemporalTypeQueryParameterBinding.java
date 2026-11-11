@@ -55,7 +55,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
+class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     private static Calendar PARAM_CALENDAR = Calendar.getInstance();
     private  static long T1 = PARAM_CALENDAR.getTimeInMillis();
     private  static long T2 = T1 + 2000;
@@ -107,7 +107,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterConvertedFromCalendarValue() {
+    void namedParameterConvertedFromCalendarValue() {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
         Calendar c3 = Calendar.getInstance();
@@ -124,7 +124,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterConvertedFromCalendarValue() {
+    void positionalParameterConvertedFromCalendarValue() {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
         Calendar c3 = Calendar.getInstance();
@@ -147,7 +147,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
      * the conversion the second execution binds every Calendar as a Timestamp.
      */
     @Test
-    public void testParameterObjectConvertedFromCalendarValue() {
+    void parameterObjectConvertedFromCalendarValue() {
         BufferedLogFactory log = (BufferedLogFactory) ((OpenJPAEntityManagerFactorySPI) emf).getConfiguration()
             .getLogFactory();
         for (int i = 0; i < 2; i++) {
@@ -177,7 +177,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
      * The temporal type only applies when the query is executed.
      */
     @Test
-    public void testParameterObjectKeepsCalendarValue() {
+    void parameterObjectKeepsCalendarValue() {
         Calendar c1 = Calendar.getInstance();
         c1.setTimeInMillis(T1);
 
@@ -194,7 +194,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
      * Binding a Calendar again without a temporal type must not apply the temporal type of an earlier binding.
      */
     @Test
-    public void testParameterObjectRebindDropsTemporalType() {
+    void parameterObjectRebindDropsTemporalType() {
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();
         Calendar c3 = Calendar.getInstance();
@@ -242,7 +242,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterConvertedFromDateValue() {
+    void namedParameterConvertedFromDateValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);
         Date d3 = new Date(T3);
@@ -256,7 +256,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedTimeParam() {
+    void namedTimeParam() {
         Date d2 = new Date(T2);
 
         Query q = em.createQuery("SELECT p FROM TimeKeeper p WHERE p.time=:t");
@@ -266,7 +266,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterConvertedFromDateValue() {
+    void positionalParameterConvertedFromDateValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);
         Date d3 = new Date(T3);
@@ -281,7 +281,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
 
 
     @Test
-    public void testNamedParameterWithMismatchedValue() {
+    void namedParameterWithMismatchedValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);
         Date d3 = new Date(T3);
@@ -299,7 +299,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterWithMismatchedValue() {
+    void positionalParameterWithMismatchedValue() {
         Date d1 = new Date(T1);
         Date d2 = new Date(T2);
         Date d3 = new Date(T3);
@@ -322,7 +322,7 @@ public class TestTemporalTypeQueryParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTemporalType() {
+    void temporalType() {
         EntityManager em = emf.createEntityManager();
         Calendar endTime = PARAM_CALENDAR;
         Calendar startTime = PARAM_CALENDAR;

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * or when explicitly set to null.
  *
  */
-public class TestOneOneNulls extends SingleEMFTestCase {
+class TestOneOneNulls extends SingleEMFTestCase {
 
     private long pid1;
     private long pid2;
@@ -79,7 +79,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindOneToOneNullDefaults() {
+    void findOneToOneNullDefaults() {
         BidiParent parent;
         BidiChild child;
 
@@ -99,7 +99,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindOneToOneNullExplicit() {
+    void findOneToOneNullExplicit() {
         BidiParent parent;
         BidiChild child;
 
@@ -119,7 +119,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryOneToOneNullChild() {
+    void queryOneToOneNullChild() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("SELECT o FROM BidiParent o "
             + "ORDER BY o.name ASC");
@@ -135,7 +135,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryOneToOneNullParent() {
+    void queryOneToOneNullParent() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("SELECT o FROM BidiChild o "
             + "ORDER BY o.name ASC");

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test that our parser handles newlines in queries
  */
-public class TestNewlinesInQueries
+class TestNewlinesInQueries
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -45,7 +45,7 @@ public class TestNewlinesInQueries
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e \n from simple e");
         SimpleEntity e = (SimpleEntity) q.getSingleResult();

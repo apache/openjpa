@@ -46,7 +46,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     public static float FLOAT_PRECISION = 0.01F;
 
     @Test
-    public void testStringArray()
+    void stringArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         String[] array = new String[max];
@@ -56,7 +56,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testLongArray()
+    void longArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Long[] array = new Long[max];
@@ -69,7 +69,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testLongPrimitiveArray()
+    void longPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         long[] array = new long[max];
@@ -82,7 +82,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testShortArray()
+    void shortArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Short[] array = new Short[max];
@@ -92,7 +92,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testShortPrimitiveArray()
+    void shortPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         short[] array = new short[max];
@@ -102,7 +102,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testIntArray()
+    void intArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Integer[] array = new Integer[max];
@@ -112,7 +112,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testIntPrimitiveArray()
+    void intPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         int[] array = new int[max];
@@ -141,7 +141,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }*/
 
     @Test
-    public void testBooleanArray()
+    void booleanArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Boolean[] array = new Boolean[max];
@@ -151,7 +151,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testCharacterArray()
+    void characterArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Character[] array = new Character[max];
@@ -162,7 +162,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testCharacterPrimitiveArray()
+    void characterPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         char[] array = new char[max];
@@ -173,7 +173,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testCharacterPrimitiveClobArray()
+    void characterPrimitiveClobArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         char[] array = new char[max];
@@ -184,7 +184,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testBooleanPrimitiveArray()
+    void booleanPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         boolean[] array = new boolean[max];
@@ -194,7 +194,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatArray()
+    void floatArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Float[] array = new Float[max];
@@ -204,7 +204,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatPrimitiveArray()
+    void floatPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         float[] array = new float[max];
@@ -214,7 +214,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleArray()
+    void doubleArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Double[] array = new Double[max];
@@ -224,7 +224,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testDoublePrimitiveArray()
+    void doublePrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         double[] array = new double[max];
@@ -234,7 +234,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     @Test
-    public void testDateArray()
+    void dateArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Date[] array = new Date[max];

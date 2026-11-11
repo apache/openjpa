@@ -31,9 +31,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * Test for OPENJPA-2651.
- */
-public class TestSQLResultSetMapping extends SingleEMFTestCase {
+* Test for OPENJPA-2651.
+*/
+class TestSQLResultSetMapping extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -76,7 +76,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
      *   Caused by: java.sql.SQLException: Column '0' not found.
      */
     @Test
-    public void testMappingNoException() {
+    void mappingNoException() {
 
         String sql = "SELECT t0.ID, t2.DATA_HORA as opRecepcaoServCentraisDataHora, t2.ID as opRecepcaoServCentraisId"
                 + " FROM CRT_REQUISICAO_CHEQUE_PERS t0, CRT_OPERACAO t2 WHERE t0.ID = 500006164 and t2.ID = 25384";
@@ -86,7 +86,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
         Query query = em.createNativeQuery(sql, "MyResultMapping");
         List<CrtRequisicaoChequePersEntity> res = query.getResultList();
 
-        assertEquals(res.size(), 1);
+        assertEquals(1, res.size());
         assertEquals(500006164, res.get(0).getId());
         assertEquals(25384, res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getId());
         assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"),
@@ -101,7 +101,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
      * '500006164', which is the ID for the CrtRequisicaoEntity.
      */
     @Test
-    public void testMappingCorrectID() {
+    void mappingCorrectID() {
 
         String sql =
             "SELECT t0.ID, t1.ID as opRecepcaoServCentraisId, t1.DATA_HORA as opRecepcaoServCentraisDataHora, "
@@ -120,7 +120,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
         Query query = em.createNativeQuery(sql, "MyResultMapping");
         List<CrtRequisicaoChequePersEntity> res = query.getResultList();
 
-        assertEquals(res.size(), 1);
+        assertEquals(1, res.size());
         assertEquals(500006164, res.get(0).getId());
         assertEquals(25384, res.get(0).getCrtOperacaoByOperacaoRecepcaoServCent().getId());
         assertEquals(Timestamp.valueOf("2014-12-16 15:24:54.0"),

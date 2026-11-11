@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEnumQueryConstructor
+class TestEnumQueryConstructor
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class TestEnumQueryConstructor
     }
 
     @Test
-    public void testEnumQueryConstructor() {
+    void enumQueryConstructor() {
         Query q = em.createQuery(
             "select new EnumFieldType(e.intField, e.enumField) " +
                 "from EnumFieldType e");

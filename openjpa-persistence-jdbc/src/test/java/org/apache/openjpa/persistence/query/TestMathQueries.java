@@ -35,9 +35,9 @@ import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMathQueries extends BaseQueryTest {
+class TestMathQueries extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(QueryTest1.class);
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
@@ -59,7 +59,7 @@ public class TestMathQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testMultipleQuery() {
+    void multipleQuery() {
         try {
 
             OpenJPAQuery q1, q2;

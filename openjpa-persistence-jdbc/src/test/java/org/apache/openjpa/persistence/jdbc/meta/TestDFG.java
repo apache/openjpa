@@ -27,8 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityTransaction;
 
@@ -40,12 +39,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object oid;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(DFGTest.class);
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         EntityTransaction t= pm.getTransaction();
@@ -66,7 +65,7 @@ public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBC
     }
 
     @Test
-    public void testDFG() {
+    void dfg() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
 
         DFGTest a = (DFGTest) pm.getObjectId(oid);
@@ -75,7 +74,7 @@ public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBC
 
         OpenJPAStateManager sm = getStateManager(a,pm);
         FieldMetaData fmd = sm.getMetaData().getField("nonDFGField");
-        assertTrue(!sm.getLoaded().get(fmd.getIndex()),
+        assertFalse(sm.getLoaded().get(fmd.getIndex()),
                 "nonDFGField should not be loaded");
 
         fmd = sm.getMetaData().getField("dfgField");
@@ -94,7 +93,7 @@ public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBC
     // stands, this is just here so that there's an easy place to look
     // at the SQL.
     @Test
-    public void testDFGWrites() {
+    void dfgWrites() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
 

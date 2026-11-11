@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * be found when searching with Object.class (default entity listener
  * with unknown entity type at XML parse time).
  */
-public class TestMethodLifecycleCallbacks {
+class TestMethodLifecycleCallbacks {
 
     public interface SomeInterface {
         void doSomething();
@@ -60,7 +60,7 @@ public class TestMethodLifecycleCallbacks {
      * where entity type is unknown, so Object.class is used.
      */
     @Test
-    public void testFindMethodWithInterfaceParamWhenSearchingForObject() {
+    void findMethodWithInterfaceParamWhenSearchingForObject() {
         // BeanLifecycleCallbacks passes type=Object.class for default listeners
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
             ListenerWithInterfaceParam.class, "prePersist", false, Object.class);
@@ -72,7 +72,7 @@ public class TestMethodLifecycleCallbacks {
      * When searching with Object.class, should find methods that take Object.
      */
     @Test
-    public void testFindMethodWithObjectParam() {
+    void findMethodWithObjectParam() {
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
             ListenerWithInterfaceParam.class, "postPersist", false, Object.class);
         assertNotNull(cb.getCallbackMethod());
@@ -84,7 +84,7 @@ public class TestMethodLifecycleCallbacks {
      * a supertype (Object or interface).
      */
     @Test
-    public void testFindMethodWithObjectParamWhenSearchingForSpecificType() {
+    void findMethodWithObjectParamWhenSearchingForSpecificType() {
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
             ListenerWithInterfaceParam.class, "postPersist", false, String.class);
         assertNotNull(cb.getCallbackMethod());
@@ -95,7 +95,7 @@ public class TestMethodLifecycleCallbacks {
      * MethodLifecycleCallbacks (entity callback, not listener) with Object arg.
      */
     @Test
-    public void testMethodLifecycleCallbacksWithObjectArg() {
+    void methodLifecycleCallbacksWithObjectArg() {
         MethodLifecycleCallbacks cb = new MethodLifecycleCallbacks(
             ListenerWithInterfaceParam.class, "postPersist", true);
         assertNotNull(cb.getCallbackMethod());

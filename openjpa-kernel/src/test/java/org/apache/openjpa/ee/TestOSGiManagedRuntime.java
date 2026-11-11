@@ -55,7 +55,7 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * Test jakarta.transaction.TransactionManager OSGi service discovery.
  */
-public class TestOSGiManagedRuntime {
+class TestOSGiManagedRuntime {
 
     private static final String TXN_MANAGER_CLASS_NAME = "jakarta.transaction.TransactionManager";
 
@@ -375,7 +375,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPreStartPostStop() throws Throwable {
+    void txnServiceDiscoveryPreStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
         context.setTransactionManager(TXN_MANAGER);
@@ -414,7 +414,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPreStartPreStop() throws Throwable {
+    void txnServiceDiscoveryPreStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
         context.setTransactionManager(TXN_MANAGER);
@@ -449,7 +449,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPostStartPostStop() throws Throwable {
+    void txnServiceDiscoveryPostStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
 
@@ -485,7 +485,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPostStartPreStop() throws Throwable {
+    void txnServiceDiscoveryPostStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
 

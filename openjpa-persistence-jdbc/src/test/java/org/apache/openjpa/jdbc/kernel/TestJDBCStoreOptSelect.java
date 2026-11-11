@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
+class TestJDBCStoreOptSelect extends SQLListenerTestCase {
     Object[] props = new Object[] { CLEAR_TABLES, OptSelectEntity.class
         };
     OptSelectEntity e1, e2;
@@ -48,7 +48,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         StoreManager store = ((EntityManagerImpl) em).getBroker().getStoreManager().getDelegate();
 

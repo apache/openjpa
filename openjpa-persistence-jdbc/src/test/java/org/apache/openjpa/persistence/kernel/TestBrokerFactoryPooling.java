@@ -36,10 +36,10 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.junit.jupiter.api.Test;
 
-public class TestBrokerFactoryPooling extends BaseKernelTest {
+class TestBrokerFactoryPooling extends BaseKernelTest {
 
     @Test
-    public void testPooling() {
+    void pooling() {
         BrokerFactory bf0 = Bootstrap.getBrokerFactory();
         BrokerFactory bf1 = Bootstrap.getBrokerFactory();
         assertSame(bf0, bf1);

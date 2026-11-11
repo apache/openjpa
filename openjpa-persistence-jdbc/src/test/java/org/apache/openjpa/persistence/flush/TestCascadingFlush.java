@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.flush;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -36,6 +37,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +63,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * ID values.
      */
     @Test
-    public void testCascadingFlushBasic() {
+    void cascadingFlushBasic() {
         if (!supportsNativeSequence) {
             return;
         }
@@ -78,7 +80,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * ID values using an detached, then merged entity graph.
      */
     @Test
-    public void testCascadingFlushDetach() {
+    void cascadingFlushDetach() {
         if (!supportsNativeSequence) {
             return;
         }
@@ -98,7 +100,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * an serialized (resulting in detach), then merged entity graph.
      */
     @Test
-    public void testCascadingFlushSerialize() {
+    void cascadingFlushSerialize() {
         if (!supportsNativeSequence) {
             return;
         }
@@ -139,7 +141,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
             assertTrue(course2.getCourseId() > 0);
             assertNotNull(course2.getClassPeriods());
             Set<ClassPeriod> cps = course2.getClassPeriods();
-            assertTrue(cps.size() == 2);
+            assertEquals(2, cps.size());
             for (ClassPeriod cp : cps) {
                 assertNotNull(cp);
                 assertTrue(cp.getClassPeriodId() > 0);
@@ -152,14 +154,14 @@ public class TestCascadingFlush extends SingleEMFTestCase {
                     assertTrue(t.getTopicId() > 0);
                     Set<Assignment> assignments = t.getAssignments();
                     assertNotNull(assignments);
-                    assertTrue(assignments.size() == 1);
+                    assertEquals(1, assignments.size());
                     for (Assignment a : assignments) {
                         assertNotNull(a);
                         assertTrue(a.getAssignmentId() > 0);
                     }
                     Set<SubTopic> subTopics = t.getSubTopics();
                     assertNotNull(subTopics);
-                    assertTrue(subTopics.size() == 1);
+                    assertEquals(1, subTopics.size());
                     for (SubTopic s : subTopics) {
                         assertNotNull(s);
                         assertTrue(s.getSubtopicId() > 0);

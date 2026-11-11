@@ -17,9 +17,7 @@
  * under the License.
  */
 package org.apache.openjpa.lib.util;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +27,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestTypedProperties {
+class TestTypedProperties {
 
     private TypedProperties _props = null;
     private TypedProperties _defs = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _props = new TypedProperties();
         _props.setProperty("bool", "true");
         _props.setProperty("int", "1");
@@ -50,7 +48,7 @@ public class TestTypedProperties {
      * Tests basic typed gets.
      */
     @Test
-    public void testTypes() {
+    void types() {
         assertTrue(_props.getBooleanProperty("bool"));
         assertEquals(1, _props.getIntProperty("int"));
         assertEquals(2L, _props.getLongProperty("long"));
@@ -63,13 +61,13 @@ public class TestTypedProperties {
      * Tests the defaults returned for missing keys.
      */
     @Test
-    public void testNoDefaults() {
-        assertTrue(!_props.getBooleanProperty("bool2"));
+    void noDefaults() {
+        assertFalse(_props.getBooleanProperty("bool2"));
         assertEquals(0, _props.getIntProperty("int2"));
         assertEquals(0L, _props.getLongProperty("long2"));
         assertEquals(0F, _props.getFloatProperty("float2"), 0F);
         assertEquals(0D, _props.getDoubleProperty("double2"), 0D);
-        assertEquals(null, _props.getProperty("double2"));
+        assertNull(_props.getProperty("double2"));
     }
 
     /**
@@ -77,7 +75,7 @@ public class TestTypedProperties {
      * backing properties instance.
      */
     @Test
-    public void testDefaults() {
+    void defaults() {
         assertTrue(_defs.getBooleanProperty("bool"));
         assertEquals(1, _defs.getIntProperty("int"));
         assertEquals(2L, _defs.getLongProperty("long"));
@@ -90,7 +88,7 @@ public class TestTypedProperties {
      * Tests that given defaults works.
      */
     @Test
-    public void testGivenDefaults() {
+    void givenDefaults() {
         assertTrue(_props.getBooleanProperty("bool2", true));
         assertEquals(1, _props.getIntProperty("int2", 1));
         assertEquals(2L, _props.getLongProperty("long2", 2L));

@@ -75,7 +75,7 @@ public class TestDelimitedIdentifiers extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTableName() {
+    void tableName() {
         id++;
         createEntityA(id);
 

@@ -50,7 +50,7 @@ public class TestLRUCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryCacheOverFlow() {
+    void queryCacheOverFlow() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         ConcurrentQueryCache cache =
             (ConcurrentQueryCache) emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
@@ -90,7 +90,7 @@ public class TestLRUCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDataCacheOverFlow() {
+    void dataCacheOverFlow() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         StoreCacheImpl storeCache = (StoreCacheImpl) emf.getCache();
         DataCache cache = (DataCache) storeCache.getDelegate();

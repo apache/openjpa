@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -34,10 +33,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * These variations indirectly test OpenJPA's ProviderUtil through the
- * spec API implementation of PersistenceUtil.
- */
-public class TestPersistenceUtil extends SingleEMFTestCase{
+* These variations indirectly test OpenJPA's ProviderUtil through the
+* spec API implementation of PersistenceUtil.
+*/
+class TestPersistenceUtil extends SingleEMFTestCase{
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +50,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * load state.
      */
     @Test
-    public void testIsLoadedEager() {
+    void isLoadedEager() {
         verifyIsLoadedEagerState(true);
     }
 
@@ -60,7 +59,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * not loaded state.
      */
     @Test
-    public void testNotLoadedLazy() {
+    void notLoadedLazy() {
         verifyIsLoadedLazyState(false);
     }
 
@@ -69,7 +68,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * loaded state.
      */
     @Test
-    public void testIsLoadedLazy() {
+    void isLoadedLazy() {
         verifyIsLoadedLazyState(true);
     }
 
@@ -78,7 +77,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * NOT_LOADED state.
      */
     @Test
-    public void testNotLoadedEager() {
+    void notLoadedEager() {
         verifyIsLoadedEagerState(false);
     }
 
@@ -87,7 +86,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * are assigned by the application.
      */
     @Test
-    public void testIsApplicationLoaded() {
+    void isApplicationLoaded() {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
         Eager ee = createEagerEntity();
@@ -118,7 +117,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
      * are in the detached state.
      */
     @Test
-    public void testIsDetachLoaded() {
+    void isDetachLoaded() {
         PersistenceUtil putil = Persistence.getPersistenceUtil();
         EntityManager em = emf.createEntityManager();
         Eager ee = createEagerEntity();
@@ -129,7 +128,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         em.clear();
 
         // should be true, as detached is treated as LoadState.UNKNOWN
-        assertEquals(true, putil.isLoaded(ee));
+        assertTrue(putil.isLoaded(ee));
 
         em.close();
     }
@@ -141,8 +140,8 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
 
         // Vfy state is true for the unmanaged entity via
         // PeristenceUtil
-        assertEquals(true, putil.isLoaded(ee));
-        assertEquals(true, putil.isLoaded(ee,
+        assertTrue(putil.isLoaded(ee));
+        assertTrue(putil.isLoaded(ee,
             "id"));
 
         em.getTransaction().begin();
@@ -159,7 +158,7 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         assertEquals(loaded, putil.isLoaded(ee, "id"));
         assertEquals(loaded, putil.isLoaded(ee, "name"));
         assertEquals(loaded, putil.isLoaded(ee, "eagerEmbed"));
-        assertEquals(true, putil.isLoaded(ee, "transField"));
+        assertTrue(putil.isLoaded(ee, "transField"));
 
         em.close();
     }
@@ -171,8 +170,8 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
 
         // Vfy LoadState is true for the unmanaged entity via
         // PersistenceUtil
-        assertEquals(true, putil.isLoaded(le));
-        assertEquals(true, putil.isLoaded(le,"id"));
+        assertTrue(putil.isLoaded(le));
+        assertTrue(putil.isLoaded(le, "id"));
 
         em.getTransaction().begin();
         em.persist(le);
@@ -189,9 +188,9 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         assertEquals(loaded, putil.isLoaded(le, "id"));
 
         // Name is lazy fetch so it should not be loaded
-        assertEquals(false, putil.isLoaded(le, "name"));
+        assertFalse(putil.isLoaded(le, "name"));
         assertEquals(loaded, putil.isLoaded(le, "lazyEmbed"));
-        assertEquals(true, putil.isLoaded(le, "transField"));
+        assertTrue(putil.isLoaded(le, "transField"));
 
         em.close();
     }
@@ -234,6 +233,6 @@ public class TestPersistenceUtil extends SingleEMFTestCase{
         assertEquals(state, putil.isLoaded(ent, "id"));
         assertEquals(state, putil.isLoaded(ent, "name"));
         assertEquals(state, putil.isLoaded(ent, "eagerEmbed"));
-        assertEquals(true, putil.isLoaded(ent, "transField"));
+        assertTrue(putil.isLoaded(ent, "transField"));
     }
 }

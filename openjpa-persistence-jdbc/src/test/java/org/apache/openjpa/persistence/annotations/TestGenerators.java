@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import jakarta.persistence.Query;
@@ -41,13 +42,13 @@ public class TestGenerators extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         deleteAll(Generator.class);
     }
 
     @Test
-    public void testGet() {
+    void get() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -60,7 +61,7 @@ public class TestGenerators extends AnnotationTestCase
     }
 
     @Test
-    public void testFlush() {
+    void flush() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -74,7 +75,7 @@ public class TestGenerators extends AnnotationTestCase
     }
 
     @Test
-    public void testCommit() {
+    void commit() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -99,10 +100,5 @@ public class TestGenerators extends AnnotationTestCase
         assertNotNull(g.getPk2());
        // assertNotEquals(new Integer(0), g);
         assertNotEquals(0, g.getPk3());
-    }
-
-    private boolean assertNotEquals(long n, long num)
-    {
-    	return(n != num);
     }
 }

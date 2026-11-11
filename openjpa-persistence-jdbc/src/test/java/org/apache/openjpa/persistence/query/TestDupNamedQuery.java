@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -30,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDupNamedQuery extends SingleEMFTestCase {
+class TestDupNamedQuery extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +45,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQuery() {
+    void testSimpleQuery() {
         simpleQuery(false, "FindOne", "FindAll", "Name One", "Value One",
             "Name Two", "Value Two");
         simpleQuery(true, "Find2One", "Find2All", "Name2 One", "Value2 One",
@@ -65,7 +63,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         List list = em.createNamedQuery(findOneQName).setParameter(1, nameOne)
             .getResultList();
         assertNotNull(list);
-        assertEquals(list.size(), 1);
+        assertEquals(1, list.size());
         Object o = list.get(0);
         assertTrue(simple2 ? o instanceof SimpleEntity2
         		: o instanceof SimpleEntity);
@@ -75,7 +73,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         if (findAllQName != null) {
             list = em.createNamedQuery(findAllQName).getResultList();
             assertNotNull(list);
-            assertEquals(list.size(), 2);
+            assertEquals(2, list.size());
             for (Object value : list) {
                 o = value;
                 assertTrue(simple2 ? o instanceof SimpleEntity2
@@ -91,13 +89,13 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
                     v = ((SimpleEntity) o).getValue();
                 }
                 if (n.equals(nameOne)) {
-                    assertTrue(v.equals(ValueOne));
+                    assertEquals(v, ValueOne);
                 }
                 else if (n.equals(nameTwo)) {
-                    assertTrue(v.equals(ValueTwo));
+                    assertEquals(v, ValueTwo);
                 }
                 else {
-                    assertTrue(false);
+                    fail();
                 }
             }
         }

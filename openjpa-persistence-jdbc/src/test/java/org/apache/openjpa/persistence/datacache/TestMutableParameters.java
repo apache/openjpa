@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Collection;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class TestMutableParameters
     private Date _startDate;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         deleteAll(CacheObjectA.class);
         Map propsMap = new HashMap();
@@ -94,7 +94,7 @@ public class TestMutableParameters
     }
 
     @Test
-    public void testMutatedDateParameter() {
+    void mutatedDateParameter() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
             "select a from " +
@@ -111,7 +111,7 @@ public class TestMutableParameters
             new Object[]{ d });
         c = (Collection) q.execute(new Object[]{ d });
 
-        assertFalse(Integer.valueOf(initialSize).equals(c.size()));
+        assertNotEquals(Integer.valueOf(initialSize), c.size());
     }
 
     //FIXME Seetha Nov 10,2006

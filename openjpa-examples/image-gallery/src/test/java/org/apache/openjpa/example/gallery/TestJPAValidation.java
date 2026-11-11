@@ -33,7 +33,7 @@ import org.apache.openjpa.example.gallery.model.Image;
 import org.apache.openjpa.example.gallery.model.Location;
 import org.junit.jupiter.api.Test;
 
-public class TestJPAValidation {
+class TestJPAValidation {
 
 
     /**
@@ -41,7 +41,7 @@ public class TestJPAValidation {
      * and pre-persist lifecycle events.
      */
     @Test
-    public void testValidation() {
+    void validation() {
         EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("BeanValidation");
         EntityManager em = emf.createEntityManager();

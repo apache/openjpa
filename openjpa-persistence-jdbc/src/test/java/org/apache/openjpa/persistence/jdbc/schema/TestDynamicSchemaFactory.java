@@ -53,7 +53,7 @@ public class TestDynamicSchemaFactory
     private ClassMapping _mapping = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setSchemaFactory(DynamicSchemaFactory.class.getName());
@@ -62,7 +62,7 @@ public class TestDynamicSchemaFactory
     }
 
     @Test
-    public void testClassMapping() {
+    void classMapping() {
         Table table = _mapping.getTable();
         assertEquals("MAPPINGTEST1", table.getName().toUpperCase(Locale.ROOT));
         assertEquals(1, table.getPrimaryKey().getColumns().length);
@@ -71,7 +71,7 @@ public class TestDynamicSchemaFactory
     }
 
     @Test
-    public void testIndicators() {
+    void indicators() {
         Version vers = _mapping.getVersion();
         assertNotNull(vers);
         assertEquals("MAPPINGTEST1", vers.getColumns()[0].getTable().

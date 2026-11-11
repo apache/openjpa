@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
+class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
     protected EntityType<Department> department_ = null;
     protected OpenJPACriteriaBuilder cb;
 
@@ -49,7 +49,7 @@ public class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         CriteriaQuery<Department> q = cb.createQuery(Department.class);
         Root<Department> dept = q.from(Department.class);
         q.select(dept).where(cb.equal(dept.get(department_.getSingularAttribute("name", String.class)), "test"));

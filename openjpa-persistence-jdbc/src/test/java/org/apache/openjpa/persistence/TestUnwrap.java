@@ -40,14 +40,14 @@ import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestUnwrap extends SingleEMFTestCase {
+class TestUnwrap extends SingleEMFTestCase {
 
     /**
      * Tests a query can be unwrapped as an instance of a series of class or
      * interface.
      */
     @Test
-    public void testValidQueryUnwrap() {
+    void validQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Query query = em.createQuery(QueryLanguages.LANG_SQL,"");
 
@@ -70,7 +70,7 @@ public class TestUnwrap extends SingleEMFTestCase {
      * class or interface.
      */
     @Test
-    public void testValidEntityManagerUnwrap() {
+    void validEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] validCasts = new Class[] {
@@ -91,7 +91,7 @@ public class TestUnwrap extends SingleEMFTestCase {
      * class or interface.
      */
     @Test
-    public void testValidOtherUnwrap() {
+    void validOtherUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] validCasts = new Class[] {
@@ -106,7 +106,7 @@ public class TestUnwrap extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConnectionUnwrap() throws Exception {
+    void connectionUnwrap() throws Exception {
         String dbDict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().getClass().getName();
 
         EntityManager em = emf.createEntityManager();
@@ -156,7 +156,7 @@ public class TestUnwrap extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNegativeConnectionUnwrap() {
+    void negativeConnectionUnwrap() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
 
@@ -183,7 +183,7 @@ public class TestUnwrap extends SingleEMFTestCase {
      * to rollback.
      */
     @Test
-    public void testInvalidEntityManagerUnwrap() {
+    void invalidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] invalidCasts = new Class[] {
@@ -212,7 +212,7 @@ public class TestUnwrap extends SingleEMFTestCase {
      * to rollback.
      */
     @Test
-    public void testInvalidQueryUnwrap() {
+    void invalidQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         Class<?>[] invalidCasts = new Class[] {

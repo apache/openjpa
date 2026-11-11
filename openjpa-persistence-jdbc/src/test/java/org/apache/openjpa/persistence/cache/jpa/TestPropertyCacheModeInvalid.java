@@ -35,7 +35,7 @@ public class TestPropertyCacheModeInvalid extends AbstractCacheTestCase {
     public void setUp() {}
 
     @Test
-    public void testInvalidPropertyValue() {
+    void invalidPropertyValue() {
         boolean exceptionCaught = false;
         try {
             Map<String, Object> propertyMap = new HashMap<>();

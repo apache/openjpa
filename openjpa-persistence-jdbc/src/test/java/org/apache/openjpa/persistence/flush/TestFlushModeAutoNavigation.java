@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * Order->Customer->Spouse with FlushModeType.AUTO. The dirty Spouse
  * should be flushed before the query executes.
  */
-public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
+class TestFlushModeAutoNavigation extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -80,7 +80,7 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
      * query through Order->Customer->Spouse with FlushModeType.AUTO.
      */
     @Test
-    public void testFlushModeAutoMultiHopNavigation() {
+    void flushModeAutoMultiHopNavigation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -111,7 +111,7 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
      * query through Order->Customer with FlushModeType.AUTO.
      */
     @Test
-    public void testFlushModeAutoSingleHopNavigation() {
+    void flushModeAutoSingleHopNavigation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

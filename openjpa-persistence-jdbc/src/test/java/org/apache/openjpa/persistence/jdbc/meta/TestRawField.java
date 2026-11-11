@@ -36,15 +36,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestRawField extends BaseJDBCTest {
+class TestRawField extends BaseJDBCTest {
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(RawField.class);
     }
 
     @Test
-    public void testRaw() {
+    void raw() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getTransaction().begin();
         RawField pc = new RawField();

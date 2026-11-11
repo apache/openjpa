@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Regression test for OPENJPA-2940: XML-declared embeddables should be
  * mapped as embedded fields, not serialized as BLOBs.
  */
-public class TestXmlEmbeddableOverride extends SingleEMFTestCase {
+class TestXmlEmbeddableOverride extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +52,7 @@ public class TestXmlEmbeddableOverride extends SingleEMFTestCase {
      * to columns (not serialized as a BLOB).
      */
     @Test
-    public void testXmlEmbeddableOverride() {
+    void xmlEmbeddableOverride() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

@@ -45,7 +45,7 @@ import org.opentest4j.AssertionFailedError;
 
 public class TestComplexQueries extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         clear();
     }
 
@@ -94,7 +94,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex1() {
+    void complex1() {
         complexQuery(1,
             new ComplexA("test", 0, null, null),
             "stringA = \'test\'",
@@ -102,7 +102,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex2() {
+    void complex2() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -116,7 +116,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex3() {
+    void complex3() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -130,7 +130,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex4() {
+    void complex4() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -145,7 +145,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex5() {
+    void complex5() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -161,7 +161,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex6() {
+    void complex6() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -178,7 +178,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex7() {
+    void complex7() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -196,7 +196,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex8() {
+    void complex8() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -215,7 +215,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex9() {
+    void complex9() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -236,7 +236,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex10() {
+    void complex10() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -250,7 +250,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex11() {
+    void complex11() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,
@@ -264,7 +264,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex12() {
+    void complex12() {
         try {
             complexQuery(1,
                 new ComplexG("testg", 0, null,
@@ -283,7 +283,7 @@ public class TestComplexQueries extends BaseQueryTest {
     }
 
     @Test
-    public void testComplex13() {
+    void complex13() {
         complexQuery(0,
             new ComplexG("testg", 0, null,
                 new ComplexF("testf", 0, null, null,

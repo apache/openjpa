@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed.vec;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 
@@ -33,7 +31,7 @@ import org.apache.openjpa.util.proxy.DelayedVectorProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDelayedVectorProxyDetachLite extends TestDelayedVectorProxy {
+class TestDelayedVectorProxyDetachLite extends TestDelayedVectorProxy {
 
     @BeforeEach
     public void setUp() {
@@ -70,7 +68,7 @@ public class TestDelayedVectorProxyDetachLite extends TestDelayedVectorProxy {
 
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedVectorProxy);
+        assertInstanceOf(DelayedVectorProxy.class, emps);
         DelayedVectorProxy dep = (DelayedVectorProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, dep.size());
@@ -85,10 +83,10 @@ public class TestDelayedVectorProxyDetachLite extends TestDelayedVectorProxy {
         resetSQL();
         assertEquals(1, emps.size());
         // Verify the delay load entity is detached
-        assertTrue(e instanceof PersistenceCapable);
+        assertInstanceOf(PersistenceCapable.class, e);
         PersistenceCapable pc = (PersistenceCapable)e;
         // LiteAutoDetach
-        assertTrue(pc.pcGetStateManager() == null);
+        assertNull(pc.pcGetStateManager());
         // verify a second SQL was not issued to get the size
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
     }

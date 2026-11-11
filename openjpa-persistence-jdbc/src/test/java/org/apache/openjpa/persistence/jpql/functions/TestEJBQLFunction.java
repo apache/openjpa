@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -66,7 +62,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, MaleUser.class,
                 FemaleUser.class, Address.class
         );
@@ -129,7 +125,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testConcatSubStringFunc() {
+    void concatSubStringFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -184,13 +180,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testConcatFunc2() {
+    void concatFunc2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         CompUser user = em.find(CompUser.class, userid1);
         assertNotNull(user, "the user is null");
-        assertEquals(user.getName(), "Seetha", "the users name is not seetha");
+        assertEquals("Seetha", user.getName(), "the users name is not seetha");
 
         String query = "UPDATE CompUser e " +
             "SET e.name = " +
@@ -225,7 +221,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTrimFunc3() {
+    void trimFunc3() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -248,7 +244,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLowerFunc() {
+    void lowerFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -271,7 +267,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLowerClobFunc() {
+    void lowerClobFunc() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         // some databases do not support case conversion on LOBs,
         // just skip this test case
@@ -299,7 +295,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testUpperFunc() {
+    void upperFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -322,7 +318,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testUpperClobFunc() {
+    void upperClobFunc() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         // some databases do not support case conversion on LOBs,
         // just skip this test case
@@ -350,7 +346,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLengthFunc() {
+    void lengthFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT o.name " +
@@ -367,7 +363,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeft() {
+    void left() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, 3) FROM CompUser AS u WHERE LEFT(u.address.streetAd, 2) = '43'";
         List result = em.createQuery(query).getResultList();
@@ -379,7 +375,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testRight() {
+    void right() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, 3) FROM CompUser AS u WHERE right(u.address.streetAd, 4) = 'some'";
         List result = em.createQuery(query).getResultList();
@@ -391,7 +387,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftWithParameterLength() {
+    void leftWithParameterLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
         List result = em.createQuery(query).setParameter("len", 4).getResultList();
@@ -406,7 +402,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftLongerThanString() {
+    void leftLongerThanString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
         List result = em.createQuery(query).getResultList();
@@ -421,7 +417,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftAndRightWithExpressionLength() {
+    void leftAndRightWithExpressionLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, LENGTH(u.computerName)), RIGHT(u.name, LENGTH(u.computerName))"
             + " FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -434,7 +430,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testRightWithParameterLength() {
+    void rightWithParameterLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
         List result = em.createQuery(query).setParameter("len", 4).getResultList();
@@ -449,7 +445,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testRightLongerThanString() {
+    void rightLongerThanString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
         List result = em.createQuery(query).getResultList();
@@ -468,7 +464,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * cannot tell apart from NULL.
      */
     @Test
-    public void testSubstringBeyondString() {
+    void substringBeyondString() {
         EntityManager em = currentEntityManager();
         String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
         String query = "SELECT SUBSTRING(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -487,7 +483,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * RIGHT(s, 0) is the empty string, which Oracle cannot tell apart from NULL.
      */
     @Test
-    public void testRightWithZeroLength() {
+    void rightWithZeroLength() {
         EntityManager em = currentEntityManager();
         String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
         String query = "SELECT RIGHT(u.name, 0) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -503,7 +499,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftAndRightOnStringLiteral() {
+    void leftAndRightOnStringLiteral() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT('Seetha', 2) = LEFT(u.name, 2)"
             + " AND RIGHT('Seetha', 3) = RIGHT(u.name, 3) AND LEFT('Seetha', 10) = u.name";
@@ -515,7 +511,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftAndRightOnStringParameter() {
+    void leftAndRightOnStringParameter() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT(:s, :len) = LEFT(u.name, 2)"
             + " AND RIGHT(:s, 3) = RIGHT(u.name, 3) AND RIGHT(:s, 10) = u.name";
@@ -527,7 +523,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testArithmFunc() {
+    void arithmFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -592,7 +588,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testGroupByHavingClause() {
+    void groupByHavingClause() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c.name FROM CompUser c GROUP BY c.name "
@@ -610,7 +606,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testOrderByClause() {
+    void orderByClause() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' "
@@ -628,7 +624,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testAVGAggregFunc() {
+    void avgAggregFunc() {
         /**
          * To be Tested: AVG, COUNT, MAX, MIN, SUM
          */
@@ -647,7 +643,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testCOUNTAggregFunc() {
+    void countAggregFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT COUNT(c.name) FROM CompUser c";
@@ -662,7 +658,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testMAXAggregFunc() {
+    void maxAggregFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT DISTINCT MAX(c.age) FROM CompUser c";
@@ -677,7 +673,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testMINAggregFunc() {
+    void minAggregFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT DISTINCT MIN(c.age) FROM CompUser c";
@@ -692,7 +688,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testSUMAggregFunc() {
+    void sumAggregFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT SUM(c.age) FROM CompUser c";
@@ -707,7 +703,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testCEILINGFunc() {
+    void ceilingFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT CEILING(SUM(c.age) + 0.4) FROM CompUser c";
@@ -722,7 +718,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testCEILINGFuncNegative() {
+    void ceilingFuncNegative() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT CEILING(0.4 - SUM(c.age)) FROM CompUser c";
@@ -737,7 +733,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testEXPFunc() {
+    void expFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT EXP(MIN(c.age)) FROM CompUser c";
@@ -752,7 +748,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testFLOORFunc() {
+    void floorFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT FLOOR(SUM(c.age) - 0.4) FROM CompUser c";
@@ -767,7 +763,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testFLOORFuncNegative() {
+    void floorFuncNegative() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT FLOOR(10.4 - SUM(c.age)) FROM CompUser c";
@@ -782,7 +778,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testPOWERFunc() {
+    void powerFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT POWER(MIN(c.age), 3) FROM CompUser c";
@@ -797,7 +793,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testROUNDFunc() {
+    void roundFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT ROUND(SUM(c.age)/7.0, 3) FROM CompUser c";
@@ -812,7 +808,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testSIGNFunc() {
+    void signFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT SIGN(1 - SUM(c.age)) FROM CompUser c";
@@ -827,7 +823,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testLNFunc() {
+    void lNFunc() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT LN(MIN(c.age)) FROM CompUser c";
@@ -842,7 +838,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractDateFromInstant() {
+    void extractDateFromInstant() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM {ts '2005-03-21 01:32:20'}) > {d '2005-02-10'}";
@@ -855,7 +851,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractTimeFromInstant() {
+    void extractTimeFromInstant() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM {ts '2005-03-21 01:32:21'}) = {t '01:32:21'}";
@@ -868,7 +864,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractDateFromLocalDateTime() {
+    void extractDateFromLocalDateTime() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(DATE FROM LOCAL DATETIME) > {d '2025-01-10'}";
@@ -881,7 +877,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractTimeFromLocalTime() {
+    void extractTimeFromLocalTime() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(TIME FROM LOCAL TIME) = {t '01:32:20'}";
@@ -894,7 +890,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractYear() {
+    void extractYear() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (YEAR FROM {d '2006-03-21'}) > 2005";
@@ -907,7 +903,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractBirthYear() {
+    void extractBirthYear() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT EXTRACT(YEAR FROM {d '2025-01-23'}) - c.age FROM CompUser AS c ORDER BY c.userid";
@@ -926,7 +922,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractQUARTER() {
+    void extractQUARTER() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (QUARTER FROM {d '2006-03-21'}) = 2";
@@ -939,7 +935,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractMONTH() {
+    void extractMONTH() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (MONTH FROM {d '2006-03-21'}) <= 3";
@@ -952,7 +948,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractWEEK() {
+    void extractWEEK() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (WEEK FROM {d '2006-03-21'}) <= 12";
@@ -965,7 +961,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractDAY() {
+    void extractDAY() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (DAY FROM {ts '2006-03-21 18:19:23'}) = 21";
@@ -978,7 +974,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractHOUR() {
+    void extractHOUR() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT (HOUR FROM {ts '2006-03-21 18:19:23'}) <> 18";
@@ -991,7 +987,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractMINUTE() {
+    void extractMINUTE() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT c FROM CompUser AS c WHERE EXTRACT(MINUTE FROM {ts '2006-03-21 18:19:23'}) = 19";
@@ -1004,7 +1000,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractSECOND() {
+    void extractSECOND() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23'}) - c.age FROM CompUser AS c ORDER BY c.age";
@@ -1023,7 +1019,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractSecondKeepsFractionFromTimestamp() {
+    void extractSecondKeepsFractionFromTimestamp() {
         EntityManager em = currentEntityManager();
 
         List<?> result = em.createQuery("SELECT EXTRACT(SECOND FROM {ts '2006-03-21 18:19:23.5'}), "
@@ -1039,7 +1035,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractSecondKeepsFractionFromTime() {
+    void extractSecondKeepsFractionFromTime() {
         DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
             // Derby keeps only whole seconds in a TIME
@@ -1058,7 +1054,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExtractHourFromLocalTime() {
+    void extractHourFromLocalTime() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
 
@@ -1077,7 +1073,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsString() {
+    void typecastAsString() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support CAST from integer to VARCHAR
             return;
@@ -1093,7 +1089,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastStringAsString() {
+    void typecastStringAsString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CAST(u.name AS STRING) FROM CompUser AS u WHERE CAST(u.name AS STRING) = 'Seetha'";
         List result = em.createQuery(query).getResultList();
@@ -1104,7 +1100,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsStringOnSelect() {
+    void typecastAsStringOnSelect() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support CAST from integer to VARCHAR
             return;
@@ -1121,7 +1117,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsInteger() {
+    void typecastAsInteger() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as integer) = :value";
 
@@ -1135,7 +1131,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsLong() {
+    void typecastAsLong() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as LONG) = :value";
 
@@ -1149,7 +1145,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsFloat() {
+    void typecastAsFloat() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age as float) = :value";
 
@@ -1163,7 +1159,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testTypecastAsDouble() {
+    void typecastAsDouble() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CAST(u.age as double) FROM CompUser AS u WHERE CAST(u.age as double) = :value";
 
@@ -1177,7 +1173,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testReplace() {
+    void replace() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support REPLACE function
             return;
@@ -1194,7 +1190,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testStringConcatOperator() {
+    void stringConcatOperator() {
         EntityManager em = currentEntityManager();
 
         // test || in SELECT - concatenate name and computerName
@@ -1209,7 +1205,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testStringConcatOperatorInWhere() {
+    void stringConcatOperatorInWhere() {
         EntityManager em = currentEntityManager();
 
         // test || in WHERE clause
@@ -1224,7 +1220,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testStringConcatOperatorInUpdate() {
+    void stringConcatOperatorInUpdate() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -1242,7 +1238,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testOrderByNullsFirst() {
+    void orderByNullsFirst() {
         EntityManager em = currentEntityManager();
 
         // address.country is null for users 5 and 6 - NULLS FIRST should put them first
@@ -1263,7 +1259,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testOrderByNullsLast() {
+    void orderByNullsLast() {
         EntityManager em = currentEntityManager();
 
         // NULLS LAST should put null-country users at the end
@@ -1283,7 +1279,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testOrderByNullsLastCOALESCE() {
+    void orderByNullsLastCOALESCE() {
         EntityManager em = currentEntityManager();
 
         // with COALESCE `NULLS LAST` is useless, but it will help to test parsing with Mysql/MariaDB and SQLServer
@@ -1304,7 +1300,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testIdFunction() {
+    void idFunction() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT ID(u) FROM CompUser AS u WHERE u.name = :name";
@@ -1318,7 +1314,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testIdFunctionOnWhere() {
+    void idFunctionOnWhere() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT u.name FROM CompUser AS u WHERE id(u)= :code";
@@ -1332,7 +1328,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionFunction() {
+    void versionFunction() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT VERSION(u) FROM CompVerUser AS u WHERE u.name = :name";
@@ -1359,7 +1355,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionFunctionOnOrderBy() {
+    void versionFunctionOnOrderBy() {
         // give the three CompVerUser rows distinct versions, in an order that
         // deliberately differs from the order of their primary keys. They are
         // persisted as Bob, Alice, Seetha1, so ordering by the version column
@@ -1383,7 +1379,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionFunctionOnOrderByDescending() {
+    void versionFunctionOnOrderByDescending() {
         bumpVersion("Alice", 2);
         bumpVersion("Bob", 1);
 
@@ -1403,7 +1399,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionFunctionOnOrderByAmongOtherOrderings() {
+    void versionFunctionOnOrderByAmongOtherOrderings() {
         // Alice and Bob end up on the same version, so the secondary ordering
         // by name decides between them
         bumpVersion("Alice", 1);
@@ -1423,7 +1419,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionFunctionOnUnversionedEntity() {
+    void versionFunctionOnUnversionedEntity() {
         EntityManager em = currentEntityManager();
 
         // CompUser has no version field and no version columns, so there is
@@ -1486,7 +1482,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testUnionProjection() {
+    void unionProjection() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -1519,7 +1515,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testUnionAllProjection() {
+    void unionAllProjection() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -1539,7 +1535,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testExceptProjection() {
+    void exceptProjection() {
         EntityManager em = currentEntityManager();
 
         // age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
@@ -1572,7 +1568,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testIntersectProjection() {
+    void intersectProjection() {
         EntityManager em = currentEntityManager();
 
         // age > 20: Seetha(36), Shannon(36), Famzy(29), Shade(23)
@@ -1595,7 +1591,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * A UNION ALL of "age &gt; 25" (Seetha, Shannon, Famzy) and "age &gt; 30"
      * (Seetha, Shannon), i.e. 5 rows, using the given identification
      * variable. Every execution below needs its own JPQL string, see
-     * {@link #testSetOperatorRange()}.
+     * {@link #setOperatorRange()}.
      */
     private String unionAllQuery(String var) {
         return "SELECT " + var + ".name FROM CompUser " + var
@@ -1666,7 +1662,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * defect that has nothing to do with the range.
      */
     @Test
-    public void testSetOperatorRange() {
+    void setOperatorRange() {
         EntityManager em = currentEntityManager();
 
         // UNION ALL, 3 rows + 2 rows = 5. The max-4 case is load-bearing:
@@ -1725,7 +1721,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testScalarOrderBy() {
+    void scalarOrderBy() {
         EntityManager em = currentEntityManager();
 
         // JPA 3.2: scalar expressions in ORDER BY
@@ -1757,7 +1753,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     @Test
-    public void testOptionalSelectClause() {
+    void optionalSelectClause() {
         EntityManager em = currentEntityManager();
 
         // JPA 3.2: SELECT clause is optional, defaults to SELECT this
@@ -1767,13 +1763,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         // Seetha(36), Shannon(36)
         assertEquals(2, result.size());
-        assertTrue(result.get(0) instanceof CompUser);
+        assertInstanceOf(CompUser.class, result.get(0));
 
         endEm(em);
     }
 
     @Test
-    public void testOptionalIdentificationVariable() {
+    void optionalIdentificationVariable() {
         EntityManager em = currentEntityManager();
 
         // JPA 3.2: identification variable is optional,
@@ -1786,13 +1782,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         // Seetha(36), Shannon(36)
         assertEquals(2, result.size());
-        assertTrue(result.get(0) instanceof CompUser);
+        assertInstanceOf(CompUser.class, result.get(0));
 
         endEm(em);
     }
 
     @Test
-    public void testOptionalSelectAndIdentificationVariable() {
+    void optionalSelectAndIdentificationVariable() {
         EntityManager em = currentEntityManager();
 
         // JPA 3.2: both SELECT clause and identification
@@ -1804,7 +1800,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         assertNotNull(result);
         // Seetha(36), Shannon(36)
         assertEquals(2, result.size());
-        assertTrue(result.get(0) instanceof CompUser);
+        assertInstanceOf(CompUser.class, result.get(0));
 
         endEm(em);
     }

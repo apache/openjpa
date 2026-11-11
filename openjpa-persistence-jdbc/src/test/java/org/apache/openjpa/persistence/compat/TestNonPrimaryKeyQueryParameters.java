@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
  * </ul>
  */
-public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
+class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
     private static final int FULLTIME_EMPLOYEE_COUNT = 3;
     private static final int PARTTIME_EMPLOYEE_COUNT = 2;
     private static final int LINEITEM_PER_INVOICE = 1;
@@ -65,7 +65,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSelectQueryWithNoParameter() {
+    void selectQueryWithNoParameter() {
         EntityManager em = emf.createEntityManager();
 
         try {

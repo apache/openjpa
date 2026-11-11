@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBEmbedded extends BaseKernelTest {
+class TestEJBEmbedded extends BaseKernelTest {
 
     private Object _oid1 = null;
     private Object _oid2 = null;
@@ -41,7 +41,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    public void setUp() {
+    void setUp() {
         deleteAll(EmbeddedOwnerPC.class);
         deleteAll(EmbeddedPC.class);
 
@@ -76,7 +76,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testInsert() {
+    void insert() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
@@ -95,7 +95,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testDelete() {
+    void delete() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         EmbeddedOwnerPC pc =
@@ -123,7 +123,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testUpdateRetain() {
+    void updateRetain() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         EmbeddedOwnerPC pc =
@@ -145,7 +145,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testReplace() {
+    void replace() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
@@ -180,7 +180,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testShare() {
+    void share() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
@@ -220,7 +220,7 @@ public class TestEJBEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testOptimisticLocking2() {
+    void optimisticLocking2() {
         EntityManager pm1 = getPM(true, false);
         startTx(pm1);
 

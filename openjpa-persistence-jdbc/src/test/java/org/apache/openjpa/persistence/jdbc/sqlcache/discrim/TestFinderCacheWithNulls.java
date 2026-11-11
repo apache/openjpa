@@ -44,7 +44,7 @@ public class TestFinderCacheWithNulls extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
 
         init();
         initData();

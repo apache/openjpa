@@ -51,13 +51,13 @@ public class TestExternalValues
     }
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         deleteAll(ExternalValues.class);
     }
 
     @Test
-    public void testInsert() {
+    void insert() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -85,8 +85,8 @@ public class TestExternalValues
         assertEquals(4, pc.getIntToFloat());
         assertEquals(4, pc.getLongToChar());
         assertEquals((short) 4, pc.getShortToString());
-        assertTrue(4.5f == pc.getFloatToBoolean());
-        assertTrue(4.5 == pc.getDoubleToByte());
+        assertEquals(4.5f, pc.getFloatToBoolean());
+        assertEquals(4.5, pc.getDoubleToByte());
         assertEquals('f', pc.getCharToInt());
         assertEquals("foo", pc.getStringToLong());
 
@@ -94,7 +94,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testComplexStrings() {
+    void complexStrings() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -115,7 +115,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testAllNull() {
+    void allNull() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -132,7 +132,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testPositionalBindingQueryParameterEqualsDeclaredType() {
+    void positionalBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
 
@@ -149,7 +149,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testNamedBindingQueryParameterEqualsDeclaredType() {
+    void namedBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);
 
@@ -166,7 +166,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testPositionalBindingQueryParameterNotEqualsExternalizedType() {
+    void positionalBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
 
@@ -184,7 +184,7 @@ public class TestExternalValues
     }
 
     @Test
-    public void testNamedBindingQueryParameterNotEqualsExternalizedType() {
+    void namedBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);
 

@@ -35,6 +35,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * and for the values of CASE, COALESCE and NULLIF, which are always written
  * as literals.
  */
-public class TestStringLiteralValues extends SingleEMFTestCase {
+class TestStringLiteralValues extends SingleEMFTestCase {
 
     private static final Object[][] ROWS = {
         { 1, "abc", 'a' },
@@ -60,6 +61,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         { 11, "abc\\%", 's' },
     };
 
+    @BeforeEach
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, StringValue.class, "openjpa.jdbc.QuerySQLCache", "false");
@@ -73,7 +75,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEqualsLiteralInJPQL() {
+    void equalsLiteralInJPQL() {
         try (EntityManager em = emf.createEntityManager()) {
             for (Object[] row : ROWS) {
                 String jpql = "SELECT e.id FROM StringValue e WHERE e.name = " + toJPQLLiteral((String) row[1]);
@@ -85,7 +87,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEqualsValueInCriteria() {
+    void equalsValueInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             for (Object[] row : ROWS) {
@@ -100,7 +102,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEqualsCharacterInCriteria() {
+    void equalsCharacterInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             for (Object[] row : ROWS) {
@@ -115,7 +117,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLikeLiteralInJPQL() {
+    void likeLiteralInJPQL() {
         assertLikeInJPQL("'100\\%' ESCAPE '\\'", 8);
         assertLikeInJPQL("'a\\_c' ESCAPE '\\'", 10);
         assertLikeInJPQL("'100''%' ESCAPE ''''", 8);
@@ -126,7 +128,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLikeValueInCriteria() {
+    void likeValueInCriteria() {
         assertLikeInCriteria("100\\%", '\\', 8);
         assertLikeInCriteria("a\\_c", '\\', 10);
         assertLikeInCriteria("100'%", '\'', 8);
@@ -137,7 +139,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCaseLiteralInJPQL() {
+    void caseLiteralInJPQL() {
         try (EntityManager em = emf.createEntityManager()) {
             for (Object[] row : ROWS) {
                 String jpql = "SELECT CASE WHEN e.id = 1 THEN " + toJPQLLiteral((String) row[1])
@@ -149,7 +151,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCaseCoalesceAndNullIfValuesInCriteria() {
+    void caseCoalesceAndNullIfValuesInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             for (Object[] row : ROWS) {

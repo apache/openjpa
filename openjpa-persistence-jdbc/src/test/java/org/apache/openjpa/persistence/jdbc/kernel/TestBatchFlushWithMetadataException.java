@@ -19,10 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -35,10 +32,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * when there is a metadata exception during the flushing for a batch job, the AbstractUpdateManager
- *  should capture the exception and skip the flushing of the failed object.
- */
-public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
+* when there is a metadata exception during the flushing for a batch job, the AbstractUpdateManager
+*  should capture the exception and skip the flushing of the failed object.
+*/
+class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -46,7 +43,7 @@ public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate(){
+    void create(){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 
@@ -70,7 +67,7 @@ public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
             fail("RollbackException should have been thrown from the externalizer");
         }catch (RollbackException rollBackException) {
             Throwable[] throwables = rollBackException.getNestedThrowables();
-            assertTrue(throwables[0] instanceof PersistenceException);
+            assertInstanceOf(PersistenceException.class, throwables[0]);
             PersistenceException persistentException = (PersistenceException) throwables[0];
             assertNotNull(persistentException);
             assertEquals(1, persistentException.getNestedThrowables().length);

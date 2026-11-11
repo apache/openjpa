@@ -37,12 +37,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGetObjectsById extends BaseKernelTest {
+class TestGetObjectsById extends BaseKernelTest {
 
     private Object[] oids;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest5.class);
         deleteAll(RuntimeTest4.class);
 
@@ -70,7 +70,7 @@ public class TestGetObjectsById extends BaseKernelTest {
     }
 
     @Test
-    public void testGetObjectsByIdInvocation() {
+    void getObjectsByIdInvocation() {
         OpenJPAEntityManager pm = getPM();
         try {
             Object[] pcs = pm.findAll(Object.class, oids);

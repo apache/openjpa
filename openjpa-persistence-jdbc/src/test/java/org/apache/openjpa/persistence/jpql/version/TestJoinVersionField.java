@@ -43,7 +43,7 @@ public class TestJoinVersionField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetDocuments(){
+    void getDocuments(){
         EntityManager em = emf.createEntityManager();
         String str = "SELECT doc FROM Document doc JOIN doc.author auth";
         TypedQuery<Document> query = em.createQuery(str, Document.class);
@@ -62,7 +62,7 @@ public class TestJoinVersionField extends SingleEMFTestCase {
      * as null.
      */
     @Test
-    public void testGetDocumentsByExplicitAttributeSelection(){
+    void getDocumentsByExplicitAttributeSelection(){
         EntityManager em = emf.createEntityManager();
         String str = "SELECT doc.id, auth.id, auth.version FROM Document doc JOIN doc.author auth";
         Query query = em.createQuery(str);

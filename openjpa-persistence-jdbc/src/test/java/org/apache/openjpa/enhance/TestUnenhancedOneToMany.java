@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestUnenhancedOneToMany extends SingleEMTestCase {
+class TestUnenhancedOneToMany extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +38,7 @@ public class TestUnenhancedOneToMany extends SingleEMTestCase {
     }
 
     @Test
-    public void testOneToMany() throws Exception {
+    void oneToMany() throws Exception {
         assertFalse(PersistenceCapable.class.isAssignableFrom(
             UnenhancedOne.class));
         assertFalse(PersistenceCapable.class.isAssignableFrom(

@@ -38,10 +38,10 @@ import org.junit.jupiter.api.Test;
  * transaction should not throw. The active transaction is rolled back
  * and the entity manager is closed.
  */
-public class TestEntityManagerCloseWithActiveTransaction {
+class TestEntityManagerCloseWithActiveTransaction {
 
     @Test
-    public void testCloseWithActiveTransactionDoesNotThrow() {
+    void closeWithActiveTransactionDoesNotThrow() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",
@@ -70,7 +70,7 @@ public class TestEntityManagerCloseWithActiveTransaction {
     }
 
     @Test
-    public void testMethodsThrowAfterCloseWithActiveTransaction() {
+    void methodsThrowAfterCloseWithActiveTransaction() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",

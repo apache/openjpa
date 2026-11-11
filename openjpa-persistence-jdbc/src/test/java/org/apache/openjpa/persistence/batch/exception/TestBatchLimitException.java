@@ -83,7 +83,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         expectedFailedObject = null;
         expectedFailedObjectOracle = null;
     }
@@ -93,7 +93,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // sometime within the Y rows. This will verify that we get the right
     // 'failed object' and message.
     @Test
-    public void testExceptionInFirstBatch() throws Throwable {
+    void exceptionInFirstBatch() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
 
@@ -137,7 +137,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // row in the batch. The 'batching' logic executes a different
     // statement when only one row is to be updated/inserted.
     @Test
-    public void testExceptionSingleBatchedRow() throws Throwable {
+    void exceptionSingleBatchedRow() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
 
@@ -179,7 +179,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // of which batch the 'failed object' was in, along with the
     // index into that batch.
     @Test
-    public void testExceptionInSecondBatch() throws Throwable {
+    void exceptionInSecondBatch() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=9");
         EntityManager em = emf.createEntityManager();
 
@@ -223,7 +223,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // it somewhere in the middle of the third batch. Again, we want to make sure our
     // indexing into the batch containing the 'failed object' is correct.
     @Test
-    public void testExceptionInThirdBatch() throws Throwable {
+    void exceptionInThirdBatch() throws Throwable {
         final int batchLimit=9;
         EntityManagerFactory emf = newEmf("batchLimit="+batchLimit);
         EntityManager em = emf.createEntityManager();
@@ -278,10 +278,10 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // again with failures again.....just want to make sure things are not in
     // some way 're-used' between the two commits as far as the indexes go.
     @Test
-    public void testSecondExceptionHasRightIndex() throws Throwable {
+    void secondExceptionHasRightIndex() throws Throwable {
         final int batchLimit=9;
 
-        testExceptionInThirdBatch();
+        exceptionInThirdBatch();
 
         EntityManagerFactory emf = newEmf("batchLimit=9");
         EntityManager em = emf.createEntityManager();
@@ -316,7 +316,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testExceptionWithMultipleCommits() throws Throwable {
+    void exceptionWithMultipleCommits() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
 

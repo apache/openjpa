@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * Orphan removal on relations mapped in orm.xml that also cascade remove,
  * either through cascade-all or cascade-remove.
  */
-public class TestOrphanRemovalXml extends SingleEMFTestCase {
+class TestOrphanRemovalXml extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +52,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovalKeptWithCascadeRemove() {
+    void orphanRemovalKeptWithCascadeRemove() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(OrphanXmlParent.class, null, true);
@@ -67,7 +67,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovedFromCascadeAllCollection() {
+    void orphanRemovedFromCascadeAllCollection() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {
@@ -82,7 +82,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovedFromCascadeRemoveCollection() {
+    void orphanRemovedFromCascadeRemoveCollection() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {
@@ -97,7 +97,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovedFromCascadeAllOneToOne() {
+    void orphanRemovedFromCascadeAllOneToOne() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {
@@ -112,7 +112,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanReplacedInCascadeAllOneToOne() {
+    void orphanReplacedInCascadeAllOneToOne() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {
@@ -130,7 +130,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovedFromCascadeRemoveOneToOne() {
+    void orphanRemovedFromCascadeRemoveOneToOne() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {
@@ -148,7 +148,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRemoveOwnerRemovesDependents() {
+    void removeOwnerRemovesDependents() {
         createParent(1);
 
         try (EntityManager em = emf.createEntityManager()) {

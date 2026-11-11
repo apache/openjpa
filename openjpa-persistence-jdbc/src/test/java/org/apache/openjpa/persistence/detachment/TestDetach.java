@@ -77,7 +77,7 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachCascadeIsSet() {
+    void detachCascadeIsSet() {
         MetaDataRepository repos = emf.getConfiguration()
                                       .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getCachedMetaData(DMCustomer.class);
@@ -95,7 +95,7 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachRemovesEntityAndCascadedRelationFromContext() {
+    void detachRemovesEntityAndCascadedRelationFromContext() {
         em.getTransaction().begin();
 
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
@@ -117,7 +117,7 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachingDirtyEntityDoesNotImplicitlyFlush() {
+    void detachingDirtyEntityDoesNotImplicitlyFlush() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
         String original = pc.getLastName();
@@ -132,7 +132,7 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachingNewEntityIsIgnored() {
+    void detachingNewEntityIsIgnored() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
         List<DMCustomerInventory> inventories = pc.getCustomerInventories();
@@ -150,7 +150,7 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachingDetachedEntityIsIgnored() {
+    void detachingDetachedEntityIsIgnored() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
         List<DMCustomerInventory> inventories = pc.getCustomerInventories();
@@ -185,12 +185,12 @@ public class TestDetach extends SingleEMFTestCase {
 
 
     @Test
-    public void testFlushingBeforeDetachingSavesChange() {
+    void flushingBeforeDetachingSavesChange() {
 
     }
 
     @Test
-    public void testManagedEntityContinuesToReferDetachedEntities() {
+    void managedEntityContinuesToReferDetachedEntities() {
         em.getTransaction().begin();
 
         DMCustomer pc = em.find(DMCustomer.class, root.getId());

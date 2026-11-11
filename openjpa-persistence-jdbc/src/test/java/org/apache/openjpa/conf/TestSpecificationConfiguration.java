@@ -41,20 +41,20 @@ import org.junit.jupiter.api.Test;
 public class TestSpecificationConfiguration extends SingleEMFTestCase {
 
     @Test
-    public void testSpecificationIsSet() {
+    void specificationIsSet() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
     }
 
     @Test
-    public void testSpecificationIsJPA() {
+    void specificationIsJPA() {
         Specification spec = getSpecifcation();
         assertTrue(spec.isSame("JPA"));
         assertTrue(spec.isSame("jpa"));
     }
 
     @Test
-    public void testSpecificationVersionIsJPA1() {
+    void specificationVersionIsJPA1() {
         Specification spec = getSpecifcation();
         int major = spec.getVersion();
         assertEquals(1, major);
@@ -62,7 +62,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSpecificationVersionIsJPA2() {
+    void specificationVersionIsJPA2() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -83,7 +83,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSpecificationVersionIsJPA3_0() {
+    void specificationVersionIsJPA30() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
           emf1 =
@@ -102,7 +102,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSpecificationVersionIsJPA3_1() {
+    void specificationVersionIsJPA31() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -122,7 +122,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSpecificationVersionIsJPA3_2() {
+    void specificationVersionIsJPA32() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
           emf1 =
@@ -141,7 +141,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLowerVersionCanBeSet() {
+    void lowerVersionCanBeSet() {
         super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();
 
@@ -154,7 +154,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
      * all exceptions wrapped as a PersistenceException
      */
     @Test
-    public void testHigherVersionCanNotBeSet() {
+    void higherVersionCanNotBeSet() {
         try {
             super.setUp("openjpa.Specification", "jpa 3.0",
                 "openjpa.Log", "DefaultLevel=WARN");
@@ -171,12 +171,12 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDifferentSpecCanBeSet() {
+    void differentSpecCanBeSet() {
         super.setUp("openjpa.Specification", "jdo 3.0");
     }
 
     @Test
-    public void testSpecCanBeSetToNullString() {
+    void specCanBeSetToNullString() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
         emf.getConfiguration().setSpecification((String)null);
@@ -184,7 +184,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSpecCanBeSetToNullSpecification() {
+    void specCanBeSetToNullSpecification() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
         emf.getConfiguration().setSpecification((Specification)null);

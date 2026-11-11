@@ -174,7 +174,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * CacheRetrieveMode.BYPASS is used.
      */
     @Test
-    public void testReadModeByass() {
+    public void readModeByass() {
         assertSqlInc(new Action() {
             @Override
             public void run() {
@@ -211,7 +211,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      *
      */
     @Test
-    public void testRetrieveModeUse() {
+    public void retrieveModeUse() {
         if (getCacheEnabled()) {
             assertNoSql(new Action() {
                 @Override
@@ -333,21 +333,21 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * Execute the defaultStoreModeTest with
      */
     @Test
-    public void testStoreModeUseBypass() throws Exception {
+    public void storeModeUseBypass() throws Exception {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.BYPASS, true, false, 1);
         }
     }
 
     @Test
-    public void testStoreModeUseUse() {
+    public void storeModeUseUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.USE, true, true, 1);
         }
     }
 
     @Test
-    public void testRefresh() {
+    public void refresh() {
         if (getCacheEnabled()) {
             OpenJPAEntityManagerSPI em = getEntityManagerFactory().createEntityManager();
             CacheableEntity e1 = em.find(CacheableEntity.class, 1);
@@ -374,7 +374,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     }
 
     @Test
-    public void testStoreModeUseRefresh() {
+    public void storeModeUseRefresh() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.REFRESH, true, true, 1);
         }
@@ -387,14 +387,14 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     }
 
     @Test
-    public void testStoreModeBypassUse() {
+    public void storeModeBypassUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.BYPASS, CacheStoreMode.USE, false, true, 1);
         }
     }
 
     @Test
-    public void testStoreModeBypassRefresh() {
+    public void storeModeBypassRefresh() {
         if (getCacheEnabled()) {
             // REFRESH picks up the changes from the database, even though the
             // first update was done with BYPASS
@@ -403,28 +403,28 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     }
 
     @Test
-    public void testStoreModeRefreshUse() {
+    public void storeModeRefreshUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.USE, true, true, 1);
         }
     }
 
     @Test
-    public void testStoreModeRefreshBypass() {
+    public void storeModeRefreshBypass() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.BYPASS, true, false, 1);
         }
     }
 
     @Test
-    public void testStoreModeRefreshRefresh() {
+    public void storeModeRefreshRefresh() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.REFRESH, true, true, 1);
         }
     }
 
     @Test
-    public void testResultsFromQueryAreInCache() {
+    public void resultsFromQueryAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();
@@ -450,7 +450,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     }
 
     @Test
-    public void testResultsFromFindAreInCache() {
+    public void resultsFromFindAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();

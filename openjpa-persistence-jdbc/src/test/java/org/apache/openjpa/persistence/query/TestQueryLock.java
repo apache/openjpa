@@ -33,14 +33,14 @@ import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQueryLock extends BaseQueryTest {
+class TestQueryLock extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Entity1.class);
     }
 
     @Test
-    public void testJPQLLock() {
+    void jpqlLock() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("SELECT o FROM Entity1 o WHERE o.stringField = 'testSimple'");
 
@@ -73,7 +73,7 @@ public class TestQueryLock extends BaseQueryTest {
     }
 
     @Test
-    public void testCriteriaLock() {
+    void criteriaLock() {
         EntityManager em = currentEntityManager();
         CriteriaBuilder cb = getEmf().getCriteriaBuilder();
         CriteriaQuery<Entity1> cq = cb.createQuery(Entity1.class);
@@ -112,7 +112,7 @@ public class TestQueryLock extends BaseQueryTest {
      * Per JPA spec, getLockMode() on an UPDATE query must throw IllegalStateException.
      */
     @Test
-    public void testGetLockModeOnUpdateQueryThrowsIllegalState() {
+    void getLockModeOnUpdateQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         startTx(em);
         Query q = em.createQuery("UPDATE Entity1 e SET e.stringField = 'x'");
@@ -131,7 +131,7 @@ public class TestQueryLock extends BaseQueryTest {
      * Per JPA spec, getLockMode() on a DELETE query must throw IllegalStateException.
      */
     @Test
-    public void testGetLockModeOnDeleteQueryThrowsIllegalState() {
+    void getLockModeOnDeleteQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         startTx(em);
         Query q = em.createQuery("DELETE FROM Entity1 e WHERE e.stringField = 'x'");
@@ -150,7 +150,7 @@ public class TestQueryLock extends BaseQueryTest {
      * Per JPA spec, setLockMode() on an UPDATE query must throw IllegalStateException.
      */
     @Test
-    public void testSetLockModeOnUpdateQueryThrowsIllegalState() {
+    void setLockModeOnUpdateQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("UPDATE Entity1 e SET e.stringField = 'x'");
         try {
@@ -167,7 +167,7 @@ public class TestQueryLock extends BaseQueryTest {
      * Per JPA spec, setLockMode() on a DELETE query must throw IllegalStateException.
      */
     @Test
-    public void testSetLockModeOnDeleteQueryThrowsIllegalState() {
+    void setLockModeOnDeleteQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("DELETE FROM Entity1 e WHERE e.stringField = 'x'");
         try {
@@ -184,7 +184,7 @@ public class TestQueryLock extends BaseQueryTest {
      * Per JPA spec, setLockMode() on a native query must throw IllegalStateException.
      */
     @Test
-    public void testNativeLock() {
+    void nativeLock() {
         EntityManager em = currentEntityManager();
         Query q = em.createNativeQuery("SELECT * FROM Entity1");
 

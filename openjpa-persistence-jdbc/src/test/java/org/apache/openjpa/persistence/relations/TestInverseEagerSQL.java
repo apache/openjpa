@@ -163,7 +163,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testOneToManyInverseEagerQuery() {
+    void oneToManyInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -190,7 +190,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testOneToOneInverseEagerQuery() {
+    void oneToOneInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -215,7 +215,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testOneToManyInheritanceQuery() {
+    void oneToManyInheritanceQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -277,7 +277,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testOneToManyEagerInverseLazyQuery() {
+    void oneToManyEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -309,7 +309,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testManyToManyEagerEagerInverseLazyQuery() {
+    void manyToManyEagerEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -340,7 +340,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testTargetOrphanRemoval() {
+    void targetOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -392,7 +392,7 @@ public class TestInverseEagerSQL
     }
 
     @Test
-    public void testSourceOrphanRemoval() {
+    void sourceOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestAttachWithNoChanges
+class TestAttachWithNoChanges
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestAttachWithNoChanges
     }
 
     @Test
-    public void testAttachWithNoChangesChecksVersion() {
+    void attachWithNoChangesChecksVersion() {
         DetachmentOneManyChild e = new DetachmentOneManyChild();
         DetachmentOneManyParent p = new DetachmentOneManyParent();
         e.setName("orig");

@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 
@@ -33,7 +30,7 @@ import org.apache.openjpa.util.UserException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJPACache extends SingleEMFTestCase {
+class TestJPACache extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -94,18 +91,18 @@ public class TestJPACache extends SingleEMFTestCase {
      * </ul>
      */
     @Test
-    public void testInterfacesReturned() {
+    void interfacesReturned() {
         Object cache = emf.getCache();
         assertNotNull(cache, "Cache is not enabled");
-        assertTrue(cache instanceof jakarta.persistence.Cache);
-        assertTrue(cache instanceof org.apache.openjpa.persistence.StoreCache);
+        assertInstanceOf(jakarta.persistence.Cache.class, cache);
+        assertInstanceOf(org.apache.openjpa.persistence.StoreCache.class, cache);
     }
 
     /**
      * Ensure that an Entity is not inserted in the cache until the transaction commits.
      */
     @Test
-    public void testContains() {
+    void contains() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -138,7 +135,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * </ul>
      */
     @Test
-    public void testEvictInstance() {
+    void evictInstance() {
         populate();
         assertInCache(CachedPerson.class, 10);
         assertInCache(CachedPerson.class, 11);
@@ -161,7 +158,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * </ul>
      */
     @Test
-    public void testEvictClass() {
+    void evictClass() {
         populate();
         assertInCache(CachedPerson.class, 10);
         assertInCache(CachedPerson.class, 11);
@@ -189,7 +186,7 @@ public class TestJPACache extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEvictAll() {
+    void evictAll() {
         populate();
 
         assertInCache(CachedPerson.class, 10);
@@ -209,7 +206,7 @@ public class TestJPACache extends SingleEMFTestCase {
 
     // test methods for bad input.
     @Test
-    public void testContainsNullEntity() {
+    void containsNullEntity() {
         try {
             emf.getCache().contains(null, 1);
             fail("Expected ArgumentException when calling  " + "contains(<null>, <nonNull>)");
@@ -219,7 +216,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testContainsNonEntityClass() {
+    void containsNonEntityClass() {
         try {
             emf.getCache().contains(Object.class, 1);
             fail("Expected ArgumentException when calling " + "contains(<nonEntityClass>, <nonNull>");
@@ -229,17 +226,17 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testContainsNullPrimaryKey() {
+    void containsNullPrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, null));
     }
 
     @Test
-    public void testContainsNegativePrimaryKey() {
+    void containsNegativePrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, -1));
     }
 
     @Test
-    public void testContainsInvalidPrimaryKeyType() {
+    void containsInvalidPrimaryKeyType() {
         try{
             emf.getCache().contains(CachedPerson.class, "abcd");
             fail();
@@ -249,7 +246,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictNullInstance() {
+    void evictNullInstance() {
         try {
             emf.getCache().evict(null, 1);
             fail("Expected ArgumentException when calling " + "evict(<null>, <id");
@@ -259,7 +256,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictNonEntityInstance() {
+    void evictNonEntityInstance() {
         try {
             emf.getCache().evict(Object.class, 1);
             fail("Expected ArgumentException when calling " + "evict(<null>, <id");
@@ -269,17 +266,17 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictNullPrimaryKey() {
+    void evictNullPrimaryKey() {
         emf.getCache().evict(CachedPerson.class, null);
     }
 
     @Test
-    public void testEvictNegativePrimaryKey() {
+    void evictNegativePrimaryKey() {
         emf.getCache().evict(CachedPerson.class, -1);
     }
 
     @Test
-    public void testEvictInvalidPrimaryKeyType() {
+    void evictInvalidPrimaryKeyType() {
         try{
             emf.getCache().evict(CachedPerson.class, "abcd");
             fail();
@@ -289,7 +286,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictNullClass() {
+    void evictNullClass() {
         try {
             emf.getCache().evict(null);
             fail("Expected ArgumentException when calling " + "evict(<null>");
@@ -299,7 +296,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictNonEntity() {
+    void evictNonEntity() {
         try {
             emf.getCache().evict(Object.class);
             fail("Expected ArgumentException when calling " + "evict(<nonEntity>");
@@ -309,7 +306,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIllegalStateExceptionAfterClose() {
+    void illegalStateExceptionAfterClose() {
         emf.close();
         try {
             emf.getCache();
@@ -321,7 +318,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIllegalStateExceptionGetAfterClose() {
+    void illegalStateExceptionGetAfterClose() {
         emf.getCache();  // populate the EntityManagerFactoryImpl's wrapper for the StoreCache.
         emf.close();
         try {

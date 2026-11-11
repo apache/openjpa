@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSimpleXmlEntity
+class TestSimpleXmlEntity
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -43,7 +43,7 @@ public class TestSimpleXmlEntity
     }
 
     @Test
-    public void testId() {
+    void id() {
         em.getTransaction().begin();
         SimpleXmlEntity e = new SimpleXmlEntity();
         em.persist(e);
@@ -59,12 +59,12 @@ public class TestSimpleXmlEntity
     }
 
     @Test
-    public void testNamedQueryInXmlNamedEntity() {
+    void namedQueryInXmlNamedEntity() {
         em.createNamedQuery("SimpleXml.findAll").getResultList();
     }
 
     @Test
-    public void testNamedQueryInXmlUsingShortClassName() {
+    void namedQueryInXmlUsingShortClassName() {
         try {
             em.createNamedQuery("SimpleXmlEntity.findAll").getResultList();
             fail("should not be able to execute query using short class name " +
@@ -75,12 +75,12 @@ public class TestSimpleXmlEntity
     }
 
     @Test
-    public void testNamedEntityInDynamicQuery() {
+    void namedEntityInDynamicQuery() {
         em.createQuery("select o from SimpleXml o").getResultList();
     }
 
     @Test
-    public void testShortClassNameInDynamicQuery() {
+    void shortClassNameInDynamicQuery() {
         try {
             em.createQuery("select o from SimpleXmlEntity o").getResultList();
             fail("should not be able to execute query using short class name " +

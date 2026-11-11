@@ -37,11 +37,11 @@ import java.util.List;
  * Run this test manually or as part of the integration test suite to
  * generate the list of reserved words for a specific Database
  */
-public class ReservedWordsIT extends AbstractPersistenceTestCase {
+class ReservedWordsIT extends AbstractPersistenceTestCase {
     private static OpenJPAEntityManagerFactory _emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         _emf = createEMF(new Object[0]);
     }
 
@@ -54,7 +54,7 @@ public class ReservedWordsIT extends AbstractPersistenceTestCase {
 
 
     @Test
-    public void testReservedColumnWords() throws Exception {
+    void reservedColumnWords() throws Exception {
         List<String> reservedColumnWords = new ArrayList<>();
         DBDictionary dict = ((JDBCConfiguration)_emf.getConfiguration()).getDBDictionaryInstance();
 

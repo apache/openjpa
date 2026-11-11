@@ -33,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDistinctCriteria extends CriteriaTest {
+class TestDistinctCriteria extends CriteriaTest {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -96,7 +96,7 @@ public class TestDistinctCriteria extends CriteriaTest {
 
 
     @Test
-    public void testDistinct() {
+    void distinct() {
         CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
         Root<Customer> customer = cq.from(Customer.class);
         Fetch<Customer, Order> o = customer.fetch("orders", JoinType.LEFT);

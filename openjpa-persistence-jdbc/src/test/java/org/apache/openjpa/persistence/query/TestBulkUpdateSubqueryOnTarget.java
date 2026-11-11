@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * a subquery (error 1093), and the subquery must see the rows as they were
  * before the statement.
  */
-public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
+class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
 
     private static final String ITEM = "BulkSubqueryItem";
     private static final String PRODUCT = "BulkSubqueryProduct";
@@ -68,7 +68,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateExistsCorrelatedToTarget() {
+    void updateExistsCorrelatedToTarget() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(1, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity * 10 WHERE EXISTS (SELECT s FROM "
@@ -78,7 +78,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateParametersInSetAndSubquery() {
+    void updateParametersInSetAndSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             try (EntityManager em = emf.createEntityManager()) {
                 em.getTransaction().begin();
@@ -99,7 +99,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateExistsCorrelated() {
+    void updateExistsCorrelated() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(3, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity + 10 WHERE EXISTS (SELECT s FROM "
@@ -109,7 +109,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateInSubquery() {
+    void updateInSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(2, execute("UPDATE " + entity
                 + " e SET e.quantity = 0 WHERE e.id IN (SELECT s.id FROM "
@@ -119,7 +119,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateSubquerySeesStateBeforeUpdate() {
+    void updateSubquerySeesStateBeforeUpdate() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(3, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity + 3 WHERE e.quantity < "
@@ -129,7 +129,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateSubclass() {
+    void updateSubclass() {
         assertEquals(1, execute("UPDATE " + SOFTWARE
             + " e SET e.quantity = e.quantity + 3 WHERE e.quantity < "
             + "(SELECT MAX(s.quantity) FROM " + SOFTWARE + " s)"));
@@ -138,7 +138,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateSubclassTable() {
+    void updateSubclassTable() {
         assertEquals(1, execute("UPDATE " + ENGINE
             + " e SET e.power = e.power + 1 WHERE e.quantity > 3"));
         assertEquals("3=30,4=41", powers());
@@ -150,7 +150,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompositePrimaryKey() {
+    void compositePrimaryKey() {
         assertEquals(3, execute("UPDATE BulkSubqueryLine e"
             + " SET e.quantity = e.quantity + 3 WHERE e.quantity < "
             + "(SELECT MAX(s.quantity) FROM BulkSubqueryLine s)"));
@@ -163,7 +163,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteExistsCorrelatedToTarget() {
+    void deleteExistsCorrelatedToTarget() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(1, execute("DELETE FROM " + entity
                 + " e WHERE EXISTS (SELECT s FROM " + entity
@@ -173,7 +173,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteInSubquery() {
+    void deleteInSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(2, execute("DELETE FROM " + entity
                 + " e WHERE e.id IN (SELECT s.id FROM " + entity
@@ -183,7 +183,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteScalarSubquery() {
+    void deleteScalarSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             assertEquals(3, execute("DELETE FROM " + entity
                 + " e WHERE e.quantity < (SELECT MAX(s.quantity) FROM "
@@ -193,7 +193,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteSubclass() {
+    void deleteSubclass() {
         for (String entity : new String[] { SOFTWARE, ENGINE }) {
             assertEquals(1, execute("DELETE FROM " + entity
                 + " e WHERE e.id IN (SELECT s.id FROM " + entity

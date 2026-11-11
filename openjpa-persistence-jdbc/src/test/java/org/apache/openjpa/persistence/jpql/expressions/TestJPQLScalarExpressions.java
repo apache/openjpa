@@ -55,7 +55,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
@@ -98,7 +98,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAggregateResultVariable() {
+    void aggregateResultVariable() {
         EntityManager em = currentEntityManager();
         String querys[] = {
             "SELECT c.name, AVG(c.age) as age, a.city FROM CompUser c left join c.address a " +
@@ -121,7 +121,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testMathAndAggregate() {
+    void mathAndAggregate() {
         EntityManager em = currentEntityManager();
         String query[] = {
             "SELECT SUM(c.age) as age FROM CompUser c",
@@ -147,7 +147,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCoalesceExpressions() {
+    void coalesceExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -165,7 +165,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testNullIfExpressions() {
+    void nullIfExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -184,7 +184,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testSimpleCaseExpressions() {
+    void simpleCaseExpressions() {
         EntityManager em = currentEntityManager();
 
         CompUser user = em.find(CompUser.class, userid1);
@@ -236,13 +236,13 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         result = (Object[]) rs.get(rs.size()-1);
 
         if (result[1] instanceof String) {
-            assertEquals(result[1], "true");
+            assertEquals("true", result[1]);
         }
         else if (result[1] instanceof Boolean) {
             assertEquals(true, result[1]);
         }
         else {
-            assertEquals(result[1], 1);
+            assertEquals(1, result[1]);
         }
 
         startTx(em);
@@ -285,7 +285,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGeneralCaseExpressions() {
+    void generalCaseExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -424,7 +424,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @Test
-    public void testChainedArithmeticIsLeftAssociative() {
+    void chainedArithmeticIsLeftAssociative() {
         EntityManager em = currentEntityManager();
 
         // a - b - c and a / b / c must be evaluated left to right; a right
@@ -458,7 +458,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testMathFuncOrderByAlias() {
+    void mathFuncOrderByAlias() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT e.age * 2 as cAge FROM CompUser e ORDER BY cAge";

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  * An XML column is compatible with an XML column of the database, so that
  * the metadata of XML columns can be merged (OPENJPA-2879).
  */
-public class TestColumnXmlCompatible {
+class TestColumnXmlCompatible {
 
     /**
      * The type code Oracle uses for XMLType.
@@ -38,7 +38,7 @@ public class TestColumnXmlCompatible {
     private static final int ORACLE_XMLTYPE = 2007;
 
     @Test
-    public void testXmlIsCompatibleWithXml() {
+    void xmlIsCompatibleWithXml() {
         assertTrue(column(Types.SQLXML).isCompatible(Types.SQLXML, null, 0, 0));
         assertTrue(column(Types.SQLXML).isCompatible(ORACLE_XMLTYPE, null, 0, 0));
         assertTrue(column(ORACLE_XMLTYPE).isCompatible(Types.SQLXML, null, 0, 0));
@@ -46,14 +46,14 @@ public class TestColumnXmlCompatible {
     }
 
     @Test
-    public void testXmlIsCompatibleWithCharacterAndLobTypes() {
+    void xmlIsCompatibleWithCharacterAndLobTypes() {
         for (int type : new int[] { Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.CLOB, Types.BLOB }) {
             assertTrue(column(Types.SQLXML).isCompatible(type, null, 0, 0));
         }
     }
 
     @Test
-    public void testXmlIsNotCompatibleWithNumbers() {
+    void xmlIsNotCompatibleWithNumbers() {
         assertFalse(column(Types.SQLXML).isCompatible(Types.INTEGER, null, 0, 0));
     }
 

@@ -24,8 +24,7 @@ import jakarta.persistence.Query;
 
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -39,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * Tests whether the lock mode on named query emits a FOR UPDATE clause in target SQL
  * query when Optimistic=true (default), with pessimistic lock manager.
  */
-public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
+class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     String lockClause = "FOR UPDATE";
 
     @Override
@@ -58,7 +57,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
      * Optimistic=true, but a lock mode specified - assert statement will lock.
      */
     @Test
-    public void testForUpdateClausePresentInNamedQueryWithLockMode() {
+    void forUpdateClausePresentInNamedQueryWithLockMode() {
         EntityManager em = emf.createEntityManager();
         lockClause = getForUpdateClause();
         em.getTransaction().begin();
@@ -77,7 +76,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
      * Optimistic=true, but a no lock mode specified - assert statement does not lock.
      */
     @Test
-    public void testForUpdateClausePresentInQueryWithDefault() {
+    void forUpdateClausePresentInQueryWithDefault() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -97,7 +96,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
      * Optimistic=true, lock mode = none set explicitly on the fetch plan.
      */
     @Test
-    public void testForUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
+    void forUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -119,7 +118,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     * Optimistic = false, explicit no locking on the named query
     */
     @Test
-    public void testForUpdateClauseAbsentInQueryWithExplictNoLock() {
+    void forUpdateClauseAbsentInQueryWithExplictNoLock() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -144,6 +143,6 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     void assertClauseAbsentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(last.toUpperCase(Locale.ROOT).indexOf(clause) == -1, clause + " is not absent in " + last);
+        assertEquals(-1, last.toUpperCase(Locale.ROOT).indexOf(clause), clause + " is not absent in " + last);
     }
 }

@@ -72,7 +72,7 @@ public class TestSubQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         EntityManager em = emf.createEntityManager();
 
         Query query =

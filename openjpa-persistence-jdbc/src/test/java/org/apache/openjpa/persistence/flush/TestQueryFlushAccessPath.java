@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * flush. The assertions below are on emitted SQL, not on results, because a
  * full-context flush returns the same results while costing an extra round trip.
  */
-public class TestQueryFlushAccessPath extends SQLListenerTestCase {
+class TestQueryFlushAccessPath extends SQLListenerTestCase {
 
     private static final String ANY_UPDATE = "(?i).*UPDATE\\s+FLUSH_.*";
     private static final String UPDATE_SPOUSE = "(?i).*UPDATE\\s+FLUSH_SPOUSE.*";
@@ -85,7 +85,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * query result, so it must not force a flush.
      */
     @Test
-    public void testDirtyTypeOutsideAccessPathDoesNotFlush() {
+    void dirtyTypeOutsideAccessPathDoesNotFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushSpouse.class, "4").setLastName("Miller");
@@ -107,7 +107,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * A dirty instance of the queried type itself must be visible to the query.
      */
     @Test
-    public void testDirtyCandidateTypeFlushes() {
+    void dirtyCandidateTypeFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushOrder.class, "11").setTotalPrice(17d);
@@ -130,7 +130,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * the query reads the subclass rows too.
      */
     @Test
-    public void testDirtySubclassOfCandidateTypeFlushes() {
+    void dirtySubclassOfCandidateTypeFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushExpressOrder.class, "12").setTotalPrice(23d);
@@ -153,7 +153,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * path, so it must be visible to the query.
      */
     @Test
-    public void testDirtyNavigatedTypeFlushes() {
+    void dirtyNavigatedTypeFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushSpouse.class, "4").setLastName("Miller");
@@ -177,7 +177,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * {@code get()} must contribute to the access path exactly as the JPQL path does.
      */
     @Test
-    public void testDirtyNavigatedTypeFlushesForCriteriaQuery() {
+    void dirtyNavigatedTypeFlushesForCriteriaQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushSpouse.class, "4").setLastName("Miller");
@@ -202,7 +202,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * query, so it must be visible.
      */
     @Test
-    public void testDirtyTypeInSubqueryFlushes() {
+    void dirtyTypeInSubqueryFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -230,7 +230,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * only the element type registered for the field puts Order into the access path.
      */
     @Test
-    public void testDirtyElementOfCollectionPathInSizeFlushes() {
+    void dirtyElementOfCollectionPathInSizeFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedFlushCustomer cust = em.find(UnenhancedFlushCustomer.class, "10");
@@ -254,7 +254,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * delete has to be flushed first.
      */
     @Test
-    public void testDirtyElementOfCollectionPathInIsEmptyFlushes() {
+    void dirtyElementOfCollectionPathInIsEmptyFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.remove(em.find(UnenhancedFlushOrder.class, "11"));
@@ -278,7 +278,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * has to follow the whole join tree.
      */
     @Test
-    public void testDirtyTypeBehindJoinOfJoinFlushesForCriteriaQuery() {
+    void dirtyTypeBehindJoinOfJoinFlushesForCriteriaQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushSpouse.class, "4").setLastName("Miller");
@@ -303,7 +303,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * A fetch join reads the fetched type, so it belongs in the access path too.
      */
     @Test
-    public void testDirtyTypeBehindFetchJoinFlushesForCriteriaQuery() {
+    void dirtyTypeBehindFetchJoinFlushesForCriteriaQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -329,7 +329,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * IN-subquery misses the unflushed name and the query returns nothing.
      */
     @Test
-    public void testDirtyTypeInCriteriaSubqueryFlushes() {
+    void dirtyTypeInCriteriaSubqueryFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -359,7 +359,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * the correlated joins of the enclosing subquery as well.
      */
     @Test
-    public void testDirtyTypeBehindCorrelatedJoinFlushes() {
+    void dirtyTypeBehindCorrelatedJoinFlushes() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushSpouse.class, "4").setLastName("Miller");
@@ -389,7 +389,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * unspecified, and the provider must not flush on the query's behalf.
      */
     @Test
-    public void testCommitFlushModeDoesNotFlush() {
+    void commitFlushModeDoesNotFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -411,7 +411,7 @@ public class TestQueryFlushAccessPath extends SQLListenerTestCase {
      * the database" (section 3.10.8).
      */
     @Test
-    public void testNoFlushWithoutActiveTransaction() {
+    void noFlushWithoutActiveTransaction() {
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedFlushCustomer cust = em.find(UnenhancedFlushCustomer.class, "10");
             cust.setName("Michael Bouschen");

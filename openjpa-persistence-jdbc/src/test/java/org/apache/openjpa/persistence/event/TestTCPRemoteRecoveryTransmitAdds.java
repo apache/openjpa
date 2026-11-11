@@ -50,7 +50,7 @@ public class TestTCPRemoteRecoveryTransmitAdds extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
@@ -72,7 +72,7 @@ public class TestTCPRemoteRecoveryTransmitAdds extends AbstractTestCase {
     }
 
     @Test
-    public void testReceiverRecovers() {
+    void receiverRecovers() {
         // Create two pmfs in a cluster that are using RCPTCP.
         OpenJPAEntityManagerFactory pmfSender = createDistinctFactory(
             TCPRemoteCommitProvider.class,
@@ -173,7 +173,7 @@ public class TestTCPRemoteRecoveryTransmitAdds extends AbstractTestCase {
     }
 
     @Test
-    public void testSenderRecovers() {
+    void senderRecovers() {
         // Create two pmfs in a cluster that are using RCPTCP.
         OpenJPAEntityManagerFactory pmfSender = createDistinctFactory(
             TCPRemoteCommitProvider.class,

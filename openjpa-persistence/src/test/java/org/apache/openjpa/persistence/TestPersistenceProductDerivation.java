@@ -46,7 +46,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPersistenceProductDerivation {
+class TestPersistenceProductDerivation {
 	private static final Logger logger = Logger.getLogger(TestPersistenceProductDerivation.class.getCanonicalName());
     private File sourceFile;
     private File targetFile;
@@ -55,7 +55,7 @@ public class TestPersistenceProductDerivation {
     ClassLoader tempLoader = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         String currentDir = System.getProperty("user.dir");
 
         // openjpa-persistence/target/test-classes/resources/second-persistence/META-INF/persistence.xml
@@ -84,7 +84,7 @@ public class TestPersistenceProductDerivation {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         // Restore the original classloader.
         Thread.currentThread().setContextClassLoader(originalLoader);
 
@@ -98,6 +98,7 @@ public class TestPersistenceProductDerivation {
             logger.warning("The file " + targetFile + " wasn't deleted.");
         }
     }
+
     /**
      * Added for OPENJPA-932. Verifies a PersistenceProductDerivation properly loads pu's from multiple
      * archives.
@@ -105,7 +106,7 @@ public class TestPersistenceProductDerivation {
      * @throws Exception
      */
     @Test
-    public void testGetAnchorsInResource()throws Exception {
+    void getAnchorsInResource() throws Exception {
 
         List<String> expectedPUs = Arrays.asList(
             new String[]{"pu_1","pu_2","pu_3"});
@@ -120,7 +121,7 @@ public class TestPersistenceProductDerivation {
     }
 
     @Test
-    public void testEncryptionPluginConfiguration() throws Exception {
+    void encryptionPluginConfiguration() throws Exception {
         PersistenceProductDerivation ppd = new PersistenceProductDerivation();
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         String encryptedPassword = "encrypted_password";
@@ -146,7 +147,7 @@ public class TestPersistenceProductDerivation {
     }
 
     @Test
-    public void testEncryptionPluginConfigurationDefaultValue() throws Exception {
+    void encryptionPluginConfigurationDefaultValue() throws Exception {
         PersistenceProductDerivation ppd = new PersistenceProductDerivation();
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         ClassLoader loader = null;
@@ -164,7 +165,7 @@ public class TestPersistenceProductDerivation {
      * persistence.xml.
      */
     @Test
-    public void testJPA1ExcludeUnlistedClasses() throws Exception {
+    void jpa1ExcludeUnlistedClasses() throws Exception {
         PersistenceProductDerivation.ConfigurationParser cp =
                 new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 
@@ -209,7 +210,7 @@ public class TestPersistenceProductDerivation {
      * persistence.xml.
      */
     @Test
-    public void testExcludeUnlistedClasses() throws Exception {
+    void excludeUnlistedClasses() throws Exception {
         PersistenceProductDerivation.ConfigurationParser cp =
             new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 

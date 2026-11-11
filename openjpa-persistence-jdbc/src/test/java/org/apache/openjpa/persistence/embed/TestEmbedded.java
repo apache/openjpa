@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEmbedded extends SQLListenerTestCase {
+class TestEmbedded extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(BaseEntity.class, Address.class, Geocode.class,
@@ -38,7 +38,7 @@ public class TestEmbedded extends SQLListenerTestCase {
     }
 
     @Test
-    public void testInsertEmbedded() {
+    void insertEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Address a = new Address();
@@ -66,7 +66,7 @@ public class TestEmbedded extends SQLListenerTestCase {
      * Authors: Chris Tillman, Jeremy Bauer
      */
     @Test
-    public void testDetachedQueryEmbedded() {
+    void detachedQueryEmbedded() {
         Address a = new Address();
         a.setStreetAddress("456 Main St");
         a.setCity("New York");
@@ -83,11 +83,11 @@ public class TestEmbedded extends SQLListenerTestCase {
                 "select address from Address address" +
                 " where address.streetAddress = '456 Main St'").get(0);
 
-        assertEquals(a2.getGeocode().getLatitude(),1.0f);
+        assertEquals(1.0f, a2.getGeocode().getLatitude());
     }
 
     @Test
-    public void testDeleteEmbeddedDoesNotSelectBeforeDelete() {
+    void deleteEmbeddedDoesNotSelectBeforeDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] streets = {"S1", "S2", "S3"};
@@ -145,7 +145,7 @@ public class TestEmbedded extends SQLListenerTestCase {
             }
             em.close();
         }
-        assertEquals(address.getGeocode().getLatitude(),1.0f);
+        assertEquals(1.0f, address.getGeocode().getLatitude());
     }
 
     private List<Address> queryAddresses(String query) {

@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.results.constructorresult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests JPA 2.1 ConstructorResult support in @SqlResultSetMapping.
  */
-public class TestConstructorResult extends SQLListenerTestCase {
+class TestConstructorResult extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +42,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConstructorResultWithNamedNativeQuery() {
+    void constructorResultWithNamedNativeQuery() {
         EntityManager em = emf.createEntityManager();
         try {
             Query q = em.createNamedQuery("CrEntity.findAllDto");
@@ -66,7 +64,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConstructorResultWithInlineNativeQuery() {
+    void constructorResultWithInlineNativeQuery() {
         EntityManager em = emf.createEntityManager();
         try {
             Query q = em.createNativeQuery(
@@ -85,7 +83,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConstructorResultSingleRow() {
+    void constructorResultSingleRow() {
         EntityManager em = emf.createEntityManager();
         try {
             Query q = em.createNativeQuery(
@@ -93,7 +91,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
                 "CrDtoMapping");
             Object result = q.getSingleResult();
             assertNotNull(result);
-            assertTrue(result instanceof CrDto);
+            assertInstanceOf(CrDto.class, result);
 
             CrDto dto = (CrDto) result;
             assertEquals(Long.valueOf(1L), dto.getId());

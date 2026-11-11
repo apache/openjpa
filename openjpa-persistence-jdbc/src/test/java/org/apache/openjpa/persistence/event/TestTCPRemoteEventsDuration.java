@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
@@ -39,6 +38,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.Duration;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +52,7 @@ public class TestTCPRemoteEventsDuration extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
@@ -68,7 +68,7 @@ public class TestTCPRemoteEventsDuration extends AbstractTestCase {
     private static final int NUM_CONCURRENT = 3;
 
     @Test
-    public void testDurationDifference() {
+    void durationDifference() {
         // create a non-cluserted, single pmf
         OpenJPAEntityManagerFactory factorySingle = createDistinctFactory(
             null, "");
@@ -128,7 +128,7 @@ public class TestTCPRemoteEventsDuration extends AbstractTestCase {
             try {
                 concurrentThreads[i].join();
             } catch (Exception e) {
-                assertTrue(false);
+                fail();
                 break;
             }
         }
@@ -150,12 +150,10 @@ public class TestTCPRemoteEventsDuration extends AbstractTestCase {
 
         Thread.currentThread();
         Thread.yield();
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             Thread.currentThread();
             Thread.sleep((int) 500);
-        } catch (InterruptedException e) {
-            fail("unexecpted exception during pause");
-        }
+        }, "unexecpted exception during pause");
         assertEquals((NUM_CONCURRENT + 1) * NUM_OBJECTS,
             listenerAtReceiver.totalAddedClasses);
         assertEquals((NUM_CONCURRENT + 1) * NUM_OBJECTS,

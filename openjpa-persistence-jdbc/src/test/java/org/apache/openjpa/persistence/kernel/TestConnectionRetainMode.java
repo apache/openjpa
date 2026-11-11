@@ -39,19 +39,19 @@ import org.junit.jupiter.api.Test;
 public class TestConnectionRetainMode extends BaseKernelTest {
 
     @Test
-    public void testOnDemand()
+    void onDemand()
         throws Exception {
         doTest("on-demand");
     }
 
     @Test
-    public void testTransaction()
+    void transaction()
         throws Exception {
         doTest("transaction");
     }
 
     @Test
-    public void testPersistenceManager()
+    void persistenceManager()
         throws Exception {
         doTest("persistence-manager");
     }

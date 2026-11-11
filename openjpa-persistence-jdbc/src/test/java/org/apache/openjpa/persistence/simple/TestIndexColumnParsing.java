@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * Tests that @Index columnList with ASC/DESC sort directions
  * is properly parsed (sort direction stripped from column name).
  */
-public class TestIndexColumnParsing extends SingleEMFTestCase {
+class TestIndexColumnParsing extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestIndexColumnParsing extends SingleEMFTestCase {
      * a "column not found" error during schema creation.
      */
     @Test
-    public void testIndexWithSortDirection() {
+    void indexWithSortDirection() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -77,7 +77,7 @@ public class TestIndexColumnParsing extends SingleEMFTestCase {
      * (without ASC/DESC suffixes).
      */
     @Test
-    public void testIndexMetadataColumns() {
+    void indexMetadataColumns() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(IndexedEntity.class, null, true);

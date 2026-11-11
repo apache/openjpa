@@ -37,18 +37,18 @@ import org.junit.jupiter.api.Test;
 public class TestFetchStatistics {
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("fetchStatisticPU");
         emf.createEntityManager().close();
         FetchStatsCollector.clear();
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
     }
 
     @Test
-    public void testFieldAccess() {
+    void fieldAccess() {
         FetchStatsCollector.clear();
 
         AEntity aEntity = new AEntity(1, "t", "d", null);
@@ -66,7 +66,7 @@ public class TestFetchStatistics {
     }
 
     @Test
-    public void testEmbeddedEntityFieldAccess() {
+    void embeddedEntityFieldAccess() {
         AEntity aEntity = new AEntity(1, "t1", "d1", null);
 
         assertEquals("extra d1", aEntity.getExtraInfo());
@@ -77,7 +77,7 @@ public class TestFetchStatistics {
     }
 
     @Test
-    public void testPropertyFieldMixedAccess() {
+    void propertyFieldMixedAccess() {
         FetchStatsCollector.clear();
 
         BEntity b = new BEntity(2, "t2", "d2");
@@ -98,7 +98,7 @@ public class TestFetchStatistics {
     }
 
     @Test
-    public void testMixedAccess() {
+    void mixedAccess() {
         BEntity e = new BEntity(1, "t1", "d1");
 
 
@@ -118,7 +118,7 @@ public class TestFetchStatistics {
     }
 
     @Test
-    public void testFieldAccessThroughRelationship() {
+    void fieldAccessThroughRelationship() {
         BEntity bf1 = new BEntity(1, "t1", "d1");
         AEntity af3 = new AEntity(3, "t3", "d3", bf1);
 
@@ -131,7 +131,7 @@ public class TestFetchStatistics {
     }
 
     @Test
-    public void testPropertyAccessThroughInheritance() {
+    void propertyAccessThroughInheritance() {
         FetchStatsCollector.clear();
 
         ChildEntity cEntity = new ChildEntity(1, "t1", "d1", "cn1");

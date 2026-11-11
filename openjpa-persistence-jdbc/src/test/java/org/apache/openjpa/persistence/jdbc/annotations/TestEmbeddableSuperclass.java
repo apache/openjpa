@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Types;
 
@@ -46,7 +44,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestEmbeddableSuperclass
+class TestEmbeddableSuperclass
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -55,7 +53,7 @@ public class TestEmbeddableSuperclass
     }
 
     @Test
-    public void testSuperclassEmbeddedOnly() {
+    void superclassEmbeddedOnly() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(EmbeddableSuper.class,
             null, true);
@@ -64,12 +62,12 @@ public class TestEmbeddableSuperclass
     }
 
     @Test
-    public void testSubclassMappingDefaultsAndOverrides() {
+    void subclassMappingDefaultsAndOverrides() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
-        assertTrue(!cls.isEmbeddedOnly());
-        assertTrue(cls.getStrategy() instanceof FullClassStrategy);
+        assertFalse(cls.isEmbeddedOnly());
+        assertInstanceOf(FullClassStrategy.class, cls.getStrategy());
         assertEquals(ClassMetaData.ID_APPLICATION, cls.getIdentityType());
         assertTrue(cls.isOpenJPAIdentity());
 
@@ -85,16 +83,15 @@ public class TestEmbeddableSuperclass
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict.getPreferredType(Types.CLOB) == Types.CLOB) {
             if (dict.maxEmbeddedClobSize > 0)
-                assertTrue(fm.getStrategy() instanceof
-                    MaxEmbeddedClobFieldStrategy);
+                assertInstanceOf(MaxEmbeddedClobFieldStrategy.class, fm.getStrategy());
             else
-                assertTrue(fm.getHandler() instanceof ClobValueHandler);
+                assertInstanceOf(ClobValueHandler.class, fm.getHandler());
         } else
-            assertTrue(fm.getStrategy() instanceof StringFieldStrategy);
+            assertInstanceOf(StringFieldStrategy.class, fm.getStrategy());
     }
 
     @Test
-    public void testSubclassDiscriminatorMapping() {
+    void subclassDiscriminatorMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
@@ -103,7 +100,7 @@ public class TestEmbeddableSuperclass
     }
 
     @Test
-    public void testVersionOverrideMapping() {
+    void versionOverrideMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
@@ -111,19 +108,19 @@ public class TestEmbeddableSuperclass
     }
 
     @Test
-    public void testRelationMappings() {
+    void relationMappings() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
         FieldMapping fm = cls.getFieldMapping("sub");
-        assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
+        assertInstanceOf(RelationFieldStrategy.class, fm.getStrategy());
 
         fm = cls.getFieldMapping("sup");
         assertEquals(RelationFieldStrategy.class, fm.getStrategy().getClass());
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EmbeddableSuperSub parent = new EmbeddableSuperSub();
         parent.setClob("parent");
         EmbeddableSuperSub sub = new EmbeddableSuperSub();

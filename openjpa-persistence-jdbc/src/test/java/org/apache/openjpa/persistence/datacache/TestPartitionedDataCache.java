@@ -18,12 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
@@ -37,7 +32,7 @@ import org.apache.openjpa.util.UserException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPartitionedDataCache extends SingleEMFTestCase {
+class TestPartitionedDataCache extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +44,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPropertyParsing() {
+    void propertyParsing() {
         PartitionedDataCache cache = new PartitionedDataCache();
         String badProperty = "(name=a,cacheSize=100),(name=b,cacheSize=200";// missing last bracket
         try {
@@ -90,20 +85,20 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPolicyConfiguration() {
+    void policyConfiguration() {
         Object v = emf.getConfiguration().toProperties(true).get("openjpa.CacheDistributionPolicy");
         String policyPlugin = emf.getConfiguration().getCacheDistributionPolicy();
         CacheDistributionPolicy policyInstance = emf.getConfiguration().getCacheDistributionPolicyInstance();
         CacheDistributionPolicy policy = emf.getConfiguration().getDataCacheManagerInstance().getDistributionPolicy();
         assertNotNull(policy);
-        assertTrue(policy instanceof TestPolicy, policy.getClass() + " not TestPolicy");
+        assertInstanceOf(TestPolicy.class, policy, policy.getClass() + " not TestPolicy");
 
     }
 
     @Test
-    public void testPluginConfiguration() {
+    void pluginConfiguration() {
         DataCache cache = ((StoreCacheImpl)emf.getStoreCache()).getDelegate();
-        assertTrue(cache instanceof PartitionedDataCache);
+        assertInstanceOf(PartitionedDataCache.class, cache);
         assertFalse(cache.getPartitionNames().isEmpty());
         assertNotNull(cache.getPartition("a", false));
         assertNotNull(cache.getPartition("b", false));
@@ -115,7 +110,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
     void assertCacheConfiguration(String name, int size) {
         DataCache cache = emf.getConfiguration().getDataCacheManagerInstance().getDataCache(name);
         assertNotNull(cache);
-        assertTrue(cache instanceof ConcurrentDataCache);
+        assertInstanceOf(ConcurrentDataCache.class, cache);
         assertEquals(size, ((ConcurrentDataCache)cache).getCacheSize());
     }
 

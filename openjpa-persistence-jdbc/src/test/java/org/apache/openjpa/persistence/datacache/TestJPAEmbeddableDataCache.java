@@ -35,7 +35,7 @@ public class TestJPAEmbeddableDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         EntityManager em = emf.createEntityManager();
         try {
             Person p = loadPerson();

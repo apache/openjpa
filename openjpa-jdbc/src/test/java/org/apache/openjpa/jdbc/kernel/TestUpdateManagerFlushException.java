@@ -77,12 +77,12 @@ import org.junit.jupiter.api.Test;
  * @author Albert Lee
  */
 
-public class TestUpdateManagerFlushException {
+class TestUpdateManagerFlushException {
 
     private TestUpdateManager updMgr;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         updMgr = new TestUpdateManager();
     }
 
@@ -92,7 +92,7 @@ public class TestUpdateManagerFlushException {
      * the order the original exceptions are thrown.
      */
     @Test
-    public void testAddRetrieve() {
+    void addRetrieve() {
 
         Collection states = new ArrayList<OpenJPAStateManager>();
         states.add(new TestOpenJPAStateManager());
@@ -102,12 +102,12 @@ public class TestUpdateManagerFlushException {
         assertEquals(3, exceps.size());
 
         Iterator<Exception> itr = exceps.iterator();
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.populateRowManager");
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.flush");
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.customInsert");
+        assertEquals(
+            "TestUpdateManager.populateRowManager", itr.next().getMessage());
+        assertEquals(
+            "TestUpdateManager.flush", itr.next().getMessage());
+        assertEquals(
+            "TestUpdateManager.customInsert", itr.next().getMessage());
     }
 
     /*

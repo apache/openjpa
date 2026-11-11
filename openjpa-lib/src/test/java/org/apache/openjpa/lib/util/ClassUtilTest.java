@@ -16,44 +16,44 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class ClassUtilTest {
+class ClassUtilTest {
 	
 	private static final Logger logger = Logger.getLogger(ClassUtilTest.class.getCanonicalName());
 
     @Test
-    public void testToClass() {
-        Assertions.assertEquals(this.getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest"));
+    void testToClass() {
+        assertEquals(this.getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest"));
 
-        Assertions.assertEquals(new ClassUtilTest[0].getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest[]"));
+        assertEquals(new ClassUtilTest[0].getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest[]"));
 
-        Assertions.assertEquals(Integer.class, toClass("java.lang.Integer"));
+        assertEquals(Integer.class, toClass("java.lang.Integer"));
 
-        Assertions.assertEquals(byte.class, toClass("byte"));
-        Assertions.assertEquals(char.class, toClass("char"));
-        Assertions.assertEquals(double.class, toClass("double"));
-        Assertions.assertEquals(float.class, toClass("float"));
-        Assertions.assertEquals(int.class, toClass("int"));
-        Assertions.assertEquals(long.class, toClass("long"));
-        Assertions.assertEquals(short.class, toClass("short"));
-        Assertions.assertEquals(boolean.class, toClass("boolean"));
-        Assertions.assertEquals(void.class, toClass("void"));
+        assertEquals(byte.class, toClass("byte"));
+        assertEquals(char.class, toClass("char"));
+        assertEquals(double.class, toClass("double"));
+        assertEquals(float.class, toClass("float"));
+        assertEquals(int.class, toClass("int"));
+        assertEquals(long.class, toClass("long"));
+        assertEquals(short.class, toClass("short"));
+        assertEquals(boolean.class, toClass("boolean"));
+        assertEquals(void.class, toClass("void"));
 
-        Assertions.assertEquals(new float[0].getClass(), toClass("float[]"));
-        Assertions.assertEquals(new float[0][0].getClass(), toClass("float[][]"));
-        Assertions.assertEquals(new long[0][0][0].getClass(), toClass("long[][][]"));
+        assertEquals(new float[0].getClass(), toClass("float[]"));
+        assertEquals(new float[0][0].getClass(), toClass("float[][]"));
+        assertEquals(new long[0][0][0].getClass(), toClass("long[][][]"));
     }
 
     @Test
-    public void nonExistingClass() {
+    void nonExistingClass() {
         assertThrows(IllegalArgumentException.class, () ->
             toClass("does.not.Exist"));
     }
@@ -63,37 +63,37 @@ public class ClassUtilTest {
     }
 
     @Test
-    public void testGetClassName() {
-        Assertions.assertEquals("ClassUtilTest", ClassUtil.getClassName(ClassUtilTest.class));
-        Assertions.assertEquals("ClassUtilTest$MyInnerClass", ClassUtil.getClassName(MyInnerClass.class));
+    void getClassName() {
+        assertEquals("ClassUtilTest", ClassUtil.getClassName(ClassUtilTest.class));
+        assertEquals("ClassUtilTest$MyInnerClass", ClassUtil.getClassName(MyInnerClass.class));
 
         // anonymous class
-        Assertions.assertEquals("ClassUtilTest$1", ClassUtil.getClassName(INSTANCE.getClass()));
+        assertEquals("ClassUtilTest$1", ClassUtil.getClassName(INSTANCE.getClass()));
 
         // primitives
-        Assertions.assertEquals("byte", ClassUtil.getClassName(byte.class));
-        Assertions.assertEquals("char", ClassUtil.getClassName(char.class));
-        Assertions.assertEquals("double", ClassUtil.getClassName(double.class));
-        Assertions.assertEquals("float", ClassUtil.getClassName(float.class));
-        Assertions.assertEquals("int", ClassUtil.getClassName(int.class));
-        Assertions.assertEquals("long", ClassUtil.getClassName(long.class));
-        Assertions.assertEquals("short", ClassUtil.getClassName(short.class));
-        Assertions.assertEquals("boolean", ClassUtil.getClassName(boolean.class));
-        Assertions.assertEquals("void", ClassUtil.getClassName(void.class));
+        assertEquals("byte", ClassUtil.getClassName(byte.class));
+        assertEquals("char", ClassUtil.getClassName(char.class));
+        assertEquals("double", ClassUtil.getClassName(double.class));
+        assertEquals("float", ClassUtil.getClassName(float.class));
+        assertEquals("int", ClassUtil.getClassName(int.class));
+        assertEquals("long", ClassUtil.getClassName(long.class));
+        assertEquals("short", ClassUtil.getClassName(short.class));
+        assertEquals("boolean", ClassUtil.getClassName(boolean.class));
+        assertEquals("void", ClassUtil.getClassName(void.class));
 
         // arrays
-        Assertions.assertEquals("long[]", ClassUtil.getClassName(long[].class));
-        Assertions.assertEquals("long[][]", ClassUtil.getClassName(long[][].class));
-        Assertions.assertEquals("float[][][]", ClassUtil.getClassName(float[][][].class));
+        assertEquals("long[]", ClassUtil.getClassName(long[].class));
+        assertEquals("long[][]", ClassUtil.getClassName(long[][].class));
+        assertEquals("float[][][]", ClassUtil.getClassName(float[][][].class));
 
-        Assertions.assertEquals("ClassUtilTest[]", ClassUtil.getClassName(ClassUtilTest[].class));
-        Assertions.assertEquals("ClassUtilTest$MyInnerClass[]", ClassUtil.getClassName(MyInnerClass[].class));
-        Assertions.assertEquals("ClassUtilTest$MyInnerClass[][]", ClassUtil.getClassName(MyInnerClass[][].class));
+        assertEquals("ClassUtilTest[]", ClassUtil.getClassName(ClassUtilTest[].class));
+        assertEquals("ClassUtilTest$MyInnerClass[]", ClassUtil.getClassName(MyInnerClass[].class));
+        assertEquals("ClassUtilTest$MyInnerClass[][]", ClassUtil.getClassName(MyInnerClass[][].class));
     }
 
     @Test
     @Disabled("only needed for manual performance tests")
-    public void testGetClassNamePerformance() {
+    void getClassNamePerformance() {
 
         long start = System.nanoTime();
         for (int i = 1; i < 10000000; i++) {
@@ -106,13 +106,13 @@ public class ClassUtilTest {
     }
 
     @Test
-    public void testGetPackageName() {
-        Assertions.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(ClassUtilTest.class));
-        Assertions.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass.class));
-        Assertions.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass[].class));
-        Assertions.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(INSTANCE.getClass()));
-        Assertions.assertEquals("", ClassUtil.getPackageName(long.class));
-        Assertions.assertEquals("", ClassUtil.getPackageName(long[].class));
+    void getPackageName() {
+        assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(ClassUtilTest.class));
+        assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass.class));
+        assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass[].class));
+        assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(INSTANCE.getClass()));
+        assertEquals("", ClassUtil.getPackageName(long.class));
+        assertEquals("", ClassUtil.getPackageName(long[].class));
     }
 
     private static abstract class MyInnerClass {

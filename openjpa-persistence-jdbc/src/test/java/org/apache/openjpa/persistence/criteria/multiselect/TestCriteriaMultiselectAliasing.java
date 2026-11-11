@@ -66,7 +66,7 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         if ("true".equals(doCB)){
             this.ttestCriteriaQuery();
         }

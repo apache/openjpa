@@ -57,7 +57,7 @@ public class TestExternalizedParameter {
     private static EntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -70,7 +70,7 @@ public class TestExternalizedParameter {
     }
 
     @Test
-    public void testNoFalseAlarmOnExternalizedParameterDetection() {
+    void noFalseAlarmOnExternalizedParameterDetection() {
         String jpql = "select b from Book b where b.title=:title";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();
@@ -83,7 +83,7 @@ public class TestExternalizedParameter {
     }
 
     @Test
-    public void testCanDetectExternalizedSingleParameterValue() {
+    void canDetectExternalizedSingleParameterValue() {
         String jpql = "select b from Book b where b.token=:token";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();
@@ -96,7 +96,7 @@ public class TestExternalizedParameter {
     }
 
     @Test
-    public void testCanDetectExternalizedMixedParameterValue() {
+    void canDetectExternalizedMixedParameterValue() {
         String jpql = "select b from Book b where b.token=:token and b.title = :title";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();

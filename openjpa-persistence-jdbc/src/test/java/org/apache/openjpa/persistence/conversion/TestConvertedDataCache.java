@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * than one persistence context, so a change made in place in one context
  * does not reach the others.
  */
-public class TestConvertedDataCache extends SingleEMFTestCase {
+class TestConvertedDataCache extends SingleEMFTestCase {
 
     private static final long TIME = 1000000000000L;
 
@@ -91,7 +91,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAnElementChangedInPlaceDoesNotReachOtherContexts() {
+    void anElementChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).getItems().get(0)
@@ -107,7 +107,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAnElementConvertedOnItsOwnDoesNotReachOtherContexts() {
+    void anElementConvertedOnItsOwnDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getElements().get(0)
@@ -124,7 +124,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testASingleValueChangedInPlaceDoesNotReachOtherContexts() {
+    void aSingleValueChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getLabel()
@@ -138,7 +138,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testADatabaseArrayChangedInPlaceDoesNotReachOtherContexts() {
+    void aDatabaseArrayChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getBytes().getBytes()[0] =
@@ -153,7 +153,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testADatabaseDateChangedInPlaceDoesNotReachOtherContexts() {
+    void aDatabaseDateChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getDate().getDate()
@@ -167,7 +167,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEachContextGetsItsOwnValues() {
+    void eachContextGetsItsOwnValues() {
         try (EntityManager em1 = emf.createEntityManager();
              EntityManager em2 = emf.createEntityManager()) {
             ConvertedListEntity e1 = em1.find(ConvertedListEntity.class, 1L);
@@ -188,7 +188,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testACommittedChangeIsLoadedFromTheCache() {
+    void aCommittedChangeIsLoadedFromTheCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).setItem(new Item("new"));
@@ -202,7 +202,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testANullValueIsLoadedFromTheCache() {
+    void aNullValueIsLoadedFromTheCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).setItem(null);
@@ -216,7 +216,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAFieldIsLeftOutOfTheCacheWhenTheConverterFails() {
+    void aFieldIsLeftOutOfTheCacheWhenTheConverterFails() {
         emf.getCache().evictAll();
         LabelConverter.failToDatabase = true;
         try (EntityManager em = emf.createEntityManager()) {
@@ -236,7 +236,7 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAConverterThatFailsOnACacheHitFailsTheFind() {
+    void aConverterThatFailsOnACacheHitFailsTheFind() {
         assertTrue(getCachedData(ConvertedCacheEntity.class, 1L)
             .isLoaded(getFieldIndex("label")));
         LabelConverter.failToEntity = true;

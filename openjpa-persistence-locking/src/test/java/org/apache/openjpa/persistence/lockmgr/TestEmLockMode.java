@@ -32,13 +32,14 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test hints using EntityManager interface.
  */
-public class TestEmLockMode extends SequencedActionsTest {
+class TestEmLockMode extends SequencedActionsTest {
     private static String NON_SUPPORTED_OPTIMISTIC_SQL =
         "SELECT .* FROM LockEmployee .*";
     private static String NON_SUPPORTED_FOR_UPDATE_SQL = "" ; // append lock clause from dict
@@ -70,7 +71,7 @@ public class TestEmLockMode extends SequencedActionsTest {
      * Test em.find(lockmode);
      */
     @Test
-    public void testFindLockModeIsolations() {
+    void findLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -141,7 +142,7 @@ public class TestEmLockMode extends SequencedActionsTest {
      * Test em.refresh(lockmode);
      */
     @Test
-    public void testRefreshLockModeIsolations() {
+    void refreshLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -213,7 +214,7 @@ public class TestEmLockMode extends SequencedActionsTest {
      * Test em.lock(lockmode);
      */
     @Test
-    public void testLockLockModeIsolations() {
+    void lockLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -284,7 +285,7 @@ public class TestEmLockMode extends SequencedActionsTest {
      * Test em.getLockMode();
      */
     @Test
-    public void testGetLockMode() {
+    void getLockMode() {
         EntityManager em = emf.createEntityManager();
 
         LockEmployee employee = em.find(LockEmployee.class, 1);

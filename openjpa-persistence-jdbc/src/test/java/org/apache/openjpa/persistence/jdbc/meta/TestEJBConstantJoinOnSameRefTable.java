@@ -30,12 +30,12 @@ import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    public void setUp ()
+    void setUp()
 	{
 		deleteAll(ConstantJoinPC4.class);
 		deleteAll(ConstantJoinPC5.class);
@@ -56,7 +56,7 @@ public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persis
 	}
 
     @Test
-    public void testConstantManyToMany ()
+    void constantManyToMany()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -79,7 +79,7 @@ public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persis
 
 
     @Test
-    public void testConstantOneToOne1 ()
+    void constantOneToOne1()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -92,7 +92,7 @@ public class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persis
 	}
 
     @Test
-    public void testSharedJoinTableModifications ()
+    void sharedJoinTableModifications()
 	{
 		EntityManager pm = currentEntityManager();
 		ConstantJoinPC4 pc4 = pm.find(ConstantJoinPC4.class, oid);

@@ -35,13 +35,13 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMappedSuper extends AbstractPersistenceTestCase {
+class TestMappedSuper extends AbstractPersistenceTestCase {
 
     /*
      * Verify constraints defined via XML on a mapped superclass are validated.
      */
     @Test
-    public void testMappedSuperXMLConstraint() {
+    void mappedSuperXMLConstraint() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "XMLConstraintPU",

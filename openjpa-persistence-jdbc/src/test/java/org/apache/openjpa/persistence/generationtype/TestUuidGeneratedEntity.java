@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestUuidGeneratedEntity extends SingleEMFTestCase {
+class TestUuidGeneratedEntity extends SingleEMFTestCase {
     
     DBDictionary _dict;
 
@@ -50,7 +50,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMapping() {
+    void mapping() {
         ClassMapping cm = getMapping(UuidGeneratedEntity.class);
         Column[] cols = cm.getPrimaryKeyColumns();
         assertEquals(1, cols.length);
@@ -60,7 +60,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDefaultValues() {
+    void defaultValues() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv1 = new UuidGeneratedEntity();
@@ -86,7 +86,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMergeBeforePersist() {
+    void mergeBeforePersist() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv1 = new UuidGeneratedEntity();
@@ -103,7 +103,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachAndMerge() {
+    void detachAndMerge() {
         EntityManager em = emf.createEntityManager();
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
         gv.setBasicUuid(UUID.randomUUID());
@@ -124,13 +124,13 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         gv = em.merge(gv);
         em.getTransaction().commit();
 
-        assertTrue((v + 1) == gv.getVersion());
+        assertEquals((v + 1), gv.getVersion());
 
         closeEM(em);
     }
 
     @Test
-    public void testGetByReference() {
+    void getByReference() {
         EntityManager em = emf.createEntityManager();
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
 
@@ -152,7 +152,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindByUUIDProperty() {
+    void findByUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -177,7 +177,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateUUIDProperty() {
+    void updateUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -216,7 +216,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindByStringUUIDProperty() {
+    void findByStringUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -242,7 +242,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindByUUID() {
+    void findByUUID() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -264,7 +264,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRemoveById() {
+    void removeById() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -288,7 +288,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testParentRelationshipById() {
+    void parentRelationshipById() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity parent = new UuidGeneratedEntity();
@@ -319,7 +319,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testParentRelationshipByEntity() {
+    void parentRelationshipByEntity() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity parent = new UuidGeneratedEntity();
@@ -346,7 +346,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSetPreviouslyNullProperty() {
+    void setPreviouslyNullProperty() {
         EntityManager em = emf.createEntityManager();
 
         UuidGeneratedEntity parent = new UuidGeneratedEntity();

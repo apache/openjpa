@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidationMode extends SingleEMFTestCase {
+class TestValidationMode extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -59,7 +59,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   1) By default, validation mode == AUTO
      */
     @Test
-    public void testValidationMode1() {
+    void validationMode1() {
         getLog().trace("testValidationMode1() - Default mode is AUTO");
         // create our EMF
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -84,7 +84,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   2) Validation mode of AUTO in persistence.xml is the same as default
      */
     @Test
-    public void testValidationMode2() {
+    void validationMode2() {
         getLog().trace("testValidationMode1() - AUTO in persistence.xml");
         // create our EMF
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -109,7 +109,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   3) Validation mode of NONE in persistence.xml overrides default
      */
     @Test
-    public void testValidationMode3() {
+    void validationMode3() {
         getLog().trace("testValidationMode3() - persistence.xml overrides " +
             "Default");
         // create our EMF
@@ -137,7 +137,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   a provider are available
      */
     @Test
-    public void testValidationMode4() {
+    void validationMode4() {
         getLog().trace("testValidationMode4() - persistence.xml overrides " +
             "Default");
         OpenJPAEntityManagerFactorySPI emf = null;
@@ -168,7 +168,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   5) Validation mode in createEMF(Map props) overrides no persistence.xml
      */
     @Test
-    public void testValidationMode5() {
+    void validationMode5() {
         getLog().trace("testValidationMode5() - Map(NONE) overrides default");
 
         // create the Map to test overrides
@@ -200,7 +200,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   6) Validation mode in createEMF(Map props) overrides persistence.xml
      */
     @Test
-    public void testValidationMode6() {
+    void validationMode6() {
         getLog().trace("testValidationMode6() - Map(NONE) overrides PU " +
             "provided mode=callback");
 
@@ -233,7 +233,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   7) Validation mode in createEMF(Map props) can be a ValidationMode enum
      */
     @Test
-    public void testValidationMode7() {
+    void validationMode7() {
         getLog().trace("testValidationMode7() - Map(ValidationMode.NONE) " +
             "overrides PU provided mode=callback");
 
@@ -266,7 +266,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   8) Life cycle event should be entity manager (Broker) specific.
      */
     @Test
-    public void testUniqueLifecycleManager() {
+    void uniqueLifecycleManager() {
         getLog().trace("testUniqueLifecycleManager() - Life cycle event tests");
         // create our EMF
         Map<String,String> prop = new HashMap<>();

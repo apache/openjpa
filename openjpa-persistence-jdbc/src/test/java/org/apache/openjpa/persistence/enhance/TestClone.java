@@ -38,7 +38,7 @@ public class TestClone extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         deleteAll(NoClone.class);
         deleteAll(PCClone.class);
@@ -49,7 +49,7 @@ public class TestClone extends AbstractTestCase {
      * test no clone method declared.
      */
     @Test
-    public void testNoClone() {
+    void noClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -68,7 +68,7 @@ public class TestClone extends AbstractTestCase {
      * test subclass which we cannot handle safely
      */
     @Test
-    public void testSubclassClone() {
+    void subclassClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -89,7 +89,7 @@ public class TestClone extends AbstractTestCase {
      * test explicit clone call
      */
     @Test
-    public void testPCClone() {
+    void pCClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);

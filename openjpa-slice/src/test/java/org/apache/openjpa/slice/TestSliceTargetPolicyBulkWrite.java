@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * A configured {@link QueryTargetPolicy} is consulted for bulk statements as
  * it is for queries. The policy here confines every query to the first slice.
  */
-public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
+class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
 
     private List<String> sliceNames;
 
@@ -80,7 +80,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testPolicyAppliesToJpqlBulkDelete() {
+    void policyAppliesToJpqlBulkDelete() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -92,7 +92,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testPolicyAppliesToJpqlBulkUpdate() {
+    void policyAppliesToJpqlBulkUpdate() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -104,7 +104,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testPolicyAppliesToJpqlBulkUpdateWithParameters() {
+    void policyAppliesToJpqlBulkUpdateWithParameters() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -119,7 +119,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testPolicyAppliesToNativeBulkStatements() {
+    void policyAppliesToNativeBulkStatements() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -133,7 +133,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
 
     /** An explicit target stays in place when other hints are set after it. */
     @Test
-    public void testExplicitTargetWinsOverPolicyAfterAnotherHint() {
+    void explicitTargetWinsOverPolicyAfterAnotherHint() {
         seed();
         String second = sliceNames.get(1);
         try (EntityManager em = emf.createEntityManager()) {

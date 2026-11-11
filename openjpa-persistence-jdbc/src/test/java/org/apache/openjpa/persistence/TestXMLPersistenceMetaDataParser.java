@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
+class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 	
 	private static final Logger logger = Logger.getLogger(TestXMLPersistenceMetaDataParser.class.getCanonicalName());
 
@@ -53,7 +53,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
     }
 
     @Test
-    public void testManyToOneLazyFetch() {
+    void manyToOneLazyFetch() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -141,7 +141,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
     }
 
     @Test
-    public void testManyToOneEagerFetch() {
+    void manyToOneEagerFetch() {
         // initialize objects
         EntityManager em = emf.createEntityManager();
 
@@ -180,7 +180,7 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryHintOrmXml() {
+    void queryHintOrmXml() {
         QueryMetaData[] meta = ((MetamodelImpl) emf.getMetamodel()).getRepository().getQueryMetaDatas();
         assertEquals(1, meta.length);
         assertEquals("Country1.literal", meta[0].getName());

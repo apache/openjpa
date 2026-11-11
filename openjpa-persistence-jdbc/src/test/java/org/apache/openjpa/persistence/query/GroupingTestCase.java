@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +41,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public abstract class GroupingTestCase
-    extends SingleEMTestCase {
+public abstract class GroupingTestCase extends SingleEMTestCase {
 
     protected abstract void prepareQuery(Query q);
 
@@ -114,7 +113,7 @@ public abstract class GroupingTestCase
     }
 
     @Test
-    public void testSimpleGroup() {
+    public void simpleGroup() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField order by o.intField asc");
         prepareQuery(q);
@@ -123,11 +122,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals(1, itr.next());
         assertEquals(2, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testOrderByAggregate() {
+    public void orderByAggregate() {
         // this is an extension of JPQL
         Query q = em.createQuery("select sum(o.shortField) " +
             "from AllFieldTypes o"
@@ -139,11 +138,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals((long) -4, itr.next());
         assertEquals((long) -2, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testCompoundGroupSame() {
+    public void compoundGroupSame() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.shortField order by o.shortField asc");
         prepareQuery(q);
@@ -152,11 +151,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals(2, itr.next());
         assertEquals(1, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testCompoundGroupDifferent() {
+    public void compoundGroupDifferent() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.byteField order by o.intField asc");
         prepareQuery(q);
@@ -167,11 +166,11 @@ public abstract class GroupingTestCase
         assertEquals(1, itr.next());
         assertEquals(2, itr.next());
         assertEquals(2, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testDifferentGroupLengths() {
+    public void differentGroupLengths() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o"
             + " group by o.byteField order by o.byteField asc");
         prepareQuery(q);
@@ -181,11 +180,11 @@ public abstract class GroupingTestCase
         assertEquals((byte) 0, itr.next());
         assertEquals((byte) 1, itr.next());
         assertEquals((byte) 2, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testGroupRelationField() {
+    public void groupRelationField() {
         Query q = em.createQuery("select o.selfOneOne.intField " +
             "from AllFieldTypes o group by o.selfOneOne.intField " +
             "order by o.selfOneOne.intField asc");
@@ -195,11 +194,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals(1, itr.next());
         assertEquals(2, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testSubstringInGroupBy() {
+    public void substringInGroupBy() {
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof SolidDBDictionary)
             return;
@@ -220,7 +219,7 @@ public abstract class GroupingTestCase
     }
 
     @Test
-    public void testGroupedAggregate() {
+    public void groupedAggregate() {
         Query q = em.createQuery("select count(o) from AllFieldTypes o " +
             "group by o.byteField order by o.byteField asc");
         prepareQuery(q);
@@ -230,11 +229,11 @@ public abstract class GroupingTestCase
         assertEquals(1L, itr.next());
         assertEquals(2L, itr.next());
         assertEquals(1L, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testGroupedRelationAggregate() {
+    public void groupedRelationAggregate() {
         Query q = em.createQuery("select count(o), max(o.selfOneOne.longField)"
             + " from AllFieldTypes o group by o.intField"
             + " order by o.intField asc");
@@ -247,11 +246,11 @@ public abstract class GroupingTestCase
         o = (Object[]) itr.next();
         assertEquals(2L, o[0]);
         assertEquals(2L, o[1]);
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testGroupedMixedProjection() {
+    public void groupedMixedProjection() {
         Query q = em.createQuery("select count(o), o.shortField " +
             "from AllFieldTypes o group by o.intField, o.shortField " +
             "order by o.intField asc");
@@ -265,11 +264,11 @@ public abstract class GroupingTestCase
         o = (Object[]) itr.next();
         assertEquals(2L, o[0]);
         assertEquals((short) -2, o[1]);
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testSimpleHaving() {
+    public void simpleHaving() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField having o.intField < 2");
         prepareQuery(q);
@@ -277,7 +276,7 @@ public abstract class GroupingTestCase
     }
 
     @Test
-    public void testAggregateHaving() {
+    public void aggregateHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1");
         prepareQuery(q);
@@ -285,7 +284,7 @@ public abstract class GroupingTestCase
     }
 
     @Test
-    public void testMixedHaving() {
+    public void mixedHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1 or o.byteField = 0 " +
             "order by o.byteField asc");
@@ -295,11 +294,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals((byte) 0, itr.next());
         assertEquals((byte) 1, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testVariableGroup() {
+    public void variableGroup() {
         Query q = em.createQuery("select max(other.longField) " +
             "from AllFieldTypes o, AllFieldTypes other " +
             "where other member of o.selfOneMany " +
@@ -310,11 +309,11 @@ public abstract class GroupingTestCase
         Iterator itr = res.iterator();
         assertEquals(2L, itr.next());
         assertEquals(4L, itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
     }
 
     @Test
-    public void testVariableHaving() {
+    public void variableHaving() {
         JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict instanceof DerbyDictionary) {

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * name, so a later <code>DROP FOREIGN KEY &lt;name&gt;</code> fails. The old
  * form stays available with <code>ConstraintNameMode=mid</code>.
  */
-public class TestMySQLConstraintNames {
+class TestMySQLConstraintNames {
 
     /**
      * Puts back the delimiting of reserved words that a configured MySQL or
@@ -53,22 +53,22 @@ public class TestMySQLConstraintNames {
     }
 
     @Test
-    public void testMySQLNamedConstraints() {
+    void mySQLNamedConstraints() {
         assertNamedConstraints(new MySQLDictionary());
     }
 
     @Test
-    public void testMariaDBNamedConstraints() {
+    void mariaDBNamedConstraints() {
         assertNamedConstraints(new MariaDBDictionary());
     }
 
     @Test
-    public void testMySQLConstraintNameModeMid() {
+    void mySQLConstraintNameModeMid() {
         assertConstraintNameModeMid(new MySQLDictionary());
     }
 
     @Test
-    public void testMariaDBConstraintNameModeMid() {
+    void mariaDBConstraintNameModeMid() {
         assertConstraintNameModeMid(new MariaDBDictionary());
     }
 

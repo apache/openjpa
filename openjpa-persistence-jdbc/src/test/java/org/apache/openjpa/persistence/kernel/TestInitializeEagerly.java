@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInitializeEagerly extends SingleEMFTestCase {
+class TestInitializeEagerly extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -37,7 +37,7 @@ public class TestInitializeEagerly extends SingleEMFTestCase {
 
     // Smoke test to ensure that the EMF is created properly when using this property.
     @Test
-    public void test(){
+    void test(){
         assertNotNull(emf);
     }
 

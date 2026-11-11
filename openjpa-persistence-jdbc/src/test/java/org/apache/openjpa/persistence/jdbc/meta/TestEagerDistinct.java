@@ -88,13 +88,13 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
     }
 
     @Test
-    public void testEagerParallelWithNonDistinctQuery()
+    void testEagerParallelWithNonDistinctQuery()
         throws Exception {
         eagerParallelWithNonDistinctQuery(-1);
     }
 
     @Test
-    public void testPagingEagerParallelWithNonDistinctQuery()
+    void pagingEagerParallelWithNonDistinctQuery()
         throws Exception {
         eagerParallelWithNonDistinctQuery(0);
     }
@@ -129,13 +129,13 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
     }
 
     @Test
-    public void testEagerParallelWithDistinctQuery()
+    void testEagerParallelWithDistinctQuery()
         throws Exception {
         eagerParallelWithDistinctQuery(-1);
     }
 
     @Test
-    public void testPagingEagerParallelWithDistinctQuery()
+    void pagingEagerParallelWithDistinctQuery()
         throws Exception {
         eagerParallelWithDistinctQuery(0);
     }
@@ -163,13 +163,13 @@ public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kerne
     }
 
     @Test
-    public void testNestedEagerParallel()
+    void testNestedEagerParallel()
         throws Exception {
         nestedEagerParallel(-1);
     }
 
     @Test
-    public void testPagingNestedEagerParallel()
+    void pagingNestedEagerParallel()
         throws Exception {
         nestedEagerParallel(0);
     }

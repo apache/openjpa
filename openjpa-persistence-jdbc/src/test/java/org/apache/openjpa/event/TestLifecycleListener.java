@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLifecycleListener extends SingleEMFTestCase {
+class TestLifecycleListener extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -35,7 +35,7 @@ public class TestLifecycleListener extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMutationsInLifecycleListener() {
+    void mutationsInLifecycleListener() {
         emf.addLifecycleListener(new AbstractLifecycleListener() {
             @Override
             public void beforePersist(LifecycleEvent event) {

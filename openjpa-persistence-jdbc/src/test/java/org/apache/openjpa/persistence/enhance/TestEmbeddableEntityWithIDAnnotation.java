@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
+class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +38,7 @@ public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
 
     //make sure no exception is thrown here.
     @Test
-    public void testpcNewObjectIdInstanceMethod(){
+    void testpcNewObjectIdInstanceMethod(){
         EntityManager em = emf.createEntityManager();
         try{
             IDOwningClassTestEntity e = new IDOwningClassTestEntity();

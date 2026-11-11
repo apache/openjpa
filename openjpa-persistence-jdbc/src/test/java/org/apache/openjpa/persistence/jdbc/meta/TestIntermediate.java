@@ -42,13 +42,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object _pc;
     private Object _rel;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         RuntimeTest1 pc = new RuntimeTest1("pc", 1);
         RuntimeTest1 rel = new RuntimeTest1("rel", 2);
         pc.setSelfOneOne(rel);
@@ -65,7 +65,7 @@ public class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel
     }
 
     @Test
-    public void testOneOneSetsIntermediate() {
+    void oneOneSetsIntermediate() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
         try {
@@ -77,7 +77,7 @@ public class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel
     }
 
     @Test
-    public void testDataCacheOneOneSetsIntermediate() {
+    void dataCacheOneOneSetsIntermediate() {
         BrokerFactory factory = getBrokerFactory(new String[]{
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

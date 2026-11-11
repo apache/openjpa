@@ -30,9 +30,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * See OPENJPA-2603 for details.
- */
-public class TestMultipleMerge extends SingleEMFTestCase {
+* See OPENJPA-2603 for details.
+*/
+class TestMultipleMerge extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestMultipleMerge extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultiMerge() {
+    void multiMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Order order = new Order(1L);

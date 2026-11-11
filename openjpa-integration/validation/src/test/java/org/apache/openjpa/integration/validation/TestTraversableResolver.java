@@ -58,7 +58,7 @@ import org.junit.jupiter.api.Test;
  *    1) testPages()
  *    2) testTitle
  */
-public class TestTraversableResolver {
+class TestTraversableResolver {
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private Log log = null;
     private OpenJPAEntityManager em = null;
@@ -72,7 +72,7 @@ public class TestTraversableResolver {
      * where fields to be potentially validated are not necessarily loaded.
      */
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         createBook(1, "long title", 234);
     }
 
@@ -108,7 +108,7 @@ public class TestTraversableResolver {
      * because the title is too long.
      */
     @Test
-    public void testLoadedTitle() {
+    void loadedTitle() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -134,7 +134,7 @@ public class TestTraversableResolver {
      * The commit should succeed with no exception.
      */
     @Test
-    public void testUnloaded() {
+    void unloaded() {
         createEMF("non-validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -158,7 +158,7 @@ public class TestTraversableResolver {
      * should be thrown since the publisher name is too long.
      */
     @Test
-    public void testCascading() {
+    void cascading() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -184,7 +184,7 @@ public class TestTraversableResolver {
      * which is eagerly fetched by default.
      */
     @Test
-    public void testPages() {
+    void pages() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -205,7 +205,7 @@ public class TestTraversableResolver {
      * It is configured with fetch=FetvhType.LAZY.
      */
     @Test
-    public void testTitle() {
+    void title() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
         em.getTransaction().begin();

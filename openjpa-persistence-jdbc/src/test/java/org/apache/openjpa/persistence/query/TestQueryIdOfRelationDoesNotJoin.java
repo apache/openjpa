@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestQueryIdOfRelationDoesNotJoin
+class TestQueryIdOfRelationDoesNotJoin
     extends SingleEMFTestCase {
 
     private long e3Id;
@@ -68,7 +68,7 @@ public class TestQueryIdOfRelationDoesNotJoin
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
             + "where e.rel.id = :id").setParameter("id", e3Id);

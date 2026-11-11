@@ -56,7 +56,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     private BrokerFactory _factory;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CacheObjectJ.class);
         deleteAll(CacheObjectE.class);
         deleteAll(SelfReferencingCacheTestObject.class);
@@ -107,7 +107,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNullRelatedPCIsCached() {
+    void nullRelatedPCIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.e FROM " +
             CacheObjectJ.class.getSimpleName() + " a where a.e is null");
@@ -121,7 +121,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNullRelatedPCAndProjectionIsCached() {
+    void nullRelatedPCAndProjectionIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.str,a.e FROM " +
@@ -139,7 +139,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNonNullRelatedPCIsCached() {
+    void nonNullRelatedPCIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.e FROM " +
             CacheObjectJ.class.getSimpleName() + " a where a.e  is not null");
@@ -153,7 +153,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNonNullRelatedPCAndProjectionIsCached() {
+    void nonNullRelatedPCAndProjectionIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.str,a.e FROM " +
@@ -172,7 +172,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testEmbeddedFields() {
+    void embeddedFields() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select embedded FROM " +
@@ -197,7 +197,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNonNullRelationOfSameTypeAsCandidate() {
+    void nonNullRelationOfSameTypeAsCandidate() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.o FROM " +
             SelfReferencingCacheTestObject.class.getSimpleName() +
@@ -219,7 +219,7 @@ public class TestJPQLRelationProjections extends AbstractTestCase {
     }
 
     @Test
-    public void testNullRelationOfSameTypeAsCandidate() {
+    void nullRelationOfSameTypeAsCandidate() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.o FROM " +
             SelfReferencingCacheTestObject.class.getSimpleName() +

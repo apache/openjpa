@@ -52,7 +52,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
+class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	private static long SSN          = 123456789;
     private static String[] PHONES   = {"+1-23-456", "+2-34-567", "+3-45-678"};
 	private static int ADDRESS_COUNT = PHONES.length;
@@ -67,7 +67,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testPersist() {
+    void persist() {
 		EntityManager em = emf.createEntityManager();
 		Person person = em.find(Person.class, SSN);
 		assertNotNull(person);
@@ -76,7 +76,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testQuery() {
+    void query() {
 		EntityManager em = emf.createEntityManager();
         String jpql =
             "select distinct a.city from Person as p, in(p.addresses) a";
@@ -85,7 +85,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testUpdate() {
+    void update() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Person person = em.find(Person.class, SSN);
@@ -104,7 +104,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testRemove() {
+    void remove() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Person person = em.find(Person.class, SSN);
@@ -117,7 +117,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testSingleDelete() {
+    void singleDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		String jpql = "delete from Person p where p.ssn=:ssn";
@@ -134,7 +134,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testBulkDelete() {
+    void bulkDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		String jpql = "delete from Person p";
@@ -152,7 +152,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testBreakingRelationCausesDeleteFromJoinTable() {
+    void breakingRelationCausesDeleteFromJoinTable() {
 		EntityManager em = emf.createEntityManager();
 		Person person = em.find(Person.class, SSN);
 		em.getTransaction().begin();

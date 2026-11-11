@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
     private Object _eId;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CacheObjectA.class);
 
         Map propsMap = new HashMap();
@@ -75,7 +76,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
     }
 
     @Test
-    public void testPCParameter() {
+    void pCParameter() {
         Broker broker = _factory.newBroker();
         broker.begin();
         CacheObjectE e = (CacheObjectE) broker.find(_eId, true, null);
@@ -86,7 +87,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
         Collection c = (Collection) q.execute(new Object[]{ e });
         CacheTestHelper.iterate(c);
         Object o = c.iterator().next();
-        assertTrue(o instanceof CacheObjectJ);
+        assertInstanceOf(CacheObjectJ.class, o);
         CacheTestHelper.assertInCache(this, q, Boolean.TRUE, new Object[]{ e });
 
         q = broker.newQuery(JPQLParser.LANG_JPQL,
@@ -95,8 +96,8 @@ public class TestPCParametersInQueries extends AbstractTestCase {
 
         c = (Collection) q.execute(new Object[]{ e });
         Object o2 = c.iterator().next();
-        assertTrue(o2 instanceof CacheObjectJ);
-        assertTrue(o == o2);
+        assertInstanceOf(CacheObjectJ.class, o2);
+        assertSame(o, o2);
 
         broker.commit();
         broker.close();

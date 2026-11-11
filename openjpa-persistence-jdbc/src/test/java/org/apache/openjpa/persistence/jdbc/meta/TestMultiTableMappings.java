@@ -166,7 +166,7 @@ public class TestMultiTableMappings extends org.apache.openjpa.persistence.jdbc.
     // ###   vertical D extends C, vertical E extends C, flat F extends C
 
     @Test
-    public void testVerticalQueryModeQueries() {
+    void verticalQueryModeQueries() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery<MultiA> q = (OpenJPAQuery<MultiA>) pm.createNativeQuery("",MultiA.class);
         ((JDBCFetchPlan) q.getFetchPlan()).setSubclassFetchMode(FetchMode.PARALLEL);

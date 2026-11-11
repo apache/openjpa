@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * @author Dianne Richards
  * @since 2.1.0
  */
-public class TestListResultSerialization extends SQLListenerTestCase {
+class TestListResultSerialization extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -48,7 +48,7 @@ public class TestListResultSerialization extends SQLListenerTestCase {
     }
 
     @Test
-    public void testRoundtrip() {
+    void testRoundtrip() {
         List<String> list = new ArrayList<>();
         list.add("xxx");
         list.add("yyy");

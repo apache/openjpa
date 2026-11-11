@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author David Ezzio
  */
-public class TestDetachmentOneMany
+class TestDetachmentOneMany
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -45,7 +45,7 @@ public class TestDetachmentOneMany
     }
 
     @Test
-    public void testDetachment() {
+    void detachment() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();
@@ -59,7 +59,7 @@ public class TestDetachmentOneMany
     }
 
     @Test
-    public void testFetchWithDetach() {
+    void fetchWithDetach() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();
@@ -82,7 +82,7 @@ public class TestDetachmentOneMany
     }
 
     @Test
-    public void testFetchWithDetachForToOneRelationship() {
+    void fetchWithDetachForToOneRelationship() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();

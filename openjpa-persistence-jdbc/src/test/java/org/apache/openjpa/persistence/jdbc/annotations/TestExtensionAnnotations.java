@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestExtensionAnnotations
+class TestExtensionAnnotations
     extends SingleEMFTestCase {
 
     private ClassMapping _mapping;
@@ -56,19 +56,19 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testDataStoreId() {
+    void dataStoreId() {
         assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(ValueStrategies.SEQUENCE, _mapping.getIdentityStrategy());
         assertEquals("system", _mapping.getIdentitySequenceName());
     }
 
     @Test
-    public void testDataCache() {
+    void dataCache() {
         assertNull(_mapping.getDataCacheName());
     }
 
     @Test
-    public void testFetchGroups() {
+    void fetchGroups() {
         FetchGroup fg = _mapping.getFetchGroup("detail");
         assertNotNull(fg);
         assertFalse(fg.isPostLoad());
@@ -83,7 +83,7 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testValueStrategy() {
+    void valueStrategy() {
         assertEquals(ValueStrategies.UUID_HEX,
             _mapping.getField("uuid").getValueStrategy());
         assertEquals(ValueStrategies.UUID_STRING,
@@ -98,19 +98,19 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testReadOnly() {
+    void readOnly() {
         assertEquals(UpdateStrategies.RESTRICT,
             _mapping.getField("seq").getUpdateStrategy());
     }
 
     @Test
-    public void testInverseLogical() {
+    void inverseLogical() {
         assertEquals("owner", _mapping.getField("rel").getInverse());
         assertNull(_mapping.getField("owner").getInverse());
     }
 
     @Test
-    public void testDependent() {
+    void dependent() {
         assertEquals(ValueMetaData.CASCADE_AUTO,
             _mapping.getField("rel").getCascadeDelete());
         assertEquals(ValueMetaData.CASCADE_NONE,
@@ -120,13 +120,13 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testLRS() {
+    void lrs() {
         assertTrue(_mapping.getField("lrs").isLRS());
         assertFalse(_mapping.getField("eager").isLRS());
     }
 
     @Test
-    public void testClassCriteria() {
+    void classCriteria() {
         assertTrue(_mapping.getFieldMapping("eager").getElementMapping().
             getUseClassCriteria());
         assertFalse(_mapping.getFieldMapping("eager").getUseClassCriteria());
@@ -135,7 +135,7 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testExternalValues() {
+    void externalValues() {
         FieldMapping externalValues = _mapping.getFieldMapping
             ("externalValues");
         assertEquals(JavaTypes.CHAR, externalValues.getDeclaredTypeCode());
@@ -147,7 +147,7 @@ public class TestExtensionAnnotations
     }
 
     @Test
-    public void testExternalizer() {
+    void externalizer() {
         FieldMapping externalizer = _mapping.getFieldMapping("externalizer");
         assertEquals(JavaTypes.OBJECT, externalizer.getDeclaredTypeCode());
         assertEquals(JavaTypes.STRING, externalizer.getTypeCode());

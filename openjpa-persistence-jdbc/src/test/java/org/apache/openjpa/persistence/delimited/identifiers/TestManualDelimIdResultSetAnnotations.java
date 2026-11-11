@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -35,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestManualDelimIdResultSetAnnotations extends SQLListenerTestCase {
+class TestManualDelimIdResultSetAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Animal animal;
@@ -93,7 +91,7 @@ public class TestManualDelimIdResultSetAnnotations extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate() {
+    void create() {
         id++;
         createDog(id);
         id++;
@@ -123,8 +121,8 @@ public class TestManualDelimIdResultSetAnnotations extends SQLListenerTestCase {
 
         for (Object[] result : results) {
             assertEquals(2, result.length);
-            assertTrue(result[0] instanceof Animal2);
-            assertTrue(result[1] instanceof Integer);
+            assertInstanceOf(Animal2.class, result[0]);
+            assertInstanceOf(Integer.class, result[1]);
             Animal2 animal2 = (Animal2)result[0];
             Integer age = (Integer)result[1];
             if (animal2.getName().equals("Spot")) {

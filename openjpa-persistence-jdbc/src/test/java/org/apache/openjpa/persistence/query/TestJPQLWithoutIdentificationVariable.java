@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {
+class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -32,7 +32,7 @@ public class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {
     }
 
     @Test
-    public void testJPQLWithoutIdentificationVariable() {
+    void jpqlWithoutIdentificationVariable() {
         try {
             em.createQuery("select o from ManyOneEntity o " +
                 "where rel.name = :name").compile();

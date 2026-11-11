@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.Point;
 import java.util.Map;
@@ -72,7 +69,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testNonpolymorphic() {
+    void nonpolymorphic() {
         FieldMapping fm = _mapping.getFieldMapping("superRel");
         assertEquals(ValueMapping.POLY_FALSE, fm.getPolymorphic());
 
@@ -87,7 +84,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testDataStoreIdColumn() {
+    void dataStoreIdColumn() {
         assertEquals("NONSTD_ENTITY", _mapping.getTable().getName());
         assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(1, _mapping.getPrimaryKeyColumns().length);
@@ -95,16 +92,15 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testDiscriminator() {
+    void discriminator() {
         Discriminator disc = _mapping.getDiscriminator();
-        assertTrue(disc.getStrategy() instanceof
-            ClassNameDiscriminatorStrategy);
+        assertInstanceOf(ClassNameDiscriminatorStrategy.class, disc.getStrategy());
         assertEquals(1, disc.getColumns().length);
         assertEquals("DISCRIM", disc.getColumns()[0].getName());
     }
 
     @Test
-    public void testSuperclassOverride() {
+    void superclassOverride() {
         FieldMapping fm = _mapping.getFieldMapping("superCollection");
         assertEquals("SUP_COLL", fm.getTable().getName());
         assertEquals(1, fm.getJoinForeignKey().getColumns().length);
@@ -118,9 +114,9 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testCustomField() {
+    void customField() {
         FieldMapping fm = _mapping.getFieldMapping("custom");
-        assertTrue(fm.getHandler() instanceof PointHandler);
+        assertInstanceOf(PointHandler.class, fm.getHandler());
         assertEquals(2, fm.getColumns().length);
         assertEquals("X_COL", fm.getColumns()[0].getName());
         assertEquals("Y_COL", fm.getColumns()[1].getName());
@@ -128,7 +124,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testValueCollection() {
+    void valueCollection() {
         FieldMapping fm = _mapping.getFieldMapping("stringCollection");
         assertEquals("STRINGS_COLL", fm.getTable().getName());
         assertEquals(1, fm.getJoinForeignKey().getColumns().length);
@@ -143,7 +139,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testJoinCollection() {
+    void joinCollection() {
         FieldMapping fm = _mapping.getFieldMapping("joinCollection");
         assertEquals("JOIN_COLL", fm.getTable().getName());
         assertEquals(1, fm.getJoinForeignKey().getColumns().length);
@@ -162,7 +158,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testValueMap() {
+    void valueMap() {
         FieldMapping fm = _mapping.getFieldMapping("stringMap");
         assertEquals("STRINGS_MAP", fm.getTable().getName());
         assertEquals(1, fm.getJoinForeignKey().getColumns().length);
@@ -182,7 +178,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testJoinMap() {
+    void joinMap() {
         FieldMapping fm = _mapping.getFieldMapping("joinMap");
         assertEquals("JOIN_MAP", fm.getTable().getName());
         assertEquals(1, fm.getJoinForeignKey().getColumns().length);
@@ -200,7 +196,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testEmbeddedOverride() {
+    void embeddedOverride() {
         FieldMapping fm = _mapping.getFieldMapping("embed");
         assertTrue(fm.isEmbedded());
         assertEquals(1, fm.getColumns().length);
@@ -219,7 +215,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testEmbeddedElementOverride() {
+    void embeddedElementOverride() {
         FieldMapping fm = _mapping.getFieldMapping("embedCollection");
         assertTrue(fm.getElement().isEmbedded());
         assertEquals("EMBED_COLL", fm.getTable().getName());
@@ -232,7 +228,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testInsertAndRetrieve() {
+    void insertAndRetrieve() {
         if (_dict instanceof PostgresDictionary)
             return;
 
@@ -286,7 +282,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testInsertAndRetrieveEmbeddedCollection() {
+    void insertAndRetrieveEmbeddedCollection() {
         NonstandardMappingEntity pc = new NonstandardMappingEntity();
         EmbedValue2 embed2 = new EmbedValue2();
         embed2.setBasic("basic");
@@ -307,7 +303,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testInsertAndRetrieveEmbeddedObjectWithStrategy() {
+    void insertAndRetrieveEmbeddedObjectWithStrategy() {
         NonstandardMappingEntity3 pc = new NonstandardMappingEntity3();
         EmbedValue3 embed3 = new EmbedValue3();
         embed3.setBasic("basic");
@@ -337,7 +333,7 @@ public class TestNonstandardMappingAnnotations
     }
 
     @Test
-    public void testInsertAndRetrieveMappedSuperWithStrategy() {
+    void insertAndRetrieveMappedSuperWithStrategy() {
         NonstandardMappingEntity4 pc = new NonstandardMappingEntity4();
         Point point = new Point();
         point.setLocation(1, 2);

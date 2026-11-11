@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * load of another field before that must not put the changed value into the
  * data cache, or it outlives a rollback.
  */
-public class TestConvertedDataCacheRollback extends SingleEMFTestCase {
+class TestConvertedDataCacheRollback extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +56,7 @@ public class TestConvertedDataCacheRollback extends SingleEMFTestCase {
     }
 
     @Test
-    public void testElementChangedInPlaceIsNotCachedByALoad() {
+    void elementChangedInPlaceIsNotCachedByALoad() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = em.find(ConvertedListEntity.class, 1L);

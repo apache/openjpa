@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.conf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,14 +105,14 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConnectionFactoryName() {
+    void connectionFactoryName() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactory2Name", jndiNames[0]);
     }
 
     @Test
-    public void testJtaDataSource() {
+    void jtaDataSource() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("jakarta.persistence.nonJtaDataSource", jndiNames[0]);
@@ -161,8 +157,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
                 em.getTransaction().commit();
                 fail("Should not be able to commit the same row a second time");
             } catch (RollbackException rbe) {
-                assertTrue(rbe.getCause() instanceof EntityExistsException,
-                    "Expected EntityExistsException but found " + rbe.getCause());
+                assertInstanceOf(EntityExistsException.class, rbe.getCause(), "Expected EntityExistsException but found " + rbe.getCause());
                 // expected
             }
 
@@ -172,7 +167,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
                 em1.getTransaction().commit();
                 fail("Should not be able to commit the same row a second time");
             } catch (RollbackException rbe) {
-                assertTrue(rbe.getCause() instanceof EntityExistsException);
+                assertInstanceOf(EntityExistsException.class, rbe.getCause());
                 // expected
             }
             em.close();
@@ -183,7 +178,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInvalidCfName() throws Exception {
+    void invalidCfName() throws Exception {
         // ensure EM creation fails - when provided an invalid JNDI name
         EntityManagerFactory emf1 = null;
         try {
@@ -201,7 +196,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDataCache() {
+    void dataCache() {
         EntityManagerFactory emf1 = null;
 
         try {
@@ -218,7 +213,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryCache() {
+    void queryCache() {
         EntityManagerFactory emf1 = null;
 
         try {
@@ -235,7 +230,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSyncMappings() {
+    void syncMappings() {
         EntityManagerFactory emf1 = null;
 
         try {

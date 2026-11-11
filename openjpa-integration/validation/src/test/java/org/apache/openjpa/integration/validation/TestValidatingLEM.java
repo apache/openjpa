@@ -38,6 +38,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -50,8 +51,9 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidatingLEM extends SingleEMFTestCase {
+class TestValidatingLEM extends SingleEMFTestCase {
 
+    @BeforeEach
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, SimpleEntity.class);
@@ -74,7 +76,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      *   1) Mode of NONE will create a LifecycleEventManager
      */
     @Test
-    public void testValidatingLEM1() {
+    void validatingLEM1() {
         getLog().trace("testValidatingLEM1() - NONE");
         // create our EMF
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -111,7 +113,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      *   2) Mode of AUTO will create a ValidatingLifecycleEventManager
      */
     @Test
-    public void testValidatingLEM2() {
+    void validatingLEM2() {
         getLog().trace("testValidatingLEM2() - AUTO");
         // create our EMF
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -148,7 +150,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      *   3) Map mode of CALLBACK will create a ValidatingLifecycleEventManager
      */
     @Test
-    public void testValidatingLEM3() {
+    void validatingLEM3() {
         getLog().trace("testValidatingLEM3() - CALLBACK");
         // create the Map to test overrides
         //   Just use current class object, as we have no provider to test with
@@ -191,7 +193,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      *   4) Verify a passed in ValidatorFactory is used
      */
     @Test
-    public void testValidatingLEM4() {
+    void validatingLEM4() {
         getLog().trace("testValidatingLEM4() - provided ValidatorFactory");
         // create a default factory to pass in
         ValidatorFactory factory = null;

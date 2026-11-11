@@ -42,7 +42,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMultiThreaded extends BaseKernelTest {
+class TestMultiThreaded extends BaseKernelTest {
 
     static int serial = 5;
     static int threads = 5;
@@ -53,7 +53,7 @@ public class TestMultiThreaded extends BaseKernelTest {
     private String name;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager pm2 = getPM();
@@ -86,19 +86,19 @@ public class TestMultiThreaded extends BaseKernelTest {
     }
 
     @Test
-    public void testgetTransaction() {
+    void testgetTransaction() {
         mttest(serial, threads, iterations);
         pm.getTransaction();
     }
 
     @Test
-    public void testGetObjectById() {
+    void getObjectById() {
         mttest(serial, threads, iterations);
         assertNotNull(pm.find(RuntimeTest1.class, id));
     }
 
     @Test
-    public void testQueryExecution() {
+    void queryExecution() {
         mttest(serial, threads, iterations);
         OpenJPAQuery q = pm.createQuery("select o from RuntimeTest1 o "
             + "where o.stringField = '" + name + "'");
@@ -106,26 +106,26 @@ public class TestMultiThreaded extends BaseKernelTest {
     }
 
     @Test
-    public void testDeletePersistent() {
+    void deletePersistent() {
         mttest(serial, threads, iterations);
         pm.removeAll(pm.createQuery("select o from RuntimeTest1 o "
             + "where o.stringField = '" + name + "'").getResultList());
     }
 
     @Test
-    public void testRefreshAll() {
+    void refreshAll() {
         mttest(serial, threads, iterations);
         pm.refreshAll();
     }
 
     @Test
-    public void testEvictAll() {
+    void evictAll() {
         mttest(serial, threads, iterations);
         pm.evictAll();
     }
 
     @Test
-    public void testIterateExtent()
+    void iterateExtent()
         throws Throwable {
         if (timeout(120 * 1000)) return;
 

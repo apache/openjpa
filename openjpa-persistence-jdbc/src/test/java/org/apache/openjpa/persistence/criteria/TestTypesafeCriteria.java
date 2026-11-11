@@ -18,13 +18,7 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -79,27 +73,27 @@ import org.junit.jupiter.api.Test;
  *
  *
  */
-public class TestTypesafeCriteria extends CriteriaTest {
+class TestTypesafeCriteria extends CriteriaTest {
     private static final Logger logger = Logger.getLogger(TestTypesafeCriteria.class.getCanonicalName());
     private static final String TRUE_JPQL = "SELECT p FROM Person p WHERE 1=1";
     private static final String FALSE_JPQL = "SELECT p FROM Person p WHERE 1<>1";
 
     @Test
-    public void testTrueLiteral() {
+    void trueLiteral() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.literal(Boolean.TRUE)), TRUE_JPQL);
     }
 
     @Test
-    public void testFalseLiteral() {
+    void falseLiteral() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.literal(Boolean.FALSE)), FALSE_JPQL);
     }
 
     @Test
-    public void testBooleanLiteralInEquals() {
+    void booleanLiteralInEquals() {
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
         Root<Order> root = q.from(Order.class);
         Path<Object> path = root.get("delivered");
@@ -110,35 +104,35 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testDefaultAndIsTrue() {
+    void defaultAndIsTrue() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.and()), TRUE_JPQL);
     }
 
     @Test
-    public void testDefaultOrIsFalse() {
+    void defaultOrIsFalse() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.or()), FALSE_JPQL);
     }
 
     @Test
-    public void testZeroDisjunctIsFalse() {
+    void zeroDisjunctIsFalse() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.disjunction()), FALSE_JPQL);
     }
 
     @Test
-    public void testZeroConjunctIsTrue() {
+    void zeroConjunctIsTrue() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
         assertEquivalence(q.where(cb.conjunction()), TRUE_JPQL);
     }
 
     @Test
-    public void testExpressions() {
+    void expressions() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08, "
                 + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
@@ -155,7 +149,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testExplictRoot() {
+    void explictRoot() {
         String jpql = "select a from Account a";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -166,7 +160,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testImplicitRoot() {
+    void implicitRoot() {
         String jpql = "select a from Account a";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -176,7 +170,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEqualWithAttributeAndLiteral() {
+    void equalWithAttributeAndLiteral() {
         String jpql = "select a from Account a where a.balance=100";
 
         CriteriaQuery c = cb.createQuery();
@@ -187,7 +181,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEqualWithAttributeAndAttribute() {
+    void equalWithAttributeAndAttribute() {
         String jpql = "select a from Account a where a.balance=a.loan";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -200,7 +194,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testProjection() {
+    void projection() {
         String jpql = "select a.balance,a.loan from Account a";
         CriteriaQuery<Tuple> c = cb.createTupleQuery();
         Root<Account> account = c.from(Account.class);
@@ -209,7 +203,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testAbsExpression() {
+    void absExpression() {
         String jpql = "select a from Account a where abs(a.balance)=100";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -220,7 +214,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCeilingExpression() {
+    void ceilingExpression() {
         String jpql = "select a from Account a where ceiling(a.balance)=100";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -231,7 +225,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testExponentialExpression() {
+    void exponentialExpression() {
         String jpql = "select a from Account a where exp(a.balance)=100";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -242,7 +236,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFloorExpression() {
+    void floorExpression() {
         String jpql = "select a from Account a where floor(a.balance)=100";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -253,7 +247,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testLnExpression() {
+    void lnExpression() {
         String jpql = "select a from Account a where ln(a.balance)=100";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -264,7 +258,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSignExpression() {
+    void signExpression() {
         String jpql = "select a from Account a where sign(a.balance)=1";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -275,7 +269,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testPowerExpression() {
+    void powerExpression() {
         DatabaseHelper.createPowerFunctionIfNecessary(getEntityManager(), getDictionary());
         String jpql = "select a from Account a where power(a.balance, 7)=1";
 
@@ -288,7 +282,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testRoundExpression() {
+    void roundExpression() {
         DatabaseHelper.createRoundFunctionIfNecessary(getEntityManager(), getDictionary());
         String jpql = "select a from Account a where round(a.balance, 1)=1";
 
@@ -301,7 +295,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testAvgExpression() {
+    void avgExpression() {
         String jpql = "select avg(a.balance) from Account a";
 
         CriteriaQuery<Double> c = cb.createQuery(Double.class);
@@ -312,7 +306,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testInPredicate() {
+    void inPredicate() {
         String jpql = "select a from Account a where a.name in ('X','Y','Z')";
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> account = c.from(Account.class);
@@ -321,7 +315,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testInPredicateWithPath() {
+    void inPredicateWithPath() {
         String jpql = "select a from Account a where a.owner.name in ('X','Y','Z')";
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> account = c.from(Account.class);
@@ -331,7 +325,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testBinaryPredicate() {
+    void binaryPredicate() {
         String jpql = "select a from Account a where a.balance>100 and a.balance<200";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -344,7 +338,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEqualWithAttributeAndUnaryExpression() {
+    void equalWithAttributeAndUnaryExpression() {
         String jpql = "select a from Account a where a.balance=abs(a.balance)";
 
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
@@ -357,7 +351,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testBetweenExpression() {
+    void betweenExpression() {
         String jpql =
             "select a from Account a where a.balance between 100 and 200";
 
@@ -370,7 +364,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSimplePath() {
+    void simplePath() {
         String jpql = "select a from Account a where a.owner.name='Pinaki'";
         CriteriaQuery<Account> c = cb.createQuery(Account.class);
         Root<Account> a = c.from(Account.class);
@@ -380,7 +374,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSimpleLeftJoin() {
+    void simpleLeftJoin() {
         String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o ";
         CriteriaQuery<Customer> c = cb.createQuery(Customer.class);
         c.from(Customer.class).join(Customer_.orders, JoinType.LEFT);
@@ -388,7 +382,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testMultipartNavigation() {
+    void multipartNavigation() {
         String jpql = "select a from A a where a.b.age=22";
 
         CriteriaQuery<A> cq = cb.createQuery(A.class);
@@ -399,7 +393,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testMultiLevelJoins() {
+    void multiLevelJoins() {
         String jpql = "SELECT c FROM Customer c JOIN c.orders o "
                     + "JOIN o.lineItems i WHERE i.product.productType = 'printer'";
 
@@ -415,7 +409,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testJoinsNotPresentInWhereClause() {
+    void joinsNotPresentInWhereClause() {
         String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o WHERE c.status = 1";
 
         CriteriaQuery<Customer> c = cb.createQuery(Customer.class);
@@ -428,7 +422,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFetchJoins() {
+    void fetchJoins() {
         String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.employees WHERE d.deptNo = 1";
 
         CriteriaQuery<Department> q = cb.createQuery(Department.class);
@@ -440,7 +434,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testJoinedPathInProjection() {
+    void joinedPathInProjection() {
         String jpql = "SELECT p.vendor FROM Employee e JOIN e.contactInfo c JOIN c.phones p "
                     + "WHERE c.address.zipCode = '95054'";
 
@@ -455,7 +449,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeyExpression() {
+    void keyExpression() {
         String jpql = "select i.name, VALUE(p) from Item i join i.photos p where KEY(p) like 'egret'";
 
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -467,7 +461,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testIndexExpression() {
+    void indexExpression() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t "
             + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 AND 9";
 
@@ -484,7 +478,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testIsEmptyExpression() {
+    void isEmptyExpression() {
         String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
 
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
@@ -495,7 +489,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testExpressionInProjection() {
+    void expressionInProjection() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
@@ -514,7 +508,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testTypeExpression() {
+    void typeExpression() {
         String jpql = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt";
 
         CriteriaQuery<Object> q = cb.createQuery();
@@ -525,7 +519,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testIndexExpressionAndLiteral() {
+    void indexExpressionAndLiteral() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
                     + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
 
@@ -540,7 +534,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testAggregateInProjection() {
+    void aggregateInProjection() {
         String jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i " +
             "JOIN o.customer c WHERE c.lastName = 'Smith' AND " +
             "c.firstName = 'John'";
@@ -558,7 +552,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSizeExpression() {
+    void sizeExpression() {
         String jpql = "SELECT SIZE(d.employees) FROM Department d "
             + "WHERE d.name = 'Sales'";
 
@@ -571,7 +565,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCaseExpression() {
+    void caseExpression() {
         String jpql = "SELECT e.name, CASE "
             + "WHEN e.rating = 1 THEN e.salary * 1.1 "
                 + "WHEN e.rating = 2 THEN e.salary * 1.2 "
@@ -590,7 +584,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testExpression1() {
+    void expression1() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
@@ -609,7 +603,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testExpression3() {
+    void expression3() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
             + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
 
@@ -624,7 +618,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testGeneralCaseExpression() {
+    void generalCaseExpression() {
         String jpql = "SELECT e.name, CASE "
             + "WHEN e.rating = 1 THEN e.salary * 1.1 "
             + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * "
@@ -643,7 +637,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSimpleCaseExpression1() {
+    void simpleCaseExpression1() {
         String jpql = "SELECT e.name, CASE e.rating "
             + "WHEN 1 THEN e.salary * 1.1 "
             + "WHEN 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
@@ -663,7 +657,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSimpleCaseExpression2() {
+    void simpleCaseExpression2() {
         String jpql = "SELECT e.name, CASE e.rating WHEN 1 THEN 10 "
             + "WHEN 2 THEN 20 ELSE 30 END "
             + "FROM Employee e WHERE e.department.name = 'Engineering'";
@@ -680,7 +674,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testLiterals() {
+    void literals() {
         String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF p.nickNames";
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         Root<Person> p = q.from(Person.class);
@@ -690,7 +684,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters1() {
+    void parameters1() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -707,7 +701,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters2() {
+    void parameters2() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat AND c.name = :name";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -727,7 +721,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters_wo_paramName() {
+    void parametersWoParamName() {
         final int rand = new Random().nextInt();
         final String name = "testName_" + rand;
         final String lastName = "lastName_" + rand;
@@ -758,7 +752,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters3() {
+    void parameters3() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -775,7 +769,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters4() {
+    void parameters4() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat AND c.name = :name";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -794,7 +788,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testParameters5() {
+    void parameters5() {
         String jpql = "SELECT c FROM Customer c Where c.status IN :coll";
 
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -814,7 +808,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSelectList1() {
+    void selectList1() {
         String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM "
             + "VideoStore v JOIN v.videoInventory i WHERE v.location.zipCode = "
             + "'94301' AND VALUE(i) > 0";
@@ -833,7 +827,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testNewConstruct() {
+    void newConstruct() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status) FROM Customer c";
 
         CriteriaQuery<CustomerDetails> q = cb.createQuery(CustomerDetails.class);
@@ -844,7 +838,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testConstructorInProjection() {
+    void constructorInProjection() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) "
                     + "FROM Customer c JOIN c.orders o WHERE o.quantity > 100";
 
@@ -861,7 +855,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testMultipleConstructorInProjection() {
+    void multipleConstructorInProjection() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status), "
                     + "NEW CustomerFullName(c.firstName, c.lastName) "
                     + "FROM Customer c";
@@ -882,7 +876,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
 
     @Test
-    public void testSubqueries1() {
+    void subqueries1() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE "
             + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) "
             + " FROM "
@@ -899,7 +893,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries2() {
+    void subqueries2() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
             + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp ="
             + " emp.spouse)";
@@ -916,7 +910,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries3() {
+    void subqueries3() {
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
             + "SELECT m.salary FROM Manager m WHERE m.department = "
             + "emp.department)";
@@ -934,7 +928,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4() {
+    void subqueries4() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM c.orders o) > 10";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -949,7 +943,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries5() {
+    void subqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
@@ -966,7 +960,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6() {
+    void subqueries6() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
@@ -983,7 +977,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testGroupByAndHaving() {
+    void groupByAndHaving() {
         String jpql = "SELECT c.status, AVG(c.filledOrderCount), COUNT(c) FROM "
             + "Customer c GROUP BY c.status HAVING c.status IN (1, 2)";
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -997,7 +991,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrdering1() {
+    void ordering1() {
         String jpql = "SELECT o FROM Customer c JOIN c.orders o "
             + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, "
             + "o.totalCost";
@@ -1014,7 +1008,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrdering2() {
+    void ordering2() {
         String jpql = "SELECT o.quantity, a.zipCode FROM Customer c "
             + "JOIN c.orders o JOIN c.address a WHERE a.state = 'CA' "
             + "ORDER BY o.quantity, a.zipCode";
@@ -1031,7 +1025,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrdering3() {
+    void ordering3() {
         String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = 'CA' AND a.county = 'Santa Clara' "
@@ -1052,7 +1046,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrdering4() {
+    void ordering4() {
         String jpql = "SELECT c FROM Customer c ORDER BY c.name DESC, c.status";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
@@ -1064,7 +1058,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrdering5() {
+    void ordering5() {
         String jpql = "SELECT c.firstName, c.lastName, c.balanceOwed FROM Customer c ORDER BY c.name DESC, c.status";
 
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -1082,7 +1076,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
      */
     @AllowFailure(message = "runs only on databases with CURRENT_USER() function e.g. MySQL but not Derby")
     @Test
-    public void testFunctionWithNoArgument() {
+    void functionWithNoArgument() {
         String jpql = "SELECT c.balanceOwed FROM Customer c";
         String sql = "SELECT CURRENT_USER(), t0.balanceOwed FROM CR_CUST t0";
 
@@ -1095,7 +1089,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFunctionWithOneArgument() {
+    void functionWithOneArgument() {
         String jpql = "SELECT MAX(c.balanceOwed) FROM Customer c";
 
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -1107,7 +1101,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFunctionWithTwoArgument() {
+    void functionWithTwoArgument() {
         String jpql = "SELECT MOD(c.balanceOwed,10) FROM Customer c";
 
         if (getDictionary().supportsModOperator) {
@@ -1128,7 +1122,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFunctionWithFunctionArgumentInOrderBy() {
+    void functionWithFunctionArgumentInOrderBy() {
         String jpql = "SELECT MOD(c.balanceOwed,10) FROM Customer c WHERE LENGTH(c.name)>3 ORDER BY LENGTH(c.name)";
         String sql = "SELECT MOD(t0.balanceOwed, ?), LENGTH(t0.name) FROM CR_CUST t0 WHERE (LENGTH(t0.name) > ?) " +
                      "ORDER BY LENGTH(t0.name) ASC";
@@ -1154,7 +1148,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys1() {
+    void keys1() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
@@ -1176,7 +1170,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys2() {
+    void keys2() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
@@ -1197,7 +1191,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys3() {
+    void keys3() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (1 <> 1)";
@@ -1217,7 +1211,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys4() {
+    void keys4() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 5)";
@@ -1237,7 +1231,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys5() {
+    void keys5() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
@@ -1259,7 +1253,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys6() {
+    void keys6() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
@@ -1280,7 +1274,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys7() {
+    void keys7() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (1 <> 1))";
@@ -1300,7 +1294,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeys8() {
+    void keys8() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 4)";
@@ -1319,7 +1313,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues1() {
+    void values1() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " +
@@ -1341,7 +1335,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues2() {
+    void values2() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (t1.VALUE_ID IN (?, ?, ?, ?, ?))";
@@ -1361,7 +1355,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues3() {
+    void values3() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (1 <> 1)";
@@ -1381,7 +1375,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValue4() {
+    void value4() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 5)";
@@ -1401,7 +1395,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues5() {
+    void values5() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE "
@@ -1425,7 +1419,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues6() {
+    void values6() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (t1.VALUE_ID IN (?, ?, ?, ?, ?)))";
@@ -1445,7 +1439,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValues7() {
+    void values7() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (NOT (1 <> 1))";
@@ -1465,7 +1459,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testValue8() {
+    void value8() {
         String sql = "SELECT t0.name, t2.id, t2.label FROM CR_ITEM t0 "
             + "INNER JOIN CR_ITEM_photos t1 ON t0.id = t1.ITEM_ID "
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE (5 = 4)";
@@ -1489,7 +1483,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
      * Hence instead of comparing target SQL we compare the result.
      */
     @Test
-    public void testJoinKey() {
+    void joinKey() {
         em.getTransaction().begin();
         em.createQuery("DELETE FROM Student s").executeUpdate();
         em.createQuery("DELETE FROM Course s").executeUpdate();
@@ -1534,7 +1528,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testAliasInOrderByClause() {
+    void aliasInOrderByClause() {
         String jpql = "SELECT AVG(a.balance) AS x FROM Account a ORDER BY x";
 
         OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
@@ -1550,7 +1544,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testRealiasNotAllowed() {
+    void realiasNotAllowed() {
         OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
         Root<Account> account = c.from(Account.class);
         Selection<Double> term = cb.avg(account.get(Account_.balance));
@@ -1564,7 +1558,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testInvalidAliasNotAllowed() {
+    void invalidAliasNotAllowed() {
         OpenJPACriteriaQuery<Double> c = cb.createQuery(Double.class);
         Root<Account> account = c.from(Account.class);
         Selection<Double> term = cb.avg(account.get(Account_.balance));
@@ -1592,7 +1586,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testInvalidParameterName() {
+    void invalidParameterName() {
         try {
             cb.parameter(Integer.class, "from");
             fail("Expected to fail on reserved word as alias");
@@ -1611,7 +1605,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testGroupByOnMaxResult() {
+    void groupByOnMaxResult() {
         String jpql = "SELECT c.address.country, count(c) from Customer c GROUP BY c.address.country " +
                       "HAVING COUNT(c.address.country)>3";
 
@@ -1631,7 +1625,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEmptyAnd() {
+    void emptyAnd() {
         CriteriaQuery<Order> c = cb.createQuery(Order.class);
         Root<Order> order = c.from(Order.class);
         c.where(cb.and(cb.not(cb.equal(order.get(Order_.customer).get(Customer_.name), "Robert E. Bissett")),
@@ -1640,7 +1634,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEmptyOr() {
+    void emptyOr() {
         CriteriaQuery<Order> c = cb.createQuery(Order.class);
         Root<Order> order = c.from(Order.class);
         c.where(cb.and(cb.not(cb.equal(order.get(Order_.customer).get(Customer_.name), "Robert E. Bissett")),
@@ -1649,7 +1643,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testDefaultProjectionWithUntypedResult() {
+    void defaultProjectionWithUntypedResult() {
         CriteriaQuery cquery = cb.createQuery();
         Root<Customer> customer = cquery.from(Customer.class);
 
@@ -1664,7 +1658,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCountDistinct() {
+    void countDistinct() {
         String jpql = "select COUNT(DISTINCT a.name) from Account a";
 
         CriteriaQuery<Long> c = cb.createQuery(Long.class);
@@ -1675,7 +1669,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCountDistinctOnJoin() {
+    void countDistinctOnJoin() {
         String jpql = "select COUNT(DISTINCT a.b.age) from A a";
 
         CriteriaQuery<Long> c = cb.createQuery(Long.class);
@@ -1687,7 +1681,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
 
     @Test
-    public void testSizeReturnsInteger() {
+    void sizeReturnsInteger() {
         String jpql = "select SIZE(c.accounts) from Customer c";
         CriteriaQuery<Integer> c = cb.createQuery(Integer.class);
         Root<Customer> customer = c.from(Customer.class);
@@ -1698,7 +1692,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testDisjunctionAsFalse() {
+    void disjunctionAsFalse() {
         Metamodel mm = em.getMetamodel();
 
         CriteriaQuery<Order> cquery = cb.createQuery(Order.class);
@@ -1719,7 +1713,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCurrentTimeReturnsSQLTypes() {
+    void currentTimeReturnsSQLTypes() {
         em.getTransaction().begin();
         Product pc = new Product();
         em.persist(pc);
@@ -1734,12 +1728,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<Time> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof Time, result.getClass() + " not instance of Time");
+        assertInstanceOf(Time.class, result, result.getClass() + " not instance of Time");
 
     }
 
     @Test
-    public void testCurrentDateReturnsSQLTypes() {
+    void currentDateReturnsSQLTypes() {
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);
@@ -1754,12 +1748,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<Date> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof Date, result.getClass() + " not instance of Date");
+        assertInstanceOf(Date.class, result, result.getClass() + " not instance of Date");
 
     }
 
     @Test
-    public void testCurrentTimestampReturnsSQLTypes() {
+    void currentTimestampReturnsSQLTypes() {
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);
@@ -1774,12 +1768,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<Timestamp> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof Timestamp, result.getClass() + " not instance of Timestamp");
+        assertInstanceOf(Timestamp.class, result, result.getClass() + " not instance of Timestamp");
 
     }
 
     @Test
-    public void testBasicLocalDateTime() {
+    void basicLocalDateTime() {
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);
@@ -1794,12 +1788,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<LocalDateTime> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof LocalDateTime, result.getClass() + " not instance of LocalDateTime");
+        assertInstanceOf(LocalDateTime.class, result, result.getClass() + " not instance of LocalDateTime");
 
     }
 
     @Test
-    public void testBasicLocalTime() {
+    void basicLocalTime() {
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);
@@ -1814,12 +1808,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<LocalTime> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof LocalTime, result.getClass() + " not instance of LocalTime");
+        assertInstanceOf(LocalTime.class, result, result.getClass() + " not instance of LocalTime");
 
     }
 
     @Test
-    public void testBasicLocalDate() {
+    void basicLocalDate() {
         em.getTransaction().begin();
         Order pc = new Order();
         em.persist(pc);
@@ -1834,7 +1828,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         TypedQuery<LocalDate> tq = em.createQuery(cquery);
         Object result = tq.getSingleResult();
-        assertTrue(result instanceof LocalDate, result.getClass() + " not instance of LocalDate");
+        assertInstanceOf(LocalDate.class, result, result.getClass() + " not instance of LocalDate");
 
     }
 
@@ -1854,7 +1848,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 //    }
 
     @Test
-    public void testLiteralInProjection() {
+    void literalInProjection() {
         String jpql = "select 'a' from Customer c where c.id=10";
 
         CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -1865,7 +1859,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testBigDecimalConversion() {
+    void bigDecimalConversion() {
         String jpql = "select c.accountNum*10.32597 from Customer c where c.id=10";
         long accountNumber = 1234516279;
 
@@ -1894,11 +1888,11 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
         List<BigDecimal> result = em.createQuery(cq).getResultList();
         assertFalse(result.isEmpty());
-        assertTrue(result.get(0) instanceof BigDecimal);
+        assertInstanceOf(BigDecimal.class, result.get(0));
     }
 
     @Test
-    public void testIdClass() {
+    void idClass() {
         String jpql = "select p from EntityWithIdClass p";
         CriteriaQuery<EntityWithIdClass> cq = cb.createQuery(EntityWithIdClass.class);
         Root<EntityWithIdClass> c = cq.from(EntityWithIdClass.class);
@@ -1908,7 +1902,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testLeft() {
+    void left() {
     	String jpql = "select p from Person p where left(p.name, 4) = 'John'";
         em.getTransaction().begin();
         Person p = new Person();
@@ -1925,7 +1919,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testRight() {
+    void right() {
     	String jpql = "select p from Person p where RIGHT(p.name, 3) = 'Doe'";
         em.getTransaction().begin();
         Person p = new Person();
@@ -1942,7 +1936,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testLeftAndRightWithParameters() {
+    void leftAndRightWithParameters() {
         em.getTransaction().begin();
         Person p = new Person();
         p.setName("John Fitzgerald Doe");
@@ -1969,7 +1963,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testReplace() {
+    void replace() {
     	if (getDictionary() instanceof DerbyDictionary) {
     		// TODO Derby DB does not support LEFT, RIGHT or REPLACE functions
     		return;
@@ -1996,7 +1990,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
      * classes and we don't want to seed shared tables.
      */
     @Test
-    public void testCriteriaUnion() {
+    void criteriaUnion() {
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -2012,7 +2006,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaUnionAll() {
+    void criteriaUnionAll() {
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -2028,7 +2022,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaExcept() {
+    void criteriaExcept() {
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -2044,7 +2038,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaExceptAll() {
+    void criteriaExceptAll() {
         DBDictionary dict = getDictionary();
         if (dict instanceof H2Dictionary
                 || (dict instanceof OracleDictionary && dict.getMajorVersion() < 21)
@@ -2072,7 +2066,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaIntersect() {
+    void criteriaIntersect() {
         CriteriaQuery<String> q1 = cb.createQuery(String.class);
         Root<CompUser> r1 = q1.from(CompUser.class);
         q1.select(r1.<String>get("name"))
@@ -2088,7 +2082,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaNullPrecedence() {
+    void criteriaNullPrecedence() {
         String jpql = "SELECT u.name FROM CompUser u ORDER BY u.name ASC NULLS FIRST";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> r = q.from(CompUser.class);
@@ -2098,7 +2092,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaListPredicates() {
+    void criteriaListPredicates() {
         String jpql = "SELECT u FROM CompUser u WHERE u.age > 20 AND u.name LIKE 'S%'";
         CriteriaQuery<CompUser> q = cb.createQuery(CompUser.class);
         Root<CompUser> r = q.from(CompUser.class);
@@ -2113,7 +2107,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCriteriaConcatList() {
+    void criteriaConcatList() {
         String jpql = "SELECT CONCAT(u.name, '-', u.computerName) FROM CompUser u WHERE u.name = 'Seetha'";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<CompUser> r = q.from(CompUser.class);

@@ -39,7 +39,7 @@ public class TestFetchGroupStacks extends SingleEMTestCase {
     }
 
     @Test
-    public void testFetchGroupStacks() {
+    void fetchGroupStacks() {
         assertFetchGroups();
         em.getFetchPlan().addFetchGroup("foo");
         assertFetchGroups("foo");

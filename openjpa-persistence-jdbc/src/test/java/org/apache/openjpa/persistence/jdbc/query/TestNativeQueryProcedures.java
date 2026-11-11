@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * <A HRE="http://issues.apache.org/jira/browse/OPENJPA-918>OPENJPA-918</A>
  *
  */
-public class TestNativeQueryProcedures extends SingleEMFTestCase {
+class TestNativeQueryProcedures extends SingleEMFTestCase {
     AbstractProcedureList procedureList = null;
 
     @BeforeEach
@@ -104,7 +104,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNoReturnNoParamProcedure() {
+    void noReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
 
@@ -177,7 +177,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
 
     @AllowFailure(value = true, message = "Waiting for resolution for JIRA DERBY-4558")
     @Test
-    public void testNoReturnMultiParamProcedure() {
+    void noReturnMultiParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
 
@@ -256,7 +256,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
 
 
     @Test
-    public void testOneReturnNoParamProcedure() {
+    void oneReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
 
@@ -325,7 +325,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOneReturnMultiParamProcedure() {
+    void oneReturnMultiParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
 

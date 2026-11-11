@@ -87,7 +87,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
      * Ensure that parameter values are not included in exception text by default.
      */
     @Test
-    public void testNoParamsByDefault() {
+    void noParamsByDefault() {
         RollbackException e = getRollbackException(PObject.class, CLEAR_TABLES);
 
         assertFalse(Pattern.matches(_regex, e.toString()));
@@ -105,7 +105,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
      * If the EMF is created with PrintParameters=true the parameter values will be logged in exception text.
      */
     @Test
-    public void testParamsEnabledByConfig() {
+    void paramsEnabledByConfig() {
         RollbackException e =
             getRollbackException(PObject.class, CLEAR_TABLES, "openjpa.ConnectionFactoryProperties",
                 "PrintParameters=true");
@@ -122,17 +122,17 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
     }
 
     @Test
-    public void testDefaultPrintParameters() {
+    void defaultPrintParameters() {
         queryCachePrintParametersLogic(null);
     }
 
     @Test
-    public void testPrintParametersTrue() {
+    void printParametersTrue() {
         queryCachePrintParametersLogic(true);
     }
 
     @Test
-    public void testPrintParametersFalse() {
+    void printParametersFalse() {
         queryCachePrintParametersLogic(false);
     }
 

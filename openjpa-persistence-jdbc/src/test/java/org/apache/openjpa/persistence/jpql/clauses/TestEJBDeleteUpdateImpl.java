@@ -38,7 +38,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         EntityManager em = currentEntityManager();
@@ -58,7 +58,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
     }
 
     @Test
-    public void testUpdate1() {
+    void update1() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -89,7 +89,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
     }
 
     @Test
-    public void testUpdate2() {
+    void update2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -122,7 +122,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
     }
 
     @Test
-    public void testDelete1() {
+    void delete1() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -149,7 +149,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
     }
 
     @Test
-    public void testDelete2() {
+    void delete2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

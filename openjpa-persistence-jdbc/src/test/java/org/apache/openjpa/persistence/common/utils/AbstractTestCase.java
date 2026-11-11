@@ -36,10 +36,7 @@
  */
 package org.apache.openjpa.persistence.common.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -1269,7 +1266,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         assertEquals(c1.size(), c2.size());
         for (Iterator i1 = c1.iterator(), i2 = c2.iterator();
             i1.hasNext() && i2.hasNext();)
-            assertTrue(i1.next() == i2.next());
+            assertSame(i1.next(), i2.next());
     }
 
     /**

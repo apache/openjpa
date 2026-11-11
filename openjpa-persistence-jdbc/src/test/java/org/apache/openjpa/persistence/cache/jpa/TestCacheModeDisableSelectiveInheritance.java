@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * the child Entity we shouldn't be caching this result.
  *
  */
-public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase {
+class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase {
     Object[] params =
         new Object[] { ChildUncacheable.class, ParentUnspecifiedEntity.class, CLEAR_TABLES,
             "jakarta.persistence.sharedCache.mode", "DISABLE_SELECTIVE", "openjpa.DataCache", "true" };
@@ -53,7 +53,7 @@ public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase 
     }
 
     @Test
-    public void testSimpleFind() throws Exception {
+    void simpleFind() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             ChildUncacheable c = new ChildUncacheable();

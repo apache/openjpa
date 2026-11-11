@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Method;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDictionaryFactory {
+class TestDictionaryFactory {
 
     private String[][] testMatrix =  {
         // Generic url
@@ -177,13 +177,11 @@ public class TestDictionaryFactory {
     private static Method getProtocol;
 
     @BeforeEach
-    public void setUp() {
-        try {
+    void setUp() {
+        Assertions.assertDoesNotThrow(() -> {
             getProtocol = DBDictionaryFactory.class.getDeclaredMethod(
                 "getProtocol", String.class);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        });
     }
 
     /**
@@ -195,16 +193,13 @@ public class TestDictionaryFactory {
      * @author Albert Lee
      */
     @Test
-    public void testUrl2Dictionary() {
+    void url2Dictionary() {
         for (String[] matrix : testMatrix) {
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 String dbType = (String) getProtocol.invoke(null,
-                        matrix[0]);
+                    matrix[0]);
                 assertEquals(dbType, matrix[1]);
-            }
-            catch (Exception e) {
-                fail(e.getMessage());
-            }
+            });
         }
     }
 }

@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMessageListeners extends SingleEMFTestCase {
+class TestMessageListeners extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -42,7 +42,7 @@ public class TestMessageListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateInPrePersist() {
+    void updateInPrePersist() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access
@@ -104,7 +104,7 @@ public class TestMessageListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateInPreUpdate() {
+    void updateInPreUpdate() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access

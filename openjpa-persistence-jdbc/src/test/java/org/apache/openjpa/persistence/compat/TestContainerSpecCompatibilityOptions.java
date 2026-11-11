@@ -68,7 +68,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
      * for a version 2 persistence.xml
      */
     @Test
-    public void testJPA1CompatibilityOptions() {
+    void jpa1CompatibilityOptions() {
         OpenJPAEntityManagerFactorySPI emf1 =
         (OpenJPAEntityManagerFactorySPI)
             createContainerEMF("persistence_1_0",
@@ -86,7 +86,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
         assertEquals("NONE", vMode);
         Specification spec = emf1.getConfiguration().getSpecificationInstance();
         assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-        assertEquals(spec.getVersion(), 1);
+        assertEquals(1, spec.getVersion());
 
         closeEMF(emf1);
 
@@ -97,7 +97,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
      * for a version 2 persistence.xml
      */
     @Test
-    public void testJPA2CompatibilityOptions() {
+    void jpa2CompatibilityOptions() {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertFalse(compat.getFlushBeforeDetach());
         assertFalse(compat.getCopyOnDetach());
@@ -109,7 +109,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
         assertEquals("AUTO", vMode);
         Specification spec = emf.getConfiguration().getSpecificationInstance();
         assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-        assertEquals(spec.getVersion(), 2);
+        assertEquals(2, spec.getVersion());
     }
 
     /*
@@ -118,7 +118,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
      * a mapped superclass.
      */
     @Test
-    public void testMappedSuperClass() {
+    void mappedSuperClass() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityA.class);
         types.add(EntityB.class);
@@ -184,7 +184,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
      *
      */
     @Test
-    public void testOneToManyRelation() {
+    void oneToManyRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(EntityC_B1MFK.class);
@@ -414,7 +414,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
     }
 
     @Test
-    public void testOneToManyMapRelation() {
+    void oneToManyMapRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_U1M_Map_FK.class);
         types.add(Uni_1ToM_Map_FK.class);
@@ -461,7 +461,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
      * releases keep working.
      */
     @Test
-    public void testLegacyDefaultMapKeyColumnName() {
+    void legacyDefaultMapKeyColumnName() {
         List<Class<?>> types = new ArrayList<>();
         types.add(Uni_Map_KeyCol.class);
         Map<String,Object> props = new HashMap<>();
@@ -729,7 +729,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
     }
 
     @Test
-    public void testUniManyToOneUsingJoinTable() {
+    void uniManyToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(Uni_MTo1_JT.class);
@@ -802,7 +802,7 @@ public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
     }
 
     @Test
-    public void testOneToOneUsingJoinTable() {
+    void oneToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_B11JT.class);
         types.add(EntityC_U11JT.class);

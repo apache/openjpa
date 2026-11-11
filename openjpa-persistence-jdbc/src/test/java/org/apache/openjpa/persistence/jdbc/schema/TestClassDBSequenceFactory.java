@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
 public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(SeqE.class);
     }
 
@@ -66,7 +66,7 @@ public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.j
     }
 
     @Test
-    public void testVirtualSuperclass() {
+    void virtualSuperclass() {
 
         OpenJPAEntityManagerFactory pmf =(OpenJPAEntityManagerFactory)
                 getEmf(getProps());
@@ -84,7 +84,7 @@ public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.j
     }
 
     @Test
-    public void testIgnoreVirtualSuperclass() {
+    void ignoreVirtualSuperclass() {
 
         Map props=new HashMap();
         props.put("TableName", "JDO_CLASS_SEQUENCE");
@@ -112,7 +112,7 @@ public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.j
      * Based on reported bug case.
      */
     @Test
-    public void testNoSequenceHolesOnAttach() {
+    void noSequenceHolesOnAttach() {
         PerClassTestObject3 pc = new PerClassTestObject3();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -144,7 +144,7 @@ public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.j
      * Will fail for dbs without pessimistic locking.
      */
     @Test
-    public void testSequence()
+    void sequence()
         throws Exception {
         if (!(supportsPessimisticLocking()))
             return;
@@ -171,7 +171,7 @@ public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.j
     }
 
     @Test
-    public void testSequenceGenerator() {
+    void sequenceGenerator() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
 
         // make sure the sequence generator creates separate

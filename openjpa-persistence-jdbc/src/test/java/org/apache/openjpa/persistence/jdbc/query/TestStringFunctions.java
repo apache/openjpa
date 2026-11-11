@@ -39,12 +39,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestStringFunctions extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestStringFunctions extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager _pm = null;
     private QueryTest1 _match = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(QueryTest1.class);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -73,43 +73,43 @@ public class TestStringFunctions extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     @Test
-    public void testSubstring() {
+    void substring() {
         assertMatch("string.substring (3) == 'barbiz'");
         assertMatch("string.substring (3, 6) == 'bar'");
     }
 
     @Test
-    public void testIndexOf() {
+    void indexOf() {
         assertMatch("string.indexOf ('bar') == 3");
         assertMatch("string.indexOf (\"b\", 4) == 6");
         assertMatch("string.indexOf ('b', 4) == 6");
     }
 
     @Test
-    public void testToLowerCase() {
+    void toLowerCase() {
         assertMatch("string.toLowerCase () == 'foobarbiz'");
         assertMatch("'FOOBARBIZ'.toLowerCase () == string");
     }
 
     @Test
-    public void testToUpperCase() {
+    void toUpperCase() {
         assertMatch("string.toUpperCase () == 'FOOBARBIZ'");
     }
 
     @Test
-    public void testStartsWith() {
+    void startsWith() {
         assertMatch("string.startsWith ('foobar')");
         assertMatch("'foobarbizbaz'.startsWith (string)");
     }
 
     @Test
-    public void testEndsWith() {
+    void endsWith() {
         assertMatch("string.endsWith ('barbiz')");
         assertMatch("'bazfoobarbiz'.endsWith (string)");
     }
 
     @Test
-    public void testMatches() {
+    void matches() {
         assertMatch("string.matches ('.oobar.*')");
         assertMatch("string.matches ('FOO.AR.IZ(?i)')");
     }

@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
  */
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-public class TestEquivalentConfiguration extends SingleEMFTestCase {
+class TestEquivalentConfiguration extends SingleEMFTestCase {
     private EntityManagerFactory emf1 = null;
 
     private Properties _system;
@@ -124,7 +124,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* namespace can be used for persistence.xml.
      */
     @Test
-    public void testOldStylePersistenceUnitConfiguration() {
+    void oldStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
 
@@ -141,7 +141,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that javax.* namespace can be used for persistence.xml.
      */
     @Test
-    public void testNewStylePersistenceUnitConfiguration() {
+    void newStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(NEW_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
 
@@ -159,7 +159,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * persistence.xml.
      */
     @Test
-    public void testMixedStylePersistenceUnitConfiguration() {
+    void mixedStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(
             MIXED_STYLE_UNIT_NAME, PERSISTENCE_UNIT);
 
@@ -179,7 +179,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      */
 
     @Test
-    public void testConflictStylePersistenceUnitConfiguration() {
+    void conflictStylePersistenceUnitConfiguration() {
         try {
             emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 CONFLICT_STYLE_UNIT_NAME, PERSISTENCE_UNIT);
@@ -193,7 +193,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that javax.* namespace can be used for System properties.
      */
     @Test
-    public void testNewStyleSystemPropertyConfiguration() {
+    void newStyleSystemPropertyConfiguration() {
         try {
             System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
             System.setProperty(NEW_STYLE_URL_KEY, URL);
@@ -218,7 +218,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* namespace can be used for System properties.
      */
     @Test
-    public void testOldStyleSystemPropertyConfiguration() {
+    void oldStyleSystemPropertyConfiguration() {
         try {
             System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
             System.setProperty(OLD_STYLE_URL_KEY, URL);
@@ -243,7 +243,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * properties.
      */
     @Test
-    public void testMixedStyleSystemPropertyConfiguration() {
+    void mixedStyleSystemPropertyConfiguration() {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_URL_KEY, URL);
         try {
@@ -268,7 +268,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * same property in System configuration.
      */
     @Test
-    public void testConflictStyleSystemPropertyConfiguration() {
+    void conflictStyleSystemPropertyConfiguration() {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
         try {
@@ -287,7 +287,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* namespace can be used for runtime configuration.
      */
     @Test
-    public void testOldStyleRuntimePropertyConfiguration() {
+    void oldStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(OLD_STYLE_URL_KEY, URL);
@@ -308,7 +308,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that javax.* namespace can be used for runtime configuration.
      */
     @Test
-    public void testNewStyleRuntimePropertyConfiguration() {
+    void newStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(NEW_STYLE_URL_KEY, URL);
@@ -330,7 +330,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * configuration.
      */
     @Test
-    public void testMixedStyleRuntimePropertyConfiguration() {
+    void mixedStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(NEW_STYLE_URL_KEY, URL);
@@ -352,7 +352,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * same property in runtime configuration.
      */
     @Test
-    public void testConflictStyleRuntimePropertyConfiguration() {
+    void conflictStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);

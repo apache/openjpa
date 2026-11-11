@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
+class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PUDEntityA01.class, PUDEntityA02.class, PUDEntityAE01.class, PUDEntityB.class,
@@ -36,7 +36,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
 
 
     @Test
-    public void testPUDefaultCascadePersistOverM2M() {
+    void pUDefaultCascadePersistOverM2M() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityA01 entity = null;
@@ -68,7 +68,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverO2M() {
+    void pUDefaultCascadePersistOverO2M() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityA01 entity = null;
@@ -100,7 +100,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverO2O() {
+    void pUDefaultCascadePersistOverO2O() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityA01 entity = null;
@@ -130,7 +130,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverM2O() {
+    void pUDefaultCascadePersistOverM2O() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityA01 entity = null;
@@ -160,7 +160,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverM2MWithEmbed() {
+    void pUDefaultCascadePersistOverM2MWithEmbed() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityAE01 entity = null;
@@ -192,7 +192,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverO2MWithEmbed() {
+    void pUDefaultCascadePersistOverO2MWithEmbed() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityAE01 entity = null;
@@ -224,7 +224,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverO2OWithEmbed() {
+    void pUDefaultCascadePersistOverO2OWithEmbed() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityAE01 entity = null;
@@ -254,7 +254,7 @@ public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPUDefaultCascadePersistOverM2OWithEmbed() {
+    void pUDefaultCascadePersistOverM2OWithEmbed() {
         EntityManager em = emf.createEntityManager();
 
         PUDEntityAE01 entity = null;

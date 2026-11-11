@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPessimisticPNonTransToPDirty
+class TestPessimisticPNonTransToPDirty
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -47,7 +47,7 @@ public class TestPessimisticPNonTransToPDirty
     }
 
     @Test
-    public void testPNonTransToPDirty() {
+    void pNonTransToPDirty() {
         em.setOptimistic(false);
         UnenhancedPropertyAccess o = (UnenhancedPropertyAccess)
             em.createQuery("select o from UnenhancedPropertyAccess o")

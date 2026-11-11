@@ -50,12 +50,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
+class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
     private OpenJPAConfiguration _conf = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _conf = new OpenJPAConfigurationImpl();
         _conf.setConnection2UserName("user");
         _conf.setConnection2Password("pass");
@@ -134,7 +134,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * persistence managers.
      */
     @Test
-    public void testFactoryLifecycleListeners() {
+    void factoryLifecycleListeners() {
         OpenJPAEntityManagerFactory pmf =
             (OpenJPAEntityManagerFactory) getEmf();
         OpenJPAEntityManagerFactorySPI pmfSPI =
@@ -195,7 +195,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * concrete PMF implementation.
      */
     @Test
-    public void testPlatform() {
+    void platform() {
         OpenJPAEntityManagerFactory pmf =
             (OpenJPAEntityManagerFactory) getEmf();
         assertNotNull(pmf.getProperties().get("Platform"));

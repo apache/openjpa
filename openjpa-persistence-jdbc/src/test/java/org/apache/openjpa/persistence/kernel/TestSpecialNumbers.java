@@ -38,9 +38,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-public class TestSpecialNumbers extends BaseKernelTest {
+class TestSpecialNumbers extends BaseKernelTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         try {
             deleteAll(AllFieldTypesTest.class);
         } catch (Exception e) {
@@ -51,14 +51,14 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testShortMax() {
+    void shortMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MAX_VALUE);
         saveAndQuery(aftt, "testshort = :param", Short.MAX_VALUE);
     }
 
     @Test
-    public void testShortMin() {
+    void shortMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MIN_VALUE);
         try {
@@ -71,14 +71,14 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testLongMax() {
+    void longMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestlong(Long.MAX_VALUE);
         saveAndQuery(aftt, "testlong = :param", Long.MAX_VALUE);
     }
 
     @Test
-    public void testLongMin() {
+    void longMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestlong(Long.MIN_VALUE);
@@ -90,7 +90,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testIntegerMax() {
+    void integerMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MAX_VALUE);
         saveAndQuery(aftt, "testint = :param",
@@ -98,7 +98,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testIntegerMin() {
+    void integerMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MIN_VALUE);
         try {
@@ -111,7 +111,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatMax() {
+    void floatMax() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MAX_VALUE);
@@ -128,7 +128,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatMin() {
+    void floatMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MIN_VALUE);
@@ -149,7 +149,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatNaN() {
+    void floatNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NaN);
@@ -160,7 +160,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatNegativeInfinity() {
+    void floatNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NEGATIVE_INFINITY);
@@ -181,7 +181,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatPostivieInfinity() {
+    void floatPostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.POSITIVE_INFINITY);
@@ -202,7 +202,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleMax() {
+    void doubleMax() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MAX_VALUE);
@@ -223,7 +223,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleMin() {
+    void doubleMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MIN_VALUE);
@@ -245,7 +245,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleNaN() {
+    void doubleNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NaN);
@@ -256,7 +256,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleNegativeInfinity() {
+    void doubleNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NEGATIVE_INFINITY);
@@ -268,7 +268,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testDoublePostivieInfinity() {
+    void doublePostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.POSITIVE_INFINITY);
@@ -280,7 +280,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testByteMin() {
+    void byteMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MIN_VALUE);
         try {
@@ -292,21 +292,21 @@ public class TestSpecialNumbers extends BaseKernelTest {
     }
 
     @Test
-    public void testByteMax() {
+    void byteMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MAX_VALUE);
         saveAndQuery(aftt, "testbyte = :param", Byte.MAX_VALUE);
     }
 
     @Test
-    public void testZeroBigInteger() {
+    void zeroBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ZERO);
         saveAndQuery(aftt, "testBigInteger = :param", BigInteger.ZERO);
     }
 
     @Test
-    public void testOneBigInteger() {
+    void oneBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ONE);
         saveAndQuery(aftt, "testBigInteger = :param", BigInteger.ONE);

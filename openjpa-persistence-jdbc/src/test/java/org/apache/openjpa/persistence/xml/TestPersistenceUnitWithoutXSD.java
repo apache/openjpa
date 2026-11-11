@@ -25,10 +25,10 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestPersistenceUnitWithoutXSD extends AbstractCachedEMFTestCase {
+class TestPersistenceUnitWithoutXSD extends AbstractCachedEMFTestCase {
 
     @Test
-    public void testPersistenceUnitWithoutXSD() {
+    void persistenceUnitWithoutXSD() {
         EntityManagerFactory emf = OpenJPAPersistence
             .createEntityManagerFactory("incorrect-ordering-and-no-xsd",
             "org/apache/openjpa/persistence/xml/persistence-without-xsd.xml");
@@ -37,7 +37,7 @@ public class TestPersistenceUnitWithoutXSD extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testEnhancer() {
+    void enhancer() {
         PCEnhancer.main(new String[] {
             "-p",
             "org/apache/openjpa/persistence/xml/persistence-without-xsd.xml",

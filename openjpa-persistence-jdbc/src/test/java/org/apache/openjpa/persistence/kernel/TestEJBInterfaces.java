@@ -44,14 +44,14 @@ public class TestEJBInterfaces extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(InterfaceTestImpl1.class, InterfaceTestImpl2.class, InterfaceTestImpl3.class,
             InterfaceHolder.class);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInterfaceField() {
+    void interfaceField() {
         EntityManager em2 = currentEntityManager();
         startTx(em2);
 

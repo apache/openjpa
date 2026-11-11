@@ -50,7 +50,7 @@ import org.junit.jupiter.api.Test;
  * orphanRemoval=true was only deleted on flush when its owner was
  * removed, instead of being removed together with the owner.
  */
-public class TestEntityLifecycleTCK extends SingleEMFTestCase {
+class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -75,7 +75,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * Verifies cascade remove + orphanRemoval do not conflict.
      */
     @Test
-    public void testCascadeRemoveOneToOne() {
+    void cascadeRemoveOneToOne() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -122,7 +122,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * because remove cascades from B to A via cascade=ALL.
      */
     @Test
-    public void testCascadeRemoveContains() {
+    void cascadeRemoveContains() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -159,7 +159,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * but cascade still applies to referenced managed entities.
      */
     @Test
-    public void testCascadeRemoveNewEntity() {
+    void cascadeRemoveNewEntity() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -205,7 +205,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * and cascade persist to A.
      */
     @Test
-    public void testCascadeAllManyToOnePersistAfterRemove() {
+    void cascadeAllManyToOnePersistAfterRemove() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -256,7 +256,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * IllegalArgumentException or cause commit failure.
      */
     @Test
-    public void testRemoveDetachedThrowsIAE() {
+    void removeDetachedThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             // Persist entity in separate transaction
@@ -304,7 +304,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * throw IllegalArgumentException.
      */
     @Test
-    public void testRemoveDetachedOneToOneThrowsIAE() {
+    void removeDetachedOneToOneThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create and persist B with its related A
@@ -354,7 +354,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * becomes managed. Uses cascade=PERSIST with orphanRemoval=true.
      */
     @Test
-    public void testPersistRemovedOneToOne() {
+    void persistRemovedOneToOne() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -393,7 +393,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * making both managed.
      */
     @Test
-    public void testPersistRemovedManyToOne() {
+    void persistRemovedManyToOne() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -440,7 +440,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * Same as persist test but with cascade=ALL + orphanRemoval.
      */
     @Test
-    public void testPersistRemovedCascadeAll() {
+    void persistRemovedCascadeAll() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

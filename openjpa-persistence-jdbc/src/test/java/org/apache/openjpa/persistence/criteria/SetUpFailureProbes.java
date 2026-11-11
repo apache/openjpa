@@ -29,6 +29,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -50,7 +51,8 @@ public final class SetUpFailureProbes {
      * fails, exactly as TestMultiselect does when its own {@code setUp()} clears the tables
      * and hits a schema or data problem after {@code super.setUp()}.
      */
-    public static class FailingSetUp extends CriteriaTest {
+    @Nested
+    class FailingSetUp extends CriteriaTest {
 
         /** The EntityManager the last probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
@@ -80,7 +82,7 @@ public final class SetUpFailureProbes {
         }
 
         @Test
-        public void testNeverRuns() {
+        void neverRuns() {
             fail("setUp() must have failed before this ran");
         }
     }
@@ -91,7 +93,8 @@ public final class SetUpFailureProbes {
      * factory, and with it the pool, has to be closed even when releasing the EntityManager
      * fails.
      */
-    public static class FailingEntityManagerClose extends CriteriaTest {
+    @Nested
+    class FailingEntityManagerClose extends CriteriaTest {
 
         /** The factory in use while the probe ran, so the caller can affirm it was closed. */
         static OpenJPAEntityManagerFactorySPI factory;
@@ -102,7 +105,7 @@ public final class SetUpFailureProbes {
             factory = getEntityManagerFactory();
             final EntityManager delegate = getEntityManager();
             setEntityManager((EntityManager) Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class<?>[] { EntityManager.class }, (proxy, method, args) -> {
+                new Class<?>[]{EntityManager.class}, (proxy, method, args) -> {
                     if ("close".equals(method.getName())) {
                         delegate.close();
                         throw new IllegalStateException("deliberate failure closing the EntityManager");
@@ -116,7 +119,7 @@ public final class SetUpFailureProbes {
         }
 
         @Test
-        public void testPasses() {
+        void passes() {
             assertNotNull(getEntityManagerFactory());
         }
     }
@@ -126,7 +129,8 @@ public final class SetUpFailureProbes {
      * its own static factory and its own {@code tearDown()}, so the guarantee
      * {@link AbstractCriteriaTestCase#runBare()} relies on has to hold there too.
      */
-    public static class FailingEmbeddableSetUp extends EmbeddableDomainTestCase {
+    @Nested
+    class FailingEmbeddableSetUp extends EmbeddableDomainTestCase {
 
         /** The EntityManager the probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
@@ -141,7 +145,7 @@ public final class SetUpFailureProbes {
         }
 
         @Test
-        public void testNeverRuns() {
+        void neverRuns() {
             fail("setUp() must have failed before this ran");
         }
     }

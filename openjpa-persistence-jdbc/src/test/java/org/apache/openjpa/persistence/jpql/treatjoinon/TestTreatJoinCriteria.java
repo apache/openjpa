@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * join to instances of the treated class and of its subclasses, as the equivalent JPQL TREAT
  * join does (see {@link TestTreatSubclassDiscriminator}).
  */
-public class TestTreatJoinCriteria extends SingleEMFTestCase {
+class TestTreatJoinCriteria extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -84,7 +84,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUntreatedJoinReturnsAllProducts() {
+    void untreatedJoinReturnsAllProducts() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -99,7 +99,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatedJoinIncludesSubclasses() {
+    void treatedJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -115,7 +115,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatedJoinToLeafClass() {
+    void treatedJoinToLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -132,7 +132,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * The narrowed join resolves attributes that are declared by the treated class only.
      */
     @Test
-    public void testTreatedJoinResolvesSubclassAttribute() {
+    void treatedJoinResolvesSubclassAttribute() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -146,7 +146,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatedRootIncludesSubclasses() {
+    void treatedRootIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -161,7 +161,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatedRootToLeafClass() {
+    void treatedRootToLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -177,7 +177,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * A type that is not a subtype of the join can not be a TREAT target.
      */
     @Test
-    public void testTreatToUnrelatedTypeIsRejected() {
+    void treatToUnrelatedTypeIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -193,7 +193,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatedCollectionJoinIncludesSubclasses() {
+    void treatedCollectionJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -212,7 +212,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * The narrowed collection join resolves attributes that are declared by the treated class only.
      */
     @Test
-    public void testTreatedCollectionJoinResolvesSubclassAttribute() {
+    void treatedCollectionJoinResolvesSubclassAttribute() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);
@@ -230,7 +230,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * can not be narrowed. The attempt must be diagnosed instead of being silently ignored.
      */
     @Test
-    public void testTreatOfCorrelatedJoinIsRejected() {
+    void treatOfCorrelatedJoinIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -252,7 +252,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * returning the path unnarrowed.
      */
     @Test
-    public void testTreatOfPlainPathIsRejected() {
+    void treatOfPlainPathIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<String> cq = cb.createQuery(String.class);

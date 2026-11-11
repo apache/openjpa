@@ -57,12 +57,12 @@ public class TestHerdDBDictionary {
     final StoreContext sc = null;
 
     @Test
-    public void testBootDBDictionaryWithUserSchemaName() throws Exception {
+    void bootDBDictionaryWithUserSchemaName() throws Exception {
         testBootDBDictionary(true);
     }
 
     @Test
-    public void testBootDBDictionaryWithoutUserSchemaName() throws Exception {
+    void bootDBDictionaryWithoutUserSchemaName() throws Exception {
         testBootDBDictionary(false);
     }
 

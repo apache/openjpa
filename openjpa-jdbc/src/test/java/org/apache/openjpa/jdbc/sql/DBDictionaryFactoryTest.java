@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.junit.jupiter.api.Test;
 
-public class DBDictionaryFactoryTest {
+class DBDictionaryFactoryTest {
 
     @Test
-    public void testDictionaryClassForString() {
+    void dictionaryClassForString() {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
 
         String[] aliases = new String[]{

@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEscapedSingleQuotesInJPQL
+class TestEscapedSingleQuotesInJPQL
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -48,7 +48,7 @@ public class TestEscapedSingleQuotesInJPQL
     }
 
     @Test
-    public void testEscapedSingleQuotesInJPQL() {
+    void escapedSingleQuotesInJPQL() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("select count(o) " +
             "from AllFieldTypes o where o.stringField = 'foo''bar'");

@@ -46,7 +46,7 @@ public class TestJDBCListener extends org.apache.openjpa.persistence.jdbc.kernel
     public static boolean commitOccurred;
 
     @Test
-    public void testJDBCListener() {
+    void jdbcListener() {
         Map props=new HashMap();
         props.put("openjpa.jdbc.JDBCListeners", Listener.class.getName());
 

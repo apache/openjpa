@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-public class TestEntityManagerClear
+class TestEntityManagerClear
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestEntityManagerClear
     }
 
     @Test
-    public void testDetach() {
+    void detach() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -68,7 +68,7 @@ public class TestEntityManagerClear
     }
 
     @Test
-    public void testClear() {
+    void clear() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -105,7 +105,7 @@ public class TestEntityManagerClear
     }
 
     @Test
-    public void testNewClearMerge() {
+    void newClearMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -135,7 +135,7 @@ public class TestEntityManagerClear
     }
 
     @Test
-    public void testUpdateClearMerge() {
+    void updateClearMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -176,7 +176,7 @@ public class TestEntityManagerClear
      *
      */
     @Test
-    public void testUpdateClearUpdateMerge() {
+    void updateClearUpdateMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -213,7 +213,7 @@ public class TestEntityManagerClear
     }
 
     @Test
-    public void testUpdateFlushClearUpdateMerge() {
+    void updateFlushClearUpdateMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * 4. @SequenceGenerators container annotation parsing
  * 5. UUID type support (cannot test on Derby, PostgreSQL-specific)
  */
-public class TestTckFixes extends SingleEMFTestCase {
+class TestTckFixes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -115,7 +115,7 @@ public class TestTckFixes extends SingleEMFTestCase {
      * Corresponds to TCK treatJoinClassTest.
      */
     @Test
-    public void testTreatJoinDiscriminator() {
+    void treatJoinDiscriminator() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -143,7 +143,7 @@ public class TestTckFixes extends SingleEMFTestCase {
      * Corresponds to TCK flushModeTest5.
      */
     @Test
-    public void testFlushModeAutoNavigatedQuery() {
+    void flushModeAutoNavigatedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -177,7 +177,7 @@ public class TestTckFixes extends SingleEMFTestCase {
      * Corresponds to TCK getIdentifierTest.
      */
     @Test
-    public void testGetIdentifierUnmanagedEntity() {
+    void getIdentifierUnmanagedEntity() {
         // Create a new entity with a manually-set id (not persisted)
         TProduct product = new TProduct();
         // TProduct uses @GeneratedValue, but we can test with a persisted one
@@ -204,7 +204,7 @@ public class TestTckFixes extends SingleEMFTestCase {
      * After detaching, getIdentifier should still return the id.
      */
     @Test
-    public void testGetIdentifierDetachedEntity() {
+    void getIdentifierDetachedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

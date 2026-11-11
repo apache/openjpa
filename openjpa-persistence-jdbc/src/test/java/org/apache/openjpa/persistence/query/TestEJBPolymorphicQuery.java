@@ -30,9 +30,9 @@ import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBPolymorphicQuery extends BaseQueryTest {
+class TestEJBPolymorphicQuery extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
 
@@ -62,7 +62,7 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
      * subclass.
      */
     @Test
-    public void testPolymorphicSelect() {
+    void polymorphicSelect() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from RuntimeTest1 o")
@@ -75,7 +75,7 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
     }
 
     @Test
-    public void testPolymorphicDelete() {
+    void polymorphicDelete() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

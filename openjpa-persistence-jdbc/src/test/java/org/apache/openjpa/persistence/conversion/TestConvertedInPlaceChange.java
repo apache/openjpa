@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * change of the entity and has to be written at flush, as the specification
  * requires in "Synchronization to the Database".
  */
-public class TestConvertedInPlaceChange extends SQLListenerTestCase {
+class TestConvertedInPlaceChange extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
     }
 
     @Test
-    public void testElementOfConvertedListChangedInPlace() {
+    void elementOfConvertedListChangedInPlace() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(InPlaceConvertedEntity.class, 1L).getItems().get(0).setName("changed");
@@ -66,7 +66,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
     }
 
     @Test
-    public void testElementOfConvertedMapChangedInPlace() {
+    void elementOfConvertedMapChangedInPlace() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(InPlaceConvertedEntity.class, 1L).getItemsByKey().get("a").setName("changed");
@@ -83,7 +83,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * one made to a new instance after it was inserted.
      */
     @Test
-    public void testElementOfConvertedListChangedAfterFlush() {
+    void elementOfConvertedListChangedAfterFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             InPlaceConvertedEntity e = em.find(InPlaceConvertedEntity.class, 1L);
@@ -112,7 +112,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * one, is checked too.
      */
     @Test
-    public void testElementOfConvertedListChangedInLaterTransaction() {
+    void elementOfConvertedListChangedInLaterTransaction() {
         try (EntityManager em = emf.createEntityManager()) {
             InPlaceConvertedEntity e = em.find(InPlaceConvertedEntity.class, 1L);
             em.getTransaction().begin();
@@ -131,7 +131,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
     }
 
     @Test
-    public void testUnchangedConvertedListIsNotWritten() {
+    void unchangedConvertedListIsNotWritten() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals("one", em.find(InPlaceConvertedEntity.class, 1L).getItems().get(0).getName());
@@ -142,7 +142,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConvertedValueChangedInPlace() {
+    void convertedValueChangedInPlace() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(InPlaceConvertedEntity.class, 1L).getItem().setName("changed");
@@ -154,7 +154,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConvertedListChangedStructurally() {
+    void convertedListChangedStructurally() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(InPlaceConvertedEntity.class, 1L).getItems().add(new Item("three"));
@@ -170,7 +170,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * while an unchanged detached instance is merged without an update.
      */
     @Test
-    public void testElementOfDetachedConvertedListChangedInPlace() {
+    void elementOfDetachedConvertedListChangedInPlace() {
         InPlaceConvertedEntity d;
         try (EntityManager em = emf.createEntityManager()) {
             d = em.find(InPlaceConvertedEntity.class, 1L);
@@ -204,7 +204,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * had when it was loaded, whether or not a flush found the change.
      */
     @Test
-    public void testElementOfConvertedListRestoredOnRollback() {
+    void elementOfConvertedListRestoredOnRollback() {
         for (boolean flush : new boolean[] { false, true }) {
             try (EntityManager em = emf.createEntityManager()) {
                 OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
@@ -228,7 +228,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * A query that reads the type flushes an element changed in place first.
      */
     @Test
-    public void testElementOfConvertedListChangedInPlaceBeforeQuery() {
+    void elementOfConvertedListChangedInPlaceBeforeQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(InPlaceConvertedEntity.class, 1L).getItems().get(0).setName("changed");
@@ -244,7 +244,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * by the check of the next flush when it is unchanged.
      */
     @Test
-    public void testNewConvertedListIsConvertedOnce() {
+    void newConvertedListIsConvertedOnce() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             InPlaceConvertedEntity n = new InPlaceConvertedEntity();
@@ -264,7 +264,7 @@ public class TestConvertedInPlaceChange extends SQLListenerTestCase {
      * not keep the instance from being loaded or a transaction from committing.
      */
     @Test
-    public void testReadOnlyConvertedList() {
+    void readOnlyConvertedList() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.createNativeQuery("INSERT INTO ReadOnlyConvertedEntity (id, ITEMS) VALUES (5, 'one')")

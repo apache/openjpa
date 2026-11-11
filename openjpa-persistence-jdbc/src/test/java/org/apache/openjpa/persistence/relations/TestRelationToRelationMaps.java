@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRelationToRelationMaps
+class TestRelationToRelationMaps
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -39,7 +39,7 @@ public class TestRelationToRelationMaps
     }
 
     @Test
-    public void testRelationToRelationMaps() {
+    void relationToRelationMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             RelationToRelationMapInstance.class);
         assertEquals(RelationRelationMapTableFieldStrategy.class,

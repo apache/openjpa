@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
-public class TestOracleGeneratedId extends SingleEMFTestCase {
+class TestOracleGeneratedId extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, OracleGeneratedIdEntity.class,
@@ -43,7 +43,7 @@ public class TestOracleGeneratedId extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGeneratedId() {
+    void generatedId() {
         EntityManager em = null;
         try {
             em = emf.createEntityManager();

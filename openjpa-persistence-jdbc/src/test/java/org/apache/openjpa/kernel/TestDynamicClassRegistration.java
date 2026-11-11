@@ -39,14 +39,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="excluded")
-public class TestDynamicClassRegistration
+@AllowFailure(message = "excluded")
+class TestDynamicClassRegistration
     extends AbstractCachedEMFTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf1;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         emf1 = createNamedEMF("empty-pu");
     }
 
@@ -58,8 +58,8 @@ public class TestDynamicClassRegistration
     }
 
     @Test
-    public void testEnhancedDynamicClassRegistration()
-        throws ClassNotFoundException {
+    void enhancedDynamicClassRegistration()
+        throws Exception {
         assertTrue(
             PersistenceCapable.class.isAssignableFrom(SimpleEntity.class));
 
@@ -76,7 +76,7 @@ public class TestDynamicClassRegistration
     }
 
     @Test
-    public void testUnenhancedDynamicClassRegistration() {
+    void unenhancedDynamicClassRegistration() {
         assertFalse(PersistenceCapable.class.isAssignableFrom(
             UnenhancedFieldAccess.class));
 

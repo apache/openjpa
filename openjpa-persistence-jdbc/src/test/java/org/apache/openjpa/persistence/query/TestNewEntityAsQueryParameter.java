@@ -90,7 +90,7 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testQueryWithTransientInstanceAsParameter() {
+    void queryWithTransientInstanceAsParameter() {
 		Projekt projekt1 = new Projekt(ID_PROJEKT1);
 		Projekt projekt2 = new Projekt(ID_PROJEKT2);
 
@@ -99,7 +99,7 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testQueryWithUnmanagedPersistentInstanceAsParameter() {
+    void queryWithUnmanagedPersistentInstanceAsParameter() {
 		EntityManager em = emf.createEntityManager();
 		Projekt projekt1 = em.find(Projekt.class, ID_PROJEKT1);
 		Projekt projekt2 = em.find(Projekt.class, ID_PROJEKT2);
@@ -111,7 +111,7 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testQueryWithManagedPersistentInstanceAsParameter() {
+    void queryWithManagedPersistentInstanceAsParameter() {
 		EntityManager em = emf.createEntityManager();
 		Projekt projekt1 = em.find(Projekt.class, ID_PROJEKT1);
 		Projekt projekt2 = em.find(Projekt.class, ID_PROJEKT2);

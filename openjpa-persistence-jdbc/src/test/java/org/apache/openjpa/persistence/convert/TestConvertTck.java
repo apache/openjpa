@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  *
  * All entities are UNENHANCED to mirror how TCK runs (runtime enhancement).
  */
-public class TestConvertTck extends SingleEMFTestCase {
+class TestConvertTck extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -70,7 +70,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK mappedSuperClassTest.
      */
     @Test
-    public void testMappedSuperClass() {
+    void mappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         char[] ln = {'D', 'o', 'e'};
@@ -104,7 +104,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK mappedSuperClass2Test.
      */
     @Test
-    public void testMappedSuperClassOverride() {
+    void mappedSuperClassOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ConvertFullTimeEmp2 expected =
@@ -133,7 +133,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK convertsTest.
      */
     @Test
-    public void testConvertsOnEmbedded() {
+    void convertsOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String street = "500.Oracle.Parkway";
@@ -173,7 +173,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK convertExceptionDuringPersistTest.
      */
     @Test
-    public void testConverterExceptionDuringPersist() {
+    void converterExceptionDuringPersist() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -206,7 +206,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK convertExceptionDuringLoadTest.
      */
     @Test
-    public void testConverterExceptionDuringLoad() {
+    void converterExceptionDuringLoad() {
         EntityManager em = emf.createEntityManager();
         // First persist with state=-2. NumberToStateConverter.toDB
         // stores "-2" as-is (state=-2, not -1 and not -2 string check)
@@ -247,7 +247,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * Mirrors TCK jpa22/repeatable/convert/Client#convertsTest.
      */
     @Test
-    public void testRepeatableConvertOnEmbedded() {
+    void repeatableConvertOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String street = "500.Oracle.Parkway";
@@ -281,7 +281,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * passed to the converter and back, so the attribute reads back as null.
      */
     @Test
-    public void testNullConvertedArrayAttribute() {
+    void nullConvertedArrayAttribute() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertFullTimeEmp(900, "Jane", null, "1000.00"));
@@ -301,7 +301,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * null-safe converter round-trips it as null.
      */
     @Test
-    public void testNullConvertedAttributeOnEmbedded() {
+    void nullConvertedAttributeOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertEmbedEntity("null-attr", "name1", 1000,
@@ -326,7 +326,7 @@ public class TestConvertTck extends SingleEMFTestCase {
      * column value.
      */
     @Test
-    public void testNullEmbedded() {
+    void nullEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertEmbedEntity("null-embed", "name1", 1000));

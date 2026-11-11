@@ -45,7 +45,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
      * number of PersonTests
      */
     @Test
-    public void testReadDepartmentsWithLeftJoinFetch() {
+    void readDepartmentsWithLeftJoinFetch() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -83,7 +83,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
      * This test works as expected.
      */
     @Test
-    public void testReadDepartmentsWithFetchPlan() {
+    void readDepartmentsWithFetchPlan() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -100,7 +100,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
      * This test works as expected.
      */
     @Test
-    public void testReadDepartmentsWithLeftJoinFetchAndOrderBy() {
+    void readDepartmentsWithLeftJoinFetchAndOrderBy() {
 
         EntityManager em = emf.createEntityManager();
 

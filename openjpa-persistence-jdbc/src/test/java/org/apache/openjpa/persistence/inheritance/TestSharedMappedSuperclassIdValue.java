@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestSharedMappedSuperclassIdValue
+class TestSharedMappedSuperclassIdValue
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -60,7 +60,7 @@ public class TestSharedMappedSuperclassIdValue
     }
 
     @Test
-    public void testFind() {
+    void find() {
         EntityManager em = emf.createEntityManager();
         NoGenEntityL3 ent = em.find(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
@@ -76,7 +76,7 @@ public class TestSharedMappedSuperclassIdValue
     }
 
     @Test
-    public void testGetReference() {
+    void getReference() {
         EntityManager em = emf.createEntityManager();
         NoGenEntityL3 ent = em.getReference(NoGenEntityL3.class, 1L);
         assertNotNull(ent);

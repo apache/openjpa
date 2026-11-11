@@ -26,7 +26,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.junit.jupiter.api.Test;
 
-public class TestMappingDefaultsImpl {
+class TestMappingDefaultsImpl {
 
 
     /**
@@ -34,7 +34,7 @@ public class TestMappingDefaultsImpl {
      * duplicate column names when populating the table with long column names.
      */
     @Test
-    public void testPopulateWithLongColumnNames() {
+    void populateWithLongColumnNames() {
         MappingDefaultsImpl mapping = new MappingDefaultsImpl();
         JDBCConfiguration conf = new JDBCConfigurationImpl(false, false);
         conf.setDBDictionary("oracle");

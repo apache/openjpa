@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,9 +42,9 @@ import org.junit.jupiter.api.Test;
  *
  * @author Marc Prud'hommeaux
  */
-public class TestQueryResults extends BaseQueryTest {
+class TestQueryResults extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager em =
@@ -70,7 +66,7 @@ public class TestQueryResults extends BaseQueryTest {
      * since they are detached from the query lifecycle.
      */
     @Test
-    public void testQueryIteratorsReturnFalseForClosedQuery() {
+    void queryIteratorsReturnFalseForClosedQuery() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -91,7 +87,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testQueryIteratorsThrowExceptionForClosedQuery() {
+    void queryIteratorsThrowExceptionForClosedQuery() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -111,7 +107,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testLazyQueryIteratorsReturnFalseForClosedem() {
+    void lazyQueryIteratorsReturnFalseForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -134,7 +130,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testEagerQueryIteratorsWorkForClosedem() {
+    void eagerQueryIteratorsWorkForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -157,7 +153,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testQueryResultIsList() {
+    void queryResultIsList() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -174,7 +170,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testQueryResultSizeIsCorrect() {
+    void queryResultSizeIsCorrect() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -196,7 +192,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testExtentIteratorsReturnFalseForClosedExtent() {
+    void extentIteratorsReturnFalseForClosedExtent() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -216,7 +212,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testExtentIteratorsThrowExceptionForClosedExtent() {
+    void extentIteratorsThrowExceptionForClosedExtent() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -241,7 +237,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testExtentIteratorsReturnFalseForClosedem() {
+    void extentIteratorsReturnFalseForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -259,7 +255,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testUniqueReturnsSingleResult() {
+    void uniqueReturnsSingleResult() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -268,7 +264,7 @@ public class TestQueryResults extends BaseQueryTest {
             + "r.stringField = \'TestQueryResults1\'";
         Object obj = em.createQuery(query).getSingleResult();
 
-        assertTrue(obj instanceof RuntimeTest1);
+        assertInstanceOf(RuntimeTest1.class, obj);
 
         query = "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = "
             + "\'xxxx\'";
@@ -287,7 +283,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testUniqueThrowsExceptionIfMultipleResults() {
+    void uniqueThrowsExceptionIfMultipleResults() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -306,7 +302,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testImpossibleRangeReturnsEmptyList() {
+    void impossibleRangeReturnsEmptyList() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -325,7 +321,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testImpossibleUniqueRangeReturnsNull() {
+    void impossibleUniqueRangeReturnsNull() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -343,7 +339,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testSingleResultUniqueRange() {
+    void singleResultUniqueRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -360,7 +356,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testMultiResultUniqueRange() {
+    void multiResultUniqueRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -406,7 +402,7 @@ public class TestQueryResults extends BaseQueryTest {
      }
      */
     @Test
-    public void testFullRange() {
+    void fullRange() {
         try {
             OpenJPAEntityManager em =
                 (OpenJPAEntityManager) currentEntityManager();
@@ -436,7 +432,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testFullRangeSubs() {
+    void fullRangeSubs() {
         try {
             OpenJPAEntityManager em =
                 (OpenJPAEntityManager) currentEntityManager();
@@ -462,7 +458,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testBeginRange() {
+    void beginRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -492,7 +488,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testBeginRangeSubs() {
+    void beginRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -523,7 +519,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testEndRange() {
+    void endRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -554,7 +550,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testEndRangeSubs() {
+    void endRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -583,7 +579,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testMidRange() {
+    void midRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -609,7 +605,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testMidRangeSubs() {
+    void midRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -634,7 +630,7 @@ public class TestQueryResults extends BaseQueryTest {
     }
 
     @Test
-    public void testPessimisticOrderedRange() {
+    void pessimisticOrderedRange() {
         // test to make sure whatever machinations we do to get a range doesn't
         // interfere with FOR UPDATE
         OpenJPAEntityManager em =

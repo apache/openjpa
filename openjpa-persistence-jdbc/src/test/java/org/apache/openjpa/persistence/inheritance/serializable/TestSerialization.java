@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSerialization extends SingleEMFTestCase {
+class TestSerialization extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestSerialization extends SingleEMFTestCase {
      * changes.
      */
     @Test
-    public void testDetachedUpdate() {
+    void detachedUpdate() {
         Employee emp = new Employee();
         emp.setFirstName("John");
         emp.setLastName("Doe");

@@ -36,12 +36,12 @@ public class TestEJBState extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(AllFieldsTypeTest.class);
     }
 
     @Test
-    public void testBigDecimalsLoseTrailingZeros() {
+    void bigDecimalsLoseTrailingZeros() {
         EntityManager pm1 = currentEntityManager();
         startTx(pm1);
         AllFieldsTypeTest aftt = new AllFieldsTypeTest();

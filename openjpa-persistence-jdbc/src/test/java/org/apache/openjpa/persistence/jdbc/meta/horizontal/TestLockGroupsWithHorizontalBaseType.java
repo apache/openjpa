@@ -45,12 +45,12 @@ public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(LockGroupSubclass.class);
     }
 
     @Test
-    public void testHorizontalLockGroup() {
+    void horizontalLockGroup() {
         LockGroupSubclass pc = new LockGroupSubclass();
         pc.setDefaultLockGroupField("foo");
         pc.setNonDefaultLockGroupField("bar");

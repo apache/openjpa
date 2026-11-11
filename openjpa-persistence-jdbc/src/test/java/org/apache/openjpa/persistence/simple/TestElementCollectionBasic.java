@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Tests that @ElementCollection works with runtime subclass enhancement.
  * Mirrors TCK ee.jakarta.tck.persistence.core.annotations.elementcollection.Client2.
  */
-public class TestElementCollectionBasic extends SingleEMFTestCase {
+class TestElementCollectionBasic extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestElementCollectionBasic extends SingleEMFTestCase {
      * Persist entity with @ElementCollection List<String>, find, verify list is populated.
      */
     @Test
-    public void testElementCollectionBasicType() {
+    void elementCollectionBasicType() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

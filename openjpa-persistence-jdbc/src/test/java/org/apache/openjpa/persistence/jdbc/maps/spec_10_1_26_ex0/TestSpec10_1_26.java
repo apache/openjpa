@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +36,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +70,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testHavingClauseWithEntityExpression() throws Exception {
+    void havingClauseWithEntityExpression() throws Exception {
         EntityManager em = emf.createEntityManager();
         Employee1 e1 = em.find(Employee1.class, 1);
         em.clear();
@@ -110,12 +110,12 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -184,7 +184,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryObject() {
+    void queryObject() {
         queryObj();
     }
 
@@ -294,34 +294,34 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public void assertDepartment1(Department1 d) {
         int id = d.getDeptId();
         Map<Integer, Employee1> es = d.getEmpMap();
-        Assertions.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             Integer empId = (Integer) obj;
             Employee1 e = es.get(empId);
-            Assertions.assertEquals(empId.intValue(), e.getEmpId());
+            assertEquals(empId.intValue(), e.getEmpId());
         }
     }
 
     public void assertDepartment2(Department2 d) {
         int id = d.getDeptId();
         Map<EmployeePK2, Employee2> es = d.getEmpMap();
-        Assertions.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set<EmployeePK2> keys = es.keySet();
         for (EmployeePK2 pk : keys) {
             Employee2 e = es.get(pk);
-            Assertions.assertEquals(pk, e.getEmpPK());
+            assertEquals(pk, e.getEmpPK());
         }
     }
 
     public void assertDepartment3(Department3 d) {
         int id = d.getDeptId();
         Map<EmployeeName3, Employee3> es = d.getEmployees();
-        Assertions.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set<EmployeeName3> keys = es.keySet();
         for (EmployeeName3 key : keys) {
             Employee3 e = es.get(key);
-            Assertions.assertEquals(key, e.getName());
+            assertEquals(key, e.getName());
         }
     }
 

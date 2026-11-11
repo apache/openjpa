@@ -13,6 +13,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,7 +62,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
+    void queryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities()");
@@ -96,7 +97,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption() {
+    void lockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption()");
@@ -128,7 +129,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
+    void lockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testLockTimeOutExceptionWhileLockingAlreadyLockedEntities()");
@@ -162,7 +163,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
+    void queryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
         final int timeout = 1000;
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +

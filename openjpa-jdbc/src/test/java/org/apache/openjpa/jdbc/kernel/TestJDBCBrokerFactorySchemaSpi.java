@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * This test needs no database: {@code synchronizeMappings} is stubbed out.
  */
-public class TestJDBCBrokerFactorySchemaSpi {
+class TestJDBCBrokerFactorySchemaSpi {
 
     static final AtomicInteger CLONES = new AtomicInteger();
 
@@ -83,7 +83,7 @@ public class TestJDBCBrokerFactorySchemaSpi {
     private CapturingFactory factory;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         JDBCConfigurationImpl conf = new JDBCConfigurationImpl();
         conf.setBrokerImpl(CountingBroker.class.getName());
         CLONES.set(0);
@@ -98,37 +98,37 @@ public class TestJDBCBrokerFactorySchemaSpi {
     }
 
     @Test
-    public void testCreatePersistenceStructure() {
+    void createPersistenceStructure() {
         factory.createPersistenceStructure(false);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='add')");
     }
 
     @Test
-    public void testCreatePersistenceStructureWithSchemas() {
+    void createPersistenceStructureWithSchemas() {
         factory.createPersistenceStructure(true);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='createDB, add')");
     }
 
     @Test
-    public void testDropPersistenceStructure() {
+    void dropPersistenceStructure() {
         factory.dropPersistenceStructure(false);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='drop')");
     }
 
     @Test
-    public void testDropPersistenceStructureWithSchemas() {
+    void dropPersistenceStructureWithSchemas() {
         factory.dropPersistenceStructure(true);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='drop, dropDB')");
     }
 
     @Test
-    public void testValidatePersistenceStructure() throws Exception {
+    void validatePersistenceStructure() throws Exception {
         factory.validatePersistenceStructure();
         assertNoBroker("validate(ForeignKeys=true)");
     }
 
     @Test
-    public void testTruncateData() {
+    void truncateData() {
         factory.truncateData();
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='refresh,deleteTableContents')");
     }

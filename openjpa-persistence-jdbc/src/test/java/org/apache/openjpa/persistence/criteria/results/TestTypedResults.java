@@ -19,8 +19,7 @@
 
 package org.apache.openjpa.persistence.criteria.results;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -112,7 +111,7 @@ public class TestTypedResults extends SingleEMFTestCase {
      * @throws Exception
      */
     @Test
-    public void testTypedJPQLQuery() {
+    void typedJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 
         Query jpqlQuery = em.createQuery("Select o from Order o where o.filled = true");
@@ -160,7 +159,7 @@ public class TestTypedResults extends SingleEMFTestCase {
      * @throws Exception
      */
     @Test
-    public void testDateQuery() throws Exception {
+    void dateQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
         Date maxDate = df.parse(ORDER_DATES[2]);
 
@@ -203,7 +202,7 @@ public class TestTypedResults extends SingleEMFTestCase {
      * @throws Exception
      */
     @Test
-    public void testMultiSelect() throws Exception {
+    void multiSelect() throws Exception {
         // get results from traditional JPQL
         EntityManager em = emf.createEntityManager();
         Query jpqlQuery =
@@ -236,8 +235,8 @@ public class TestTypedResults extends SingleEMFTestCase {
 
         for (Object[] os : jpqlResults) {
             assertEquals(2, os.length);
-            assertTrue(os[0] instanceof Order);
-            assertTrue(os[1] instanceof Producer);
+            assertInstanceOf(Order.class, os[0]);
+            assertInstanceOf(Producer.class, os[1]);
         }
 
         // cheap way to ensure that we have the same contents.

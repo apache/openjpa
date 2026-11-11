@@ -101,7 +101,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testCacheAll() {
+    void cacheAll() {
         getEntityManagerFactoryCacheSettings(null, null);
         populate();
         StoreCache cache = emf.getStoreCache();
@@ -109,7 +109,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testCacheItems() {
+    void cacheItems() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
@@ -117,7 +117,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testCacheItemsAndPurchases() {
+    void cacheItemsAndPurchases() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class,
             Purchase.class }, null);
         populate();
@@ -126,7 +126,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testCacheItemsAndOrders() {
+    void cacheItemsAndOrders() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class,
             Order.class }, null);
         populate();
@@ -135,7 +135,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testCachePurchasesAndOrders() {
+    void cachePurchasesAndOrders() {
         getEntityManagerFactoryCacheSettings(new Class[] { Purchase.class,
             Order.class }, null);
         populate();
@@ -144,7 +144,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testExcludePurchases() {
+    void excludePurchases() {
         getEntityManagerFactoryCacheSettings(null,
             new Class[] { Purchase.class });
         populate();
@@ -153,7 +153,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testExcludeOrders() {
+    void excludeOrders() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Order.class });
         populate();
         StoreCache cache = emf.getStoreCache();
@@ -161,7 +161,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testExcludeItems() {
+    void excludeItems() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Item.class });
         populate();
         StoreCache cache = emf.getStoreCache();
@@ -169,7 +169,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testExcludeOrdersAndPurchases() {
+    void excludeOrdersAndPurchases() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Order.class,
             Purchase.class });
         populate();
@@ -178,7 +178,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testIncludePurchaseItemExcludePurchase() {
+    void includePurchaseItemExcludePurchase() {
         try{
         getEntityManagerFactoryCacheSettings(new Class[] { Purchase.class,
             Item.class }, new Class[] { Purchase.class });

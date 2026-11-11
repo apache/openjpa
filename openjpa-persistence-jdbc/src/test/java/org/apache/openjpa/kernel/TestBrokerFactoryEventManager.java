@@ -28,10 +28,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.junit.jupiter.api.Test;
 
-public class TestBrokerFactoryEventManager {
+class TestBrokerFactoryEventManager {
 
     @Test
-    public void testCreateEvent() {
+    void createEvent() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.cast(
                 Persistence.createEntityManagerFactory("test"));

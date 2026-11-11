@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * Tests that JPA 3.2 @Column(secondPrecision) is correctly handled
  * for time-based column types.
  */
-public class TestSecondPrecision extends SingleEMFTestCase {
+class TestSecondPrecision extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestSecondPrecision extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         LocalDateTime now = LocalDateTime.now();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -66,7 +66,7 @@ public class TestSecondPrecision extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSecondPrecisionMetadata() {
+    void secondPrecisionMetadata() {
         // Verify that secondPrecision is correctly parsed from the annotation
         // by checking the column metadata through the mapping info
         org.apache.openjpa.jdbc.meta.ClassMapping mapping =

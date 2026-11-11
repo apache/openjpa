@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
 
     private static final int TAG_COUNT = 3;
 
@@ -43,7 +43,7 @@ public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testCompositeKeyCandidateIsDeletedInMemory() {
+    void compositeKeyCandidateIsDeletedInMemory() {
         assertEquals(1, delete(
             "delete from BulkDeleteCompositeOwner o where o.name=:n",
             "n", "owner"));
@@ -61,7 +61,7 @@ public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
      * deleted in SQL and its owned table is emptied outright.
      */
     @Test
-    public void testCompositeKeyCandidateWithoutCriteria() {
+    void compositeKeyCandidateWithoutCriteria() {
         assertEquals(2, delete("delete from BulkDeleteCompositeOwner o"));
 
         assertEquals(0, count(BulkDeleteCompositeOwner.class));

@@ -52,13 +52,13 @@ public class TestFieldRange extends BaseKernelTest {
             + "!@@#$\\%^&\"*()-=\\|+_/?.>,<~`";
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         deleteAll(AllFieldTypesTest.class);
     }
 
     @Test
-    public void testSaveState()
+    void saveState()
         throws Exception {
         allFieldSaveState(
             (int) 259645,
@@ -114,7 +114,7 @@ public class TestFieldRange extends BaseKernelTest {
      * not a killer one.
      */
     @Test
-    public void testLargeNumbersNegative()
+    void largeNumbersNegative()
         throws Exception {
         allFieldSaveState(
             (int) (Integer.MIN_VALUE + 1),
@@ -133,7 +133,7 @@ public class TestFieldRange extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleAndFloatPrecision()
+    void doubleAndFloatPrecision()
         throws Exception {
         allFieldSaveState(
             (int) (0),
@@ -152,7 +152,7 @@ public class TestFieldRange extends BaseKernelTest {
     }
 
     @Test
-    public void testZeroNumbers()
+    void zeroNumbers()
         throws Exception {
         allFieldSaveState(
             (int) (0),
@@ -171,19 +171,19 @@ public class TestFieldRange extends BaseKernelTest {
     }
 
     @Test
-    public void testLowDate()
+    void lowDate()
         throws Exception {
         dateTest(0);
     }
 
     @Test
-    public void testCurDate()
+    void curDate()
         throws Exception {
         dateTest(System.currentTimeMillis());
     }
 
     @Test
-    public void testHighDate()
+    void highDate()
         throws Exception {
         try {
             // postgres will sometimes store the String "invalid" if the
@@ -207,7 +207,7 @@ public class TestFieldRange extends BaseKernelTest {
      * Some date instances that have been known to have problems.
      */
     @Test
-    public void testProblematicDates()
+    void problematicDates()
         throws Exception {
         dateTest(1047744639);        // pointbase had probs with this
     }

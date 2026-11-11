@@ -45,7 +45,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object _nonpk = null;
     private Object _nonpk3 = null;
@@ -55,7 +55,7 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     private Object _constant3 = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         // make sure these classes are registered since we're using metadata
         // values for the class indicator
@@ -135,13 +135,13 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testNonPKOneOne() {
+    void testNonPKOneOne() {
 
         nonPKOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerNonPKOneOne() {
+    void eagerNonPKOneOne() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPK");
         nonPKOneOne(pm);
@@ -156,12 +156,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testPartialOneOne() {
+    void testPartialOneOne() {
         partialOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerPartialOneOne() {
+    void eagerPartialOneOne() {
 
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("partial");
@@ -177,12 +177,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testVerticalNonPKOneOne() {
+    void testVerticalNonPKOneOne() {
         verticalNonPKOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerVerticalNonPKOneOne() {
+    void eagerVerticalNonPKOneOne() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPK3");
         verticalNonPKOneOne(pm);
@@ -200,12 +200,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testVerticalPartialOneOne() {
+    void testVerticalPartialOneOne() {
         verticalPartialOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerVerticalPartialOneOne() {
+    void eagerVerticalPartialOneOne() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("partial3");
         verticalPartialOneOne(pm);
@@ -223,12 +223,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testNonPKManyMany() {
+    void testNonPKManyMany() {
         nonPKManyMany((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerNonPKManyMany() {
+    void eagerNonPKManyMany() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPKs");
         nonPKManyMany(pm);
@@ -245,12 +245,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testPartialManyMany() {
+    void testPartialManyMany() {
         partialManyMany((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerPartialManyMany() {
+    void eagerPartialManyMany() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("partials");
         partialManyMany(pm);
@@ -267,12 +267,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testVerticalNonPKManyMany() {
+    void testVerticalNonPKManyMany() {
         verticalNonPKManyMany((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerVerticalNonPKManyMany() {
+    void eagerVerticalNonPKManyMany() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPK2s");
         verticalNonPKManyMany(pm);
@@ -294,12 +294,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testVerticalPartialManyMany() {
+    void testVerticalPartialManyMany() {
         verticalPartialManyMany((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerVerticalPartialManyMany() {
+    void eagerVerticalPartialManyMany() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("partial2s");
         verticalPartialManyMany(pm);
@@ -321,7 +321,7 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testVerticalConstant() {
+    void verticalConstant() {
 
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         ConstantJoinPC2 constant2 =
@@ -335,12 +335,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testConstantOneOne() {
+    void testConstantOneOne() {
         constantOneOne((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerConstantOneOne() {
+    void eagerConstantOneOne() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPK");
         constantOneOne(pm);
@@ -356,12 +356,12 @@ public class TestIrregularJoins extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testConstantOneMany() {
+    void testConstantOneMany() {
         constantOneMany((OpenJPAEntityManager)currentEntityManager());
     }
 
     @Test
-    public void testEagerConstantOneMany() {
+    void eagerConstantOneMany() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nonPKs");
         constantOneMany(pm);

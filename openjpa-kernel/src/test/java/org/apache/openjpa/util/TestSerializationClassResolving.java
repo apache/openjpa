@@ -18,12 +18,7 @@
  */
 package org.apache.openjpa.util;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * no loader can resolve by name fall back to the stream's own resolution.
  * Interface names of dynamic proxies are checked like class names.
  */
-public class TestSerializationClassResolving {
+class TestSerializationClassResolving {
 
     /**
      * A descriptor for a primitive type carries the type name, which
@@ -53,18 +48,18 @@ public class TestSerializationClassResolving {
      * resolvable only through {@link java.io.ObjectInputStream#resolveClass}.
      */
     @Test
-    public void testPrimitiveDescriptorIsResolved() throws Exception {
+    void primitiveDescriptorIsResolved() throws Exception {
         assertEquals(int.class, deserialize(serialize(int.class)));
     }
 
     @Test
-    public void testArrayClassIsResolved() throws Exception {
+    void arrayClassIsResolved() throws Exception {
         assertEquals(int[].class, deserialize(serialize(int[].class)));
         assertEquals(String[].class, deserialize(serialize(String[].class)));
     }
 
     @Test
-    public void testArrayInstanceIsResolved() throws Exception {
+    void arrayInstanceIsResolved() throws Exception {
         int[] values = new int[]{ 1, 2, 3 };
         assertEquals(int[].class, deserialize(serialize(values)).getClass());
     }
@@ -74,7 +69,7 @@ public class TestSerializationClassResolving {
      * through it, not through the loader of the deserializing code.
      */
     @Test
-    public void testClassOfContextLoaderWins() throws Exception {
+    void classOfContextLoaderWins() throws Exception {
         RedefiningClassLoader loader =
             new RedefiningClassLoader(getClass().getClassLoader());
         Class<?> redefined = loader.loadClass(Payload.class.getName());
@@ -96,7 +91,7 @@ public class TestSerializationClassResolving {
     }
 
     @Test
-    public void testProxyIsResolved() throws Exception {
+    void proxyIsResolved() throws Exception {
         Object read = deserialize(serialize((Serializable) newProxy()));
         assertTrue(Proxy.isProxyClass(read.getClass()));
         assertArrayEquals(new Class<?>[]{ Runnable.class }, read.getClass().getInterfaces());
@@ -108,7 +103,7 @@ public class TestSerializationClassResolving {
      * blacklisted name of the same length.
      */
     @Test
-    public void testProxyWithBlacklistedInterfaceIsRejected() throws Exception {
+    void proxyWithBlacklistedInterfaceIsRejected() throws Exception {
         String allowed = Runnable.class.getName();
         String blocked = "org.apache.xalanXX";
         assertEquals(allowed.length(), blocked.length());
@@ -119,7 +114,7 @@ public class TestSerializationClassResolving {
             deserialize(bytes);
             fail("a proxy of a blacklisted interface must not be deserialized");
         } catch (StoreException e) {
-            assertTrue(e.getCause() instanceof SecurityException, String.valueOf(e.getCause()));
+            assertInstanceOf(SecurityException.class, e.getCause(), String.valueOf(e.getCause()));
             assertTrue(e.getCause().getMessage().contains(blocked));
         }
     }

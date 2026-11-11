@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -40,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * collection to a single column. Before OPENJPA-3017 the attribute was left
  * out of the mapping altogether and its contents were lost without an error.
  */
-public class TestConvertedList extends SingleEMFTestCase {
+class TestConvertedList extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +45,7 @@ public class TestConvertedList extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTheAttributeIsMappedToOneColumn() {
+    void theAttributeIsMappedToOneColumn() {
         ClassMapping cm = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance()
             .getMapping(ConvertedListEntity.class, null, true);
@@ -56,12 +53,12 @@ public class TestConvertedList extends SingleEMFTestCase {
         assertNotNull(fm, "the converted attribute must be mapped");
         assertEquals(1,
             fm.getColumns().length, "the whole collection is one column value");
-        assertTrue(fm.getHandler() instanceof ConverterValueHandler, "the converter must map the value as a whole, got "
+        assertInstanceOf(ConverterValueHandler.class, fm.getHandler(), "the converter must map the value as a whole, got "
             + fm.getHandler());
     }
 
     @Test
-    public void testRoundTrip() {
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();
@@ -80,7 +77,7 @@ public class TestConvertedList extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTheListIsLoadedEagerly() {
+    void theListIsLoadedEagerly() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();
@@ -102,7 +99,7 @@ public class TestConvertedList extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAnExplicitLazyFetchIsHonoured() {
+    void anExplicitLazyFetchIsHonoured() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();

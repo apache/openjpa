@@ -52,7 +52,7 @@ public class TestOrphanedKeyAction extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         RuntimeTest1 pc = new RuntimeTest1();
@@ -75,7 +75,7 @@ public class TestOrphanedKeyAction extends AbstractTestCase {
     }
 
     @Test
-    public void testLog() {
+    void log() {
         Map map = getOrphanedKeyConfiguration("log(Level=FATAL)");
 
         OpenJPAEntityManagerFactory pmf = getEmf(map);
@@ -94,7 +94,7 @@ public class TestOrphanedKeyAction extends AbstractTestCase {
     }
 
     @Test
-    public void testException() {
+    void exception() {
         Map map = getOrphanedKeyConfiguration("exception");
         OpenJPAEntityManagerFactory pmf = getEmf(map);
 
@@ -118,7 +118,7 @@ public class TestOrphanedKeyAction extends AbstractTestCase {
     }
 
     @Test
-    public void testNone() {
+    void none() {
         Map map = getOrphanedKeyConfiguration("none");
         OpenJPAEntityManagerFactory pmf = getEmf(map);
         OpenJPAEntityManager pm = pmf.createEntityManager();

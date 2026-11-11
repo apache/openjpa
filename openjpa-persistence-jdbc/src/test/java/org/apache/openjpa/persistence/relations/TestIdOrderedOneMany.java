@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestIdOrderedOneMany
+class TestIdOrderedOneMany
     extends SingleEMFTestCase {
 
     private long id;
@@ -70,7 +70,7 @@ public class TestIdOrderedOneMany
     }
 
     @Test
-    public void testExplicitOrdering() {
+    void explicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);
@@ -86,7 +86,7 @@ public class TestIdOrderedOneMany
     }
 
     @Test
-    public void testImplicitOrdering() {
+    void implicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);

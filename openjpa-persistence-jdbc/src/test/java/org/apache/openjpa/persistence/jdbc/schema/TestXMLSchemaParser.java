@@ -27,10 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.sql.Types;
@@ -56,7 +53,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
     private SchemaGroup _group = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         this.conf = new JDBCConfigurationImpl();
         _group = getSchemaGroup();
@@ -87,7 +84,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Checks the generated schema group for accuracy.
      */
     @Test
-    public void testSchemaParsing() {
+    void schemaParsing() {
         assertEquals(2, _group.getSchemas().length);
         assertEquals("SCHEMA1", _group.getSchema("SCHEMA1").getName());
         assertEquals("SCHEMA2", _group.getSchema("SCHEMA2").getName());
@@ -97,7 +94,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Checks the pased sequences.
      */
     @Test
-    public void testSequenceParsing() {
+    void sequenceParsing() {
         Schema schema = _group.getSchema("SCHEMA1");
         assertEquals(2, schema.getSequences().length);
         assertEquals(0, _group.getSchema("SCHEMA2").getSequences().length);
@@ -122,7 +119,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Checks table and column parsing.
      */
     @Test
-    public void testTableColumnParsing() {
+    void tableColumnParsing() {
         Schema schema1 = _group.getSchema("SCHEMA1");
         Table[] tables = schema1.getTables();
         assertEquals(2, tables.length);
@@ -136,7 +133,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
         assertEquals(Types.VARCHAR, cols[0].getType());
         assertEquals(Types.FLOAT, cols[1].getType());
         assertTrue(cols[0].isNotNull());
-        assertTrue(!cols[1].isNotNull());
+        assertFalse(cols[1].isNotNull());
         assertEquals("def", cols[0].getDefault());
         assertNull(cols[1].getDefault());
     }
@@ -145,7 +142,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Test that primary keys are resolved correctly.
      */
     @Test
-    public void testPrimaryKeyParsing() {
+    void primaryKeyParsing() {
         Table table = _group.getSchema("SCHEMA1").getTable("TABLE1");
         PrimaryKey pk = table.getPrimaryKey();
         assertNotNull(pk);
@@ -158,7 +155,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
         pk = table.getPrimaryKey();
         assertNotNull(pk);
         assertEquals("PK2", pk.getName());
-        assertTrue(!pk.isLogical());
+        assertFalse(pk.isLogical());
         assertEquals(2, pk.getColumns().length);
         assertEquals(table.getColumn("COL1"), pk.getColumns()[0]);
         assertEquals(table.getColumn("COL2"), pk.getColumns()[1]);
@@ -168,7 +165,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Test that indexes are resolved correctly.
      */
     @Test
-    public void testIndexParsing() {
+    void indexParsing() {
         Table table = _group.getSchema("SCHEMA1").getTable("TABLE1");
         Index idx = table.getIndex("IDX1");
         assertNotNull(idx);
@@ -179,7 +176,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
         table = _group.getSchema("SCHEMA2").getTable("TABLE2");
         idx = table.getIndex("IDX2");
         assertNotNull(idx);
-        assertTrue(!idx.isUnique());
+        assertFalse(idx.isUnique());
         assertEquals(2, idx.getColumns().length);
         assertEquals(table.getColumn("COL1"), idx.getColumns()[0]);
         assertEquals(table.getColumn("COL2"), idx.getColumns()[1]);
@@ -189,7 +186,7 @@ public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.ker
      * Test that foreign keys are resolved correctly.
      */
     @Test
-    public void testForeignKeyParsing() {
+    void foreignKeyParsing() {
         Table table1 = _group.getSchema("SCHEMA1").getTable("TABLE1");
         Table table2 = _group.getSchema("SCHEMA2").getTable("TABLE2");
 

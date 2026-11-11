@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * column(s), and that VERSION(x) on an unversioned type is rejected with a
  * meaningful user exception instead of a NullPointerException.
  */
-public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
+class TestVersionFunctionOrderBy extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -58,7 +58,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testOrderByVersionUsesVersionColumn() {
+    void orderByVersionUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -70,7 +70,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testOrderByVersionDescendingUsesVersionColumn() {
+    void orderByVersionDescendingUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -82,7 +82,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testOrderByVersionAmongOtherOrderings() {
+    void orderByVersionAmongOtherOrderings() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -94,7 +94,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testWhereVersionStillUsesVersionColumn() {
+    void whereVersionStillUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -108,7 +108,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testVersionOnUnversionedTypeThrowsUserException() {
+    void versionOnUnversionedTypeThrowsUserException() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery("SELECT u FROM CompUser u ORDER BY VERSION(u)").getResultList();
@@ -130,7 +130,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testProjectVersionOfSurrogateVersionedType() {
+    void projectVersionOfSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -144,7 +144,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testWhereVersionOnSurrogateVersionedType() {
+    void whereVersionOnSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -158,7 +158,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testOrderByVersionOnSurrogateVersionedType() {
+    void orderByVersionOnSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
 
@@ -174,7 +174,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testProjectVersionOnUnversionedTypeThrowsUserException() {
+    void projectVersionOnUnversionedTypeThrowsUserException() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery("SELECT VERSION(u) FROM CompUser u").getResultList();

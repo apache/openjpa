@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * Tests for EntityGraph API (JPA 2.1 / 3.2).
  * Mirrors the TCK EntityGraph tests.
  */
-public class TestEntityGraph extends SingleEMFTestCase {
+class TestEntityGraph extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +55,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK addAttributeNodesStringArrayTest.
      */
     @Test
-    public void testAddAttributeNodesString() {
+    void addAttributeNodesString() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGEmployee> eg = em.createEntityGraph(EGEmployee.class);
@@ -80,7 +80,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK addAttributeNodesStringArrayIllegalArgumentExceptionTest.
      */
     @Test
-    public void testAddAttributeNodesStringIAE() {
+    void addAttributeNodesStringIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGEmployee2> eg = em.createEntityGraph(EGEmployee2.class);
@@ -101,7 +101,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testAddAttributeNodesAttribute() {
+    void addAttributeNodesAttribute() {
         EntityManager em = emf.createEntityManager();
         try {
             Metamodel mm = em.getMetamodel();
@@ -132,7 +132,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK createEntityGraphStringTest.
      */
     @Test
-    public void testCreateEntityGraphString() {
+    void createEntityGraphString() {
         EntityManager em = emf.createEntityManager();
         try {
             // known named graph should return non-null
@@ -152,7 +152,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK getEntityGraphStringTest and entityGraphGetNameTest.
      */
     @Test
-    public void testGetEntityGraphString() {
+    void getEntityGraphString() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<?> eg = em.getEntityGraph("first_last_graph");
@@ -168,7 +168,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK getEntityGraphStringIllegalArgumentExceptionTest.
      */
     @Test
-    public void testGetEntityGraphStringIAE() {
+    void getEntityGraphStringIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             try {
@@ -187,7 +187,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK entityGraphGetNameNoNameExistsTest.
      */
     @Test
-    public void testNameDefaultsToEntityName() {
+    void nameDefaultsToEntityName() {
         EntityManager em = emf.createEntityManager();
         try {
             List<EntityGraph<? super EGEmployee2>> egs =
@@ -204,7 +204,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK getNameTest.
      */
     @Test
-    public void testCreateEntityGraphClassName() {
+    void createEntityGraphClassName() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGEmployee2> eg = em.createEntityGraph(EGEmployee2.class);
@@ -220,7 +220,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK getEntityGraphsClassTest.
      */
     @Test
-    public void testGetEntityGraphsClass() {
+    void getEntityGraphsClass() {
         EntityManager em = emf.createEntityManager();
         try {
             List<EntityGraph<? super EGEmployee3>> egs =
@@ -245,7 +245,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK getEntityGraphsClassIllegalArgumentExceptionTest.
      */
     @Test
-    public void testGetEntityGraphsClassIAE() {
+    void getEntityGraphsClassIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             try {
@@ -264,7 +264,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK addNamedEntityGraphStringEntityGraphTest.
      */
     @Test
-    public void testAddNamedEntityGraph() {
+    void addNamedEntityGraph() {
         EntityManager em = emf.createEntityManager();
         try {
             String graphName = "new_named_entity_graph";
@@ -304,7 +304,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK annotationsTest.
      */
     @Test
-    public void testAnnotationAttributeNodes() {
+    void annotationAttributeNodes() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<?> eg = em.getEntityGraph("last_salary_graph");

@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.query;
 
 import org.junit.jupiter.api.BeforeEach;
 
-public class TestUpdateSingleValuedAssociationXML extends
+class TestUpdateSingleValuedAssociationXML extends
     TestUpdateSingleValuedAssociation {
 
     @BeforeEach

@@ -38,9 +38,9 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInheritance extends BaseKernelTest {
+class TestInheritance extends BaseKernelTest {
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -58,7 +58,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get all three objects via an extent.
      */
     @Test
-    public void testGetAllRuntimeTest1s() {
+    void getAllRuntimeTest1s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest1 o");
         Collection c = q.getResultList();
@@ -70,7 +70,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get all RuntimeTest2 objects via an extent.
      */
     @Test
-    public void testGetAllRuntimeTest2s() {
+    void getAllRuntimeTest2s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest2 o");
         Collection c = q.getResultList();
@@ -82,7 +82,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get all RuntimeTest3 objects via an extent.
      */
     @Test
-    public void testGetAllRuntimeTest3s() {
+    void getAllRuntimeTest3s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest3 o");
         Collection c = q.getResultList();
@@ -94,7 +94,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get just RuntimeTest1s via an extent.
      */
     @Test
-    public void testGetJustRuntimeTest1s() {
+    void getJustRuntimeTest1s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest1 o");
         q.setSubclasses(false);
@@ -111,7 +111,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get just RuntimeTest2s via an extent.
      */
     @Test
-    public void testGetJustRuntimeTest2s() {
+    void getJustRuntimeTest2s() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest2 o");
         q.setSubclasses(false);
@@ -128,7 +128,7 @@ public class TestInheritance extends BaseKernelTest {
      * Tests that we can get just RuntimeTest3s via an extent.
      */
     @Test
-    public void testGetJustRuntimeTest3() {
+    void getJustRuntimeTest3() {
         OpenJPAEntityManager pm = getPM();
         OpenJPAQuery q = pm.createQuery("SELECT o FROM RuntimeTest3 o");
         q.setSubclasses(false);

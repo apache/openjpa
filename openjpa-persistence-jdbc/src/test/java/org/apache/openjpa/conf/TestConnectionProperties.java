@@ -23,7 +23,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestConnectionProperties extends SingleEMFTestCase {
+class TestConnectionProperties extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp(new Object[] { "openjpa.ConnectionProperties",
@@ -33,7 +33,7 @@ public class TestConnectionProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmWithProps() {
+    void emWithProps() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.close();
     }

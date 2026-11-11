@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +36,7 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
     private OpenJPAEntityManagerFactorySPI emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         emf = createEMF(MapHolder.class, MapEmbeddable.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", "openjpa.RuntimeUnenhancedClasses", "unsupported");
         populate();
@@ -68,7 +66,7 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testMapContents() {
+    void mapContents() {
         EntityManager em = emf.createEntityManager();
 
         MapHolder mh = em.find(MapHolder.class, 10);
@@ -76,13 +74,11 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
         assertNotNull(mh);
 
         for (Object o : mh.getEmbeddableMap().keySet()) {
-            assertTrue(o instanceof MapEmbeddable,
-                "Expected key to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
+            assertInstanceOf(MapEmbeddable.class, o, "Expected key to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
         }
 
         for (Object o : mh.getEmbeddableMap().values()) {
-            assertTrue(o instanceof MapEmbeddable,
-                "Expected value to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
+            assertInstanceOf(MapEmbeddable.class, o, "Expected value to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
         }
         em.close();
     }

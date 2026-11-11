@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * SimpleA -> *SimpleB -> *SimpleC. SimpleC has no CascadeType.MERGE annotation.
  *
  */
-public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
+class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
     private int a_id;
 
     @BeforeEach
@@ -71,7 +71,7 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMergeAttached () {
+    void mergeAttached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         assertNotNull(a);
@@ -102,7 +102,7 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
      * "A", it couldn't find "B" because previous code assume B was detached.
      */
     @Test
-    public void testMergeDetached () {
+    void mergeDetached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         assertNotNull(a);

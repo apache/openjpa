@@ -35,15 +35,15 @@ import org.apache.openjpa.persistence.kernel.common.apps.AppIdClassString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestClassStringConstructor extends BaseKernelTest {
+class TestClassStringConstructor extends BaseKernelTest {
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(AppIdClassString.class);
     }
 
     @Test
-    public void testConstructor() {
+    void constructor() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         AppIdClassString pc = new AppIdClassString(5);

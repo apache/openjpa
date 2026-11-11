@@ -62,7 +62,7 @@ public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testBase()
+    void base()
         throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
@@ -93,7 +93,7 @@ public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testBadId()
+    void badId()
         throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
@@ -111,7 +111,7 @@ public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testLeaf()
+    void leaf()
         throws Exception {
         BaseSub1Sub2 pc = new BaseSub1Sub2();
         pc.setBaseField(4);
@@ -145,7 +145,7 @@ public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testLeaf2()
+    void leaf2()
         throws Exception {
         BaseSub2 pc = new BaseSub2();
         pc.setBaseField(3);
@@ -178,7 +178,7 @@ public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testMid()
+    void mid()
         throws Exception {
         BaseSub1 pc = new BaseSub1();
         pc.setBaseField(2);

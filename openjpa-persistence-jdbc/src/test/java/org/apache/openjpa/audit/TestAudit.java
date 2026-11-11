@@ -53,7 +53,7 @@ public class TestAudit {
 	EntityManager em;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
     	if (emf == null) {
     		emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory("audit"));
     		assertNotNull(emf);
@@ -84,17 +84,17 @@ public class TestAudit {
     }
 
     @Test
-    public void testAuditorIsConfigured() {
+    void auditorIsConfigured() {
     	assertNotNull(auditor);
     }
 
     @Test
-    public void testIsEntityAuditable() {
+    void isEntityAuditable() {
     	assertNotNull(X.class.getAnnotation(Auditable.class));
     }
 
     @Test
-    public void testNewInstancesAreAudited() {
+    void newInstancesAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
 
@@ -108,7 +108,7 @@ public class TestAudit {
     }
 
     @Test
-    public void testUpdateOutsideTransactionAreAudited() {
+    void updateOutsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
 
@@ -128,7 +128,7 @@ public class TestAudit {
     }
 
     @Test
-    public void testUpdateInsideTransactionAreAudited() {
+    void updateInsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
 
@@ -149,7 +149,7 @@ public class TestAudit {
     }
 
     @Test
-    public void testAuditDoesNotLeakMemory() {
+    void auditDoesNotLeakMemory() {
     	int N = 1000;
     	EntityManager em = emf.createEntityManager();
 	   	long m2 = insert(N, em);

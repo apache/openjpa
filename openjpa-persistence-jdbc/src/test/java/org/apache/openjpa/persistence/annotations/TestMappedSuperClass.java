@@ -50,7 +50,7 @@ public class TestMappedSuperClass extends AnnotationTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Store.class);
         deleteAll(Site.class);
         deleteAll(Site1.class);
@@ -58,13 +58,13 @@ public class TestMappedSuperClass extends AnnotationTestCase {
     }
 
     @Test
-    public void testMappedSuperClassSameKeys() {
+    void mappedSuperClassSameKeys() {
         createSite();
         createStore();
     }
 
     @Test
-    public void testMappedSuperClassIdClass() {
+    void mappedSuperClassIdClass() {
         createSite1();
         createStore1();
     }

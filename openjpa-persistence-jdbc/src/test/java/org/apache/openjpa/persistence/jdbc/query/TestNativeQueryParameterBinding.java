@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
+class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 	private static Class<? extends Exception> NO_ERROR = null;
 
     @BeforeEach
@@ -47,25 +47,25 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testNamedParameterInNativeQueryIsNotValid() {
+    void namedParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=:id";
 		verifyParams(sql, IllegalArgumentException.class, "id", 10);
 	}
 
     @Test
-    public void testPositionalParameterInNativeQueryIsValid() {
+    void positionalParameterInNativeQueryIsValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, NO_ERROR, 1, 10);
 	}
 
     @Test
-    public void testZeroPositionalParameterInNativeQueryIsNotValid() {
+    void zeroPositionalParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, IllegalArgumentException.class, 0, 10);
 	}
 
     @Test
-    public void testNativeQueryDeclaredParameters() {
+    void nativeQueryDeclaredParameters() {
         String sql = "SELECT * FROM Application WHERE id=?1 AND name=?2";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

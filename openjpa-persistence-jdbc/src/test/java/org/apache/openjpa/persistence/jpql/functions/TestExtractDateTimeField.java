@@ -44,7 +44,7 @@ import jakarta.persistence.criteria.Root;
  * Evaluates EXTRACT on persistent temporal columns, so that every database renders each field
  * with its own SQL rather than relying on a generic EXTRACT(field FROM x).
  */
-public class TestExtractDateTimeField extends SingleEMFTestCase {
+class TestExtractDateTimeField extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -74,44 +74,44 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractYear() {
+    void extractYear() {
         assertEquals(List.of(2024, 2023), extract("YEAR", "localDateField"));
         assertEquals(List.of(2024, 2023), extract("YEAR", "localDateTimeField"));
     }
 
     @Test
-    public void testExtractQuarter() {
+    void extractQuarter() {
         assertEquals(List.of(1, 4), extract("QUARTER", "localDateField"));
         assertEquals(List.of(2, 4), extract("QUARTER", "localDateTimeField"));
     }
 
     @Test
-    public void testExtractMonth() {
+    void extractMonth() {
         assertEquals(List.of(1, 12), extract("MONTH", "localDateField"));
         assertEquals(List.of(5, 11), extract("MONTH", "localDateTimeField"));
     }
 
     @Test
-    public void testExtractDay() {
+    void extractDay() {
         assertEquals(List.of(1, 31), extract("DAY", "localDateField"));
         assertEquals(List.of(17, 2), extract("DAY", "localDateTimeField"));
     }
 
     @Test
-    public void testExtractHour() {
+    void extractHour() {
         assertEquals(List.of(13, 7), extract("HOUR", "localDateTimeField"));
         // a time column is a DATE column on Oracle
         assertEquals(List.of(13, 7), extract("HOUR", "localTimeField"));
     }
 
     @Test
-    public void testExtractMinute() {
+    void extractMinute() {
         assertEquals(List.of(45, 5), extract("MINUTE", "localDateTimeField"));
         assertEquals(List.of(45, 5), extract("MINUTE", "localTimeField"));
     }
 
     @Test
-    public void testExtractSecond() {
+    void extractSecond() {
         try (EntityManager em = emf.createEntityManager()) {
             List<?> result = em.createQuery("SELECT EXTRACT(SECOND FROM e.localDateTimeField) "
                     + "FROM Java8TimeTypes e ORDER BY e.id").getResultList();
@@ -128,7 +128,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
      * zone of the session when storing or reading it.
      */
     @Test
-    public void testExtractHourAndMinuteFromOffsetDateTimeOnOracle() {
+    void extractHourAndMinuteFromOffsetDateTimeOnOracle() {
         if (!(getDBDictionary() instanceof OracleDictionary)) {
             return;
         }
@@ -150,7 +150,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractInWhereClause() {
+    void extractInWhereClause() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(QUARTER FROM e.localDateField) = 4 AND EXTRACT(DAY FROM e.localDateField) = 31",
@@ -160,7 +160,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractWeek() {
+    void extractWeek() {
         assertEquals(List.of(1, 52), extract("WEEK", "localDateField"));
     }
 
@@ -169,7 +169,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
      * parameter and in the WHERE and ORDER BY clauses.
      */
     @Test
-    public void testExtractWeekAtYearBoundaries() {
+    void extractWeekAtYearBoundaries() {
         LocalDate[] dates = {
             LocalDate.of(2020, 12, 31), // Thursday of week 53 of 2020
             LocalDate.of(2021, 1, 3), // Sunday of week 53 of 2020
@@ -218,7 +218,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCriteriaExtract() {
+    void criteriaExtract() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -248,7 +248,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractFromParameter() {
+    void extractFromParameter() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(YEAR FROM e.localDateField) = EXTRACT(YEAR FROM :d) "
@@ -269,7 +269,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCriteriaExtractFromLiteral() {
+    void criteriaExtractFromLiteral() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
@@ -285,7 +285,7 @@ public class TestExtractDateTimeField extends SingleEMFTestCase {
      * the time they were extracted from, also on databases without a TIME type.
      */
     @Test
-    public void testExtractDateAndTime() {
+    void extractDateAndTime() {
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals(List.of(1), em.createQuery("SELECT e.id FROM Java8TimeTypes e "
                     + "WHERE EXTRACT(DATE FROM e.localDateTimeField) = {d '2024-05-17'}", Integer.class)

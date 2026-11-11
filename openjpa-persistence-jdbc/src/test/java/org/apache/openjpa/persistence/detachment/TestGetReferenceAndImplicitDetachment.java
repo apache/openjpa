@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGetReferenceAndImplicitDetachment
+class TestGetReferenceAndImplicitDetachment
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -39,7 +39,7 @@ public class TestGetReferenceAndImplicitDetachment
     }
 
     @Test
-    public void testNonexistentGetReferenceDetachmentInTxWithCommit() {
+    void nonexistentGetReferenceDetachmentInTxWithCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =
@@ -56,7 +56,7 @@ public class TestGetReferenceAndImplicitDetachment
     }
 
     @Test
-    public void testNonexistentGetReferenceDetachmentOutsideTx() {
+    void nonexistentGetReferenceDetachmentOutsideTx() {
         EntityManager em = emf.createEntityManager();
         DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
@@ -71,7 +71,7 @@ public class TestGetReferenceAndImplicitDetachment
     }
 
     @Test
-    public void testNonexistentGetReferenceDetachmentInTxWithRollback() {
+    void nonexistentGetReferenceDetachmentInTxWithRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =
@@ -88,7 +88,7 @@ public class TestGetReferenceAndImplicitDetachment
     }
 
     @Test
-    public void testNonexistentGetReferenceDetachmentInTxWithFailedCommit() {
+    void nonexistentGetReferenceDetachmentInTxWithFailedCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =

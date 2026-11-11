@@ -37,14 +37,14 @@ import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSequence extends BaseKernelTest {
+class TestSequence extends BaseKernelTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(AImplB.class);
     }
 
     @Test
-    public void testSequence() {
+    void sequence() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         Generator seq = pm.getIdGenerator(AImplB.class);

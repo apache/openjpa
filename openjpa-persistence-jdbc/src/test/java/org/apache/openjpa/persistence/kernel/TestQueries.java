@@ -46,13 +46,13 @@ public class TestQueries extends BaseKernelTest {
     private int id = 10000;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
     @Test
-    public void testSimpleQuery() {
+    void simpleQuery() {
         OpenJPAEntityManager pm = getPM();
 
         persist(newRuntimeTest1("SimpleQueryA", 50), pm);
@@ -75,7 +75,7 @@ public class TestQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testAndQuery() {
+    void andQuery() {
         String query = "intField1 > 10 AND o.intField1 < 50";
 
         for (int currentCount = 1; currentCount < 15; currentCount++) {
@@ -98,7 +98,7 @@ public class TestQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testRelationQuery() {
+    void testRelationQuery() {
         relationQuery(10, "JOE", 20);
         relationQuery(99, "BOB", 2);
         relationQuery(3, "MARTHA", 1);
@@ -129,7 +129,7 @@ public class TestQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testQueryExecuteThrowsExceptionWhenNoNTR() {
+    void queryExecuteThrowsExceptionWhenNoNTR() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         pm.persist(newRuntimeTest1("Query", 10));

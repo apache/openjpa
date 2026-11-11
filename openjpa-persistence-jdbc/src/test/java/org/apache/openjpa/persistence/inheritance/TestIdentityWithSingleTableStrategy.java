@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import jakarta.persistence.EntityManager;
 
@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
+class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	private Admin admin;
 	private RegularUser user;
 
@@ -64,25 +64,25 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFindAndNaviagtedEntityIdential() {
+    void findAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
 		Admin adminFromFind = em1.find(Admin.class, admin.getOid());
 		Admin adminFromMethodBean = regularUserFromFind.getAdmin();
-		assertTrue(adminFromFind == adminFromMethodBean);
+		assertSame(adminFromFind, adminFromMethodBean);
 		em1.close();
 	}
 
     @Test
-    public void testReferenceAndNaviagtedEntityIdential() {
+    void referenceAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
         Admin adminFromGetReference = em1.getReference(Admin.class, admin
 				.getOid());
 		Admin adminFromMethodBean = regularUserFromFind.getAdmin();
-		assertTrue(adminFromGetReference == adminFromMethodBean);
+		assertSame(adminFromGetReference, adminFromMethodBean);
 		em1.close();
 	}
 }

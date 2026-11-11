@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.datacache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -28,8 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-
 import org.apache.openjpa.datacache.AbstractQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.TypesChangedEvent;
@@ -37,17 +35,21 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
 
 /**
  * Without a list of persistent types, a remote commit event can name a
  * persistent subclass that has not been loaded yet. The subclass still
  * invalidates the cached query results of its superclass.
  */
-public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
+class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
 
     private static final String DOG = "org.apache.openjpa.persistence.datacache.RemoteCommitDog";
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         // the subclass is not part of the listed types
@@ -60,9 +62,9 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryCacheInvalidatesSuperclassOfUnloadedType() {
+    void queryCacheInvalidatesSuperclassOfUnloadedType() {
         for (Class<?> cls : PCRegistry.getRegisteredTypes()) {
-            assertFalse(DOG.equals(cls.getName()), "the subclass must not be loaded yet");
+            assertNotEquals(DOG, cls.getName(), "the subclass must not be loaded yet");
         }
 
         // no persistent types are listed, so types are found when used

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteInverseMap extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteInverseMap extends AbstractBulkDeleteTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestBulkDeleteInverseMap extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testRelatedEntityRowsSurviveBulkDelete() {
+    void relatedEntityRowsSurviveBulkDelete() {
         assertEquals(1, delete("delete from BulkDeleteMapOwner o"));
 
         assertEquals(0, count(BulkDeleteMapOwner.class));

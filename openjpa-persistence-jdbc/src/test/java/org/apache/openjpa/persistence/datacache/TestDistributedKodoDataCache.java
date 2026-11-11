@@ -60,7 +60,7 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
     }
@@ -125,22 +125,22 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
     }
 
     @Test
-    public void testNormalTransAndDataCacheDelete() {
+    void normalTransAndDataCacheDelete() {
         coreTestTransAndChange(new performAsDelete(), false, true);
     }
 
     @Test
-    public void testNormalTransAndDataCacheModify() {
+    void normalTransAndDataCacheModify() {
         coreTestTransAndChange(new performAsModify(), false, false);
     }
 
     @Test
-    public void testLargeTransAndDataCacheDelete() {
+    void largeTransAndDataCacheDelete() {
         coreTestTransAndChange(new performAsDelete(), true, true);
     }
 
     @Test
-    public void testLargeTransAndDataCacheModify() {
+    void largeTransAndDataCacheModify() {
         coreTestTransAndChange(new performAsModify(), true, false);
     }
 

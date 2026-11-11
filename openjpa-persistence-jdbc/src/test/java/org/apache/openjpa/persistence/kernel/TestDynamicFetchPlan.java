@@ -68,7 +68,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySubClassFieldB() {
+    void fetchBySubClassFieldB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
 		fp.setExtendedPathLookup(true);
@@ -87,7 +87,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySubClassFieldA() {
+    void fetchBySubClassFieldA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -106,7 +106,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySuperClassField() {
+    void fetchBySuperClassField() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -125,7 +125,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySubClassFieldNameB() {
+    void fetchBySubClassFieldNameB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -144,7 +144,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySubClassFieldNameA() {
+    void fetchBySubClassFieldNameA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -163,7 +163,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFetchBySuperClassFieldName() {
+    void fetchBySuperClassFieldName() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -183,7 +183,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 
     // OPENJPA-2413: FetchPlan.clearFetchGroups() does not retain "default" in list of active Fetch Groups.
     @Test
-    public void testClearFetchPlan() {
+    void clearFetchPlan() {
 	    OpenJPAEntityManager em = emf.createEntityManager();
 	    FetchPlan fp = em.getFetchPlan();
 

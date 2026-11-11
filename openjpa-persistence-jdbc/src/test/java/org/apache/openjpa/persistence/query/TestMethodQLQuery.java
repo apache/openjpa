@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -60,28 +58,28 @@ public class TestMethodQLQuery
     }
 
     @Test
-    public void testMethodQLWithParameters() {
+    void methodQLWithParameters() {
         OpenJPAQuery q = createMethodQuery("echo");
         Query kernelQ = q.unwrap(Query.class);
         kernelQ.declareParameters("String firstName, String lastName");
         q.setParameter("firstName", "Fred").setParameter("lastName", "Lucas");
         Object result = q.getResultList().get(0);
-        assertTrue(result instanceof Map);
+        assertInstanceOf(Map.class, result);
         Map params = (Map)result;
         assertEquals("Fred", params.get("firstName"));
         assertEquals("Lucas", params.get("lastName"));
     }
 
     @Test
-    public void testMethodQLWithoutParametersDeclared() {
+    void methodQLWithoutParametersDeclared() {
         OpenJPAQuery q = createMethodQuery("echo");
         Object result = q.getResultList().get(0);
-        assertTrue(result instanceof Map);
+        assertInstanceOf(Map.class, result);
         assertTrue(((Map)result).isEmpty());
     }
 
     @Test
-    public void testInvalidMethodReturnType() {
+    void invalidMethodReturnType() {
         OpenJPAQuery q = createMethodQuery("invalidReturnMeth");
         try {
             q.getResultList().get(0);
@@ -92,7 +90,7 @@ public class TestMethodQLQuery
     }
 
     @Test
-    public void testVoidMethodReturnType() {
+    void voidMethodReturnType() {
         OpenJPAQuery q = createMethodQuery("voidMeth");
         try {
             q.getResultList().get(0);

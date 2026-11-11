@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 
 // -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionPassword=openjpatst
 // -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst
-public class TestExplicitAccess extends SingleEMFTestCase {
+class TestExplicitAccess extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -76,7 +76,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * class level.
      */
     @Test
-    public void testClassSpecifiedFieldAccess() {
+    void classSpecifiedFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -107,7 +107,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * class level.
      */
     @Test
-    public void testClassSpecifiedPropertyAccess() {
+    void classSpecifiedPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -138,7 +138,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * on specific methods.
      */
     @Test
-    public void testClassSpecifiedMixedSinglePCFieldAccess() {
+    void classSpecifiedMixedSinglePCFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -162,7 +162,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         DefFieldMixedPropAccess dfmpa2 =
             (DefFieldMixedPropAccess)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
-        assertEquals(dfmpa2.getStringField(), "DFMPA");
+        assertEquals("DFMPA", dfmpa2.getStringField());
 
         try {
             qry = em.createNamedQuery("DFMPA.badQuery");
@@ -187,7 +187,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * on specific methods.
      */
     @Test
-    public void testClassSpecifiedMixedSinglePCPropertyAccess() {
+    void classSpecifiedMixedSinglePCPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -209,7 +209,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         DefPropMixedFieldAccess dpmfa2 =
             (DefPropMixedFieldAccess)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
-        assertEquals(dpmfa2.getStrProp(), "DPMFA");
+        assertEquals("DPMFA", dpmfa2.getStrProp());
 
         try {
             qry = em.createNamedQuery("DPMFA.badQuery");
@@ -232,7 +232,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * subclass using property access get mapped properly.
      */
     @Test
-    public void testAbstractMappedSuperField() {
+    void abstractMappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         PropertySub ps = new PropertySub();
@@ -257,7 +257,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         PropertySub ps2 =
             (PropertySub)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "AbsMappedSuperName");
+        assertEquals("AbsMappedSuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -282,7 +282,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * subclass using field access get mapped properly.
      */
     @Test
-    public void testAbstractMappedSuperProperty() {
+    void abstractMappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         FieldSub fs = new FieldSub();
@@ -307,7 +307,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         FieldSub fs2 =
             (FieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "AbsMappedSuperName");
+        assertEquals("AbsMappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -333,7 +333,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * The subclass uses a storage field in the superclass.
      */
     @Test
-    public void testMappedSuperField() {
+    void mappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         PropertySub2 ps = new PropertySub2();
@@ -358,7 +358,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         PropertySub2 ps2 =
             (PropertySub2)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "MappedSuperName");
+        assertEquals("MappedSuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -384,7 +384,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * The subclass uses a storage field in the superclass.
      */
     @Test
-    public void testMappedSuperProperty() {
+    void mappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         FieldSub2 fs = new FieldSub2();
@@ -409,7 +409,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         FieldSub2 fs2 =
             (FieldSub2)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "MappedSuperName");
+        assertEquals("MappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -435,7 +435,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * MappedSuperclass.
      */
     @Test
-    public void testMixedMappedSuper() {
+    void mixedMappedSuper() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         MixedFieldSub fs = new MixedFieldSub();
@@ -462,7 +462,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         MixedFieldSub fs2 =
             (MixedFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "MixedMappedSuperName");
+        assertEquals("MixedMappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -489,7 +489,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * NOTE: be sure to test with all forms of inheritance.
      */
     @Test
-    public void testEntityFieldDefaultInheritance() {
+    void entityFieldDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         FieldSub3 fs = new FieldSub3();
@@ -519,7 +519,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         FieldSub3 fs2 =
             (FieldSub3)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "EntitySuperName");
+        assertEquals("EntitySuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -542,7 +542,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         SuperPropertyEntity spe2 =
             (SuperPropertyEntity)qry.getSingleResult();
         assertEquals(spe, spe2);
-        assertEquals(spe2.getName(), "SuperPropertyEntity");
+        assertEquals("SuperPropertyEntity", spe2.getName());
 
         try {
             // This query ensures that a subclass property didn't somehow get
@@ -570,7 +570,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * NOTE: be sure to test with all forms of inheritance.
      */
     @Test
-    public void testEntityPropertyDefaultInheritance() {
+    void entityPropertyDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         PropertySub3 ps = new PropertySub3();
@@ -599,7 +599,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         PropertySub3 ps2 =
             (PropertySub3)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "EntitySuperName");
+        assertEquals("EntitySuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -622,7 +622,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         SuperFieldEntity sfe2 =
             (SuperFieldEntity)qry.getSingleResult();
         assertEquals(sfe2, sfe2);
-        assertEquals(sfe2.getName(), "SuperFieldEntity");
+        assertEquals("SuperFieldEntity", sfe2.getName());
 
         try {
             // This query ensures that a subclass property didn't somehow get
@@ -648,7 +648,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity with property access
      */
     @Test
-    public void testEmbeddablesField() {
+    void embeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         EmbedFieldAccess efa = new EmbedFieldAccess();
@@ -696,7 +696,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity with field access
      */
     @Test
-    public void testEmbeddablesProperty() {
+    void embeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         EmbedPropAccess epa = new EmbedPropAccess();
@@ -744,7 +744,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity with mixed access
      */
     @Test
-    public void testMixedEmbeddables() {
+    void mixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         EmbedMixedAccess ema = new EmbedMixedAccess();
@@ -795,7 +795,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * an embeddable stack.
      */
     @Test
-    public void testNestedEmbeddables() {
+    void nestedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         EmbedInnerProp eip = new EmbedInnerProp();
@@ -846,7 +846,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * an entity with mulitple embeddables.
      */
     @Test
-    public void testMultipleEmbeddables() {
+    void multipleEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         EmbedFieldAccess efa = new EmbedFieldAccess();
@@ -917,7 +917,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * the id field, which is field default)
      */
     @Test
-    public void testPropertyAccessStrategies() {
+    void propertyAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         PropAccessFieldStratsEntity pa = new PropAccessFieldStratsEntity();
@@ -987,8 +987,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         // Name has a matching getter/setter.  Make sure the access type
         // is field & not property
         assertNotNull(cmd.getField("name"));
-        assertTrue((cmd.getField("name").getAccessType() & AccessCode.FIELD) ==
-            AccessCode.FIELD);
+        assertEquals((cmd.getField("name").getAccessType() & AccessCode.FIELD), AccessCode.FIELD);
 
         // Assert mappings were not created for fields or properties which
         // should not be persistent
@@ -1010,7 +1009,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * for the id field, which is property default)
      */
     @Test
-    public void testFieldAccessStrategies() {
+    void fieldAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         FieldAccessPropStratsEntity fa = new FieldAccessPropStratsEntity();
@@ -1080,8 +1079,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         // Name has a matching getter/setter.  Make sure the access type
         // is property & not field
         assertNotNull(cmd.getField("name"));
-        assertTrue((cmd.getField("name").getAccessType() & AccessCode.PROPERTY)
-            == AccessCode.PROPERTY);
+        assertEquals((cmd.getField("name").getAccessType() & AccessCode.PROPERTY), AccessCode.PROPERTY);
 
         // Assert mappings were not created for fields or properties which
         // should not be persistent
@@ -1102,7 +1100,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * mixed access embeddable.
      */
     @Test
-    public void testMapWithNestedEmbeddable() {
+    void mapWithNestedEmbeddable() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         MenuItem mi = new MenuItem();

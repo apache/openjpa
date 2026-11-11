@@ -43,7 +43,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
     }
 
     @Test
-    public void testQueryResultTypesWithThis() {
+    void queryResultTypesWithThis() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.name,a FROM " +
@@ -56,7 +56,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
     }
 
     @Test
-    public void testQueryResultTypesWithRelated() {
+    void queryResultTypesWithRelated() {
         Broker broker = getBroker();
         Query q = broker
             .newQuery(JPQLParser.LANG_JPQL, "select a.name,a.relatedB FROM " +
@@ -70,7 +70,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
     }
 
     @Test
-    public void testSingleProjectionOfNonThisRelation() {
+    void singleProjectionOfNonThisRelation() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.relatedB FROM " +
@@ -82,7 +82,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
     }
 
     @Test
-    public void testSingleProjectionOfThisRelation() {
+    void singleProjectionOfThisRelation() {
         Broker broker = getBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +
             CacheObjectA.class.getSimpleName() + " a");
@@ -91,7 +91,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
     }
 
     @Test
-    public void testNoResultClause() {
+    void noResultClause() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +

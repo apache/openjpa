@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test EntityManager find/namedQuery deadlock exceptions.
  */
-public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
+class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     private DBType dbType;
     private HashMap<DBType,Class<?>[]> expWriteLockExClasses;
 
@@ -71,7 +71,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
 
     /* ======== Find dead lock exception test ============*/
     @Test
-    public void testFindDeadLockException() {
+    void findDeadLockException() {
         commonFindTest("testFindDeadLockException", LockModeType.READ, null);
         commonFindTest("testFindDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
         commonFindTest("testFindDeadLockException", LockModeType.PESSIMISTIC_WRITE, ExpectingAnyLockExClass);
@@ -116,7 +116,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
 
     /* ======== named query dead lock exception test ============*/
     @Test
-    public void testNamedQueryDeadLockException() {
+    void namedQueryDeadLockException() {
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.READ, null);
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.PESSIMISTIC_FORCE_INCREMENT, ExpectingAnyLockExClass);

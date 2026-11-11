@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMapCollectionToBlob
+class TestMapCollectionToBlob
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -43,13 +43,13 @@ public class TestMapCollectionToBlob
     }
 
     @Test
-    public void testHandlerToHandlerMaps() {
+    void handlerToHandlerMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerToHandlerMapInstance.class);
         FieldMapping fm = cm.getFieldMapping("map");
         assertEquals(getBlobFieldStrategy(), fm.getStrategy().getClass());
         assertEquals("NONSTD_MAPPING_MAP", fm.getTable().getName());
-        assertEquals(fm.getTable().getColumn("MAP").getType(), Types.BLOB);
+        assertEquals(Types.BLOB, fm.getTable().getColumn("MAP").getType());
 
         HandlerToHandlerMapInstance o = new HandlerToHandlerMapInstance();
         o.getMap().put("foo", "bar");

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * Reproduces the TCK ShelfLife + Product pattern that causes NPE
  * during enhancement when both redefine and createSubclass are active.
  */
-public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
+class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +52,7 @@ public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
      * This triggers enhancement of both the entity and embeddable.
      */
     @Test
-    public void testPersistAndMergeWithEmbeddable() {
+    void persistAndMergeWithEmbeddable() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -88,7 +88,7 @@ public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
      * Test: persist + set + merge + query (full TCK pattern with embeddable).
      */
     @Test
-    public void testQueryAfterMergeWithEmbeddable() {
+    void queryAfterMergeWithEmbeddable() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

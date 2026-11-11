@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * @author Harald Wellmann
  *
  */
-public class TestMapUpdate extends SQLListenerTestCase {
+class TestMapUpdate extends SQLListenerTestCase {
 
     private MultilingualString entity1;
 	private OpenJPAEntityManagerSPI em;
@@ -50,7 +50,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     }
 
     @Test
-    public void testUpdateMapKey() throws Exception {
+    void updateMapKey() throws Exception {
     	em.getTransaction().begin();
 
     	MultilingualString ms = em.find(MultilingualString.class, entity1.getId());
@@ -70,7 +70,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     }
 
     @Test
-    public void testUpdateMapValue() throws Exception {
+    void updateMapValue() throws Exception {
     	em.getTransaction().begin();
 
     	MultilingualString ms = em.find(MultilingualString.class, entity1.getId());

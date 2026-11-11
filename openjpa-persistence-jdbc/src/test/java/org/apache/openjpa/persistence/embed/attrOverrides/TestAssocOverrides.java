@@ -29,7 +29,6 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +57,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
      * Test AssociationOverrides on field
      */
     @Test
-    public void testAssocOverride1() {
+    void assocOverride1() {
         sql.clear();
         createObj1();
         findObj1();
@@ -72,7 +71,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
      * Test AssociationOverrides on entity (MappedSuperclass)
      */
     @Test
-    public void testAssocOverride2() {
+    void assocOverride2() {
         sql.clear();
         createObj2();
         findObj2();
@@ -235,7 +234,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public void findObj2() {
         EntityManager em = emf.createEntityManager();
         PartTimeEmployee p = em.find(PartTimeEmployee.class, 1);
-        Assertions.assertEquals(p.getHourlyWage(), (float)100, 0.001f);
+        assertEquals(p.getHourlyWage(), (float)100, 0.001f);
         em.close();
     }
 
@@ -247,7 +246,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         String jpql = "select p from PartTimeEmployee p";
         Query q = em.createQuery(jpql);
         List<PartTimeEmployee> ps = q.getResultList();
-        Assertions.assertEquals(ps.size(), numEmployees);
+        assertEquals(ps.size(), numEmployees);
         tran.commit();
         em.close();
     }

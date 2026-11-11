@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * Before the fix, this threw VerifyError: "Bad access to protected init method"
  * in the generated pcsubclass writeReplace() method.
  */
-public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
+class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Mirrors TCK setup — pcsubclass generation triggers writeReplace().
      */
     @Test
-    public void testCreateEMWithProtectedConstructorSuperclass() {
+    void createEMWithProtectedConstructorSuperclass() {
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
@@ -64,7 +64,7 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Persist multiple entities, find by PK, remove, verify removal.
      */
     @Test
-    public void testPersistFindRemove() {
+    void persistFindRemove() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(1, "hazelnut", 1.0f));
@@ -105,7 +105,7 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Modify a detached entity, merge it back, verify update.
      */
     @Test
-    public void testMerge() {
+    void merge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(10, "original", 5.0f));
@@ -139,7 +139,7 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Query using a field inherited from the MappedSuperclass.
      */
     @Test
-    public void testQueryInheritedField() {
+    void queryInheritedField() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(20, "decaf blend", 3.0f));

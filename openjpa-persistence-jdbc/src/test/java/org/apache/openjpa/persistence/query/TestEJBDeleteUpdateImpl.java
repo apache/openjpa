@@ -31,14 +31,14 @@ import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
+class TestEJBDeleteUpdateImpl extends BaseQueryTest {
 
     RuntimeTest1 runt1;
     RuntimeTest2 runt2;
     Entity1 ent;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
         deleteAll(Entity1.class);
@@ -64,7 +64,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
     }
 
     @Test
-    public void testUpdate1() {
+    void update1() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -97,7 +97,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
     }
 
     @Test
-    public void testUpdate2() {
+    void update2() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -133,7 +133,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
     }
 
     @Test
-    public void testDelete1() {
+    void delete1() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -160,7 +160,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
     }
 
     @Test
-    public void testDelete2() {
+    void delete2() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -184,7 +184,7 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
     }
 
     @Test
-    public void testUpdate3() {
+    void update3() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);

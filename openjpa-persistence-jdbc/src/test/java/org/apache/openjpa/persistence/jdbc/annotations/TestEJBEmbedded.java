@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -49,7 +46,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestEJBEmbedded extends SingleEMFTestCase {
+class TestEJBEmbedded extends SingleEMFTestCase {
 
     private static final String CLOB;
 
@@ -68,7 +65,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbedded() {
+    void embedded() {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -101,7 +98,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbeddedMetaData() {
+    void embeddedMetaData() {
         ClassMetaData ownerMeta =
             JPAFacadeHelper.getMetaData(emf, EmbedOwner.class);
         FieldMetaData fmd = ownerMeta.getField("embed");
@@ -160,17 +157,17 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullNoCache() {
+    void nullNoCache() {
         nullTestLogic(false);
     }
 
     @Test
-    public void testNullCacheEnabled() {
+    void nullCacheEnabled() {
         nullTestLogic(true);
     }
 
     @Test
-    public void testMappingTransferAndOverride() {
+    void mappingTransferAndOverride() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().getMapping
             (EmbedOwner.class, null, true);
@@ -188,11 +185,10 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict.getPreferredType(Types.CLOB) == Types.CLOB) {
             if (dict.maxEmbeddedClobSize > 0)
-                assertTrue(fm.getStrategy() instanceof
-                    MaxEmbeddedClobFieldStrategy);
+                assertInstanceOf(MaxEmbeddedClobFieldStrategy.class, fm.getStrategy());
             else
-                assertTrue(fm.getHandler() instanceof ClobValueHandler);
+                assertInstanceOf(ClobValueHandler.class, fm.getHandler());
         } else
-            assertTrue(fm.getStrategy() instanceof StringFieldStrategy);
+            assertInstanceOf(StringFieldStrategy.class, fm.getStrategy());
     }
 }

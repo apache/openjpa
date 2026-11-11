@@ -49,13 +49,13 @@ public class TestEvents
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         transactionListener = new TransactionEventListenerTestImpl();
         deleteAll(RuntimeTest1.class);
     }
 
     @Test
-    public void testCommit() {
+    void commit() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
@@ -78,7 +78,7 @@ public class TestEvents
     }
 
     @Test
-    public void testRollback() {
+    void rollback() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
@@ -100,7 +100,7 @@ public class TestEvents
     }
 
     @Test
-    public void testObjectChanges() {
+    void objectChanges() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
@@ -130,7 +130,7 @@ public class TestEvents
     }
 
     @Test
-    public void testIgnoreCallbackModeExceptionConsumed() {
+    void ignoreCallbackModeExceptionConsumed() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
@@ -155,7 +155,7 @@ public class TestEvents
     }
 
     @Test
-    public void testExceptionCausesRollback() {
+    void exceptionCausesRollback() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)
@@ -177,7 +177,7 @@ public class TestEvents
         } catch (Exception je) {
             assertEquals("xxx", je.getMessage());
         }
-        assertTrue(!(isActiveTx(pm)));
+        assertFalse((isActiveTx(pm)));
         endEm(pm);
 
         assertEquals(TransactionEventListenerTestImpl.STARTED |
@@ -187,7 +187,7 @@ public class TestEvents
     }
 
     @Test
-    public void testExceptionAfterCommitThrown() {
+    void exceptionAfterCommitThrown() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         ((OpenJPAEntityManagerSPI) pm)

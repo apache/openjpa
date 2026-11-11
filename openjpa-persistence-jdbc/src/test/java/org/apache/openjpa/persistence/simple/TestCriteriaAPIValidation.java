@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for Criteria API validation fixes.
  */
-public class TestCriteriaAPIValidation extends SingleEMFTestCase {
+class TestCriteriaAPIValidation extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * ParameterExpression.getPosition() should return null for named parameters.
      */
     @Test
-    public void testParameterExpressionPositionIsNull() {
+    void parameterExpressionPositionIsNull() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         ParameterExpression<String> param = cb.parameter(String.class, "myParam");
         assertNull(param.getPosition());
@@ -59,7 +59,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * CriteriaBuilder.literal(null) should throw IllegalArgumentException.
      */
     @Test
-    public void testLiteralNullThrows() {
+    void literalNullThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         try {
             cb.literal(null);
@@ -74,7 +74,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * because compound selections cannot be nested.
      */
     @Test
-    public void testNestedTupleThrows() {
+    void nestedTupleThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = cb.createTupleQuery();
         Root<AllFieldTypes> root = cq.from(AllFieldTypes.class);
@@ -94,7 +94,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * because compound selections cannot be nested.
      */
     @Test
-    public void testNestedArrayThrows() {
+    void nestedArrayThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<AllFieldTypes> root = cq.from(AllFieldTypes.class);
@@ -113,7 +113,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * CriteriaBuilder.tuple(array(...)) should throw IllegalArgumentException.
      */
     @Test
-    public void testTupleContainingArrayThrows() {
+    void tupleContainingArrayThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<AllFieldTypes> root = cq.from(AllFieldTypes.class);

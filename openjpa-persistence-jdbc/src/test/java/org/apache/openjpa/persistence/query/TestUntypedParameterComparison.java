@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * of such a parameter, so databases such as Derby, which reject a comparison
  * of two untyped parameter markers, need a cast based on the bound values.
  */
-public class TestUntypedParameterComparison extends SingleEMFTestCase {
+class TestUntypedParameterComparison extends SingleEMFTestCase {
 
     private static final String EQUAL = "SELECT s FROM simple s WHERE :a = :b";
 
@@ -57,49 +57,49 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEqualStrings() {
+    void equalStrings() {
         assertMatches(true, EQUAL, "abc", "abc");
         assertMatches(false, EQUAL, "abc", "xyz");
     }
 
     @Test
-    public void testEqualIntegers() {
+    void equalIntegers() {
         assertMatches(true, EQUAL, 42, 42);
         assertMatches(false, EQUAL, 42, 7);
     }
 
     @Test
-    public void testEqualLongs() {
+    void equalLongs() {
         assertMatches(true, EQUAL, 42L, 42L);
         assertMatches(false, EQUAL, 42L, 7L);
     }
 
     @Test
-    public void testEqualDoubles() {
+    void equalDoubles() {
         assertMatches(true, EQUAL, 1.5d, 1.5d);
         assertMatches(false, EQUAL, 1.5d, 2.5d);
     }
 
     @Test
-    public void testEqualBigDecimals() {
+    void equalBigDecimals() {
         assertMatches(true, EQUAL, new BigDecimal("1.25"), new BigDecimal("1.25"));
         assertMatches(false, EQUAL, new BigDecimal("1.25"), new BigDecimal("2.5"));
     }
 
     @Test
-    public void testEqualDates() {
+    void equalDates() {
         assertMatches(true, EQUAL, LocalDate.of(2024, 3, 1), LocalDate.of(2024, 3, 1));
         assertMatches(false, EQUAL, LocalDate.of(2024, 3, 1), LocalDate.of(2024, 3, 2));
     }
 
     @Test
-    public void testEqualBooleans() {
+    void equalBooleans() {
         assertMatches(true, EQUAL, true, true);
         assertMatches(false, EQUAL, true, false);
     }
 
     @Test
-    public void testNotEqual() {
+    void notEqual() {
         String jpql = "SELECT s FROM simple s WHERE :a <> :b";
         assertMatches(true, jpql, "abc", "xyz");
         assertMatches(false, jpql, "abc", "abc");
@@ -108,7 +108,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLessAndGreater() {
+    void lessAndGreater() {
         assertMatches(true, "SELECT s FROM simple s WHERE :a < :b", 9, 10);
         assertMatches(false, "SELECT s FROM simple s WHERE :a < :b", 10, 9);
         assertMatches(true, "SELECT s FROM simple s WHERE :a > :b", "b", "a");
@@ -120,7 +120,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBetween() {
+    void between() {
         String jpql = "SELECT s FROM simple s WHERE :a BETWEEN :b AND :c";
         assertMatches(true, jpql, 5, 1, 10);
         assertMatches(false, jpql, 50, 1, 10);
@@ -135,7 +135,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * query, see TestSQLBuffer for the positions on every database.
      */
     @Test
-    public void testParameterBetweenParameterAndPath() {
+    void parameterBetweenParameterAndPath() {
         String jpql = "SELECT s FROM simple s WHERE :a BETWEEN :b AND s.name";
         for (int i = 0; i < 2; i++) {
             assertMatches(true, jpql, "cat", "bar");
@@ -149,7 +149,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * comparison with untyped criteria parameters instead.
      */
     @Test
-    public void testIn() {
+    void in() {
         assertInMatches(true, "abc", "xyz", "abc");
         assertInMatches(false, "abc", "xyz", "uvw");
         assertInMatches(true, 3, 2, 3);
@@ -157,7 +157,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEqualUntypedCriteriaParameters() {
+    void equalUntypedCriteriaParameters() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
@@ -181,7 +181,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * chosen for the first values must not be reused for the second.
      */
     @Test
-    public void testReexecuteWithOtherType() {
+    void reexecuteWithOtherType() {
         String jpql = "SELECT s FROM simple s WHERE :a < :b";
         try (EntityManager em = emf.createEntityManager()) {
             Query q = em.createQuery(jpql);
@@ -204,7 +204,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * type, which goes through the prepared query cache.
      */
     @Test
-    public void testRecreateWithOtherType() {
+    void recreateWithOtherType() {
         String jpql = "SELECT s FROM simple s WHERE :a < :b";
         for (int i = 0; i < 2; i++) {
             assertMatches(true, jpql, "10", "9");
@@ -220,7 +220,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * the first execution must not be reused from the prepared query cache.
      */
     @Test
-    public void testCaseInSelectWithOtherType() {
+    void caseInSelectWithOtherType() {
         String jpql = "SELECT CASE WHEN :a < :b THEN s.name ELSE s.value END FROM simple s";
         for (int i = 0; i < 2; i++) {
             assertCaseResult("foo", jpql, "10", "9");

@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -37,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestVersion extends SingleEMFTestCase {
+class TestVersion extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -70,7 +67,7 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionNumeric() {
+    void versionNumeric() {
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -100,7 +97,7 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionTimestamp() {
+    void versionTimestamp() {
         // ensure that some time has passed
         // since the records were created
         try {
@@ -143,7 +140,7 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionSubclass() {
+    void versionSubclass() {
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -172,7 +169,7 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionNoChange() {
+    void versionNoChange() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -191,7 +188,7 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNoDefaultVersionWithoutFieldOrColumn() {
+    void noDefaultVersionWithoutFieldOrColumn() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(EmbedOwner.class,
             null, true);
@@ -201,17 +198,17 @@ public class TestVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionWithField() {
+    void versionWithField() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(AnnoTest1.class,
             null, true);
-        assertTrue(NoneVersionStrategy.getInstance() !=
+        assertNotSame(NoneVersionStrategy.getInstance(),
             cls.getVersion().getStrategy());
         assertEquals(1, cls.getVersion().getColumns().length);
     }
 
     @Test
-    public void testNullInitialVersion() {
+    void nullInitialVersion() {
         EntityManager em = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
         try {

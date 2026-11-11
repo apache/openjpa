@@ -54,7 +54,7 @@ public class CacheLoadTest extends AbstractTestCase {
             Integer.getInteger("cachetest.iterations", 1000);
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -70,7 +70,7 @@ public class CacheLoadTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCacheLoad()
+    void cacheLoad()
         throws Exception {
         mttest(Integer.getInteger("cachetest.threads", 30),
                 Integer.getInteger("cachetest.iterations", 1000));

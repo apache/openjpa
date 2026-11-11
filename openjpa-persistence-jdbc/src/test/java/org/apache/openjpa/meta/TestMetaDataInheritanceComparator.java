@@ -26,10 +26,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
+class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
 
     @Test
-    public void testInheritanceComparatorWithBase() {
+    void inheritanceComparatorWithBase() {
         inheritanceComparatorHelper(true);
     }
 
@@ -52,7 +52,7 @@ public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMetaDataInheritanceComparatorWithBase() {
+    void metaDataInheritanceComparatorWithBase() {
         metaDataInheritanceComparatorHelper(true);
     }
 
@@ -81,7 +81,7 @@ public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEndToEnd() {
+    void endToEnd() {
         // make sure we can get things fully instantiated
         emf.createEntityManager().close();
     }

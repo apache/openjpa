@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * entities: persist, remove, re-persist.
  * Mirrors TCK cascadeAllMX1Test2 and persistMX1Test2.
  */
-public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
+class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
      * Verify B is managed and b.getA1() != null.
      */
     @Test
-    public void testCascadeAllRePersistedRemovedEntity() {
+    void cascadeAllRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

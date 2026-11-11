@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * Testcase for MySQL Blob types. OPENJPA-740 introduced intelligent column type for BLOBs, OPENJPA-1870 refined it a
  * bit.
  */
-public class TestClobColumnType extends SingleEMFTestCase {
+class TestClobColumnType extends SingleEMFTestCase {
 
     private static boolean _firstRun=true;
     private boolean _runTest = false; // only test with MySQL
@@ -75,28 +75,28 @@ public class TestClobColumnType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSmallLob() {
+    void smallLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.tinyTextTypeName, getCol("smallLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testMedLob() {
+    void medLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.mediumTextTypeName, getCol("medLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testLongBlob() {
+    void longBlob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.longTextTypeName, getCol("longLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testDefaultLob() {
+    void defaultLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().clobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
         }

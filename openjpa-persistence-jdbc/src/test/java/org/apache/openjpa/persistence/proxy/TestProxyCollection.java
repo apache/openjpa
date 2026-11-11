@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.LinkedHashSet;
 
@@ -43,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestProxyCollection extends SingleEMFTestCase {
+class TestProxyCollection extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, TreeNode.class, ConcreteEntity.class, AbstractEntity.class);
@@ -54,7 +51,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
      * level. This is not a persistent operation, just in-memory.
      */
     @Test
-    public void testCreateTree() {
+    void createTree() {
 		TreeNode root = new TreeNode();
 		root.setName("0");
 		int[] fanOuts = {1,2,3};
@@ -67,7 +64,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
      * level. This is not a persistent operation, just in-memory.
      */
     @Test
-    public void testModifyTree() {
+    void modifyTree() {
 		int[] fanOuts = {1,2,2,4};
 		int[] newFanOuts = {1,3,1,2};
 		TreeNode root = new TreeNode();
@@ -83,48 +80,48 @@ public class TestProxyCollection extends SingleEMFTestCase {
      * number of children at every level.
      */
     @Test
-    public void testPersistTree() {
+    void persistTree() {
 		int[] fanOuts = {2,3,4};
 		verify(create(fanOuts), fanOuts);
 	}
 
     @Test
-    public void testAddNodeAtLeaf() {
+    void addNodeAtLeaf() {
 		int[] original = {1,2,3};
 		int[] modifier = {1,2,4}; // add new child at Level 2
 		createModifyAndMerge(original, modifier);
 	}
 
     @Test
-    public void testAddNewLevel() {
+    void addNewLevel() {
 		int[] original = {1,2,3};
 		int[] modifier = {1,2,3,2}; // add 2 new children at new Level
 		createModifyAndMerge(original, modifier);
 	}
 
     @Test
-    public void testAddAndRemove() {
+    void addAndRemove() {
 		int[] original = {2,3,4};
         int[] modifier = {4,3,2}; // add 1 at Level 1 + remove 1 at Level 3
 		createModifyAndMerge(original, modifier);
 	}
 
     @Test
-    public void testAddAtAllLevel() {
+    void addAtAllLevel() {
 		int[] original = {2,3,4};
 		int[] modifier = {3,4,5}; // add 1 at each Level
 		createModifyAndMerge(original, modifier);
 	}
 
     @Test
-    public void testRemoveAtAllLevel() {
+    void removeAtAllLevel() {
 		int[] original = {2,3,4};
 		int[] modifier = {1,2,3}; // remove 1 from each Level
 		createModifyAndMerge(original, modifier);
 	}
 
     @Test
-    public void testCreateCorrectType() {
+    void createCorrectType() {
         ConcreteEntity ce = new ConcreteEntity();
         ce.addItem(ce);
 
@@ -211,7 +208,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 	 * tracking changes.
 	 */
 	void assertProxyCollection(Object o, boolean tracking) {
-		assertTrue(o instanceof ProxyCollection);
+        assertInstanceOf(ProxyCollection.class, o);
 		ChangeTracker tracker = ((ProxyCollection)o).getChangeTracker();
 		if (tracking) {
 			assertNotNull(tracker);

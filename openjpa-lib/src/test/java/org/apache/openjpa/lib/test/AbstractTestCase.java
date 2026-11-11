@@ -148,22 +148,9 @@ public abstract class AbstractTestCase {
     // Assertion Helpers
     ////////////////////
 
-    public void assertNotEquals(Object a, Object b) {
-        if (a == null && b != null)
-            return;
-        if (a != null && b == null)
-            return;
-        if (!(a.equals(b)))
-            return;
-        if (!(b.equals(a)))
-            return;
-
-        fail("expected !<" + a + ">.equals(<" + b + ">)");
-    }
-
     public void assertSize(int size, Object ob) {
         if (ob == null) {
-            assertEquals(size, 0);
+            assertEquals(0, size);
             return;
         }
 

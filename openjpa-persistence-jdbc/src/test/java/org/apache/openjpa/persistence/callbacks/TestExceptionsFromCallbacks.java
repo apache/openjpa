@@ -69,7 +69,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPrePersistException() {
+    void prePersistException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -89,7 +89,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPrePersistExceptionOnMerge() {
+    void prePersistExceptionOnMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -109,7 +109,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistExceptionDuringFlush() {
+    void postPersistExceptionDuringFlush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -140,7 +140,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistExceptionDuringCommit() {
+    void postPersistExceptionDuringCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -173,7 +173,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPrePersistExceptionDuringFlushWithNewFlushedInstance() {
+    void prePersistExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -188,7 +188,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPrePersistExceptionDuringCommitWithNewFlushedInstance() {
+    void prePersistExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -202,7 +202,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistExceptionDuringFlushWithNewFlushedInstance() {
+    void postPersistExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -217,7 +217,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistExceptionDuringCommitWithNewFlushedInstance() {
+    void postPersistExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -231,7 +231,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionWithNewInstance() {
+    void preUpdateExceptionWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -243,7 +243,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringFlushWithNewInstance() {
+    void postUpdateExceptionDuringFlushWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -256,7 +256,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringCommitWithNewInstance() {
+    void postUpdateExceptionDuringCommitWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -268,7 +268,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringFlushWithNewFlushedInstance() {
+    void preUpdateExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -279,7 +279,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringCommitWithNewFlushedInstance() {
+    void preUpdateExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -290,7 +290,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringFlushWithNewFlushedInstance() {
+    void postUpdateExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -301,7 +301,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringCommitWithNewFlushedInstance() {
+    void postUpdateExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -312,7 +312,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringFlushWithExistingInstance() {
+    void preUpdateExceptionDuringFlushWithExistingInstance() {
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -335,7 +335,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringCommitWithExistingInstance() {
+    void preUpdateExceptionDuringCommitWithExistingInstance() {
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -347,7 +347,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringFlushWithExistingInstance() {
+    void postUpdateExceptionDuringFlushWithExistingInstance() {
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -359,7 +359,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringCommitWithExistingInstance() {
+    void postUpdateExceptionDuringCommitWithExistingInstance() {
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -371,7 +371,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringFlushWithExistingFlushedInstance() {
+    void preUpdateExceptionDuringFlushWithExistingFlushedInstance() {
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -388,7 +388,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreUpdateExceptionDuringCommitWithExistingFlushedInstance(){
+    void preUpdateExceptionDuringCommitWithExistingFlushedInstance(){
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -404,7 +404,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringFlushWithExistingFlushedInstance(){
+    void postUpdateExceptionDuringFlushWithExistingFlushedInstance(){
         Object oid = insert("new instance");
 
         EntityManager em = emf.createEntityManager();
@@ -421,7 +421,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostUpdateExceptionDuringCommitWithExistingFlushedInstance()
+    void postUpdateExceptionDuringCommitWithExistingFlushedInstance()
     {
         Object oid = insert("new instance");
 
@@ -438,7 +438,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostLoadException() {
+    void postLoadException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -465,7 +465,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreDeleteException() {
+    void preDeleteException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -486,7 +486,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostDeleteExceptionDuringFlush() {
+    void postDeleteExceptionDuringFlush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -504,7 +504,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostDeleteExceptionDuringCommit() {
+    void postDeleteExceptionDuringCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -522,7 +522,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreDeleteExceptionDoubleDelete() {
+    void preDeleteExceptionDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -539,7 +539,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostDeleteExceptionDuringFlushDoubleDelete() {
+    void postDeleteExceptionDuringFlushDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();
@@ -557,7 +557,7 @@ public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostDeleteExceptionDuringCommitDoubleDelete() {
+    void postDeleteExceptionDuringCommitDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ExceptionsFromCallbacksEntity o = new ExceptionsFromCallbacksEntity();

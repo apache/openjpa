@@ -19,9 +19,7 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -42,10 +40,10 @@ import org.junit.jupiter.api.Test;
  * <code>StoreCharsAsNumbers</code> default and that an explicit user setting
  * survives {@link DBDictionary#connectedConfiguration(Connection)} (OPENJPA-2971).
  */
-public class TestPostgresDictionary {
+class TestPostgresDictionary {
 
     @Test
-    public void testStoreCharsAsNumbersDefaultsToFalseOnModernPostgres() throws Exception {
+    void storeCharsAsNumbersDefaultsToFalseOnModernPostgres() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection(16, 0));
         assertFalse(dict.storeCharsAsNumbers);
@@ -53,7 +51,7 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testStoreCharsAsNumbersDefaultsToTrueOnLegacyPostgres() throws Exception {
+    void storeCharsAsNumbersDefaultsToTrueOnLegacyPostgres() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection(8, 4));
         assertTrue(dict.storeCharsAsNumbers);
@@ -61,7 +59,7 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testExplicitStoreCharsAsNumbersSurvivesConnectedConfiguration() throws Exception {
+    void explicitStoreCharsAsNumbersSurvivesConnectedConfiguration() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary("StoreCharsAsNumbers=true");
         assertTrue(dict.storeCharsAsNumbers);
         dict.connectedConfiguration(connection(16, 0));
@@ -70,7 +68,7 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testExplicitStoreCharsAsNumbersFalseSurvivesOnLegacyPostgres() throws Exception {
+    void explicitStoreCharsAsNumbersFalseSurvivesOnLegacyPostgres() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary("StoreCharsAsNumbers=false");
         assertFalse(dict.storeCharsAsNumbers);
         dict.connectedConfiguration(connection(8, 4));
@@ -79,7 +77,7 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testSetterMarksValueAsExplicit() throws Exception {
+    void setterMarksValueAsExplicit() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary(null);
         assertFalse(dict.isStoreCharsAsNumbersExplicit());
         dict.setStoreCharsAsNumbers(true);
@@ -89,13 +87,13 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testDictionaryDefaultIsNativeCharStorageBeforeConnecting() {
+    void dictionaryDefaultIsNativeCharStorageBeforeConnecting() {
         assertFalse(new PostgresDictionary().storeCharsAsNumbers);
         assertFalse(new PostgresDictionary().isStoreCharsAsNumbersExplicit());
     }
 
     @Test
-    public void testProgrammaticPublicFieldAssignmentSurvivesOnModernPostgres() throws Exception {
+    void programmaticPublicFieldAssignmentSurvivesOnModernPostgres() throws Exception {
         PostgresDictionary dict = newConfiguredDictionary(null);
         dict.storeCharsAsNumbers = true;
         dict.connectedConfiguration(connection(16, 0));
@@ -104,7 +102,7 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testSubclassConstructorAssignmentSurvivesOnModernPostgres() throws Exception {
+    void subclassConstructorAssignmentSurvivesOnModernPostgres() throws Exception {
         PostgresDictionary dict = new PostgresDictionary() {
             {
                 storeCharsAsNumbers = true;
@@ -117,16 +115,16 @@ public class TestPostgresDictionary {
     }
 
     @Test
-    public void testExplicitStoreCharsAsNumbersThroughDBDictionaryFactory() throws Exception {
+    void explicitStoreCharsAsNumbersThroughDBDictionaryFactory() throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         DataSource ds = dataSource(connection(16, 0));
 
         DBDictionary explicit = DBDictionaryFactory.newDBDictionary(conf, ds, "StoreCharsAsNumbers=true");
-        assertTrue(explicit instanceof PostgresDictionary);
+        assertInstanceOf(PostgresDictionary.class, explicit);
         assertTrue(explicit.storeCharsAsNumbers, "explicit StoreCharsAsNumbers=true must survive DBDictionaryFactory");
 
         DBDictionary auto = DBDictionaryFactory.newDBDictionary(conf, ds, null);
-        assertTrue(auto instanceof PostgresDictionary);
+        assertInstanceOf(PostgresDictionary.class, auto);
         assertFalse(auto.storeCharsAsNumbers, "PostgreSQL 16 must default to native CHAR storage");
     }
 
@@ -136,7 +134,7 @@ public class TestPostgresDictionary {
      * rejects a type modifier on these types (OPENJPA-3018).
      */
     @Test
-    public void testJsonColumnDefinitionHasNoSize() {
+    void jsonColumnDefinitionHasNoSize() {
         PostgresDictionary dict = newConfiguredDictionary(null);
         assertEquals("jsonb", dict.getTypeName(column(Types.VARCHAR, "jsonb", 255)));
         assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));

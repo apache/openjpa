@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.meta;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,13 +39,13 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(SequenceAssigned.class);
         deleteAll(SequenceAssigned3.class);
     }
 
     @Test
-    public void testGetObjectId() {
+    void getObjectId() {
         SequenceAssigned pc = new SequenceAssigned();
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -60,7 +61,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testGetValue() {
+    void getValue() {
         SequenceAssigned pc = new SequenceAssigned();
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -73,7 +74,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testPrimitive() {
+    void primitive() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned pc2 = new SequenceAssigned();
         OpenJPAEntityManager pm =
@@ -90,7 +91,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testManualAssign() {
+    void manualAssign() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned3 pc2 = new SequenceAssigned3();
         OpenJPAEntityManager pm =
@@ -114,7 +115,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         SequenceAssigned2 pc = new SequenceAssigned2();
         SequenceAssigned2 pc2 = new SequenceAssigned2();
         OpenJPAEntityManager pm =
@@ -131,7 +132,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testWrapper() {
+    void wrapper() {
         SequenceAssigned3 pc = new SequenceAssigned3();
         SequenceAssigned3 pc2 = new SequenceAssigned3();
         OpenJPAEntityManager pm =
@@ -150,7 +151,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testGetObjectById() {
+    void getObjectById() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -167,7 +168,7 @@ public class TestSequenceAssigned extends AbstractTestCase {
     }
 
     @Test
-    public void testReachability() {
+    void reachability() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned pc2 = new SequenceAssigned();
         pc.setOther(pc2);

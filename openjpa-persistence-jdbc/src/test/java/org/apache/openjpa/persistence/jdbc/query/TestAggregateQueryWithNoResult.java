@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
+class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     EntityManager em;
 
     @BeforeEach
@@ -55,7 +55,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
 
 
     @Test
-    public void testSumWithNoResult() {
+    void sumWithNoResult() {
         String jpql = "SELECT SUM(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
@@ -65,7 +65,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAvgWithNoResult() {
+    void avgWithNoResult() {
         String jpql = "SELECT AVG(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
@@ -75,7 +75,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCountWithNoResult() {
+    void countWithNoResult() {
         String jpql = "SELECT COUNT(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
@@ -85,7 +85,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxWithNoResult() {
+    void maxWithNoResult() {
         String jpql = "SELECT MAX(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
@@ -95,7 +95,7 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinWithNoResult() {
+    void minWithNoResult() {
         String jpql = "SELECT MIN(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();

@@ -51,7 +51,7 @@ public class TestFactoryMethod extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         _repos = getRepository();
         _metaTest7 = _repos.getMetaData(MetaTest7.class, null, true);
     }
@@ -69,7 +69,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * factory method is overloaded - i.e. same name but different types.
      */
     @Test
-    public void testFactoryMatchesByType() {
+    void factoryMatchesByType() {
         FieldMetaData fieldMetaData = _metaTest7.getField("status");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -90,7 +90,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * can be matched with a Factory taking long (a widening conversion).
      */
     @Test
-    public void testFactoryMatchesByTypeWidening() {
+    void factoryMatchesByTypeWidening() {
         FieldMetaData fieldMetaData = _metaTest7.getField("intLongStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -111,7 +111,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * can be matched with a Factory taking Integer (a boxing conversion).
      */
     @Test
-    public void testFactoryMatchesByTypeBoxing() {
+    void factoryMatchesByTypeBoxing() {
         FieldMetaData fieldMetaData = _metaTest7.getField("intIntegerStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -132,7 +132,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * Integer can be matched with a Factory taking Integer (an identity conversion).
      */
     @Test
-    public void testFactoryMatchesByTypeWrapper() {
+    void factoryMatchesByTypeWrapper() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerIntegerStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -153,7 +153,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * Integer can be matched with a Factory taking int (an unboxing conversion).
      */
     @Test
-    public void testFactoryMatchesByTypeUnboxing() {
+    void factoryMatchesByTypeUnboxing() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerIntStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -175,7 +175,7 @@ public class TestFactoryMethod extends AbstractTestCase {
      * conversion).
      */
     @Test
-    public void testFactoryMatchesByTypeUnboxingWidening() {
+    void factoryMatchesByTypeUnboxingWidening() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerLongStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();

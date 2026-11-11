@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for CriteriaUpdate and CriteriaDelete (JPA 2.1).
  */
-public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
+class TestCriteriaUpdateDelete extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -64,7 +64,7 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
      * CriteriaDelete should delete all rows when no WHERE clause.
      */
     @Test
-    public void testCriteriaDeleteAll() {
+    void criteriaDeleteAll() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -89,7 +89,7 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
      * CriteriaDelete with WHERE clause.
      */
     @Test
-    public void testCriteriaDeleteWithWhere() {
+    void criteriaDeleteWithWhere() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -114,7 +114,7 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
      * CriteriaUpdate should update matching rows.
      */
     @Test
-    public void testCriteriaUpdateWithWhere() {
+    void criteriaUpdateWithWhere() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -142,7 +142,7 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
      * CriteriaUpdate should update all rows when no WHERE.
      */
     @Test
-    public void testCriteriaUpdateAll() {
+    void criteriaUpdateAll() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -169,7 +169,7 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
      * CriteriaUpdate with set(String attributeName, Object value).
      */
     @Test
-    public void testCriteriaUpdateSetByAttributeName() {
+    void criteriaUpdateSetByAttributeName() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 

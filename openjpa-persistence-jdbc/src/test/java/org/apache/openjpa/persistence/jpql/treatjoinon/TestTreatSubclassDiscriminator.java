@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * TREAT(x AS Middle) over a three level single table hierarchy must match
  * instances of Middle and of its subclasses, but not of the root class.
  */
-public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
+class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -74,7 +74,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatJoinIncludesSubclasses() {
+    void treatJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TSoftwareProduct) s",
@@ -85,7 +85,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatJoinLeafClass() {
+    void treatJoinLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TGameProduct) s",
@@ -95,7 +95,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatInWhereExclusiveProperty() {
+    void treatInWhereExclusiveProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).genre = 'FPS'",
@@ -105,7 +105,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatInWhereCommonProperty() {
+    void treatInWhereCommonProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).revisionNumber = 2.0",
@@ -115,7 +115,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatInWhereRestrictsOnlyItsPredicate() {
+    void treatInWhereRestrictsOnlyItsPredicate() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p "
@@ -127,7 +127,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTreatInWhereOnJoinVariable() {
+    void treatInWhereOnJoinVariable() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TLineItem l JOIN l.product p "

@@ -61,7 +61,7 @@ import org.opentest4j.AssertionFailedError;
  * The probes in {@link SetUpFailureProbes} therefore let one factory - and so one pool -
  * survive all of their failures, which is what the real criteria tests do to one another.
  */
-public class TestSetUpFailureReleasesConnection extends CriteriaTest {
+class TestSetUpFailureReleasesConnection extends CriteriaTest {
 
     /**
      * More failures than the pool has connections, so that one leaked connection per failure
@@ -75,7 +75,7 @@ public class TestSetUpFailureReleasesConnection extends CriteriaTest {
      * already leaves its EntityManager open, and the pool runs dry part way through the loop.
      */
     @Test
-    public void testSetUpFailureDoesNotExhaustTheConnectionPool() {
+    void setUpFailureDoesNotExhaustTheConnectionPool() {
         OpenJPAEntityManagerFactorySPI factory = getEntityManagerFactory();
         for (int i = 0; i < FAILURES; i++) {
             SetUpFailureProbes.FailingSetUp.opened = null;
@@ -103,7 +103,7 @@ public class TestSetUpFailureReleasesConnection extends CriteriaTest {
      * would leak the whole pool.
      */
     @Test
-    public void testEntityManagerCloseFailureStillClosesTheFactory() {
+    void entityManagerCloseFailureStillClosesTheFactory() {
         releaseOwnEntityManager();
         SetUpFailureProbes.FailingEntityManagerClose.factory = null;
 
@@ -118,11 +118,11 @@ public class TestSetUpFailureReleasesConnection extends CriteriaTest {
     }
 
     /**
-     * The same as {@link #testSetUpFailureDoesNotExhaustTheConnectionPool()} for the
+     * The same as {@link #setUpFailureDoesNotExhaustTheConnectionPool()} for the
      * EmbeddableDomainTestCase hierarchy, which keeps a static factory of its own.
      */
     @Test
-    public void testEmbeddableSetUpFailureReleasesTheEntityManager() {
+    void embeddableSetUpFailureReleasesTheEntityManager() {
         releaseOwnEntityManager();
         SetUpFailureProbes.FailingEmbeddableSetUp.opened = null;
 

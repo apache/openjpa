@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * Tests record embeddables with non-String component types (long, double)
  * and custom @Column names.
  */
-public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
+class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndLoadWithLongAndDouble() {
+    void persistAndLoadWithLongAndDouble() {
         final CoordinateRecord coord =
                 new CoordinateRecord(39.7817, -89.6501, 200L);
         final LocationEntity loc = new LocationEntity("Springfield", coord);
@@ -66,7 +66,7 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateCoordinate() {
+    void updateCoordinate() {
         final LocationEntity loc = new LocationEntity("MountainBase",
                 new CoordinateRecord(46.8523, 9.5308, 1500L));
 
@@ -99,7 +99,7 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteLocation() {
+    void deleteLocation() {
         final LocationEntity loc = new LocationEntity("ToDelete",
                 new CoordinateRecord(0.0, 0.0, 0L));
 
@@ -125,7 +125,7 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullCoordinate() {
+    void nullCoordinate() {
         final LocationEntity loc = new LocationEntity("NoCoord", null);
 
         final EntityManager em = emf.createEntityManager();
@@ -145,7 +145,7 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRecordEqualityAfterLoad() {
+    void recordEqualityAfterLoad() {
         final CoordinateRecord original =
                 new CoordinateRecord(51.5074, -0.1278, 11L);
         final LocationEntity loc = new LocationEntity("London", original);

@@ -73,7 +73,7 @@ public class TestXmlDelimitedIdentifiers extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTableName() {
+    void tableName() {
         id++;
         createEntityA(id);
 

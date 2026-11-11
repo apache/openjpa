@@ -25,10 +25,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-public class TestTemporaryClassLoader {
+class TestTemporaryClassLoader {
 
     @Test
-    public void testTemporaryClassLoader() throws Exception {
+    void temporaryClassLoader() throws Exception {
         Set s = new HashSet();
         for (int i = 0; i < 2; i++) {
             ClassLoader loader = new TemporaryClassLoader

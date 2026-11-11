@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -59,7 +56,7 @@ public class TestVersion extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		new AnnoTest1();
 		new AnnoTest2();
@@ -99,7 +96,7 @@ public class TestVersion extends AnnotationTestCase
      * track this issue.
      */
     @Test
-    public void testVersionNumeric()
+    void versionNumeric()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -135,7 +132,7 @@ public class TestVersion extends AnnotationTestCase
 	}
 
     @Test
-    public void testVersionTimestamp()
+    void versionTimestamp()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -171,7 +168,7 @@ public class TestVersion extends AnnotationTestCase
 	}
 
     @Test
-    public void testVersionSubclass()
+    void versionSubclass()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -209,7 +206,7 @@ public class TestVersion extends AnnotationTestCase
 	}
 
     @Test
-    public void testVersionNoChange()
+    void versionNoChange()
 	{
 		OpenJPAEntityManager em = currentEntityManager();
 		startTx(em);
@@ -229,7 +226,7 @@ public class TestVersion extends AnnotationTestCase
 	}
 
     @Test
-    public void testNoDefaultVersionWithoutFieldOrColumn()
+    void noDefaultVersionWithoutFieldOrColumn()
 	   {
            OpenJPAEntityManager pm =
                (OpenJPAEntityManager) currentEntityManager();
@@ -245,7 +242,7 @@ public class TestVersion extends AnnotationTestCase
 	   }
 
     @Test
-    public void testVersionWithField()
+    void versionWithField()
 	   {
            OpenJPAEntityManager pm =
                (OpenJPAEntityManager) currentEntityManager();
@@ -253,7 +250,7 @@ public class TestVersion extends AnnotationTestCase
                    OpenJPAPersistence.cast(pm)).getConfiguration())
                    .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
                            null, true);
-		   assertTrue(NoneVersionStrategy.getInstance() !=
+		   assertNotSame(NoneVersionStrategy.getInstance(),
 			   cls.getVersion().getStrategy()); assertEquals(1,
                        cls.getVersion().getColumns().length);
 			endEm(pm);

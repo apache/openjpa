@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * enhancement (subclass-redefinition), mirroring the TCK Order entity
  * pattern.
  */
-public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
+class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +47,7 @@ public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
      * merge a new entity, clear, find, assert description persisted.
      */
     @Test
-    public void testMergeWithLowercaseGetter() {
+    void mergeWithLowercaseGetter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -70,7 +70,7 @@ public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
      * Tests persist and find with lowercase getter.
      */
     @Test
-    public void testPersistAndFindLowercaseGetter() {
+    void persistAndFindLowercaseGetter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

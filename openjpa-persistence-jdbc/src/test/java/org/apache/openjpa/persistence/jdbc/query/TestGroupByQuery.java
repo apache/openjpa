@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestGroupByQuery extends SingleEMFTestCase {
+class TestGroupByQuery extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, Game.class, IndoorGame.class, Scrabble.class,
@@ -67,7 +67,7 @@ public class TestGroupByQuery extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testGroupBy() {
+    void groupBy() {
 		String jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
                 + "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
 				+ "GROUP BY g1.name )) ORDER BY g.name";

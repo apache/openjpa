@@ -40,6 +40,7 @@ import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * types of the metadata repository. Names of other types are ignored and do
  * not load or initialize the named class.
  */
-public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
+class TestRemoteCommitTypeNames extends SingleEMFTestCase {
 
     /**
      * Set by the static initializer of {@link NotPersistent}.
@@ -58,6 +59,7 @@ public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
         TestRemoteCommitTypeNames.class.getName() + "$NotPersistent";
     private static final String UNKNOWN = "org.apache.openjpa.example.DoesNotExist";
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, CachedPerson.class,
@@ -68,7 +70,7 @@ public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDataCacheIgnoresUnknownTypeNames() {
+    void dataCacheIgnoresUnknownTypeNames() {
         CachedPerson person = persist(1);
         assertTrue(emf.getCache().contains(CachedPerson.class, person.getId()));
 
@@ -83,7 +85,7 @@ public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryCacheIgnoresUnknownTypeNames() {
+    void queryCacheIgnoresUnknownTypeNames() {
         AbstractQueryCache cache = getQueryCache();
         List<Collection<?>> changes = new ArrayList<>();
         cache.addTypesChangedListener((TypesChangedEvent event) -> changes.add(event.getTypes()));

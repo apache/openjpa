@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
+class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -40,7 +40,7 @@ public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDetachedEntityCascadePersist() {
+    void detachedEntityCascadePersist() {
         // Persist an item for finding later
         EntityManager em = emf.createEntityManager();
         DMItem item = new DMItem();

@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
+class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
     protected List<String> _sql = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
      * loaded (or not) as expected.
      */
     @Test
-    public void testLazyEmbeddableFields() throws Exception {
+    void lazyEmbeddableFields() throws Exception {
         _sql.clear();
         HashMap<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.JDBCListeners",

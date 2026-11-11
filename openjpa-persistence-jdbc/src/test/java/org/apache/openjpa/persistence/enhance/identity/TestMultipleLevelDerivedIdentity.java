@@ -59,7 +59,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testMerge() {
+    void merge() {
         EntityManager em = emf.createEntityManager();
 
         Library lib = new Library();
@@ -84,12 +84,12 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testPersist() {
+    void persist() {
 		create();
 	}
 
     @Test
-    public void testQueryRootLevel() {
+    void queryRootLevel() {
 		EntityManager em = emf.createEntityManager();
 		List<Library> list = em.createQuery("SELECT p FROM Library p")
 							   .getResultList();
@@ -101,7 +101,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testQueryIntermediateLevel() {
+    void queryIntermediateLevel() {
 		EntityManager em = emf.createEntityManager();
 		List<Book> list = em.createQuery("SELECT p FROM Book p")
 							   .getResultList();
@@ -119,7 +119,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testQueryLeafLevel() {
+    void queryLeafLevel() {
 		EntityManager em = emf.createEntityManager();
 		List<Page> list = em.createQuery("SELECT p FROM Page p")
 							   .getResultList();
@@ -135,7 +135,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFindRootNode() {
+    void findRootNode() {
 		EntityManager em = emf.createEntityManager();
 		Library lib = em.find(Library.class, LIBRARY_NAME);
 		assertNotNull(lib);
@@ -145,7 +145,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFindIntermediateNode() {
+    void findIntermediateNode() {
 		EntityManager em = emf.createEntityManager();
 
 		BookId bookId = new BookId();
@@ -157,7 +157,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFindLeafNode() {
+    void findLeafNode() {
 		EntityManager em = emf.createEntityManager();
 
 		BookId bookId = new BookId();
@@ -172,7 +172,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testUpdate() {
+    void update() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		BookId bookId = new BookId();
@@ -186,7 +186,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testDeleteRoot() {
+    void deleteRoot() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Library lib = em.find(Library.class, LIBRARY_NAME);
@@ -200,7 +200,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testDeleteLeafObtainedByQuery() {
+    void deleteLeafObtainedByQuery() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
         Page page = (Page)em.createQuery(
@@ -216,7 +216,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testDeleteLeafObtainedByFind() {
+    void deleteLeafObtainedByFind() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		BookId bookId = new BookId();

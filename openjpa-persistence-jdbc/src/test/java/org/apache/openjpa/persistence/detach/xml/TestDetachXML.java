@@ -41,14 +41,14 @@ import org.junit.jupiter.api.Test;
  * persistent.  Detach is called iteratively on a full graph and cascade
  * behavior is verified.
  */
-public class TestDetachXML extends AbstractPersistenceTestCase {
+class TestDetachXML extends AbstractPersistenceTestCase {
 
     /*
      * Test the use of cascade-detach with all relationship types.  All entities
      * in the graph should be detached when any entity is detached.
      */
     @Test
-    public void testDetach() throws Exception {
+    void detach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachXMLPU",
@@ -68,7 +68,7 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * detached.
      */
     @Test
-    public void testNoDetach()  throws Exception {
+    void noDetach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("NoDetachXMLPU",
@@ -87,7 +87,7 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * in the graph should be detached when a single entity is detached.
      */
     @Test
-    public void testAllDetach()  throws Exception {
+    void allDetach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachAllXMLPU",

@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.xmlstore.simple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -46,10 +42,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Simple XMLStore test case to get an EntityManager and perform some basic operations.
  */
-public class TestPersistence extends AbstractPersistenceTestCase {
+class TestPersistence extends AbstractPersistenceTestCase {
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
 
         // delete previous DB
         Path dbDir = Paths.get("target/openjpa-xmlstore-db");
@@ -61,7 +57,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEntityManager() {
+    void createEntityManager() {
         OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
                 "xmlstore-simple",
                 "META-INF/persistence.xml", Map.of());
@@ -75,7 +71,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
             t.rollback();
 
             // openjpa-facade test
-            assertTrue(em instanceof OpenJPAEntityManager);
+            assertInstanceOf(OpenJPAEntityManager.class, em);
             OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
             ojem.getFetchPlan().setMaxFetchDepth(1);
             assertEquals(1, ojem.getFetchPlan().getMaxFetchDepth());
@@ -86,7 +82,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
                 "xmlstore-simple",
                 "META-INF/persistence.xml",
@@ -164,7 +160,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
      * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
      */
     @Test
-    public void testBulkDelete() {
+    void bulkDelete() {
         assertBulkDelete(Map.of());
     }
 
@@ -172,7 +168,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
      * The same with the flush explicitly turned off.
      */
     @Test
-    public void testBulkDeleteWithoutFlush() {
+    void bulkDeleteWithoutFlush() {
         assertBulkDelete(Map.of("openjpa.Compatibility",
                 "FlushAfterInMemoryBulkOperation=false"));
     }
@@ -207,7 +203,7 @@ public class TestPersistence extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testNewDeleteNew() {
+    void newDeleteNew() {
         OpenJPAEntityManagerFactorySPI emf = createNamedOpenJPAEMF(
                 "xmlstore-simple",
                 "META-INF/persistence.xml",

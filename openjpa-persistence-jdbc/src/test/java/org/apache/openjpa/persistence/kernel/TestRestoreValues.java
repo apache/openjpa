@@ -42,7 +42,7 @@ public class TestRestoreValues extends BaseKernelTest {
     private Object _oid = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(FetchGroupTestObject.class);
 
         FetchGroupTestObject pc = new FetchGroupTestObject();
@@ -73,7 +73,7 @@ public class TestRestoreValues extends BaseKernelTest {
     }
 
     @Test
-    public void testUnloadedFieldDirtiedBeforeLoadedField() {
+    void unloadedFieldDirtiedBeforeLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
@@ -92,7 +92,7 @@ public class TestRestoreValues extends BaseKernelTest {
     }
 
     @Test
-    public void testUnloadedFieldDirtiedAfterLoadedField() {
+    void unloadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
@@ -109,7 +109,7 @@ public class TestRestoreValues extends BaseKernelTest {
     }
 
     @Test
-    public void testLoadedFieldDirtiedAfterLoadedField() {
+    void loadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
@@ -127,7 +127,7 @@ public class TestRestoreValues extends BaseKernelTest {
     }
 
     @Test
-    public void testNewInstanceUnmodifiedInTransaction() {
+    void newInstanceUnmodifiedInTransaction() {
         FetchGroupTestObject pc = new FetchGroupTestObject();
         pc.setA(2);
         pc.setB("3");

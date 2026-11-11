@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  *   @MapKeyEnumerated types (ORDINAL vs STRING) on the same column
  * - @OneToMany(mappedBy) with @MapKeyTemporal(DATE) for Date map keys
  */
-public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
+class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
     /**
      * Test that @MapKeyEnumerated(STRING) works on a OneToMany(mappedBy)
@@ -51,7 +51,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * with OFFICE_ID column.
      */
     @Test
-    public void testMapKeyEnumeratedWithSharedTable() {
+    void mapKeyEnumeratedWithSharedTable() {
         setUp(DROP_TABLES,
             MkeDepartment.class,
             MkeDepartmentOrdinal.class,
@@ -122,7 +122,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * retrieved.
      */
     @Test
-    public void testMapKeyTemporalOneToMany() {
+    void mapKeyTemporalOneToMany() {
         setUp(DROP_TABLES,
             MktDepartment.class,
             MktEmployee.class);
@@ -167,7 +167,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Map field with embeddable values.
      */
     @Test
-    public void testMapKeyEnumeratedElementCollection() {
+    void mapKeyEnumeratedElementCollection() {
         setUp(DROP_TABLES,
             MapKeyEnumEntity.class,
             MapValueEmbeddable.class);
@@ -206,7 +206,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Map field with embeddable values.
      */
     @Test
-    public void testMapKeyTemporalElementCollection() {
+    void mapKeyTemporalElementCollection() {
         setUp(DROP_TABLES,
             MapKeyTemporalEntity.class,
             MapValueEmbeddable.class);
@@ -243,7 +243,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * both map to EMP_MAPKEYCOL2.
      */
     @Test
-    public void testMapKeyTemporalSharedTable() {
+    void mapKeyTemporalSharedTable() {
         setUp(DROP_TABLES,
             MktDeptShared.class,
             MktDeptShared2.class,

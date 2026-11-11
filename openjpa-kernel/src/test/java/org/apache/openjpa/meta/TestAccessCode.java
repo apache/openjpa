@@ -40,7 +40,7 @@ public class TestAccessCode {
 
     // Valid class codes are 0 2 4 10 12 26 28
     @Test
-    public void testValidClassCodes() {
+    void validClassCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
         isValidClassCode(true,   2, FIELD);
@@ -70,7 +70,7 @@ public class TestAccessCode {
 
     // Valid field codes are 0 2 4 10 12
     @Test
-    public void testValidFieldCodes() {
+    void validFieldCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
         isValidClassCode(true,   2, FIELD);
@@ -91,7 +91,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testProperty() {
+    void property() {
         isProperty(false,  0, UNKNOWN);
         isProperty(false,  2, FIELD);
         isProperty(true,   4, PROPERTY);
@@ -102,7 +102,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testField() {
+    void field() {
         isField(false,  0, UNKNOWN);
         isField(true,   2, FIELD);
         isField(false,  4, PROPERTY);
@@ -114,7 +114,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testExplicit() {
+    void explicit() {
         isExplicit(false,  0, UNKNOWN);
         isExplicit(false,  2, FIELD);
         isExplicit(false,  4, PROPERTY);
@@ -126,7 +126,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testMixed() {
+    void mixed() {
         isMixed(false,  0, UNKNOWN);
         isMixed(false,  2, FIELD);
         isMixed(false,  4, PROPERTY);
@@ -138,7 +138,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testCompatibleField() {
+    void compatibleField() {
         assertCompatible(EXPLICIT|FIELD, PROPERTY, MIXED|EXPLICIT|FIELD);
         assertCompatible(EXPLICIT|FIELD, FIELD, EXPLICIT|FIELD);
         assertCompatible(EXPLICIT|PROPERTY, PROPERTY, EXPLICIT|PROPERTY);
@@ -176,7 +176,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals("explicit property access", AccessCode.toClassString(12));
     }
 

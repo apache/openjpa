@@ -38,7 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
+class TestOracleXmlColumn extends AbstractPersistenceTestCase {
 
     private static String projectStr = "project";
     private static String xmlData =
@@ -54,7 +54,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
         JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
@@ -90,7 +90,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCrudXmlColumn() throws SQLException {
+    void crudXmlColumn() throws Exception {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =
@@ -128,7 +128,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testExistingColumn() throws SQLException {
+    void existingColumn() throws Exception {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =

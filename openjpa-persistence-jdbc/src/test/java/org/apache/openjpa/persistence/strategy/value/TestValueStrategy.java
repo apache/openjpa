@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestValueStrategy extends SQLListenerTestCase {
+class TestValueStrategy extends SQLListenerTestCase {
     @BeforeEach
     public void setUp(){
         setUp(ValueStrategyEntity.class, DROP_TABLES,
@@ -38,7 +38,7 @@ public class TestValueStrategy extends SQLListenerTestCase {
     }
 
     @Test
-    public void testIt() {
+    void it() {
         EntityManager em = emf.createEntityManager();
         ValueStrategyEntity se = em.find(ValueStrategyEntity.class, "id1");
         assertNotNull(se);

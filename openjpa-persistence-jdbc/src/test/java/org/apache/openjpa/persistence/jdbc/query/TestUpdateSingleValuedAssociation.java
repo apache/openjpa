@@ -53,7 +53,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testUpdateSingleValuedAssociationToNullViaParameter() {
+    void updateSingleValuedAssociationToNullViaParameter() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
 
@@ -64,7 +64,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testUpdateSingleValuedAssociationToNullViaLiteral() {
+    void updateSingleValuedAssociationToNullViaLiteral() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
 
@@ -75,7 +75,7 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testUpdateSingleValuedAssociationToNonNullViaParameter() {
+    void updateSingleValuedAssociationToNonNullViaParameter() {
 		Application pc = createApplicationWithNullApplicant();
 		assertNull(pc.getUser());
 

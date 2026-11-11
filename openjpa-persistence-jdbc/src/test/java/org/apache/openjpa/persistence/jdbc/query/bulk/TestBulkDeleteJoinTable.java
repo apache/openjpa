@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * materialized at all and the owned tables are emptied outright.
      */
     @Test
-    public void testBulkDeleteWithoutCriteriaEmptiesOwnedTables() {
+    void bulkDeleteWithoutCriteriaEmptiesOwnedTables() {
         assertEquals(2, delete("delete from BulkDeleteOwner o"));
 
         assertEquals(0, count(BulkDeleteOwner.class));
@@ -69,7 +69,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * and the rows of the owned tables are untouched.
      */
     @Test
-    public void testBulkDeleteWithoutMatches() {
+    void bulkDeleteWithoutMatches() {
         assertEquals(0, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "nobody"));
 
@@ -80,7 +80,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testSingleDeleteRemovesRowsOfOwnedTables() {
+    void singleDeleteRemovesRowsOfOwnedTables() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.id=:id",
             "id", 1L));
 
@@ -94,7 +94,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * through the embedded mapping.
      */
     @Test
-    public void testEmbeddedElementCollectionIsCleaned() {
+    void embeddedElementCollectionIsCleaned() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "owner"));
 
@@ -108,7 +108,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * mistaken for the table of a related entity.
      */
     @Test
-    public void testElementCollectionOfEmbeddableIsCleaned() {
+    void elementCollectionOfEmbeddableIsCleaned() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "owner"));
 
@@ -123,7 +123,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * collection table, so it has to be evaluated before that table is emptied.
      */
     @Test
-    public void testSize() {
+    void size() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where size(o.nicknames)=3"));
 
@@ -133,7 +133,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testIsNotEmpty() {
+    void isNotEmpty() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where o.nicknames is not empty"));
 
@@ -147,7 +147,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * must survive.
      */
     @Test
-    public void testIsEmpty() {
+    void isEmpty() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where o.nicknames is empty"));
 
@@ -156,7 +156,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testMemberOf() {
+    void memberOf() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where 'nick1' member of o.nicknames"));
 
@@ -166,7 +166,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testCorrelatedExistsSubquery() {
+    void correlatedExistsSubquery() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where exists "
             + "(select o2 from BulkDeleteOwner o2 where o2.id=o.id "
             + "and o2.name=:n)", "n", "owner"));
@@ -177,7 +177,7 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testUncorrelatedInSubquery() {
+    void uncorrelatedInSubquery() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.id in "
             + "(select o2.id from BulkDeleteOwner o2 where o2.name=:n)",
             "n", "owner"));

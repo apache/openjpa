@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * departure from the visibility guarantee for SELECTs, and nothing about the flush mode
  * re-enables it.
  */
-public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
+class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
 
     private static final String ANY_UPDATE = "(?i).*UPDATE\\s+FLUSH_.*";
     private static final String UPDATE_CUSTOMER = "(?i).*UPDATE\\s+FLUSH_CUSTOMER.*";
@@ -76,7 +76,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * its documented effect: the query runs against the datastore and nothing is flushed.
      */
     @Test
-    public void testIgnoreChangesSuppressesFlushForInheritedFlushMode() {
+    void ignoreChangesSuppressesFlushForInheritedFlushMode() {
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals(FlushModeType.AUTO, em.getFlushMode());
             em.getTransaction().begin();
@@ -98,7 +98,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * query still runs against the datastore.
      */
     @Test
-    public void testExplicitAutoOnQueryKeepsIgnoreChanges() {
+    void explicitAutoOnQueryKeepsIgnoreChanges() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -122,7 +122,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * in memory over the whole extent.
      */
     @Test
-    public void testAutoThenCommitBehavesLikeCommitAlone() {
+    void autoThenCommitBehavesLikeCommitAlone() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -148,7 +148,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * the source query's flush mode, which is never unset.
      */
     @Test
-    public void testIgnoreChangesSurvivesNamedQueryRoundTrip() {
+    void ignoreChangesSurvivesNamedQueryRoundTrip() {
         emf.addNamedQuery("TestQueryFlushIgnoreChanges.byName",
             emf.createEntityManager().createQuery(JPQL, UnenhancedFlushOrder.class));
         try (EntityManager em = emf.createEntityManager()) {

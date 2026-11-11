@@ -83,7 +83,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNonRelationalFieldInverseSideVersionUpdate() {
+    void nonRelationalFieldInverseSideVersionUpdate() {
         EntityManager em = emf.createEntityManager();
 
         M2MBiDepartment sales = em.find(M2MBiDepartment.class, SALESID);
@@ -116,7 +116,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNonRelationalFieldOwnerSideVersionUpdate() {
+    void nonRelationalFieldOwnerSideVersionUpdate() {
         // Change only non-relation fields on Employee.
         // Version number of Employee should be updated.
         // Version number of Department should not change.
@@ -152,7 +152,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
 
 
     @Test
-    public void testRelationalFieldBothSidesVersionUpdate() {
+    void relationalFieldBothSidesVersionUpdate() {
         // Move Employee from old Department to new Department.
         // Update both sides of the relationship.
         // Since there is a bidirectional ManyToMany relationship

@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -40,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * OPENJPA-3017 it was put on the element mapping, and mapping the field
  * failed with "this mapping cannot have columns in this context".
  */
-public class TestConvertedListXml extends SingleEMFTestCase {
+class TestConvertedListXml extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +51,7 @@ public class TestConvertedListXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTheMappingFileColumnIsTheAttributeColumn() {
+    void theMappingFileColumnIsTheAttributeColumn() {
         ClassMapping cm = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance()
             .getMapping(XmlConvertedListEntity.class, null, true);
@@ -61,12 +59,12 @@ public class TestConvertedListXml extends SingleEMFTestCase {
         assertNotNull(fm, "the converted attribute must be mapped");
         assertEquals(1, fm.getColumns().length);
         assertEquals("ITEMS_TEXT", fm.getColumns()[0].getIdentifier().getName());
-        assertTrue(fm.getHandler() instanceof ConverterValueHandler, "the converter must map the value as a whole, got "
+        assertInstanceOf(ConverterValueHandler.class, fm.getHandler(), "the converter must map the value as a whole, got "
             + fm.getHandler());
     }
 
     @Test
-    public void testRoundTrip() {
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlConvertedListEntity e = new XmlConvertedListEntity();
@@ -85,7 +83,7 @@ public class TestConvertedListXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTheListIsLoadedEagerly() {
+    void theListIsLoadedEagerly() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlConvertedListEntity e = new XmlConvertedListEntity();

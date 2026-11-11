@@ -106,7 +106,7 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
 //    }
 
     @Test
-    public void testSeqGen() {
+    void seqGen() {
         if (!supportsNativeSequence) {
             return;
         }

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.kernel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,7 +70,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
 
         deleteAll();
 
@@ -99,7 +100,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testDetach() {
+    void detach() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = pm.find(AttachB.class, oid);
 
@@ -139,7 +140,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testDetachWithGroups() {
+    void detachWithGroups() {
         OpenJPAEntityManager pm = getPM();
         //FIXME jthomas
 //      pm.getFetchPlan().setDetachmentOptions(
@@ -187,7 +188,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testDetachNoOverwrite() {
+    void detachNoOverwrite() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
         b = (AttachB) pm.detachCopy(b);
@@ -215,7 +216,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testOptimisticLock() {
+    void optimisticLock() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
 
@@ -250,7 +251,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testEmbedded() {
+    void embedded() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = pm.find(AttachD.class, doid);
 
@@ -281,7 +282,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testNullEmbedded() {
+    void nullEmbedded() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = (AttachD) pm.find(AttachD.class, doid);
 
@@ -311,7 +312,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testNullEmbeddedRelated() {
+    void nullEmbeddedRelated() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = (AttachD) pm.find(AttachD.class, doid);
 
@@ -342,7 +343,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testNullCollection() {
+    void nullCollection() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
         b.getDs();
@@ -366,12 +367,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
     }
 
     @Test
-    public void testCollectionAdd() {
+    void collectionAdd() {
         doCollectionTest(false);
     }
 
     @Test
-    public void testCollectionChanges() {
+    void collectionChanges() {
         doCollectionTest(true);
     }
 

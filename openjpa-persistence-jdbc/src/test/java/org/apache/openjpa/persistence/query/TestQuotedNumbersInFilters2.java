@@ -41,10 +41,10 @@ import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
+class TestQuotedNumbersInFilters2 extends BaseQueryTest {
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
@@ -68,7 +68,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
     }
 
     @Test
-    public void testUnquotedNumbersWithExtraPrecision() {
+    void unquotedNumbersWithExtraPrecision() {
         assertEquals(1, helper("intField = 15"));
         assertEquals(1, helper("intField = -8"));
         assertEquals(1, helper("intField = 3"));
@@ -87,13 +87,13 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
     }
 
     @Test
-    public void testSingleQuotedStrings() {
+    void singleQuotedStrings() {
         assertEquals(1, helper("stringField = 'foo'"));
         assertEquals(1, helper("stringField = '3'"));
     }
 
     @Test
-    public void testDoubleQuotedStrings() {
+    void doubleQuotedStrings() {
         assertEquals(1, helper("stringField = \'foo\'"));
         assertEquals(1, helper("stringField = \'3\'"));
     }
@@ -105,7 +105,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
      * FIX ME: aokeke - commenting this --> applies to kodo 3.1 and prior
      */
     @Test
-    public void testKodo31SingleQuotedMultipleCharacterBehavior() {
+    void kodo31SingleQuotedMultipleCharacterBehavior() {
         assertEquals(0, helper31("intField = '15'", true)); // looks like '1'
         assertEquals(0, helper31("intField = '52'", true)); // looks like '5'
         assertEquals(1, helper31("intField = '49'", true)); // looks like '4'
@@ -120,7 +120,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
      * in in-mem queries.
      */
     @Test
-    public void testKodo31UnquotedInMemBehavior() {
+    void kodo31UnquotedInMemBehavior() {
         assertEquals(1, helper31("intField = 3", false));
         assertEquals(1, helper31("intField = -8", false));
         assertEquals(1, helper31("intField = 15", false));
@@ -128,7 +128,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
     }
 
     @Test
-    public void testKodo31UnquotedDatastoreBehavior() {
+    void kodo31UnquotedDatastoreBehavior() {
         assertEquals(1, helper31("intField = 3", false));
         assertEquals(1, helper31("intField = -8", false));
         assertEquals(1, helper31("intField = 15", false));

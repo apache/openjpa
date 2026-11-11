@@ -33,10 +33,10 @@ import org.junit.jupiter.api.Test;
  * therefore be partitioned, so that one persistence unit cannot consume or
  * clear the entries of another.
  */
-public class TestSchemaToolDroppedTables {
+class TestSchemaToolDroppedTables {
 
     @AfterEach
-    public void clearTracking() {
+    void clearTracking() {
         SchemaTool.clearDroppedTables();
     }
 
@@ -50,23 +50,23 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testKeyIsTheConfigurationId() {
+    void keyIsTheConfigurationId() {
         assertEquals("unit-a", SchemaTool.trackingKey(conf("unit-a", "jdbc:h2:mem:x")));
     }
 
     @Test
-    public void testKeyFallsBackToTheConnectionWithoutAnId() {
+    void keyFallsBackToTheConnectionWithoutAnId() {
         assertEquals("jdbc:h2:mem:x", SchemaTool.trackingKey(conf(null, "jdbc:h2:mem:x")));
     }
 
     @Test
-    public void testKeyIsStableWithNeitherIdNorConnection() {
+    void keyIsStableWithNeitherIdNorConnection() {
         assertEquals(SchemaTool.trackingKey(conf(null, null)),
             SchemaTool.trackingKey(conf(null, null)));
     }
 
     @Test
-    public void testOnePersistenceUnitDoesNotSeeAnothersDrop() {
+    void onePersistenceUnitDoesNotSeeAnothersDrop() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         JDBCConfiguration b = conf("unit-b", "jdbc:h2:mem:b");
 
@@ -79,7 +79,7 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testTwoFactoriesOfOneUnitShareTheTracking() {
+    void twoFactoriesOfOneUnitShareTheTracking() {
         // this is what lets a factory see what a closed generateSchema()
         // factory dropped; the two are separate configuration instances
         SchemaTool.trackScriptDdl(conf("unit-a", "jdbc:h2:mem:a"), "DROP TABLE FOO");
@@ -88,7 +88,7 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testClearingOneUnitLeavesAnotherIntact() {
+    void clearingOneUnitLeavesAnotherIntact() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         JDBCConfiguration b = conf("unit-b", "jdbc:h2:mem:b");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
@@ -102,7 +102,7 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testCreatingTheTableAgainForgetsIt() {
+    void creatingTheTableAgainForgetsIt() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
         SchemaTool.trackScriptDdl(a, "CREATE TABLE FOO (ID INTEGER)");
@@ -111,7 +111,7 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testEntryIsConsumedWhenNotSpecCompliant() {
+    void entryIsConsumedWhenNotSpecCompliant() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
 

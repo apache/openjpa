@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test JPA 2.0 LockMode type permutation behaviors with "mixed" lock manager.
  */
-public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
+class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
@@ -38,7 +38,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
 
     /* ======== Thread 1 : Read Lock ============*/
     @Test
-    public void testFindReadRead() {
+    void findReadRead() {
         commonFindTest(
             "testFind(Read,Commit/Read,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -50,7 +50,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindReadWrite() {
+    void findReadWrite() {
         commonFindTest(
             "testFind(Read,Commit/Write,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -62,7 +62,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindReadPessimisticRead() {
+    void findReadPessimisticRead() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticRead,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -74,7 +74,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindReadPessimisticWrite() {
+    void findReadPessimisticWrite() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticWrite,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -86,7 +86,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindReadPessimisticForceInc() {
+    void findReadPessimisticForceInc() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticForceInc,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -99,7 +99,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
 
     /* ======== Thread 1 : Write Lock ============*/
     @Test
-    public void testFindWriteRead() {
+    void findWriteRead() {
         commonFindTest(
             "testFind(Write,Commit/Read,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -111,7 +111,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindWriteWrite() {
+    void findWriteWrite() {
         commonFindTest(
             "testFind(Write,Commit/Write,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -123,7 +123,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindWritePessimisticRead() {
+    void findWritePessimisticRead() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticRead,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -135,7 +135,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindWritePessimisticWrite() {
+    void findWritePessimisticWrite() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticWrite,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -147,7 +147,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindWritePessimisticForceInc() {
+    void findWritePessimisticForceInc() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticForceInc,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -160,7 +160,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
 
     /* ======== Thread 1 : PessimisticRead Lock ============*/
     @Test
-    public void testFindPessimisticReadRead() {
+    void findPessimisticReadRead() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -172,7 +172,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimisticReadWrite() {
+    void findPessimisticReadWrite() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -184,7 +184,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimisticReadPessimisticRead() {
+    void findPessimisticReadPessimisticRead() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -196,7 +196,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimisticReadPessimisticWrite() {
+    void findPessimisticReadPessimisticWrite() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -208,7 +208,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimisticReadPessimisticForceInc() {
+    void findPessimisticReadPessimisticForceInc() {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -221,7 +221,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
 
     /* ======== Thread 1 : Pessimsitic Write Lock ============*/
     @Test
-    public void testFindPessimsiticWriteRead() {
+    void findPessimsiticWriteRead() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -233,7 +233,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticWriteWrite() {
+    void findPessimsiticWriteWrite() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -245,7 +245,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticWritePessimisticRead() {
+    void findPessimsiticWritePessimisticRead() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -257,7 +257,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticWritePessimisticWrite() {
+    void findPessimsiticWritePessimisticWrite() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -269,7 +269,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticWritePessimisticForceInc() {
+    void findPessimsiticWritePessimisticForceInc() {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -282,7 +282,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
 
     /* ======== Thread 1 : Pessimsitic Force Increment Lock ============*/
     @Test
-    public void testFindPessimsiticForceIncRead() {
+    void findPessimsiticForceIncRead() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -294,7 +294,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticForceIncWrite() {
+    void findPessimsiticForceIncWrite() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -306,7 +306,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticForceIncPessimisticRead() {
+    void findPessimsiticForceIncPessimisticRead() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -318,7 +318,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticForceIncPessimisticWrite() {
+    void findPessimsiticForceIncPessimisticWrite() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -330,7 +330,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindPessimsiticForceIncPessimisticForceInc() {
+    void findPessimsiticForceIncPessimisticForceInc() {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,

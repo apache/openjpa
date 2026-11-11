@@ -29,7 +29,7 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -40,12 +40,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestFieldState extends BaseKernelTest {
+class TestFieldState extends BaseKernelTest {
 
     private Object oid;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         OpenJPAEntityManager pm = getPM();
@@ -62,7 +62,7 @@ public class TestFieldState extends BaseKernelTest {
     }
 
     @Test
-    public void testNotDirtyAfterSameChange() {
+    void notDirtyAfterSameChange() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
 
@@ -70,7 +70,7 @@ public class TestFieldState extends BaseKernelTest {
         a.setStringField(a.getStringField());
         OpenJPAStateManager sm = getStateManager(a, pm);
         FieldMetaData fmd = sm.getMetaData().getField("stringField");
-        assertTrue(!sm.getDirty().get(fmd.getIndex()));
+        assertFalse(sm.getDirty().get(fmd.getIndex()));
 
         endTx(pm);
         endEm(pm);

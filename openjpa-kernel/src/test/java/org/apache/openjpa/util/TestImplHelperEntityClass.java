@@ -32,24 +32,24 @@ import org.junit.jupiter.api.Test;
  * Tests that {@link ImplHelper#getEntityClass} unwraps generated
  * pcsubclasses, including nested ones.
  */
-public class TestImplHelperEntityClass {
+class TestImplHelperEntityClass {
 
     public static class SimpleEntity {
     }
 
     @Test
-    public void testNullReturnsNull() {
+    void nullReturnsNull() {
         assertNull(ImplHelper.getEntityClass(null));
     }
 
     @Test
-    public void testPlainClassReturnsActualClass() {
+    void plainClassReturnsActualClass() {
         assertEquals(SimpleEntity.class,
             ImplHelper.getEntityClass(new SimpleEntity()));
     }
 
     @Test
-    public void testUnwrapsNestedPCSubclasses() throws Exception {
+    void unwrapsNestedPCSubclasses() throws Exception {
         SubclassLoader loader = new SubclassLoader(getClass().getClassLoader());
         Class<?> sub = loader.definePCSubclass(SimpleEntity.class);
         Class<?> subSub = loader.definePCSubclass(sub);

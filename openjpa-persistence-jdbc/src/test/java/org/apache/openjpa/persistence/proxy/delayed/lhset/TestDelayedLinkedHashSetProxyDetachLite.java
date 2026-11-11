@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed.lhset;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 
@@ -33,7 +31,7 @@ import org.apache.openjpa.util.proxy.DelayedLinkedHashSetProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHashSetProxy {
+class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHashSetProxy {
 
     @BeforeEach
     public void setUp() {
@@ -70,7 +68,7 @@ public class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHa
 
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedLinkedHashSetProxy);
+        assertInstanceOf(DelayedLinkedHashSetProxy.class, emps);
         DelayedLinkedHashSetProxy dep = (DelayedLinkedHashSetProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, dep.size());
@@ -85,10 +83,10 @@ public class TestDelayedLinkedHashSetProxyDetachLite extends TestDelayedLinkedHa
         resetSQL();
         assertEquals(1, emps.size());
         // Verify the delay load entity is detached
-        assertTrue(e instanceof PersistenceCapable);
+        assertInstanceOf(PersistenceCapable.class, e);
         PersistenceCapable pc = (PersistenceCapable)e;
         // LiteAutoDetach
-        assertTrue(pc.pcGetStateManager() == null);
+        assertNull(pc.pcGetStateManager());
         // verify a second SQL was not issued to get the size
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
     }

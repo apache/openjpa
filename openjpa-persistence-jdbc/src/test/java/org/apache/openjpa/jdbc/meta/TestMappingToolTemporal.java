@@ -20,9 +20,6 @@ package org.apache.openjpa.jdbc.meta;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
@@ -30,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMappingToolTemporal extends SingleEMTestCase {
+class TestMappingToolTemporal extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +35,7 @@ public class TestMappingToolTemporal extends SingleEMTestCase {
     }
 
     @Test
-    public void testMappingToolTemporal() throws IOException, SQLException {
+    void mappingToolTemporal() throws Exception {
         ClassMapping mapping = (ClassMapping)
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf))
                 .getConfiguration().getMetaDataRepositoryInstance()

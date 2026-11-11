@@ -51,10 +51,10 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestEdit extends CriteriaTest {
+class TestEdit extends CriteriaTest {
 
     @Test
-    public void testWhereConditionEditedToAddOr() {
+    void whereConditionEditedToAddOr() {
         String jpql = "select p from Person p where p.name='XYZ'";
         String editedjpql = "select p from Person p where p.name='XYZ' or p.name='ABC'";
 
@@ -71,7 +71,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testWhereConditionEditedToAddAnd() {
+    void whereConditionEditedToAddAnd() {
         String jpql = "select p from Person p where p.name='XYZ'";
         String editedjpql = "select p from Person p where p.name='XYZ' and p.name='ABC'";
 
@@ -88,7 +88,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testWhereConditionEditedToRemoveAnd() {
+    void whereConditionEditedToRemoveAnd() {
         String jpql = "select p from Person p where p.name='XYZ' and p.name='ABC'";
         String editedjpql = "select p from Person p where p.name='XYZ'";
 
@@ -114,7 +114,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testEditOrderBy() {
+    void editOrderBy() {
         String jpql = "select p from Person p ORDER BY p.name";
         String editedjpql = "select p from Person p ORDER BY p.name, p.id DESC";
 
@@ -137,7 +137,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testEditedToAddMultiselectionTerm() {
+    void editedToAddMultiselectionTerm() {
         String jpql = "select p from Person p";
         String editedjpql = "select p,p.name from Person p";
 
@@ -157,7 +157,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testSingleSelectionHasNoCompoundItems() {
+    void singleSelectionHasNoCompoundItems() {
         CriteriaQuery<Person> c = cb.createQuery(Person.class);
         Root<Person> p = c.from(Person.class);
         c.select(p);
@@ -174,7 +174,7 @@ public class TestEdit extends CriteriaTest {
      * Candidate class is implicitly selected but a null is returned by getSelection()
      */
     @Test
-    public void testCandidateClassIsImplicitlySelectedForEntityQuery() {
+    void candidateClassIsImplicitlySelectedForEntityQuery() {
         String jpql = "select p from Person p";
         CriteriaQuery<Person> c = cb.createQuery(Person.class);
         Root<Person> p = c.from(Person.class);
@@ -185,7 +185,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testCandidateClassIsNotImplicitlySelectedForNonEntityQuery() {
+    void candidateClassIsNotImplicitlySelectedForNonEntityQuery() {
         String jpql = "select p from Person p";
         CriteriaQuery<Tuple> c = cb.createTupleQuery();
         Root<Person> p = c.from(Person.class);
@@ -196,7 +196,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testRootIsNotImplicitlyDefined() {
+    void rootIsNotImplicitlyDefined() {
         CriteriaQuery<Person> c = cb.createQuery(Person.class);
         Selection<Person> term = c.getSelection();
         assertNull(term);
@@ -205,7 +205,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testEditParameterizedPredicate() {
+    void editParameterizedPredicate() {
         String jpql = "select p from Person p where p.name=:p1";
         String editedjpql = "select p from Person p where p.name=:p1 and p.name=:p2";
 
@@ -233,7 +233,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testEditParameterizedPredicateReplaced() {
+    void editParameterizedPredicateReplaced() {
         String jpql = "select p from Person p where p.name=:p1 and p.name=:p2";
         String editedjpql = "select p from Person p where p.name=:p3";
 
@@ -261,7 +261,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testEditParameterizedPredicateRemoved() {
+    void editParameterizedPredicateRemoved() {
         String jpql = "select p from Person p where p.name=:p1 and p.name=:p2";
         String editedjpql = "select p from Person p where p.name=:p1";
 
@@ -289,7 +289,7 @@ public class TestEdit extends CriteriaTest {
     }
 
     @Test
-    public void testSerachWithinResult() {
+    void serachWithinResult() {
         em.getTransaction().begin();
         em.createQuery("DELETE FROM Person p").executeUpdate();
         em.getTransaction().commit();

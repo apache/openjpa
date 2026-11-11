@@ -77,7 +77,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testJoinColumns() {
+    void joinColumns() {
         createFeatureXml();
         EntityManager em = emf.createEntityManager();
         String jpql = "Select f from Feature f Join fetch f.attributes";
@@ -125,14 +125,14 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityA_Coll_StringXml() {
+    void entityACollStringXml() {
         createEntityA_Coll_StringXml();
         queryEntityA_Coll_StringXml();
         findEntityA_Coll_StringXml();
     }
 
     @Test
-    public void testEntityA_Coll_Embed_Embed() {
+    void entityACollEmbedEmbed() {
         createEntityA_Coll_Embed_EmbedXml();
         queryEntityA_Coll_Embed_EmbedXml();
         findEntityA_Coll_Embed_EmbedXml();
@@ -319,7 +319,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
 
 
     @Test
-    public void testMapKeyAnnotations(){
+    void mapKeyAnnotations(){
         createObj();
         queryObj();
         findObj();
@@ -739,7 +739,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovalTarget() {
+    void orphanRemovalTarget() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
         int count = count(OrderXml.class);
@@ -769,7 +769,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovalTargetSetNull() {
+    void orphanRemovalTargetSetNull() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
         CustomerXml c = em.find(CustomerXml.class, 1);
@@ -791,7 +791,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrphanRemovalSource() {
+    void orphanRemovalSource() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
 

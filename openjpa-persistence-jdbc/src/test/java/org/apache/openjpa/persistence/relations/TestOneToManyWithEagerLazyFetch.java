@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test Multi-OneToMany relationship with different fetch types.
  */
-public class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
+class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
 
     final int TestUtil1xm_TestRow_Id = 100;
 
@@ -79,7 +79,7 @@ public class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLoadedOneToManyCount() {
+    void loadedOneToManyCount() {
         EntityManager em = emf.createEntityManager();
         Util1xmLf e1 = em.find(Util1xmLf.class, TestUtil1xm_TestRow_Id);
         // SELECT t0.firstName, t1.UTIL1XMLF_ID, t2.id, t2.lastName FROM Util1xmLf t0
@@ -94,12 +94,12 @@ public class TestOneToManyWithEagerLazyFetch extends SingleEMFTestCase {
         //      INNER JOIN Util1xmRt t1 ON t0.UNIRIGHTLZY_ID = t1.id WHERE t0.UTIL1XMLF_ID = ?
         //      [params=(int) 100]
         assertNotNull(eRs, "Util1xmRt uniRightLzy != null");
-        assertEquals(eRs.size(), 2, "Util1xmRt uniRightLzy.size == 2");
+        assertEquals(2, eRs.size(), "Util1xmRt uniRightLzy.size == 2");
 
         Collection<Util1xmRt> eEs = e1.getUniRightEgr();
         assertNotNull(eEs, "Util1xmRt uniRightEgr != null");
         // Failing test: Getting 3 in eager collection, one null entry
-        assertEquals(eEs.size(), 2, "Util1xmRt uniRightEgr.size == 2");
+        assertEquals(2, eEs.size(), "Util1xmRt uniRightEgr.size == 2");
 
         em.close();
     }

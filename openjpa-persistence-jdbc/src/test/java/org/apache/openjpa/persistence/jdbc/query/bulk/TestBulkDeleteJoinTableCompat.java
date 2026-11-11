@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteJoinTableCompat extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteJoinTableCompat extends AbstractBulkDeleteTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestBulkDeleteJoinTableCompat extends AbstractBulkDeleteTestCase {
     }
 
     @Test
-    public void testOwnedTableRowsAreLeftBehind() {
+    void ownedTableRowsAreLeftBehind() {
         assertEquals(2, delete("delete from BulkDeleteOwner o"));
 
         assertEquals(0, count(BulkDeleteOwner.class));

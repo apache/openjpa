@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * called the internal overload without passing {@code idx.columnNames()}, so the
  * specified column names were never added to the schema {@code Index} object.</p>
  */
-public class TestIndexColumnNames extends SingleEMFTestCase {
+class TestIndexColumnNames extends SingleEMFTestCase {
 
     private ClassMapping _mapping;
 
@@ -55,7 +55,7 @@ public class TestIndexColumnNames extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFieldIndexColumnNamesAreApplied() {
+    void fieldIndexColumnNamesAreApplied() {
         FieldMapping fm = _mapping.getFieldMapping("colA");
         assertNotNull(fm, "Field mapping for 'colA' must exist");
 

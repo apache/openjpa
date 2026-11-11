@@ -44,7 +44,7 @@ import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 import org.junit.jupiter.api.Test;
 
 
-public class TestSchema extends BaseJDBCTest {
+class TestSchema extends BaseJDBCTest {
 
     private Schema _schema = new SchemaGroup().addSchema("schema");
 
@@ -52,11 +52,11 @@ public class TestSchema extends BaseJDBCTest {
      * Test the {@link Schema} class.
      */
     @Test
-    public void testSchema() {
+    void schema() {
         assertEquals("schema", _schema.getName());
         assertTrue(_schema.getSchemaGroup().isNameTaken("schema"));
 
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("table1"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("table1"));
         Table table1 = _schema.addTable("table1");
         assertTrue(_schema.getSchemaGroup().isNameTaken("table1"));
         Table table2 = _schema.addTable("table2");
@@ -71,11 +71,11 @@ public class TestSchema extends BaseJDBCTest {
         assertNull(_schema.getTable("table3"));
 
         assertTrue(_schema.removeTable(table1));
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("table1"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("table1"));
         assertNull(_schema.getTable("table1"));
         assertEquals(table2, _schema.getTable("table2"));
         assertTrue(_schema.removeTable(table2));
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("table2"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("table2"));
         assertNull(_schema.getTable("table2"));
         assertEquals(0, _schema.getTables().length);
     }
@@ -84,12 +84,12 @@ public class TestSchema extends BaseJDBCTest {
      * Test the {@link Table} class.
      */
     @Test
-    public void testTable() {
+    void table() {
         Table table = _schema.addTable("table");
         assertEquals(_schema, table.getSchema());
         assertEquals("table", table.getName());
 
-        assertTrue(!table.isNameTaken("schema"));
+        assertFalse(table.isNameTaken("schema"));
         assertTrue(table.isNameTaken("table"));
 
         // pk testing
@@ -97,18 +97,18 @@ public class TestSchema extends BaseJDBCTest {
         PrimaryKey pk = table.addPrimaryKey("pk");
         assertEquals(table, pk.getTable());
         assertEquals(pk, table.getPrimaryKey());
-        assertTrue(!table.isNameTaken("pk"));
+        assertFalse(table.isNameTaken("pk"));
         assertTrue(_schema.getSchemaGroup().isNameTaken("pk"));
 
         table.removePrimaryKey();
         assertNull(table.getPrimaryKey());
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("pk"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("pk"));
 
         // column testing
         Column c2 = table.addColumn("c2");
         Column c1 = table.addColumn("c1");
         assertTrue(table.isNameTaken("c1"));
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("c1"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("c1"));
         assertEquals(table, c1.getTable());
         Column[] cols = table.getColumns();
         assertEquals(2, cols.length);
@@ -119,26 +119,26 @@ public class TestSchema extends BaseJDBCTest {
         assertEquals(c2, table.getColumn("c2"));
 
         assertTrue(table.removeColumn(c1));
-        assertTrue(!table.isNameTaken("c1"));
+        assertFalse(table.isNameTaken("c1"));
         assertNull(table.getColumn("c1"));
 
         // foreign key testing
         ForeignKey fk = table.addForeignKey("fk");
         assertTrue(_schema.getSchemaGroup().isNameTaken("fk"));
-        assertTrue(!table.isNameTaken("fk"));
+        assertFalse(table.isNameTaken("fk"));
         assertEquals(table, fk.getTable());
         ForeignKey[] fks = table.getForeignKeys();
         assertEquals(1, fks.length);
         assertEquals(fk, fks[0]);
 
         assertTrue(table.removeForeignKey(fk));
-        assertTrue(!_schema.getSchemaGroup().isNameTaken("fk"));
+        assertFalse(_schema.getSchemaGroup().isNameTaken("fk"));
         assertEquals(0, table.getForeignKeys().length);
 
         // index testing
         Index idx = table.addIndex("idx");
         assertTrue(_schema.getSchemaGroup().isNameTaken("idx"));
-        assertTrue(!table.isNameTaken("idx"));
+        assertFalse(table.isNameTaken("idx"));
         assertEquals(table, idx.getTable());
         Index[] idxs = table.getIndexes();
         assertEquals(1, idxs.length);
@@ -146,7 +146,7 @@ public class TestSchema extends BaseJDBCTest {
 
         assertEquals(idx, table.getIndex("idx"));
         assertTrue(table.removeIndex(idx));
-        assertTrue(!table.isNameTaken("idx"));
+        assertFalse(table.isNameTaken("idx"));
         assertNull(table.getIndex("idx"));
     }
 
@@ -154,7 +154,7 @@ public class TestSchema extends BaseJDBCTest {
      * Test the {@link Index} class.
      */
     @Test
-    public void testIndex() {
+    void index() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
         Column c2 = table.addColumn("c2");
@@ -186,7 +186,7 @@ public class TestSchema extends BaseJDBCTest {
         cols = idx.getColumns();
         assertEquals(0, cols.length);
 
-        assertTrue(!idx.isUnique());
+        assertFalse(idx.isUnique());
         idx.setUnique(true);
         assertTrue(idx.isUnique());
     }
@@ -195,7 +195,7 @@ public class TestSchema extends BaseJDBCTest {
      * Test the {@link ForeignKey} class.
      */
     @Test
-    public void testForeignKey() {
+    void foreignKey() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
         Column c2 = table.addColumn("c2");
@@ -251,7 +251,7 @@ public class TestSchema extends BaseJDBCTest {
      * Tests the {@link SchemaGroup} class.
      */
     @Test
-    public void testSchemaGroup() {
+    void schemaGroup() {
         SchemaGroup group = _schema.getSchemaGroup();
         assertEquals(_schema, group.getSchema("schema"));
         Table foo1 = _schema.addTable("foo");
@@ -270,7 +270,7 @@ public class TestSchema extends BaseJDBCTest {
      * Test primary key removal.
      */
     @Test
-    public void testPrimaryKeyRemoval() {
+    void primaryKeyRemoval() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
         Column c2 = table.addColumn("c2");
@@ -294,7 +294,7 @@ public class TestSchema extends BaseJDBCTest {
      * Test column removal.
      */
     @Test
-    public void testColumnRemoval() {
+    void columnRemoval() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
         Column c2 = table.addColumn("c2");

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
- public class TestBlobs extends SingleEMFTestCase {
+ class TestBlobs extends SingleEMFTestCase {
 
     private int _populatedId = 1;
     private int _nullLobId = 2;
@@ -91,7 +91,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNotNullBlobQuery() {
+     void notNullBlobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.blobField IS NOT NULL", Integer.class);
@@ -106,7 +106,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNullBlobQuery() {
+     void nullBlobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.blobField IS NULL", Integer.class);
@@ -121,7 +121,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNotNullLobQuery() {
+     void notNullLobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.lobField IS NOT NULL", Integer.class);
@@ -136,7 +136,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNullLobQuery() {
+     void nullLobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.lobField IS NULL", Integer.class);

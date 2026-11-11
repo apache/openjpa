@@ -26,11 +26,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -67,7 +63,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * the database for test failures.
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (firstTime) {
             firstTime = false;
             clearTestData();
@@ -147,7 +143,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * fecth group selects only the _name field.
      */
     @Test
-    public void testZeroRecursionDepthSingleValuedField() {
+    void zeroRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name", 4, 0);
     }
 
@@ -157,7 +153,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * of 1 (default).
      */
     @Test
-    public void testOneRecursionDepthSingleValuedField() {
+    void oneRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name+parent", 4, 1);
     }
 
@@ -167,19 +163,19 @@ public class TestFetchPlan extends BaseKernelTest {
      * of 2.
      */
     @Test
-    public void testTwoRecursionDepthSingleValuedField() {
+    void twoRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name+parent+grandparent",
             4, 2);
     }
 
     @Test
-    public void testThreeRecursionDepthSingleValuedField() {
+    void threeRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField
             ("name+parent+grandparent+greatgrandparent", 4, 3);
     }
 
     @Test
-    public void testInfiniteRecursionDepthSingleValuedField() {
+    void infiniteRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("allparents", 4, -1);
     }
 
@@ -311,7 +307,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * controlled by the fetch groups.
      */
     @Test
-    public void testRelationTraversal() {
+    void relationTraversal() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(-1);
@@ -349,7 +345,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * controlled by the fetch groups.
      */
     @Test
-    public void testRelationTraversalTruncated() {
+    void relationTraversalTruncated() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(-1);
@@ -389,7 +385,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * employee's.
      */
     @Test
-    public void testRelationTraversalWithCompanyAsRoot() {
+    void relationTraversalWithCompanyAsRoot() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
 
@@ -424,7 +420,7 @@ public class TestFetchPlan extends BaseKernelTest {
      * Same as above but the root compnay instance is detached.
      */
     @Test
-    public void testDetachedRelationTraversalWithCompanyAsRoot() {
+    void detachedRelationTraversalWithCompanyAsRoot() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(2);
@@ -438,7 +434,7 @@ public class TestFetchPlan extends BaseKernelTest {
             (PCCompany) pm.find(PCCompany.class, _rootCompanyId);
 
         PCCompany company = (PCCompany) pm.detachCopy(company1);
-        assertTrue(company != company1, "company is equal company1");
+        assertNotSame(company, company1, "company is equal company1");
         Set departments = (Set) PCCompany.reflect(company, "departments");
         assertNotNull(departments, "department is null");
         assertEquals(2, departments.size(), "department size is not 2");
@@ -458,7 +454,7 @@ public class TestFetchPlan extends BaseKernelTest {
     }
 
     @Test
-    public void testDefaultFetchGroup() {
+    void defaultFetchGroup() {
         OpenJPAEntityManager pm = getPM();
 
         String squery =
@@ -472,7 +468,7 @@ public class TestFetchPlan extends BaseKernelTest {
     }
 
     @Test
-    public void testDefaultFetchGroupExistsByDefault() {
+    void defaultFetchGroupExistsByDefault() {
         OpenJPAEntityManager pm = getPM();
         assertTrue(pm.getFetchPlan().getFetchGroups().contains(
                 FetchPlan.GROUP_DEFAULT),
@@ -480,7 +476,7 @@ public class TestFetchPlan extends BaseKernelTest {
     }
 
     @Test
-    public void testDefaultFetchGroupCanBeRemoved() {
+    void defaultFetchGroupCanBeRemoved() {
         OpenJPAEntityManager pm = getPM();
         assertTrue(pm.getFetchPlan().getFetchGroups().contains(
                 FetchPlan.GROUP_DEFAULT),

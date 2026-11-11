@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJoin extends SingleEMFTestCase {
+class TestJoin extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestJoin extends SingleEMFTestCase {
      * Verify that an entity does not create joins to itself.
      */
     @Test
-    public void testSelfJoin() {
+    void selfJoin() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(emf,
                 Item.class);
         FieldMapping fm = cm.getFieldMapping("itemId");

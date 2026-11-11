@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * {@link FieldMetaData}; concurrent conversions must construct and publish
  * exactly one instance. See OPENJPA-2954.
  */
-public class TestConverterInstanceCaching {
+class TestConverterInstanceCaching {
 
     private static final int THREADS = 8;
 
@@ -69,7 +69,7 @@ public class TestConverterInstanceCaching {
     }
 
     @Test
-    public void testSingleConverterInstanceUnderConcurrency() throws Exception {
+    void singleConverterInstanceUnderConcurrency() throws Exception {
         CONSTRUCTED.set(0);
         SECOND_CONSTRUCTION = new CountDownLatch(2);
 

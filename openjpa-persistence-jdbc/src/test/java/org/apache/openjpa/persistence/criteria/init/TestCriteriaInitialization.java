@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria.init;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCriteriaInitialization extends SingleEMFTestCase {
+class TestCriteriaInitialization extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -57,7 +58,7 @@ public class TestCriteriaInitialization extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         emf.close();
 
         EntityManagerFactory oldEmf = emf;

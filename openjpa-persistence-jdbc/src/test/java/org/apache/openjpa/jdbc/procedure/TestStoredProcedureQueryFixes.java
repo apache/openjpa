@@ -66,7 +66,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Uses positional parameters (like the TCK does).
      */
     @Test
-    public void testGetOutputParameterValueInvalidPosition() throws Exception {
+    void getOutputParameterValueInvalidPosition() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XTWO", true);
@@ -103,7 +103,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Uses positional parameters (like the TCK does).
      */
     @Test
-    public void testGetParameterValueFromDifferentQuery() throws Exception {
+    void getParameterValueFromDifferentQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XINOUT", true);
@@ -145,7 +145,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * (not wrapped in PersistenceException) when no results are returned.
      */
     @Test
-    public void testGetSingleResultNoResultException() throws Exception {
+    void getSingleResultNoResultException() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE NORESULT", true);
@@ -170,7 +170,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * (not wrapped in PersistenceException) when multiple results are returned.
      */
     @Test
-    public void testGetSingleResultNonUniqueResultException() throws Exception {
+    void getSingleResultNonUniqueResultException() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             // Insert test data
@@ -207,7 +207,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * the value registered under the position of that parameter.
      */
     @Test
-    public void testExplicitNullNamedParameterWinsOverPosition() throws Exception {
+    void explicitNullNamedParameterWinsOverPosition() throws Exception {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
 
@@ -238,7 +238,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Test that IN parameters following an OUT parameter are bound at their position.
      */
     @Test
-    public void testInParameterAfterOutParameter() throws Exception {
+    void inParameterAfterOutParameter() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);
@@ -265,7 +265,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * with, as databases report it in their own type (e.g. a BigDecimal for an INTEGER on Oracle).
      */
     @Test
-    public void testOutParameterHasRegisteredNumericType() throws Exception {
+    void outParameterHasRegisteredNumericType() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);
@@ -292,7 +292,7 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * truncated.
      */
     @Test
-    public void testOutParameterIsNotNarrowedWithLoss() throws Exception {
+    void outParameterIsNotNarrowedWithLoss() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);

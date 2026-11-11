@@ -22,8 +22,7 @@ import jakarta.persistence.EntityManager;
 
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +40,7 @@ public class TestEJBLobs extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(EJBLobsInnerEntity.class, EJBLobsInner2Entity.class);
 
         EntityManager em = currentEntityManager();
@@ -75,39 +74,39 @@ public class TestEJBLobs extends AbstractTestCase {
     }
 
     @Test
-    public void testOtherFields() {
+    void otherFields() {
         assertEquals("string", _inner.getString());
     }
 
     @Test
-    public void testClob() {
+    void clob() {
         assertEquals("clobField", _inner.getClob());
     }
 
     @Test
-    public void testBlob() {
+    void blob() {
         assertNotNull(_inner.getBlob());
         assertEquals("inner2", _inner.getBlob().string);
     }
 
     @Test
-    public void testSetNull() {
+    void setNull() {
         startTx(_pm);
         _inner.setClob(null);
         _inner.setBlob(null);
         endTx(_pm);
 
-        assertEquals(null, _inner.getBlob());
-        assertEquals(null, _inner.getClob());
+        assertNull(_inner.getBlob());
+        assertNull(_inner.getClob());
     }
 
     @Test
-    public void testDelete() {
+    void delete() {
         deleteAll(EJBLobsInnerEntity.class);
     }
 
     @Test
-    public void testUpdate() {
+    void update() {
         startTx(_pm);
         _inner.setClob("newvalue");
         EJBLobsInner2Entity inner2 = new EJBLobsInner2Entity();

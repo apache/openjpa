@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestFindAbstractClass
+class TestFindAbstractClass
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -55,23 +53,23 @@ public class TestFindAbstractClass
     }
 
     @Test
-    public void testEntityTypeInheritanceTypeJoined() {
+    void entityTypeInheritanceTypeJoined() {
         EntityManager em = emf.createEntityManager();
         String query = "select c from AbstractBase c where TYPE(c) = ConcreteSubclass";
         List rs = em.createQuery(query).getResultList();
-        assertTrue(rs.get(0) instanceof ConcreteSubclass);
+        assertInstanceOf(ConcreteSubclass.class, rs.get(0));
         query = "select c from AbstractBase c";
         rs = em.createQuery(query).getResultList();
-        assertTrue(rs.get(0) instanceof ConcreteSubclass);
+        assertInstanceOf(ConcreteSubclass.class, rs.get(0));
         em.close();
     }
 
     @Test
-    public void testFind() {
+    void find() {
         EntityManager em = emf.createEntityManager();
         AbstractBase e = em.find(AbstractBase.class, "id");
         assertNotNull(e);
-        assertTrue(e instanceof ConcreteSubclass);
+        assertInstanceOf(ConcreteSubclass.class, e);
         assertEquals(1, ((ConcreteSubclass) e).getSubclassData());
         em.close();
     }

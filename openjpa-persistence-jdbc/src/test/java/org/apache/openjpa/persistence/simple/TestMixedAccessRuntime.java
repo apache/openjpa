@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * @Access(PROPERTY) override, which triggered IndexOutOfBoundsException
  * in PCEnhancer.addAttributeTranslation().
  */
-public class TestMixedAccessRuntime extends SingleEMFTestCase {
+class TestMixedAccessRuntime extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestMixedAccessRuntime extends SingleEMFTestCase {
      * Verify EMF creation succeeds — this is where the enhancement error occurred.
      */
     @Test
-    public void testEmfCreation() {
+    void emfCreation() {
         assertNotNull(emf);
     }
 
@@ -56,7 +56,7 @@ public class TestMixedAccessRuntime extends SingleEMFTestCase {
      * Persist and find entity with mixed access fields.
      */
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * result cache in wrong order. This test suite tests various cases for the
  * above problem.
  */
-public class TestOrderbyInDataCache extends SingleEMFTestCase {
+class TestOrderbyInDataCache extends SingleEMFTestCase {
 	private long pid;
 
     @BeforeEach
@@ -67,7 +67,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testGetChildList(){
+    void getChildList(){
     	EntityManager em = emf.createEntityManager();
     	OrderedOneManyParent prt = em.find(OrderedOneManyParent.class, pid);
         assertEquals(3, prt.getChildren().size());
@@ -80,7 +80,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInsertChild() {
+    void insertChild() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OrderedOneManyParent prt = em.find(OrderedOneManyParent.class, pid);
@@ -106,7 +106,7 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateChildName() {
+    void updateChildName() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OrderedOneManyChild child = em.find(OrderedOneManyChild.class, 4);

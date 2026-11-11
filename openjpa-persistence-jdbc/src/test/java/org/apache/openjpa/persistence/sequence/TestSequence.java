@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintStream;
@@ -52,7 +53,7 @@ public class TestSequence extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultiThreadedNativeSequences() throws Exception {
+    public void multiThreadedNativeSequences() throws Exception {
         boolean supportsNativeSequence = false;
 
         try {
@@ -118,16 +119,16 @@ public class TestSequence extends SingleEMFTestCase {
 
         person = em.find(EntityPerson.class, person_id);
         assertTrue(person != null);
-        assertTrue(person.getId() == person_id);
-        assertTrue(person.getFirstName().equals("Person_First_Name"));
-        assertTrue(person.getLastName().equals("Person_Last_Name"));
+        assertEquals(person.getId(), person_id);
+        assertEquals("Person_First_Name", person.getFirstName());
+        assertEquals("Person_Last_Name", person.getLastName());
 
         employee = em.find(EntityEmployee.class, employee_id);
         assertTrue(employee != null);
-        assertTrue(employee.getId() == employee_id);
-        assertTrue(employee.getFirstName().equals("Employee_First_Name"));
-        assertTrue(employee.getLastName().equals("Employee_Last_Name"));
-        assertTrue(employee.getSalary() == NUMBER_ENTITIES);
+        assertEquals(employee.getId(), employee_id);
+        assertEquals("Employee_First_Name", employee.getFirstName());
+        assertEquals("Employee_Last_Name", employee.getLastName());
+        assertEquals(NUMBER_ENTITIES, employee.getSalary());
 
         em.getTransaction().begin();
         em.remove(person);

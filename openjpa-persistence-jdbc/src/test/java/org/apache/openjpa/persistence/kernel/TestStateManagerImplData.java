@@ -51,7 +51,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
     Boolean _f3;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class);
     }
 
@@ -69,7 +69,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
     }
 
     @Test
-    public void testImplData() {
+    void implData() {
         ModRuntimeTest1 pc = new ModRuntimeTest1();
 
         OpenJPAEntityManager pm = getPM(false, false);
@@ -98,7 +98,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
             assertFalse(sm.isImplDataCacheable(1));
             assertNull(sm.setImplData(1, f1));
             assertEquals(f1, sm.getImplData(1));
-            assertTrue(!sm.isImplDataCacheable(1));
+            assertFalse(sm.isImplDataCacheable(1));
             assertEquals(f1, sm.setImplData(1, null));
             assertNull(sm.getImplData(1));
             assertFalse(sm.isImplDataCacheable(1));
@@ -123,7 +123,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
     }
 
     @Test
-    public void testNotClearedIfRetainValues() {
+    void notClearedIfRetainValues() {
         notClearedIfRetainValuesTest(true);
         notClearedIfRetainValuesTest(false);
     }

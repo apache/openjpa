@@ -42,7 +42,7 @@ public class TestJoinedInheritance extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         new AnnoTest1();
         new AnnoTest2();
@@ -53,7 +53,7 @@ public class TestJoinedInheritance extends AnnotationTestCase
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest3 pc = new AnnoTest3();

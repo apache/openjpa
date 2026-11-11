@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit tests about SelectImpl.
  */
-public class TestSelectImpl {
+class TestSelectImpl {
 
     @Test
-    public void testSelectResultGetColumnAlias() {
+    void selectResultGetColumnAlias() {
         verifySelectResultGetColumnAlias(true, false, false, -1, "Col", 56, "t56.\"Col\"");
         verifySelectResultGetColumnAlias(false, false, false, -1, "Col", 18, "t18.Col");
 

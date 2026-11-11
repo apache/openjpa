@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEnumXmlTypeMapping extends SingleEMFTestCase {
+class TestEnumXmlTypeMapping extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -35,7 +35,7 @@ public class TestEnumXmlTypeMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEnumXmlType() {
+    void enumXmlType() {
         ClassMapping mapping = getMapping(Authority.class);
         FieldMapping fm = mapping.getFieldMapping("authorityName");
         Column[] cols = fm.getColumns();

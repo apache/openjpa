@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.openjpa.lib.test.AbstractTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestIdentifiers extends AbstractTestCase {
+class TestIdentifiers extends AbstractTestCase {
 
     @Test
-    public void testIdentifierConversion() {
+    void identifierConversion() {
 
         // Create a naming configs used for testing.
         IdentifierConfiguration defConfig = new IdConfigurationTestImpl();

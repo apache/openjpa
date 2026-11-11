@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * would need a configuration and manageable metadata, which is beyond a unit
  * test here.
  */
-public class TestImplHelperUnenhancedInstance {
+class TestImplHelperUnenhancedInstance {
 
     record Point(int x, int y) {
     }
@@ -48,7 +48,7 @@ public class TestImplHelperUnenhancedInstance {
      * not share one registration.
      */
     @Test
-    public void testKeysByIdentityNotEquality() {
+    void keysByIdentityNotEquality() {
         Point p1 = new Point(3, 4);
         Point p2 = new Point(3, 4);
         assertEquals(p1, p2);
@@ -64,7 +64,7 @@ public class TestImplHelperUnenhancedInstance {
     }
 
     @Test
-    public void testLastRegistrationWins() {
+    void lastRegistrationWins() {
         Point p = new Point(5, 6);
         PersistenceCapable pcA = newPersistenceCapable();
         PersistenceCapable pcB = newPersistenceCapable();

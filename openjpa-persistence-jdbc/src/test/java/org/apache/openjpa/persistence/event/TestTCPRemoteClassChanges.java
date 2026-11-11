@@ -51,7 +51,7 @@ public class TestTCPRemoteClassChanges extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
@@ -73,7 +73,7 @@ public class TestTCPRemoteClassChanges extends AbstractTestCase {
     }
 
     @Test
-    public void testAddedClasses() {
+    void addedClasses() {
         // Create two pmfs in a cluster that are using RCPTCP.
         OpenJPAEntityManagerFactory pmfSender = createDistinctFactory(
             TCPRemoteCommitProvider.class,

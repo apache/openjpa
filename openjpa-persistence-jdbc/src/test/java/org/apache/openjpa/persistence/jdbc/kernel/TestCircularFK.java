@@ -31,13 +31,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestCircularFK extends BaseJDBCTest{
+class TestCircularFK extends BaseJDBCTest{
 
     private Object _oid1 = null;
     private Object _oid2 = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         OpenJPAEntityManager pm = getPM();
 
         startTx(pm);
@@ -64,7 +64,7 @@ public class TestCircularFK extends BaseJDBCTest{
     }
 
     @Test
-    public void testInsert() {
+    void insert() {
         // inserts are tested in setup; just make sure the inserts
         // actually worked
         OpenJPAEntityManager pm = getPM();
@@ -80,7 +80,7 @@ public class TestCircularFK extends BaseJDBCTest{
     }
 
     @Test
-    public void testDelete() {
+    void delete() {
         OpenJPAEntityManager pm = getPM();
         CircularFKPC pc1 = (CircularFKPC) pm.find(CircularFKPC.class,_oid1);
         CircularFKPC2 pc2 = (CircularFKPC2) pm.find(CircularFKPC2.class,_oid2);
@@ -105,7 +105,7 @@ public class TestCircularFK extends BaseJDBCTest{
     }
 
     @Test
-    public void testUpdate() {
+    void update() {
         OpenJPAEntityManager pm = getPM();
         CircularFKPC pc1 = (CircularFKPC) pm.find(CircularFKPC.class,_oid1);
         CircularFKPC2 pc2 = (CircularFKPC2) pm.find(CircularFKPC2.class,_oid2);

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -27,17 +29,16 @@ import java.sql.SQLException;
 
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
  * Test for the {@link org.apache.openjpa.jdbc.sql.BooleanRepresentation} factory and default impls
  */
-public class TestBooleanRepresentation {
+class TestBooleanRepresentation {
 
 
     @Test
-    public void testBooleanRepresentation() throws Exception {
+    void booleanRepresentation() throws Exception {
 
         checkBooleanRepresentation("BOOLEAN", Boolean.class, Boolean.TRUE, Boolean.FALSE);
         checkBooleanRepresentation("INT_10", Integer.class, 1, 0);
@@ -62,15 +63,15 @@ public class TestBooleanRepresentation {
         throws Exception {
         ClassLoader cl = TestBooleanRepresentation.class.getClassLoader();
         BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.valueOf(representationKey, cl);
-        Assertions.assertNotNull(booleanRepresentation);
+        assertNotNull(booleanRepresentation);
 
         DummyPreparedStatement<T> dummyPreparedStatement = new DummyPreparedStatement<>(expectedType);
 
         booleanRepresentation.setBoolean(dummyPreparedStatement, 1, true);
-        Assertions.assertEquals(yesRepresentation, dummyPreparedStatement.getBooleanRepresentationValue());
+        assertEquals(yesRepresentation, dummyPreparedStatement.getBooleanRepresentationValue());
 
         booleanRepresentation.setBoolean(dummyPreparedStatement, 1, false);
-        Assertions.assertEquals(noRepresentation, dummyPreparedStatement.getBooleanRepresentationValue());
+        assertEquals(noRepresentation, dummyPreparedStatement.getBooleanRepresentationValue());
 
 
         // and also test getBoolean!
@@ -81,13 +82,13 @@ public class TestBooleanRepresentation {
                 if (String.class.equals(expectedType) && !"getString".equals(method.getName()) ||
                     Boolean.class.equals(expectedType) && !"getBoolean".equals(method.getName()) ||
                     Integer.class.equals(expectedType) && !"getInt".equals(method.getName())) {
-                    Assertions.fail("wrong ResultSet method " + method.getName()
+                    fail("wrong ResultSet method " + method.getName()
                                 + "for expectedType " + expectedType.getName());
                 }
                 return yesRepresentation;
             }
         });
-        Assertions.assertTrue(booleanRepresentation.getBoolean(yesRs, 1));
+        assertTrue(booleanRepresentation.getBoolean(yesRs, 1));
 
         ResultSet noRs = (ResultSet) Proxy.newProxyInstance(cl, new Class[]{ResultSet.class},
                 new InvocationHandler() {
@@ -96,13 +97,13 @@ public class TestBooleanRepresentation {
                 if (String.class.equals(expectedType) && !"getString".equals(method.getName()) ||
                     Boolean.class.equals(expectedType) && !"getBoolean".equals(method.getName()) ||
                     Integer.class.equals(expectedType) && !"getInt".equals(method.getName())) {
-                    Assertions.fail("wrong ResultSet method " + method.getName()
+                    fail("wrong ResultSet method " + method.getName()
                                 + "for expectedType " + expectedType.getName());
                 }
                 return noRepresentation;
             }
         });
-        Assertions.assertFalse(booleanRepresentation.getBoolean(noRs, 1));
+        assertFalse(booleanRepresentation.getBoolean(noRs, 1));
     }
 
 
@@ -129,19 +130,19 @@ public class TestBooleanRepresentation {
 
         @Override
         public void setBoolean(int idx, boolean b) throws SQLException {
-            Assertions.assertEquals(Boolean.class, expectedType);
+            assertEquals(Boolean.class, expectedType);
             booleanRepresentationValue = b;
         }
 
         @Override
         public void setString(int idx, String s) throws SQLException {
-            Assertions.assertEquals(String.class, expectedType);
+            assertEquals(String.class, expectedType);
             booleanRepresentationValue = s;
         }
 
         @Override
         public void setInt(int idx, int i) throws SQLException {
-            Assertions.assertEquals(Integer.class, expectedType);
+            assertEquals(Integer.class, expectedType);
             booleanRepresentationValue = i;
         }
     }

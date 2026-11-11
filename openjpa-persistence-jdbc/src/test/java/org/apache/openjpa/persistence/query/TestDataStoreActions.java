@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDataStoreActions
+class TestDataStoreActions
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -36,7 +36,7 @@ public class TestDataStoreActions
     }
 
     @Test
-    public void testDataStoreActions() {
+    void dataStoreActions() {
         OpenJPAQuery q = em.createQuery("select o from AllFieldTypes o");
         String[] sql = q.getDataStoreActions(null);
         assertEquals(1, sql.length);

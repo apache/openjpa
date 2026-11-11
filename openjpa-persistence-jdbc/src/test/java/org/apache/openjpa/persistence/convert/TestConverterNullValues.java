@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * An AttributeConverter is consulted for null values as well, so a converter
  * may map null to a default in either direction.
  */
-public class TestConverterNullValues extends SingleEMFTestCase {
+class TestConverterNullValues extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -54,7 +54,7 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * converter's substitute lands in the column.
      */
     @Test
-    public void testNullAttributeIsConverted() {
+    void nullAttributeIsConverted() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(1, null));
@@ -76,7 +76,7 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * returned by convertToDatabaseColumn still stores a null column value.
      */
     @Test
-    public void testNullColumnIsConverted() {
+    void nullColumnIsConverted() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(2, NullDefaultConverter.ERASE));
@@ -97,7 +97,7 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * to a parameter and "IS NOT NULL" stay consistent with each other.
      */
     @Test
-    public void testNullInQueryMeansSqlNull() {
+    void nullInQueryMeansSqlNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         // column holds DB_DEFAULT, attribute reads back as null
@@ -129,7 +129,7 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * null is a literal or a bound parameter.
      */
     @Test
-    public void testNullBulkUpdateMeansSqlNull() {
+    void nullBulkUpdateMeansSqlNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(6, "a"));

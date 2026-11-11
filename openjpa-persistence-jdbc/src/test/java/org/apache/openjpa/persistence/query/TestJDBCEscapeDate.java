@@ -66,7 +66,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
     }
 
     @Test
-    public void testJDBCEscape() {
+    void jdbcEscape() {
         populate();
         EntityManager em = emf.createEntityManager();
 
@@ -175,7 +175,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
      * to the JIRA fix, upon the second exception an exception would occur.
      */
     @Test
-    public void testMultipleQueryExecutionWithDateLiteral() {
+    void multipleQueryExecutionWithDateLiteral() {
         populate();
         EntityManager em = emf.createEntityManager();
 

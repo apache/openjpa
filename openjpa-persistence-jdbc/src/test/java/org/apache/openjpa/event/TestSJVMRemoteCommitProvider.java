@@ -35,7 +35,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSJVMRemoteCommitProvider extends AbstractCachedEMFTestCase {
+class TestSJVMRemoteCommitProvider extends AbstractCachedEMFTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf1;
     private OpenJPAEntityManagerFactorySPI emf2;
@@ -43,7 +43,7 @@ public class TestSJVMRemoteCommitProvider extends AbstractCachedEMFTestCase {
     private ListenerImpl listen2;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map sjvm1 = new HashMap();
         sjvm1.put("openjpa.RemoteCommitProvider", "sjvm");
         // set this to differentiate emf1 from the other emf below
@@ -72,7 +72,7 @@ public class TestSJVMRemoteCommitProvider extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testSJVMRemoteCommitProvider() {
+    void sjvmRemoteCommitProvider() {
         assertNotSame(JPAFacadeHelper.toBrokerFactory(emf1),
             JPAFacadeHelper.toBrokerFactory(emf2));
 

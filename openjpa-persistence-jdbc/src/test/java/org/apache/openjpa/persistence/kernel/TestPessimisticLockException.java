@@ -54,7 +54,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
      * detailed description of this test.
      */
     @Test
-    public void testPessimisticLockException() {
+    void pessimisticLockException() {
         if (!skipTest()) {
 
             populate();
@@ -152,7 +152,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
      * one when the refresh occurs at the same time.
      */
     @Test
-    public void testSQLCount() {
+    void sqlCount() {
         if (!skipTest()) {
 
             populate();

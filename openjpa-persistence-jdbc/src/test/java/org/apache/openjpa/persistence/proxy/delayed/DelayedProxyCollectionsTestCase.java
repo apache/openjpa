@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.proxy.delayed;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -34,16 +35,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import jakarta.persistence.EntityManager;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.util.proxy.DelayedProxy;
 import org.apache.openjpa.util.Proxy;
+import org.apache.openjpa.util.proxy.DelayedProxy;
 import org.apache.openjpa.util.proxy.ProxyCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
 
 /**
  * Verifies generic delay-load capabilities for delay-load collection proxies.
@@ -190,7 +191,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * without triggering a load of the collection.
      */
     @Test
-    public void testSingleRemove() {
+    public void singleRemove() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -220,7 +221,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         emps = d.getEmployees();
         // assert there was no select
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps);
         DelayedProxy dep = (DelayedProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, emps.size());
@@ -252,7 +253,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * without triggering a load on the collection.
      */
     @Test
-    public void testSingleAdd() {
+    public void singleAdd() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -277,7 +278,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         emps = d.getEmployees();
         // assert there was no select
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps);
         DelayedProxy dep = (DelayedProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, emps.size());
@@ -316,7 +317,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * triggering a load on a delayed collection.
      */
     @Test
-    public void testMixedAddRemove() {
+    public void mixedAddRemove() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -341,7 +342,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         emps = d.getEmployees();
         // assert there was no select
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps);
         DelayedProxy dep = (DelayedProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, emps.size());
@@ -403,7 +404,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * functions as expected.
      */
     @Test
-    public void testEagerCollection() {
+    public void eagerCollection() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and
@@ -427,7 +428,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         assertAnySQLAnyOrder("SELECT .* DC_DEP_PRD .*");
         resetSQL();
         products = d.getProducts();
-        assertTrue(products instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, products);
         ProxyCollection pxycoll = (ProxyCollection)products;
         assertFalse(pxycoll.getOwner().isDelayed(pxycoll.getOwnerField()));
         Product p3 = getProduct(products, 0);
@@ -441,7 +442,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a DB ordered collection is not delay load capable.
      */
     @Test
-    public void testOrderedCollection() {
+    public void orderedCollection() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and persist
@@ -465,7 +466,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         Collection<Location> locations = d.getLocations();
         assertAnySQLAnyOrder("SELECT .* DC_DEP_LOC .*");
         resetSQL();
-        assertTrue(locations instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, locations);
         ProxyCollection pxycoll = (ProxyCollection)locations;
         assertFalse(pxycoll.getOwner().isDelayed(pxycoll.getOwnerField()));
         assertEquals(1, locations.size());
@@ -477,7 +478,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a collection will load upon serialization
      */
     @Test
-    public void testSerialization() {
+    public void serialization() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -502,7 +503,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         emps = d.getEmployees();
         // assert there was no select
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps);
         DelayedProxy dep = (DelayedProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, emps.size());
@@ -544,7 +545,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * (delays load) with delayed loading enabled
      */
     @Test
-    public void testLazyEmbeddableCollection() {
+    public void lazyEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
         IDepartment d = createDepartment();
@@ -567,7 +568,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         resetSQL();
         certs = d.getCertifications();
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_CERT .*");
-        assertTrue(certs instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, certs);
         assertEquals(2,certs.size());
         assertAnySQLAnyOrder("SELECT .* DC_DEP_CERT .*");
 
@@ -579,7 +580,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * (no delay load) with delayed loading enabled
      */
     @Test
-    public void testEagerEmbeddableCollection() {
+    public void eagerEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
         IDepartment d = createDepartment();
@@ -605,7 +606,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         ProxyCollection pxycoll = (ProxyCollection)awards;
         assertFalse(pxycoll.getOwner().isDelayed(pxycoll.getOwnerField()));
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_AWD .*");
-        assertTrue(awards instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, awards);
         assertEquals(3,awards.size());
         assertNoneSQLAnyOrder("SELECT .* DC_DEP_AWD .*");
 
@@ -617,7 +618,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a collection can be loaded post detachment
      */
     @Test
-    public void testPostDetach() {
+    public void postDetach() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -641,7 +642,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
 
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps);
         DelayedProxy dep = (DelayedProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, emps.size());
@@ -656,9 +657,9 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         resetSQL();
         assertEquals(1, emps.size());
         // Verify the delay load entity is detached
-        assertTrue(e instanceof PersistenceCapable);
+        assertInstanceOf(PersistenceCapable.class, e);
         PersistenceCapable pc = (PersistenceCapable)e;
-        assertTrue(pc.pcGetStateManager() instanceof DetachedStateManager);
+        assertInstanceOf(DetachedStateManager.class, pc.pcGetStateManager());
         // verify a second SQL was not issued to get the size
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
 
@@ -696,7 +697,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * delayed.  The to-many in the embeddable uses
      */
     @Test
-    public void testEmbeddableRelationship() {
+    public void embeddableRelationship() {
         EntityManager em = emf.createEntityManager();
 
         IUserIdentity ui = createUserIdentity();
@@ -726,7 +727,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         ProxyCollection pxycoll = (ProxyCollection)accounts;
         assertTrue(pxycoll.getOwner().isDelayed(pxycoll.getOwnerField()));
         assertNoneSQLAnyOrder("SELECT .* DC_ACCOUNT .*");
-        assertTrue(accounts instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, accounts);
         // Trigger a load via iterator
         int count = 0;
         for (IAccount a : accounts) {
@@ -743,7 +744,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * load.
      */
     @Test
-    public void testProxyMethods() {
+    public void proxyMethods() {
         // Load up a collection
         EntityManager em = emf.createEntityManager();
 
@@ -783,7 +784,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         resetSQL();
         IDepartment d = findDepartment(em, id);
         Collection<?> emps2 = d.getEmployees();
-        assertTrue(emps2 instanceof DelayedProxy);
+        assertInstanceOf(DelayedProxy.class, emps2);
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
         try {
             m.invoke(emps2, buildArgs(m, emps));

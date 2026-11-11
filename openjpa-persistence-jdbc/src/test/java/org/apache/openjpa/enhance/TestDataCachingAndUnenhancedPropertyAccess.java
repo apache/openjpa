@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDataCachingAndUnenhancedPropertyAccess extends SingleEMFTestCase {
+class TestDataCachingAndUnenhancedPropertyAccess extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +37,7 @@ public class TestDataCachingAndUnenhancedPropertyAccess extends SingleEMFTestCas
     }
 
     @Test
-    public void testSimpleDataCacheOperation() {
+    void simpleDataCacheOperation() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -51,7 +51,7 @@ public class TestDataCachingAndUnenhancedPropertyAccess extends SingleEMFTestCas
     }
 
     @Test
-    public void testAccessIdBeforeCommit() {
+    void accessIdBeforeCommit() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {

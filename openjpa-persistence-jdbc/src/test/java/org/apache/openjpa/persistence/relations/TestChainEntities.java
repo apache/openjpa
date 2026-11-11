@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestChainEntities extends SingleEMFTestCase {
+class TestChainEntities extends SingleEMFTestCase {
 
 	/*
 	 * Set this magical number to 3 or less to avoid the error.
@@ -50,7 +50,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testChainEntities () {
+    void chainEntities() {
 		chainUpdate ();
 	}
 

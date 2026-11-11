@@ -20,8 +20,8 @@
 package org.apache.openjpa.persistence.jest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
@@ -59,7 +59,7 @@ import com.meterware.servletunit.ServletUnitClient;
  * @author Pinaki Poddar
  *
  */
-public class TestJEST {
+class TestJEST {
     private static ServletRunner container;
     private static String baseURI;
     private static String DEFAULT_WEB_XML  = "WEB-INF/web.xml";
@@ -71,7 +71,7 @@ public class TestJEST {
      * Sets up a class-wide Servlet Engine.
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (container == null) {
             String resource = System.getProperty("jest.web.xml", DEFAULT_WEB_XML);
             System.err.println("Starting Servlet Container from " + resource);
@@ -92,12 +92,12 @@ public class TestJEST {
     }
 
     @Test
-    public void testBadURL() throws Exception {
+    void badURL() throws Exception {
         assertError(HttpURLConnection.HTTP_NOT_FOUND, uri("some+bad+url"));
     }
 
     @Test
-    public void testDomain() throws Exception {
+    void domain() throws Exception {
         WebResponse response = getResponse(uri("domain"));
         assertNotNull(response);
         System.err.println(response.getText());
@@ -149,14 +149,14 @@ public class TestJEST {
     NodeList getNodes(Document doc, String path) throws Exception {
         XPath xpath = _xpathFactory.newXPath();
         Object nodes = xpath.compile(path).evaluate(doc, XPathConstants.NODESET);
-        assertTrue(nodes instanceof NodeList);
+        assertInstanceOf(NodeList.class, nodes);
         return (NodeList)nodes;
     }
 
     Node getNode(Document doc, String path) throws Exception {
         XPath xpath = _xpathFactory.newXPath();
         Object node = xpath.compile(path).evaluate(doc, XPathConstants.NODE);
-        assertTrue(node instanceof Node);
+        assertInstanceOf(Node.class, node);
         return (Node)node;
     }
 }

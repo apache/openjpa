@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests database-specific query hints.
  */
-public class TestHintedQuery extends SQLListenerTestCase {
+class TestHintedQuery extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestHintedQuery extends SQLListenerTestCase {
     }
 
     @Test
-    public void testHintedQuery() {
+    void hintedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new TimeKeeper());

@@ -18,12 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -335,7 +330,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDeletedOneToOneRelations() throws Exception {
+    public void deletedOneToOneRelations() throws Exception {
         EntityManager em = factory.createEntityManager();
         try {
             startTx(em);
@@ -359,7 +354,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCanCacheExtension() throws Exception {
+    public void canCacheExtension() throws Exception {
         DataCache cache = cacheManager(factory).getSystemDataCache();
 
         // first, test caching of newly created objects.
@@ -393,7 +388,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetCache() {
+    public void getCache() {
         // first, test caching of newly created objects.
         DataCache defaultCache = cacheManager(factory).getDataCache(
             DataCache.NAME_DEFAULT, false);
@@ -431,7 +426,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPrimitives() throws Exception {
+    public void primitives() throws Exception {
         // make sure that the 'a' that was found before changes
         // were made is still valid.
         assertOld(a);
@@ -473,7 +468,7 @@ public abstract class CacheTest extends AbstractTestCase {
       */
 
     @Test
-    public void testExpiredRelations() {
+    public void expiredRelations() {
         CacheObjectA a = (CacheObjectA) em.find(CacheObjectA.class, oid);
         em.refresh(a);
         Object relationOid = em.getObjectId(a.getRelatedObject());
@@ -514,7 +509,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPCArrays() throws Exception {
+    public void pCArrays() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         try {
@@ -534,8 +529,8 @@ public abstract class CacheTest extends AbstractTestCase {
             a = (CacheObjectA) newEm.find(CacheObjectA.class, oid);
             CacheObjectA[] array = a.getRelatedArray();
             assertEquals(2, array.length);
-            assertTrue(array[0] instanceof CacheObjectA);
-            assertTrue(array[1] instanceof CacheObjectA);
+            assertInstanceOf(CacheObjectA.class, array[0]);
+            assertInstanceOf(CacheObjectA.class, array[1]);
 
             Object arrayOid = newEm.getObjectId(array[0]);
             if (!arrayOid.equals(parentOid) && !arrayOid.equals(oid)) {
@@ -553,7 +548,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testStringArrays() throws Exception {
+    public void stringArrays() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         try {
@@ -581,7 +576,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPrimitiveArrays() throws Exception {
+    public void primitiveArrays() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         try {
@@ -609,7 +604,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDateArrays() throws Exception {
+    public void dateArrays() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         CacheObjectA a;
@@ -639,7 +634,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDate() throws Exception {
+    public void date() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         CacheObjectA a;
@@ -675,7 +670,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testLocale() throws Exception {
+    public void locale() throws Exception {
         OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory
             .createEntityManager();
         startTx(newEm);
@@ -709,7 +704,7 @@ public abstract class CacheTest extends AbstractTestCase {
     // * Pessimistic transactions
 
     @Test
-    public void testBasicQuery() {
+    public void basicQuery() {
         basicQueries(factory.createEntityManager(), Boolean.FALSE, 3, 1);
         basicQueries(factory.createEntityManager(), Boolean.TRUE, 3, 1);
 
@@ -802,7 +797,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testNonCacheableClass() {
+    public void nonCacheableClass() {
         Broker broker = JPAFacadeHelper.toBrokerFactory(factory).newBroker();
         try {
             org.apache.openjpa.kernel.Query q = broker.newQuery(
@@ -821,7 +816,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testNonCacheableAccessPath() {
+    public void nonCacheableAccessPath() {
         Broker broker = JPAFacadeHelper.toBrokerFactory(factory).newBroker();
         try {
             org.apache.openjpa.kernel.Query q = broker.newQuery(
@@ -843,7 +838,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testNonCacheableSubclasses1() {
+    public void nonCacheableSubclasses1() {
         Broker broker = JPAFacadeHelper.toBrokerFactory(factory).newBroker();
         try {
             // a query on the CacheObjectA class includes an uncacheable
@@ -863,7 +858,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testNonCacheableSubclasses2() {
+    public void nonCacheableSubclasses2() {
         Broker broker = JPAFacadeHelper.toBrokerFactory(factory).newBroker();
         try {
             // a query on the CacheObjectA extent configured without
@@ -885,7 +880,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testCacheNames() {
+    public void cacheNames() {
         assertCacheName(CacheObjectA.class, DataCache.NAME_DEFAULT);
         assertCacheName(CacheObjectAChild1.class, DataCache.NAME_DEFAULT);
         assertCacheName(CacheObjectAChild2.class, null);
@@ -925,7 +920,7 @@ public abstract class CacheTest extends AbstractTestCase {
       */
 
     @Test
-    public void testCache2() {
+    public void cache2() {
         OpenJPAEntityManager em1 =
             (OpenJPAEntityManager) factory.createEntityManager();
         OpenJPAEntityManager em2 = null;
@@ -970,7 +965,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTimeouts1() throws Exception {
+    public void timeouts1() throws Exception {
         timeoutsTest1(30);
     }
 
@@ -996,7 +991,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testTimeouts2() throws Exception {
+    public void timeouts2() throws Exception {
         timeoutsTest2(30);
     }
 
@@ -1179,7 +1174,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testQueryTimeouts() throws Exception {
+    public void queryTimeouts() throws Exception {
         queryTimeoutsHelper(factory);
         queryTimeoutsHelper(timeoutFactory);
     }
@@ -1247,7 +1242,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testQueryImplicitEvictions() throws Exception {
+    public void queryImplicitEvictions() throws Exception {
         OpenJPAEntityManager em = (OpenJPAEntityManager) factory
             .createEntityManager();
         try {
@@ -1394,7 +1389,7 @@ public abstract class CacheTest extends AbstractTestCase {
       */
 
     @Test
-    public void testAllegedConcurrentModificationException() throws Exception {
+    public void allegedConcurrentModificationException() throws Exception {
         OpenJPAEntityManager em = (OpenJPAEntityManager) factory
             .createEntityManager();
         CacheObjectE e;
@@ -1483,7 +1478,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testQueriesOnCollectionsDontUseCache() {
+    public void queriesOnCollectionsDontUseCache() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) factory
             .createEntityManager();
         try {
@@ -1527,12 +1522,12 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testDFGFieldsLoaded1() {
+    public void dfgFieldsLoaded1() {
         dfgFieldsLoadedHelper(false);
     }
 
     @Test
-    public void testDFGFieldsLoaded2() {
+    public void dfgFieldsLoaded2() {
         dfgFieldsLoadedHelper(true);
     }
 
@@ -1615,7 +1610,7 @@ public abstract class CacheTest extends AbstractTestCase {
       */
 
     @Test
-    public void testCachedQueryClosureReleasesResources() {
+    public void cachedQueryClosureReleasesResources() {
         // PersistenceManagerFactory factory =
         // KodoHelper.createEntityManagerFactory ();
         EntityManager initEm = factory.createEntityManager();
@@ -1643,7 +1638,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMutableSCOsAreConverted() {
+    public void mutableSCOsAreConverted() {
         OpenJPAEntityManager em0 = (OpenJPAEntityManager) factory
             .createEntityManager();
         OpenJPAEntityManager em1 = (OpenJPAEntityManager) factory
@@ -1675,7 +1670,7 @@ public abstract class CacheTest extends AbstractTestCase {
             d = (Date) data.getData(fmd.getIndex());
             Broker broker = JPAFacadeHelper.toBroker(em1);
             OpenJPAStateManager sm = broker.getStateManager(a);
-            assertTrue(sm == ((ProxyDate) a.getDate()).getOwner());
+            assertSame(sm, ((ProxyDate) a.getDate()).getOwner());
             assertEquals(Date.class, d.getClass());
         }
         finally {
@@ -1685,7 +1680,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testEmptyResultsAreCached() {
+    public void emptyResultsAreCached() {
         Broker broker = JPAFacadeHelper.toBrokerFactory(factory).newBroker();
         org.apache.openjpa.kernel.Query q = broker.newQuery(
             JPQLParser.LANG_JPQL, "Select a FROM "
@@ -1700,19 +1695,19 @@ public abstract class CacheTest extends AbstractTestCase {
     private void doassertTrue(EntityManager em, String name, int age)
         throws Exception {
         CacheObjectA a = (CacheObjectA) em.find(CacheObjectA.class, oid);
-        assertTrue(name.equals(a.getName()));
-        assertTrue(a.getAge() == age);
+        assertEquals(name, a.getName());
+        assertEquals(a.getAge(), age);
         endEm(em);
     }
 
     private void assertNew(CacheObjectA a) {
-        assertTrue(NEW_NAME.equals(a.getName()));
-        assertTrue(ORIG_AGE == a.getAge());
+        assertEquals(NEW_NAME, a.getName());
+        assertEquals(ORIG_AGE, a.getAge());
     }
 
     private void assertOld(CacheObjectA a) {
-        assertTrue(ORIG_NAME.equals(a.getName()));
-        assertTrue(ORIG_AGE == a.getAge());
+        assertEquals(ORIG_NAME, a.getName());
+        assertEquals(ORIG_AGE, a.getAge());
     }
 
     private DataCacheManager cacheManager(OpenJPAEntityManagerFactory factory) {

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test hints using EntityManager interface.
  */
-public class TestEmLockTimeout extends SequencedActionsTest {
+class TestEmLockTimeout extends SequencedActionsTest {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
      * Test setting lock.timeout at the createEntityManagerFactory.
      */
     @Test
-    public void testSetJavaxLockTimeoutAtProviderCreateEmf() {
+    void setJavaxLockTimeoutAtProviderCreateEmf() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
             , "jakarta.persistence.lock.timeout", "13"
@@ -73,7 +73,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
     @AllowFailure(message = "OPENJPA-??? - Provider.createEntityManagerFactory" +
         " does not suppport multiple equivalent properties.")
     @Test
-    public void testSetLockTimeoutsAtProviderCreateEmf() {
+    void setLockTimeoutsAtProviderCreateEmf() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
             , "openjpa.LockTimeout", 122
@@ -96,7 +96,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
      * value set at createEntityManagerFactory and createEm.
      */
     @Test
-    public void testSetJavaxLockTimeoutAtFind() {
+    void setJavaxLockTimeoutAtFind() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
             , "jakarta.persistence.lock.timeout", "13"

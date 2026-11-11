@@ -43,7 +43,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
         deleteAll(Department.class);
@@ -79,7 +79,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testFromClause1() {
+    void fromClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM Student o";
 
@@ -93,7 +93,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testFromClause2() {
+    void fromClause2() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT NEW apps.ArtCourse(e.name)" +
@@ -108,7 +108,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testFromClause3() {
+    void fromClause3() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name " +
             "FROM Student o, Course c " +
@@ -126,7 +126,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testWhereClause1() {
+    void whereClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
             "FROM Student s, Course d " +
@@ -141,7 +141,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testWhereClause2() {
+    void whereClause2() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
             "FROM Student s " +
@@ -159,7 +159,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testClauseRangeVar() {
+    void clauseRangeVar() {
         EntityManager em = currentEntityManager();
         String query = "SELECT DISTINCT s FROM Student s, Student s2 " +
             "WHERE s.name = 'John' AND s2.name = 'Jonathan'";
@@ -176,7 +176,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testClausePathExpr() {
+    void clausePathExpr() {
         EntityManager em = currentEntityManager();
         String failure = "SELECT DISTINCT s " +
             "FROM Student s WHERE" +
@@ -192,7 +192,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testClausePathExpr2() {
+    void clausePathExpr2() {
         EntityManager em = currentEntityManager();
         String success =
             "SELECT DISTINCT d.name FROM Student AS s, IN(s.department) d ";
@@ -206,7 +206,7 @@ public class TestEJBClauses extends AbstractTestCase {
     }
 
     @Test
-    public void testCollMemberDecl() {
+    void collMemberDecl() {
         EntityManager em = currentEntityManager();
 
         String colldec = "SELECT DISTINCT s.name " +

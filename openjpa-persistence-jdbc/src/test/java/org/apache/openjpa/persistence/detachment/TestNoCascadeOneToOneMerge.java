@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Gokhan Ergul
  */
-public class TestNoCascadeOneToOneMerge
+class TestNoCascadeOneToOneMerge
     extends SingleEMFTestCase {
 
     private int a_id;
@@ -78,7 +78,7 @@ public class TestNoCascadeOneToOneMerge
     }
 
     @Test
-    public void testMergeAllAttached () {
+    void mergeAllAttached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         SimpleRef b2 = em.find(SimpleRef.class, b2_id);
@@ -101,7 +101,7 @@ public class TestNoCascadeOneToOneMerge
     }
 
     @Test
-    public void testMergeRefAttached () {
+    void mergeRefAttached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         assertNotNull(a);
@@ -128,7 +128,7 @@ public class TestNoCascadeOneToOneMerge
     }
 
     @Test
-    public void testMergeDetached () {
+    void mergeDetached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         SimpleRef b1 = em.find(SimpleRef.class, b1_id);

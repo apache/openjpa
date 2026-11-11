@@ -24,23 +24,22 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.JPQLNode;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestJPQLParser {
+class TestJPQLParser {
 
     @Test
-    public void testSimpleJPQLExtractFieldFromPath() {
-        try {
+    void simpleJPQLExtractFieldFromPath() {
+        Assertions.assertDoesNotThrow(() -> {
             String query = "SELECT a FROM Usuario AS a where (extract(year from a.dateOfBirth) - 2000) < 25";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
             assertNotNull(node);
-        } catch (ParseException ex) {
-            fail();
-        }
+        });
     }
 
     @Test
-    public void testSimpleJPQLExtractFieldFromDate() {
+    void simpleJPQLExtractFieldFromDate() {
         try {
             String query = "SELECT a FROM Usuario AS a where extract (DAY from {d '2005-04-13'}) = 10";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -52,7 +51,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testJPQL() {
+    void jpql() {
         try {
             String query = "SELECT c FROM CompUser AS u WHERE EXTRACT (YEAR FROM {d '2006-03-21'}) > 2005";
             assertNotNull(new JPQL(query).parseQuery());
@@ -63,7 +62,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleJPQLExtractPart() {
+    void simpleJPQLExtractPart() {
         try {
             String query = "SELECT a FROM Usuario AS a where extract(date from a.dateOfBirth) = {d '2025-07-12'}";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -75,7 +74,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToString() {
+    void simpleCastToString() {
         try {
             String query = "SELECT u FROM User AS u WHERE CAST((EXTRACT(year FROM u.dateOfBirth)) AS STRING) = '1983'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -87,7 +86,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToStringOnSelect() {
+    void simpleCastToStringOnSelect() {
         try {
             String query = "SELECT CAST(u.birthYear AS string) FROM User AS u WHERE EXTRACT(year FROM u.dateOfBirth) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -99,7 +98,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToInteger() {
+    void simpleCastToInteger() {
         try {
             String query = "SELECT u FROM User AS u WHERE CAST('1983' AS INTEGER) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -111,7 +110,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToIntegerOnSelect() {
+    void simpleCastToIntegerOnSelect() {
         try {
             String query = "SELECT CAST(u.birthYear as Integer) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -123,7 +122,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToLong() {
+    void simpleCastToLong() {
         try {
             String query = "SELECT u FROM User AS u WHERE CAST('1983' AS LONG) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -135,7 +134,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToLongOnSelect() {
+    void simpleCastToLongOnSelect() {
         try {
             String query = "SELECT CAST(u.birthYear as long) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -147,7 +146,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToFloat() {
+    void simpleCastToFloat() {
         try {
             String query = "SELECT u FROM User AS u WHERE CAST('1983' AS FLOAT) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -159,7 +158,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToFloatOnSelect() {
+    void simpleCastToFloatOnSelect() {
         try {
             String query = "SELECT CAST(u.birthYear as FLOAT) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -171,7 +170,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToDouble() {
+    void simpleCastToDouble() {
         try {
             String query = "SELECT u FROM User AS u WHERE CAST(u.cast AS INTEGER) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -183,7 +182,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSimpleCastToDoubleOnSelect() {
+    void simpleCastToDoubleOnSelect() {
         try {
             String query = "SELECT CAST(u.birthYear as double) FROM User AS u WHERE extract(year from u.dateOfBirth) = 1983";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -196,7 +195,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testStringLeftFunction() {
+    void stringLeftFunction() {
         try {
             String query = "SELECT LEFT(u.name, 3) FROM User AS u WHERE LEFT(u.lastName, 1) = 'D'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -210,7 +209,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testStringRightFunction() {
+    void stringRightFunction() {
         try {
             String query = "SELECT RIGHT(u.name, 3) FROM User AS u WHERE right(u.lastName, 1) = 'D'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -224,7 +223,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testReplaceStringFunction() {
+    void replaceStringFunction() {
         try {
             String query = "SELECT REPLACE(u.name, 'John', u.lastName) FROM User u WHERE REPLACE(u.name, 'ohn', 'ack') = 'Jack'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -237,7 +236,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testReplaceAsIdentifierFunction() {
+    void replaceAsIdentifierFunction() {
         try {
             String query = "SELECT REPLACE(u.name, 'John', u.lastName) "
                     + "FROM User u WHERE REPLACE(u.name, 'ohn', 'ack') = 'Jack' AND u.replace = true";
@@ -251,7 +250,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testIdFunctionSimple() {
+    void idFunctionSimple() {
         try {
             String query = "SELECT u FROM User AS u WHERE ID(u) = :id";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -264,7 +263,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testIdFunctionOnSelect() {
+    void idFunctionOnSelect() {
         try {
             String query = "SELECT ID(u) FROM User AS u WHERE u.name = :name";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -277,7 +276,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testVersionFunctionEquals() {
+    void versionFunctionEquals() {
         try {
             String query = "SELECT u FROM User AS u WHERE VERSION(u) = :version";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -290,7 +289,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testVersionFunctionSimple() {
+    void versionFunctionSimple() {
         try {
             String query = "SELECT u FROM User AS u WHERE VERSION(u) <> :version";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -303,7 +302,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testStringConcatOperator() {
+    void stringConcatOperator() {
         try {
             String query = "SELECT u.firstName || ' ' || u.lastName FROM User AS u";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -316,7 +315,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testStringConcatOperatorInWhere() {
+    void stringConcatOperatorInWhere() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.firstName || u.lastName = :fullName";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -329,7 +328,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOrderByNullsFirst() {
+    void orderByNullsFirst() {
         try {
             String query = "SELECT u FROM User AS u ORDER BY u.name ASC NULLS FIRST";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -342,7 +341,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOrderByNullsLast() {
+    void orderByNullsLast() {
         try {
             String query = "SELECT u FROM User AS u ORDER BY u.name DESC NULLS LAST, u.age ASC NULLS FIRST";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -355,7 +354,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOrderByNullsWithoutAscDesc() {
+    void orderByNullsWithoutAscDesc() {
         try {
             String query = "SELECT u FROM User AS u ORDER BY u.name NULLS LAST";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -368,7 +367,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOrderByScalarExpression() {
+    void orderByScalarExpression() {
         try {
             String query = "SELECT u FROM User AS u ORDER BY UPPER(u.name) ASC";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -381,7 +380,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testDeleteUsingIdAndVersion() {
+    void deleteUsingIdAndVersion() {
         try {
             String query = "DELETE from Employee WHERE id(this) = :id AND version(this) = :version";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -394,7 +393,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnion() {
+    void union() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 UNION SELECT u FROM User AS u WHERE u.name = 'Admin'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -407,7 +406,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnionAll() {
+    void unionAll() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 UNION ALL SELECT u FROM User AS u WHERE u.name = 'Admin'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -420,7 +419,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testIntersect() {
+    void intersect() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 INTERSECT SELECT u FROM User AS u WHERE u.active = true";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -433,7 +432,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testIntersectAll() {
+    void intersectAll() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 INTERSECT ALL SELECT u FROM User AS u WHERE u.active = true";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -446,7 +445,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testExcept() {
+    void except() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 EXCEPT SELECT u FROM User AS u WHERE u.name = 'Admin'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -459,7 +458,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testExceptAll() {
+    void exceptAll() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 EXCEPT ALL SELECT u FROM User AS u WHERE u.name = 'Admin'";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -472,7 +471,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnionWithIntersect() {
+    void unionWithIntersect() {
         try {
             String query = "SELECT u FROM User AS u WHERE u.age > 30 "
                 + "UNION SELECT u FROM User AS u WHERE u.active = true "
@@ -487,7 +486,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testParenthesizedUnion() {
+    void parenthesizedUnion() {
         try {
             String query = "(SELECT u FROM User AS u WHERE u.age > 30 "
                 + "UNION SELECT u FROM User AS u WHERE u.name = 'Admin') "
@@ -502,7 +501,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOptionalSelectClause() {
+    void optionalSelectClause() {
         try {
             String query = "FROM User u WHERE u.age > 30";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -515,7 +514,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOptionalIdentificationVariable() {
+    void optionalIdentificationVariable() {
         try {
             String query = "SELECT this FROM User"
                 + " WHERE this.age > 30";
@@ -529,7 +528,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOptionalSelectAndIdentificationVariable() {
+    void optionalSelectAndIdentificationVariable() {
         try {
             String query = "FROM User WHERE this.age > 30";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -542,7 +541,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testOptionalSelectNoWhere() {
+    void optionalSelectNoWhere() {
         try {
             String query = "FROM User";
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -555,7 +554,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testChainedAdditiveOperatorsAreLeftAssociative() throws ParseException {
+    void chainedAdditiveOperatorsAreLeftAssociative() throws Exception {
         // 10 - 3 - 2 must parse as (10 - 3) - 2, i.e. the left operand of the
         // outermost subtraction is itself a subtraction.
         String query = "SELECT u FROM User AS u WHERE u.age = 10 - 3 - 2";
@@ -567,7 +566,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testChainedMultiplicativeOperatorsAreLeftAssociative() throws ParseException {
+    void chainedMultiplicativeOperatorsAreLeftAssociative() throws Exception {
         // 100 / 5 / 2 must parse as (100 / 5) / 2.
         String query = "SELECT u FROM User AS u WHERE u.age = 100 / 5 / 2";
         JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -578,7 +577,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testMixedAdditiveOperatorsAreLeftAssociative() throws ParseException {
+    void mixedAdditiveOperatorsAreLeftAssociative() throws Exception {
         // 10 - 3 + 2 must parse as (10 - 3) + 2, not as 10 - (3 + 2).
         String query = "SELECT u FROM User AS u WHERE u.age = 10 - 3 + 2";
         JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -589,7 +588,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testMixedMultiplicativeOperatorsAreLeftAssociative() throws ParseException {
+    void mixedMultiplicativeOperatorsAreLeftAssociative() throws Exception {
         // 100 / 5 * 2 must parse as (100 / 5) * 2, not as 100 / (5 * 2).
         String query = "SELECT u FROM User AS u WHERE u.age = 100 / 5 * 2";
         JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -600,7 +599,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testMultiplicationBindsTighterThanAddition() throws ParseException {
+    void multiplicationBindsTighterThanAddition() throws Exception {
         // 1 + 2 * 3 must parse as 1 + (2 * 3).
         String query = "SELECT u FROM User AS u WHERE u.age = 1 + 2 * 3";
         JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -611,7 +610,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnaryMinusOnPath() throws ParseException {
+    void unaryMinusOnPath() throws Exception {
         JPQLNode node = (JPQLNode) new JPQL("SELECT -u.age FROM User u").parseQuery();
         JPQLNode negate = node.findChildByID(JPQLTreeConstants.JJTNEGATE, true);
         assertNotNull(negate);
@@ -619,14 +618,14 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnaryPlusOnPath() throws ParseException {
+    void unaryPlusOnPath() throws Exception {
         JPQLNode node = (JPQLNode) new JPQL("SELECT +u.age FROM User u").parseQuery();
         assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
         assertNotNull(node.findChildByID(JPQLTreeConstants.JJTPATH, true));
     }
 
     @Test
-    public void testUnaryMinusBindsTighterThanMultiplication() throws ParseException {
+    void unaryMinusBindsTighterThanMultiplication() throws Exception {
         // -u.age * 2 must parse as (-u.age) * 2
         String query = "SELECT u FROM User u WHERE -u.age * 2 < 0";
         JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
@@ -636,7 +635,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testUnaryMinusOnArithmeticPrimaries() throws ParseException {
+    void unaryMinusOnArithmeticPrimaries() throws Exception {
         String[] queries = {
             "SELECT -(u.age + u.height) FROM User u",
             "SELECT u FROM User u WHERE -u.age < 0",
@@ -656,7 +655,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSignedNumericLiteralsStayLiterals() throws ParseException {
+    void signedNumericLiteralsStayLiterals() throws Exception {
         String[] queries = {
             "SELECT u FROM User u WHERE u.age = -1",
             "SELECT u FROM User u WHERE u.age = - 1",
@@ -671,7 +670,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSubtractionOfSignedLiteral() throws ParseException {
+    void subtractionOfSignedLiteral() throws Exception {
         // 1 - -1 is a subtraction whose right operand is the literal -1
         JPQLNode node = (JPQLNode) new JPQL("SELECT u FROM User u WHERE u.age = 1 - -1").parseQuery();
         assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
@@ -682,7 +681,7 @@ public class TestJPQLParser {
     }
 
     @Test
-    public void testSubtractionWithoutWhitespace() throws ParseException {
+    void subtractionWithoutWhitespace() throws Exception {
         // u.age -1 is a subtraction, not a path followed by the literal -1
         JPQLNode node = (JPQLNode) new JPQL("SELECT u FROM User u WHERE u.age -1 = 0").parseQuery();
         assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));

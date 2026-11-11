@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,12 +54,12 @@ public class TestPersistentClasses extends AbstractTestCase {
             assertTrue(names.contains(clsName), "expected element " + clsName + " was not found in "
                 + names);
         else
-            assertTrue(!names.contains(clsName), "unexpected element " + clsName + " was found in "
+            assertFalse(names.contains(clsName), "unexpected element " + clsName + " was found in "
                 + names);
     }
 
     @Test
-    public void testNoneConfigured() {
+    void noneConfigured() {
 
         Map map = new HashMap();
         map.put("openjpa.MetaDataFactory", "jpa");
@@ -75,7 +74,7 @@ public class TestPersistentClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testJPAClasspathScanner() {
+    void jpaClasspathScanner() {
         Map map = new HashMap();
         map.put("openjpa.MetaDataFactory",
                 "jpa(ClasspathScan=src;jdk1.5-test)");
@@ -94,7 +93,7 @@ public class TestPersistentClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testTypes() {
+    void types() {
 
         Map map = new HashMap();
 

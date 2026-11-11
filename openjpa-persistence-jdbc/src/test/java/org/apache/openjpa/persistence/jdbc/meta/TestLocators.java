@@ -50,7 +50,7 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     private OpenJPAEntityManagerFactory pmf;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
 
@@ -72,12 +72,12 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     }
 
     @Test
-    public void testBLOBs() {
+    void bloBs() {
         doBlobTest(50000);
     }
 
     @Test
-    public void testSmallBLOBs() {
+    void smallBLOBs() {
         doBlobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
@@ -118,7 +118,7 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     }
 
     @Test
-    public void testShrinkBLOB() {
+    void shrinkBLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
         LocatorTestObject o = new LocatorTestObject();
@@ -150,12 +150,12 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     }
 
     @Test
-    public void testCLOBs() {
+    void cloBs() {
         doClobTest(50000);
     }
 
     @Test
-    public void testSmallCLOBs() {
+    void smallCLOBs() {
         doClobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
@@ -197,7 +197,7 @@ public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     }
 
     @Test
-    public void testShrinkCLOB() {
+    void shrinkCLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
         LocatorTestObject o = new LocatorTestObject();

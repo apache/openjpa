@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.exception;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -26,18 +28,18 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.Query;
-
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLErrorCodeReader;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Query;
 
 /**
  * Tests proper JPA exceptions are raised by the implementation.
@@ -83,7 +85,7 @@ public class TestException extends SingleEMFTestCase {
 		PObject pc1 = em1.find(PObject.class, id);
 		PObject pc2 = em2.find(PObject.class, id);
 
-		assertTrue(pc1 != pc2);
+		assertNotSame(pc1, pc2);
 
 		pc1.setName("Modified in TXN1");
         if (supportsQueryTimeout) {
@@ -109,7 +111,7 @@ public class TestException extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testThrowsEntityExistsException() {
+    void throwsEntityExistsException() {
 		EntityManager em = emf.createEntityManager();
 
 		em.getTransaction().begin();
@@ -134,7 +136,7 @@ public class TestException extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testThrowsEntityNotFoundException() {
+    void throwsEntityNotFoundException() {
 		EntityManager em = emf.createEntityManager();
 
 		em.getTransaction().begin();
@@ -161,7 +163,7 @@ public class TestException extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testErrorCodeConfigurationHasAllKnownDictionaries() {
+    void errorCodeConfigurationHasAllKnownDictionaries() {
 		SQLErrorCodeReader reader = new SQLErrorCodeReader();
 		InputStream in = DBDictionary.class.getResourceAsStream
 			("sql-error-state-codes.xml");
@@ -184,7 +186,7 @@ public class TestException extends SingleEMFTestCase {
      * as per JPA spec.
      */
     @Test
-    public void testIllegalArgumennExceptionOnInvalidQuery() {
+    void illegalArgumennExceptionOnInvalidQuery() {
 	    EntityManager em = emf.createEntityManager();
 	    try {
 	      em.createQuery("This is not a valid JPQL query");
@@ -199,7 +201,7 @@ public class TestException extends SingleEMFTestCase {
      * Invalid named query fails as per spec on factory based construction.
      */
     @Test
-    public void testIllegalArgumennExceptionOnInvalidNamedQuery() {
+    void illegalArgumennExceptionOnInvalidNamedQuery() {
          EntityManager em = emf.createEntityManager();
          try {
              Query query = em.createNamedQuery("This is invalid Named query");

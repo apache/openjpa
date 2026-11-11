@@ -43,36 +43,36 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
 	}
 
     /** public void testMapping() {
-             ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
-                 getMappingRepositoryInstance().getMapping(TablePerClass2.class,
-                 null, true);
-             assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
-             assertTrue(mapping.getDiscriminator().getStrategy()
-                 instanceof NoneDiscriminatorStrategy);
-             assertNull(mapping.getJoinForeignKey());
-             assertNull(mapping.getJoinablePCSuperclassMapping());
-             assertEquals("TPC_BASIC", mapping.getFieldMapping("basic").
-                 getColumns()[0].getName());
-             ClassMapping embed = mapping.getFieldMapping("embed").
-                 currentEntityManager()beddedMapping();
-             assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
-                 getColumns()[0].getName());
-
-             ClassMapping sup = mapping.getPCSuperclassMapping();
-             assertEquals(TablePerClass1.class, sup.getDescribedType());
-             assertTrue(sup.getStrategy() instanceof FullClassStrategy);
-             assertTrue(sup.getDiscriminator().getStrategy()
-                 instanceof NoneDiscriminatorStrategy);
-             assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
-                 getColumns()[0].getName());
-             embed = sup.getFieldMapping("embed")
-                 .currentEntityManager()beddedMapping();
-             assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
-                 getColumns()[0].getName());
-         }**/
+                  ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
+                      getMappingRepositoryInstance().getMapping(TablePerClass2.class,
+                      null, true);
+                  assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
+                  assertTrue(mapping.getDiscriminator().getStrategy()
+                      instanceof NoneDiscriminatorStrategy);
+                  assertNull(mapping.getJoinForeignKey());
+                  assertNull(mapping.getJoinablePCSuperclassMapping());
+                  assertEquals("TPC_BASIC", mapping.getFieldMapping("basic").
+                      getColumns()[0].getName());
+                  ClassMapping embed = mapping.getFieldMapping("embed").
+                      currentEntityManager()beddedMapping();
+                  assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
+                      getColumns()[0].getName());
+     
+                  ClassMapping sup = mapping.getPCSuperclassMapping();
+                  assertEquals(TablePerClass1.class, sup.getDescribedType());
+                  assertTrue(sup.getStrategy() instanceof FullClassStrategy);
+                  assertTrue(sup.getDiscriminator().getStrategy()
+                      instanceof NoneDiscriminatorStrategy);
+                  assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
+                      getColumns()[0].getName());
+                  embed = sup.getFieldMapping("embed")
+                      .currentEntityManager()beddedMapping();
+                  assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
+                      getColumns()[0].getName());
+              }**/
 
     @Test
-    public void testInsertAndRetrieve() {
+    void insertAndRetrieve() {
         deleteAll(TablePerClass1.class);
 
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();

@@ -47,7 +47,7 @@ public class TestUniteratedQueryResult extends AbstractTestCase {
     private EntityManagerFactory _pmf;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         logger.fine("****Deleted Records "
             + deleteAll(CacheObjectA.class));
         Map propsMap = new HashMap();
@@ -60,7 +60,7 @@ public class TestUniteratedQueryResult extends AbstractTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         CacheObjectA pc1 = new CacheObjectA();
         pc1.setName("pc1");
         CacheObjectA pc2 = new CacheObjectA();

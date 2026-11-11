@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * Test for JPA-2.2 java.time.* functionality
  */
-public class TestJava8TimeTypes extends SingleEMFTestCase {
+class TestJava8TimeTypes extends SingleEMFTestCase {
     private static final String VAL_LOCAL_DATE = "2019-01-01";
     private static final String VAL_LOCAL_TIME = "04:57:15";
     private static final String VAL_LOCAL_DATETIME = "2019-01-01T01:00:00";
@@ -101,7 +101,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReadJava8Types() {
+    void readJava8Types() {
 
         // now read it back.
         EntityManager em = emf.createEntityManager();
@@ -124,7 +124,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     // we've got reports from various functions not properly working with Java8 Dates.
     @Test
-    public void testReadLocalDate() {
+    void readLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
         final List<LocalDate> date = qry.getResultList();
@@ -134,7 +134,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     // max function
     @Test
-    public void testMaxLocalDate() {
+    void maxLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select max(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
         final LocalDate max = qry.getSingleResult();
@@ -143,7 +143,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxLocalDateTime() {
+    void maxLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDateTime> qry = em.createQuery("select max(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
         final LocalDateTime max = qry.getSingleResult();
@@ -152,7 +152,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxLocalTime() {
+    void maxLocalTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
         final LocalTime max = qry.getSingleResult().withNano(0);
@@ -163,7 +163,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxOffsetTime() {
+    void maxOffsetTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
         final OffsetTime max = qry.getSingleResult();
@@ -182,7 +182,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxOffsetDateTime() {
+    void maxOffsetDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
         final OffsetDateTime max = qry.getSingleResult();
@@ -193,7 +193,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
 
     // min function
     @Test
-    public void testMinLocalDate() {
+    void minLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select min(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
         final LocalDate min = qry.getSingleResult();
@@ -201,7 +201,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinLocalDateTime() {
+    void minLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDateTime> qry = em.createQuery("select min(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
         final LocalDateTime min = qry.getSingleResult();
@@ -210,7 +210,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinLocalTime() {
+    void minLocalTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
         final LocalTime min = qry.getSingleResult();
@@ -221,7 +221,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinOffsetTime() {
+    void minOffsetTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
         final OffsetTime min = qry.getSingleResult();
@@ -240,7 +240,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinOffsetDateTime() {
+    void minOffsetDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetDateTime> qry
                 = em.createQuery("select min(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
@@ -251,7 +251,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCurrentDateLocalDate() {
+    void currentDateLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < CURRENT_DATE", Java8TimeTypes.class);
@@ -262,7 +262,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCurrentDateLocalDateTime() {
+    void currentDateLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < CURRENT_TIMESTAMP", Java8TimeTypes.class);
@@ -273,7 +273,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetCurrentLocalDate() {
+    void getCurrentLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateField < LOCAL DATE", Java8TimeTypes.class);
@@ -288,7 +288,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
      * so they equal a date stored for today.
      */
     @Test
-    public void testCurrentDateEqualsDateOfToday() {
+    void currentDateEqualsDateOfToday() {
         try (EntityManager em = emf.createEntityManager()) {
             final String today = "select LOCAL DATE from Java8TimeTypes AS j where j.id = 1";
             final LocalDate before = em.createQuery(today, LocalDate.class).getSingleResult();
@@ -315,7 +315,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetCurrentLocalDateTime() {
+    void getCurrentLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
                 = em.createQuery("select j from Java8TimeTypes AS j where j.localDateTimeField < LOCAL DATETIME", Java8TimeTypes.class);
@@ -326,7 +326,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetCurrentLocalTime() {
+    void getCurrentLocalTime() {
         // LOCAL TIME is the time of the database server, which may run in another
         // time zone than this JVM, so the expected rows are computed from it
         try (EntityManager em = emf.createEntityManager()) {
@@ -352,7 +352,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractSecondKeepsFractionFromColumns() {
+    void extractSecondKeepsFractionFromColumns() {
         DBDictionary dict = getDbDictionary(emf);
         if (!(dict instanceof H2Dictionary || dict instanceof MySQLDictionary
             || dict instanceof MariaDBDictionary)) {
@@ -390,7 +390,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReadInstant() {
+    void readInstant() {
         EntityManager em = emf.createEntityManager();
         Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
         assertEquals(Instant.parse("2019-01-01T10:00:00Z"), eRead.getInstantField());
@@ -398,7 +398,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReadYear() {
+    void readYear() {
         EntityManager em = emf.createEntityManager();
         Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
         assertEquals(Year.of(2019), eRead.getYearField());
@@ -406,7 +406,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSelectInstant() {
+    void selectInstant() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Instant> qry = em.createQuery(
                 "select t.instantField from Java8TimeTypes AS t order by t.id", Instant.class);
@@ -417,7 +417,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSelectYear() {
+    void selectYear() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Year> qry = em.createQuery(
                 "select t.yearField from Java8TimeTypes AS t order by t.id", Year.class);
@@ -428,7 +428,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMaxInstant() {
+    void maxInstant() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Instant> qry = em.createQuery(
                 "select max(t.instantField) from Java8TimeTypes AS t", Instant.class);
@@ -438,7 +438,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMinYear() {
+    void minYear() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Year> qry = em.createQuery(
                 "select min(t.yearField) from Java8TimeTypes AS t", Year.class);

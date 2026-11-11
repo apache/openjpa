@@ -31,10 +31,10 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.RestoreState;
 import org.junit.jupiter.api.Test;
 
-public class TestEnumToKernelConstantMappings {
+class TestEnumToKernelConstantMappings {
 
     @Test
-    public void testConnectionRetainModes() {
+    void connectionRetainModes() {
         assertEquals(ConnectionRetainModes.CONN_RETAIN_ALWAYS,
             ConnectionRetainMode.ALWAYS.toKernelConstant());
         assertEquals(ConnectionRetainMode.ALWAYS,
@@ -64,7 +64,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testDetachState() {
+    void detachState() {
         assertEquals(DetachState.DETACH_ALL,
             DetachStateType.ALL.toKernelConstant());
         assertEquals(DetachStateType.ALL,
@@ -93,7 +93,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testRestoreState() {
+    void restoreState() {
         assertEquals(RestoreState.RESTORE_ALL,
             RestoreStateType.ALL.toKernelConstant());
         assertEquals(RestoreStateType.ALL,
@@ -121,7 +121,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testAutoClear() {
+    void autoClear() {
         assertEquals(AutoClear.CLEAR_ALL, AutoClearType.ALL.toKernelConstant());
         assertEquals(AutoClearType.ALL,
             AutoClearType.fromKernelConstant(AutoClear.CLEAR_ALL));
@@ -140,7 +140,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testAutoDetach() {
+    void autoDetach() {
         // Commenting out constant count test for now. Subtracting 2 is brittle.
         // assertEquals(getConstantCount(AutoDetach.class) - 2,
         //    AutoDetachType.values().length);
@@ -191,7 +191,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testCallbackMode() {
+    void callbackMode() {
         assertEquals(getConstantCount(CallbackModes.class),
             CallbackMode.values().length);
 
@@ -246,7 +246,7 @@ public class TestEnumToKernelConstantMappings {
     }
 
     @Test
-    public void testQueryOperationTypes() {
+    void queryOperationTypes() {
         assertEquals(QueryOperations.OP_SELECT,
             QueryOperationType.SELECT.toKernelConstant());
         assertEquals(QueryOperationType.SELECT,

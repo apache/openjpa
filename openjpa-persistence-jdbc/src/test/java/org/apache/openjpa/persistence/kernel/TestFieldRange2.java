@@ -50,13 +50,13 @@ public class TestFieldRange2 extends BaseKernelTest {
             + "!@@#$\\%^&\"*()-=\\|+_/?.>,<~`";
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         deleteAll(AllFieldTypesTest.class);
     }
 
     @Test
-    public void testSaveState()
+    void saveState()
         throws Exception {
         allFieldSaveState(
             (int) 259645,

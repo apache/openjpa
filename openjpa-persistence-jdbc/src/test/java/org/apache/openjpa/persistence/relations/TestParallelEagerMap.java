@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestParallelEagerMap extends SingleEMFTestCase {
+class TestParallelEagerMap extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +37,7 @@ public class TestParallelEagerMap extends SingleEMFTestCase {
     }
 
     @Test
-    public void testParentNotNull() {
+    void parentNotNull() {
 
         MapKeyParent[] parents = { new MapKeyParent(), new MapKeyParent() };
         for (MapKeyParent parent : parents) {

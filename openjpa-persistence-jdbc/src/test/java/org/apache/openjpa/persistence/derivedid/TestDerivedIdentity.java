@@ -83,7 +83,7 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
     }
 
     @Test
-    public void testDerivedIdentity() {
+    void derivedIdentity() {
         EntityManager em = emf.createEntityManager();
         Query query = null;
         String str[] = {

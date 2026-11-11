@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * is special enhancement task in main/ant/enhancer.xml to ensure this value is set
  * during the enhancement process for the entities used by this test.
  */
-public class TestOptimizeIdCopy extends SingleEMFTestCase {
+class TestOptimizeIdCopy extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestOptimizeIdCopy extends SingleEMFTestCase {
      * only the proper/expected public constructor is called during the id copy operation.
      */
     @Test
-    public void testIdOptimization() {
+    void idOptimization() {
         EntityManager em = emf.createEntityManager();
 
         // Add a software entity
@@ -79,7 +79,7 @@ public class TestOptimizeIdCopy extends SingleEMFTestCase {
      * are different than field order
      */
     @Test
-    public void testIdOptimizationConstructorOutOfOrder() {
+    void idOptimizationConstructorOutOfOrder() {
         EntityManager em = emf.createEntityManager();
 
         Hardware hw = new Hardware();
@@ -105,7 +105,7 @@ public class TestOptimizeIdCopy extends SingleEMFTestCase {
      * Verifies that classes without a proper constructor do not get optimized
      */
     @Test
-    public void testNoOptimization() {
+    void noOptimization() {
         EntityManager em = emf.createEntityManager();
 
         int id = new Random().nextInt();

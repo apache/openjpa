@@ -62,7 +62,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
     Broker _broker;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
@@ -109,7 +109,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
      * Tests that all sequence numbers are unique and in order.
      */
     @Test
-    public void testSequence()
+    void sequence()
         throws Exception {
         Set set = new HashSet();
 
@@ -129,7 +129,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
     }
 
     @Test
-    public void testExtensions()
+    void extensions()
         throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());

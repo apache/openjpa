@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.merge;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -29,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
+class TestCascadeOneToManyMerge extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(Toy.class, ToyBox.class, CLEAR_TABLES);
@@ -43,7 +42,7 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testOneToManyCascadeMergeSingleEntity() {
+    void oneToManyCascadeMergeSingleEntity() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -69,11 +68,11 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
             Toy toyFind = em.find(Toy.class, 1);
             assertNotNull(toyboxFind, "Assert em.find() for ToyBox(id=1) did not return null.");
             assertNotNull(toyFind, "Assert em.find() for Toy(id=1) did not return null.");
-            assertTrue(mergedToyBox == toyboxFind, "Assert em.find() returns the ToyBox returned by em.merge()");
-            assertTrue(toyboxFind.getToyList().size() == 1, "Assert tahat ToyBox(id=1).toyList is size 1");
+            assertSame(mergedToyBox, toyboxFind, "Assert em.find() returns the ToyBox returned by em.merge()");
+            assertEquals(1, toyboxFind.getToyList().size(), "Assert tahat ToyBox(id=1).toyList is size 1");
             assertTrue(toyboxFind.getToyList()
                 .contains(toyFind), "Assert that ToyBox(id=1).toyList contains the managed Toy(id=1).");
-            assertTrue(toyFind.getToybox() == toyboxFind, "Assert that Toy(id=1) references the managed ToyBox(id=1).");
+            assertSame(toyFind.getToybox(), toyboxFind, "Assert that Toy(id=1) references the managed ToyBox(id=1).");
 
             em.getTransaction().commit();
 
@@ -98,7 +97,7 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testOneToManyCascadeMergeDoubleEntity() {
+    void oneToManyCascadeMergeDoubleEntity() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -132,15 +131,15 @@ public class TestCascadeOneToManyMerge extends SingleEMFTestCase {
             assertNotNull(toyboxFind, "Assert em.find() for ToyBox(id=1) did not return null.");
             assertNotNull(toy1Find, "Assert em.find() for Toy(id=1) did not return null.");
             assertNotNull(toy2Find, "Assert em.find() for Toy(id=2) did not return null.");
-            assertTrue(mergedToyBox == toyboxFind, "Assert em.find() returns the ToyBox returned by em.merge()");
-            assertTrue(toyboxFind.getToyList().size() == 2, "Assert tahat ToyBox(id=1).toyList is size 2");
+            assertSame(mergedToyBox, toyboxFind, "Assert em.find() returns the ToyBox returned by em.merge()");
+            assertEquals(2, toyboxFind.getToyList().size(), "Assert tahat ToyBox(id=1).toyList is size 2");
             assertTrue(toyboxFind.getToyList()
                 .contains(toy1Find), "Assert that ToyBox(id=1).toyList contains the managed Toy(id=1).");
             assertTrue(toyboxFind.getToyList()
                 .contains(toy2Find), "Assert that ToyBox(id=1).toyList contains the managed Toy(id=2).");
-            assertTrue(toy1Find.getToybox() == toyboxFind,
+            assertSame(toy1Find.getToybox(), toyboxFind,
                 "Assert that Toy(id=1) references the managed ToyBox(id=1).");
-            assertTrue(toy2Find.getToybox() == toyboxFind,
+            assertSame(toy2Find.getToybox(), toyboxFind,
                 "Assert that Toy(id=2) references the managed ToyBox(id=1).");
 
             em.clear();

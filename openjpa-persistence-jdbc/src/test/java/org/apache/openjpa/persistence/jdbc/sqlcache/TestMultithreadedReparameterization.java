@@ -44,14 +44,14 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestMultithreadedReparameterization {
+class TestMultithreadedReparameterization {
 	private static final Logger logger = Logger.getLogger(TestMultithreadedReparameterization.class.getCanonicalName());
     private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -63,7 +63,7 @@ public class TestMultithreadedReparameterization {
     }
 
     @Test
-    public void testReparameterizationUnderHeavyLoad() throws Exception {
+    void reparameterizationUnderHeavyLoad() throws Exception {
         long baseId = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -100,8 +100,8 @@ public class TestMultithreadedReparameterization {
             for(Throwable t : exceptions) {
                 fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
             }
-            assertEquals(nThreads*nRepeats,stats.getExecutionCount(), stats.getExecutionCount(jpql));
-            assertEquals(nThreads*nRepeats-1,stats.getExecutionCount(), stats.getHitCount(jpql));
+            assertEquals(nThreads * nRepeats, stats.getExecutionCount());
+            assertEquals(nThreads * nRepeats - 1, stats.getExecutionCount());
         } finally {
             //clear statistics for other tests
             emf.getConfiguration().getQuerySQLCacheInstance().clear();
@@ -119,7 +119,7 @@ public class TestMultithreadedReparameterization {
      * @throws Exception
      */
     @Test
-    public void testCacheSwappingUnderHeavyLoad() throws Exception {
+    void cacheSwappingUnderHeavyLoad() throws Exception {
         final int nRuns = 10;
         final int nThreads = 20;
         //This value needs to be more than the max cache size to reliably cause cache

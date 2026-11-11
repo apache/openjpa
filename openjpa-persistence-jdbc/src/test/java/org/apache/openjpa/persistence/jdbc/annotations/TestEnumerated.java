@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestEnumerated
+class TestEnumerated
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class TestEnumerated
     }
 
     @Test
-    public void testMapping() {
+    void mapping() {
         ClassMapping cls = (ClassMapping) emf.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class,
             null, true);
@@ -70,7 +70,7 @@ public class TestEnumerated
     }
 
     @Test
-    public void testBehavior() {
+    void behavior() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(1);

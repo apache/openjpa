@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.temporal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -83,27 +84,27 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
     }
 
     @Test
-    public void testNoRounding() {
+    void noRounding() {
         em = emf.createEntityManager();
         final List<TemporalEntity> temporalEntityList = findAll(em);
         assertNotNull(temporalEntityList);
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 5);
-            assertEquals(testDate.getMonth(), 11);
-            assertEquals(testDate.getDate(), 31);
-            assertEquals(testDate.getHours(), 23);
-            assertEquals(testDate.getMinutes(), 59);
-            assertEquals(testDate.getSeconds(), 59);
-            assertEquals(testDate.getYear(), 8099);
+            assertEquals(5, testDate.getDay());
+            assertEquals(11, testDate.getMonth());
+            assertEquals(31, testDate.getDate());
+            assertEquals(23, testDate.getHours());
+            assertEquals(59, testDate.getMinutes());
+            assertEquals(59, testDate.getSeconds());
+            assertEquals(8099, testDate.getYear());
             assertTrue(sdf.format(testDate).toString().endsWith(".000"));
         }
         em.close();
     }
 
     @Test
-    public void testNoRoundingNoMillisecondLoss() {
+    void noRoundingNoMillisecondLoss() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         dict.setDateMillisecondBehavior(DBDictionary.DateMillisecondBehaviors.RETAIN.toString());
@@ -114,13 +115,13 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 5);
-            assertEquals(testDate.getMonth(), 11);
-            assertEquals(testDate.getDate(), 31);
-            assertEquals(testDate.getHours(), 23);
-            assertEquals(testDate.getMinutes(), 59);
-            assertEquals(testDate.getSeconds(), 59);
-            assertEquals(testDate.getYear(), 8099);
+            assertEquals(5, testDate.getDay());
+            assertEquals(11, testDate.getMonth());
+            assertEquals(31, testDate.getDate());
+            assertEquals(23, testDate.getHours());
+            assertEquals(59, testDate.getMinutes());
+            assertEquals(59, testDate.getSeconds());
+            assertEquals(8099, testDate.getYear());
             assertTrue(sdf.format(testDate).toString().endsWith(".999"));
             // System.out.println("sdf.format(testDate).toString() = " + sdf.format(testDate).toString());
         }
@@ -128,7 +129,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
     }
 
     @Test
-    public void testRounding() {
+    void rounding() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         // set value back to default
@@ -140,13 +141,13 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 6);
-            assertEquals(testDate.getMonth(), 0);
-            assertEquals(testDate.getDate(), 1);
-            assertEquals(testDate.getHours(), 0);
-            assertEquals(testDate.getMinutes(), 0);
-            assertEquals(testDate.getSeconds(), 0);
-            assertEquals(testDate.getYear(), 8100);
+            assertEquals(6, testDate.getDay());
+            assertEquals(0, testDate.getMonth());
+            assertEquals(1, testDate.getDate());
+            assertEquals(0, testDate.getHours());
+            assertEquals(0, testDate.getMinutes());
+            assertEquals(0, testDate.getSeconds());
+            assertEquals(8100, testDate.getYear());
 //            assertEquals(testDate.getTime(), 253402326000000L);
             assertTrue(sdf.format(testDate).toString().endsWith(".000"));
         }

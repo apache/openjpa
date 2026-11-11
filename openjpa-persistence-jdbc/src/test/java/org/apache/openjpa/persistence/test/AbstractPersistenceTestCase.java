@@ -444,16 +444,6 @@ public abstract class AbstractPersistenceTestCase {
         return false;
     }
 
-    public static void assertNotEquals(Object o1, Object o2) {
-        if (o1 == o2) {
-            fail("expected args to be different; were the same instance.");
-        } else if (o1 == null || o2 == null) {
-            return;
-        } else if (o1.equals(o2)) {
-            fail("expected args to be different; compared equal.");
-        }
-    }
-
     /**
      * Round-trip a serializable object to bytes.
      */

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * may require a particular case for that character. See OPENJPA-2467 and
  * OPENJPA-2993.
  */
-public class TestAccessorNameDerivation {
+class TestAccessorNameDerivation {
 
     private static class Fixture {
         public int getaWord() {
@@ -99,7 +99,7 @@ public class TestAccessorNameDerivation {
     }
 
     @Test
-    public void testBothGetterSpellingsYieldTheSameName() {
+    void bothGetterSpellingsYieldTheSameName() {
         assertTrue(AbstractMetaDataDefaults.isNormalGetter(method("getaWord")));
         assertTrue(AbstractMetaDataDefaults.isNormalGetter(method("getAWord")));
         assertEquals("aWord", fieldName("getaWord"));
@@ -109,7 +109,7 @@ public class TestAccessorNameDerivation {
     }
 
     @Test
-    public void testBothBooleanGetterSpellingsYieldTheSameName() {
+    void bothBooleanGetterSpellingsYieldTheSameName() {
         // OPENJPA-2993: is<lowercase>() must stay a recognized boolean getter,
         // otherwise the property is silently dropped from the metadata.
         assertTrue(AbstractMetaDataDefaults.isBooleanGetter(method("isaBoolean")));
@@ -120,7 +120,7 @@ public class TestAccessorNameDerivation {
     }
 
     @Test
-    public void testNonGetters() {
+    void nonGetters() {
         // non-boolean return type
         assertFalse(AbstractMetaDataDefaults.isBooleanGetter(method("isValue")));
         assertNull(fieldName("isValue"));
@@ -130,13 +130,13 @@ public class TestAccessorNameDerivation {
     }
 
     @Test
-    public void testShortNames() {
+    void shortNames() {
         assertEquals("a", fieldName("getA"));
         assertEquals("a1", fieldName("getA1"));
     }
 
     @Test
-    public void testDivergenceFromIntrospectorDecapitalize() {
+    void divergenceFromIntrospectorDecapitalize() {
         // OPENJPA-2993: OpenJPA deliberately does not implement the JavaBeans
         // rule that leaves a name starting with two upper-case characters
         // alone. Aligning with it would rename existing properties and their

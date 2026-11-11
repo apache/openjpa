@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEntityAsIdentityFields extends SingleEMFTestCase {
+class TestEntityAsIdentityFields extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp( CLEAR_TABLES,
@@ -43,7 +43,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField001() {
+    void entityAsIdentityField001() {
         EntityManager em = null;
         em = emf.createEntityManager();
 
@@ -59,7 +59,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField002A() {
+    void entityAsIdentityField002A() {
         EntityManager em = null;
 
         try {
@@ -93,7 +93,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField002B() {
+    void entityAsIdentityField002B() {
         EntityManager em = null;
 
         try {
@@ -126,7 +126,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField002C() {
+    void entityAsIdentityField002C() {
         EntityManager em = null;
         EntityManager emPop = null;
 
@@ -168,7 +168,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField003A() {
+    void entityAsIdentityField003A() {
         EntityManager em = null;
 
         try {
@@ -199,7 +199,7 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testEntityAsIdentityField004A() {
+    void entityAsIdentityField004A() {
         EntityManager em = null;
         EntityManager emPop = null;
 

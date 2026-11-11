@@ -85,7 +85,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
 
 
     @Test
-    public void testNonPagingExtent() {
+    void nonPagingExtent() {
         initializePagingPCs();
 
         EntityManager em= currentEntityManager();
@@ -112,7 +112,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testNonPagingQuery()
+    void nonPagingQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -187,7 +187,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testPagingExtent()
+    void pagingExtent()
         throws Exception {
         initializePagingPCs();
 
@@ -213,7 +213,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testPagingQuery()
+    void pagingQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -263,7 +263,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testPagingAppIdExtent()
+    void pagingAppIdExtent()
         throws Exception {
         initializePagingAppIdPCs();
 
@@ -289,7 +289,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testPagingAppIdQuery()
+    void pagingAppIdQuery()
         throws Exception {
         initializePagingAppIdPCs();
 
@@ -363,7 +363,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testMultiPageExtent()
+    void multiPageExtent()
         throws Exception {
         initializePagingPCs();
 
@@ -391,7 +391,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testMultiPageQuery()
+    void multiPageQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -446,7 +446,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testLastPageQuery()
+    void lastPageQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -480,7 +480,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testSingleResultPage()
+    void singleResultPage()
         throws Exception {
         initializePagingPCs();
 

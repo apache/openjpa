@@ -50,7 +50,7 @@ public class TestSchemaTool {
 
     @MethodSource("data")
     @ParameterizedTest(name = "{index}: {0} -> {1}")
-    public void testExecuteScript(String sqlScript, List<String> expected) throws Exception {
+    void executeScript(String sqlScript, List<String> expected) throws Exception {
         final ArrayList<String> sqlToRun = new ArrayList<>();
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setClassResolver(new ClassResolver() {

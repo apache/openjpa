@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * Tests MapJoin queries with @OneToMany(mappedBy=...) @MapKey(name=...)
  * relationships using property-based access (like TCK entities).
  */
-public class TestMapJoinQuery extends SingleEMFTestCase {
+class TestMapJoinQuery extends SingleEMFTestCase {
 
     @Entity
     @Table(name = "MJ_DEPT")
@@ -154,7 +154,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
      * Test: SELECT d FROM MJDepartment d JOIN d.lastNameEmployees e WHERE (e.id = 1)
      */
     @Test
-    public void testJoinMapAttribute() {
+    void joinMapAttribute() {
         EntityManager em = emf.createEntityManager();
 
         // JPQL equivalent
@@ -181,7 +181,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
      * Test: SELECT d.id, d.name, e.lastName FROM MJDepartment d JOIN d.lastNameEmployees e WHERE (e.id = 1)
      */
     @Test
-    public void testJoinMapString() {
+    void joinMapString() {
         EntityManager em = emf.createEntityManager();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();

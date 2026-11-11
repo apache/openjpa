@@ -121,7 +121,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
     }
 
     @Test
-    public void testId() {
+    void id() {
         int counter = 1;
         int id = 0;
         while (counter <= 20) {
@@ -134,7 +134,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
     }
 
     @Test
-    public void testId2() {
+    void id2() {
         int counter = 1;
         int id = 0;
         while (counter <= 20) {

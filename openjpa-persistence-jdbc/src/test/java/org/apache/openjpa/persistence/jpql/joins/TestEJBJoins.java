@@ -43,7 +43,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
         deleteAll(Department.class);
@@ -79,7 +79,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testInnerJoin() {
+    void innerJoin() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct o.name from Student o JOIN " +
             "o.course d WHERE d.name" +
@@ -97,7 +97,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testOuterJoin() {
+    void outerJoin() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name FROM Student " +
             "s LEFT JOIN s.department d";
@@ -112,7 +112,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testFetchJoin1() {
+    void fetchJoin1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT s FROM Student s JOIN FETCH s.name";
 
@@ -125,7 +125,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testFetchJoin2() {
+    void fetchJoin2() {
         EntityManager em = currentEntityManager();
         String query = "SELECT s " +
             "FROM Student s " +
@@ -144,7 +144,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftOuterJoin() {
+    void leftOuterJoin() {
         EntityManager em = currentEntityManager();
 
         String ljoin = "SELECT DISTINCT s.name FROM Student s " +
@@ -162,7 +162,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testInnerJoinFetch() {
+    void innerJoinFetch() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT s FROM Student " +
@@ -178,7 +178,7 @@ public class TestEJBJoins extends AbstractTestCase {
     }
 
     @Test
-    public void testLeftJoinFetch() {
+    void leftJoinFetch() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT s FROM Student " +

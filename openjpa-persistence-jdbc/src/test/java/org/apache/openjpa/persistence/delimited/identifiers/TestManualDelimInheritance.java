@@ -34,7 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestManualDelimInheritance extends SQLListenerTestCase {
+class TestManualDelimInheritance extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Dog dog;
@@ -83,7 +83,7 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate() {
+    void create() {
         id++;
         createDog(id);
         id++;

@@ -34,10 +34,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * This tests a particular kind of byte [] that is not a BLOB for DB2.  Don't need to
- * do anything except return if we are using a different DB.
- */
-public class TestByteArray extends SingleEMTestCase {
+* This tests a particular kind of byte [] that is not a BLOB for DB2.  Don't need to
+* do anything except return if we are using a different DB.
+*/
+class TestByteArray extends SingleEMTestCase {
     boolean runTest=false;
 
     @BeforeEach
@@ -53,7 +53,7 @@ public class TestByteArray extends SingleEMTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testByteArray() {
+    void byteArray() {
         if (! runTest) {
             // skip if not DB2 (from setup)
             return;

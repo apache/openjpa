@@ -96,7 +96,7 @@ public abstract class CompanyModelTest
      * should always return all known instances in the database.
      */
     @Test
-    public void testBasicQueries() throws Exception {
+    public void basicQueries() throws Exception {
         for (Class c : impls.values()) {
             for (PropertyDescriptor pd :
                 Introspector.getBeanInfo(c).getPropertyDescriptors()) {

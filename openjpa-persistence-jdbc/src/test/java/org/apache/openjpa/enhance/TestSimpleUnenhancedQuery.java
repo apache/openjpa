@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
+class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() throws Exception {
 		setUp(CLEAR_TABLES, UnenhancedPObject.class,"openjpa.RuntimeUnenhancedClasses", "supported");
@@ -47,7 +47,7 @@ public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testExtentQuery() {
+    void extentQuery() {
 		EntityManager em = emf.createEntityManager();
 		assertFalse(em.createQuery("SELECT p FROM UnenhancedPObject p")
 				.getResultList().isEmpty());

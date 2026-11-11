@@ -54,7 +54,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
     private Log log;
 
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
         log = emf.getConfiguration().getLog("Tests");
@@ -80,7 +80,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testJoinOnly() throws SQLException {
+    void joinOnly() throws Exception {
 
         log.error("THIS TEST IS CURRENTLY DISABLED!");
         if (true) return;

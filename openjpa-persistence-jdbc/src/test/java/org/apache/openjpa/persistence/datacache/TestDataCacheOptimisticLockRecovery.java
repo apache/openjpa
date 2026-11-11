@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -37,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDataCacheOptimisticLockRecovery
+class TestDataCacheOptimisticLockRecovery
     extends SingleEMFTestCase {
 
     private int pk;
@@ -77,8 +76,8 @@ public class TestDataCacheOptimisticLockRecovery
     }
 
     @Test
-    public void testOptimisticLockRecovery()
-        throws SQLException {
+    void optimisticLockRecovery()
+        throws Exception {
 
         EntityManager em;
 
@@ -151,7 +150,7 @@ public class TestDataCacheOptimisticLockRecovery
     }
 
     @Test
-    public void testExpectedOptimisticLockException() {
+    void expectedOptimisticLockException() {
         EntityManager em;
 
         // 1. start a new tx

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -35,11 +36,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
@@ -61,6 +57,11 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 /**
  * Tests correctness and performance of queries with and without Prepared Query Cache.
@@ -125,7 +126,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
      * Creates data once for all other tests to use.
      */
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -263,7 +264,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testCollectionValuedParameterOfEntities() {
+    void collectionValuedParameterOfEntities() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql1 = "select d from Department d where d.name in ('Marketing', 'Sales') order by d.name";
         String jpql2 = "select d from Department d where d.name in ('Engineering', 'Marketing') order by d.name";
@@ -278,13 +279,13 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 
         for (Employee employee2 : rs1) {
             Employee e = (Employee) employee2;
-            assertFalse(e.getDepartment().getName().equals("Engineering"));
+            assertNotEquals("Engineering", e.getDepartment().getName());
         }
 
         List<Employee> rs2 = (List<Employee>) em.createQuery(jpql).setParameter("param", param2).getResultList();
         for (Employee employee1 : rs2) {
             Employee e = (Employee) employee1;
-            assertFalse(e.getDepartment().getName().equals("Sales"));
+            assertNotEquals("Sales", e.getDepartment().getName());
         }
 
         em.clear();
@@ -296,7 +297,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         List<Employee> rs3 = query.getResultList();
         for (Employee element : rs3) {
             Employee e = (Employee) element;
-            assertTrue(e.getDepartment().getName().equals("Marketing"));
+            assertEquals("Marketing", e.getDepartment().getName());
         }
 
         em.clear();
@@ -307,7 +308,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         List<Employee> rs4 = query.getResultList();
         for (Employee employee : rs4) {
             Employee e = (Employee) employee;
-            assertTrue(e.getDepartment().getName().equals("Engineering"));
+            assertEquals("Engineering", e.getDepartment().getName());
         }
 
         em.clear();
@@ -341,7 +342,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCollectionValuedParameterOfEntitiesWithEmptyList() {
+    void collectionValuedParameterOfEntitiesWithEmptyList() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql1 =
             "select d from Department d where d.name in ('Marketing', 'Sales') order by d.name";
@@ -356,7 +357,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 
         for (Employee employee : rs1) {
             Employee e = (Employee) employee;
-            assertFalse(e.getDepartment().getName().equals("Engineering"));
+            assertNotEquals("Engineering", e.getDepartment().getName());
         }
 
         // Prior to OPENJPA-2118, the following query would yeild a
@@ -367,13 +368,13 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
             em.createQuery(jpql).setParameter("param",
                 new ArrayList<Department>()).getResultList();
         } catch (ArgumentException ae) {
-            assertEquals(ae.getCause().getMessage(),
-                "Input parameter \"param\" is empty.");
+            assertEquals(
+                "Input parameter \"param\" is empty.", ae.getCause().getMessage());
         }
     }
 
     @Test
-    public void testRepeatedParameterInSubqueryInDifferentOrderSubQLast() {
+    void repeatedParameterInSubqueryInDifferentOrderSubQLast() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         String jpql = "SELECT o from OrderJPA o " +
@@ -406,19 +407,19 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testPreparedQueryCacheIsActiveByDefault() {
+    void preparedQueryCacheIsActiveByDefault() {
 		assertNotNull(getPreparedQueryCache());
 	}
 
     @Test
-    public void testPreparedQueryCacheIsPerUnitSingleton() {
+    void preparedQueryCacheIsPerUnitSingleton() {
 		PreparedQueryCache c1 = getPreparedQueryCache();
 		PreparedQueryCache c2 = getPreparedQueryCache();
 		assertSame(c1, c2);
 	}
 
     @Test
-    public void testPreparedQueryIdentifierIsOriginalJPQLQuery() {
+    void preparedQueryIdentifierIsOriginalJPQLQuery() {
         String jpql = "select p from Company p";
         OpenJPAQuery<?> q1 = em.createQuery(jpql);
         q1.getResultList();
@@ -429,7 +430,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testOriginalJPQLQueryStringIsSetOnPreparedQuery() {
+    void originalJPQLQueryStringIsSetOnPreparedQuery() {
         String jpql = "select p from Company p";
         OpenJPAQuery<?> q1 = em.createQuery(jpql);
         q1.getResultList();
@@ -440,7 +441,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testOrderByElementsAbsentInProjection() {
+    void orderByElementsAbsentInProjection() {
 	    String jpql = "select c.name from Company c ORDER BY c.startYear";
         OpenJPAQuery<?> q1 = em.createQuery(jpql);
         List l1 = q1.getResultList();
@@ -455,7 +456,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testExclusionPattern() {
+    void exclusionPattern() {
 		OpenJPAQuery<?> q1 = em.createQuery(EXCLUDED_QUERY_1);
 		q1.getResultList();
 		assertNotCached(EXCLUDED_QUERY_1);
@@ -487,7 +488,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testPreparedQueryIsCachedOnExecution() {
+    void preparedQueryIsCachedOnExecution() {
 		String jpql = "select p from Company p";
 		OpenJPAQuery<?> q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
@@ -503,7 +504,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testPreparedQueryIsCachedAcrossExecution() {
+    void preparedQueryIsCachedAcrossExecution() {
 		String jpql = "select p from Company p";
 		OpenJPAQuery<?> q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
@@ -522,7 +523,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testInvalidatePreparedQueryWithHint() {
+    void invalidatePreparedQueryWithHint() {
 		String jpql = "select p from Company p";
 		OpenJPAQuery<?> q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
@@ -553,7 +554,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testIgnorePreparedQueryWithHint() {
+    void ignorePreparedQueryWithHint() {
 		String jpql = "select p from Company p";
 		OpenJPAQuery<?> q1 = em.createQuery(jpql);
 		assertNotCached(jpql);
@@ -585,7 +586,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testQueryStatistics() {
+    void queryStatistics() {
         QueryStatistics<String> stats = getPreparedQueryCache().getStatistics();
         stats.reset();
 
@@ -612,7 +613,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testResetQueryStatistics() {
+    void resetQueryStatistics() {
         QueryStatistics<String> stats = getPreparedQueryCache().getStatistics();
         stats.reset();
 
@@ -666,26 +667,26 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testQueryWithNoParameter() {
+    void queryWithNoParameter() {
 		String jpql = "select p from Company p";
 		compare(jpql, !IS_NAMED_QUERY);
 	}
 
     @Test
-    public void testQueryWithLiteral() {
+    void queryWithLiteral() {
         String jpql = "select p from Company p where p.name = " + literal(COMPANY_NAMES[0]);
 		compare(jpql, !IS_NAMED_QUERY);
 	}
 
     @Test
-    public void testQueryWithParameter() {
+    void queryWithParameter() {
 		String jpql = "select p from Company p where p.name = :param";
 		Object[] params = {"param", COMPANY_NAMES[0]};
 		compare(jpql, !IS_NAMED_QUERY,  params);
 	}
 
     @Test
-    public void testQueryWithJoinsAndParameters() {
+    void queryWithJoinsAndParameters() {
         String jpql = "select e from Employee e " + "where e.name = :emp"
 					+ " and e.department.name = :dept"
                     + " and e.department.company.name LIKE  "
@@ -698,26 +699,26 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testNamedQueryWithNoParameter() {
+    void namedQueryWithNoParameter() {
 		String namedQuery = "Company.PreparedQueryWithNoParameter";
         compare(namedQuery, IS_NAMED_QUERY);
 	}
 
     @Test
-    public void testNamedQueryWithLiteral() {
+    void namedQueryWithLiteral() {
 		String namedQuery = "Company.PreparedQueryWithLiteral";
 		compare(namedQuery, IS_NAMED_QUERY);
 	}
 
     @Test
-    public void testNamedQueryWithPositionalParameter() {
+    void namedQueryWithPositionalParameter() {
         String namedQuery = "Company.PreparedQueryWithPositionalParameter";
 		Object[] params = {1, COMPANY_NAMES[0], 2, START_YEARS[0]};
 		compare(namedQuery, IS_NAMED_QUERY,  params);
 	}
 
     @Test
-    public void testNamedQueryWithNamedParameter() {
+    void namedQueryWithNamedParameter() {
 		String namedQuery = "Company.PreparedQueryWithNamedParameter";
         Object[] params = {"name", COMPANY_NAMES[0], "startYear",
                 START_YEARS[0]};
@@ -725,7 +726,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testPersistenceCapableParameter() {
+    void persistenceCapableParameter() {
         String jpql = "select e from Employee e " +
                 "where e.department.company=:company";
 	    Object[] params = {"company", IBM};
@@ -736,7 +737,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
      * Project results are returned with different types of ROP.
      */
     @Test
-    public void testProjectionResult() {
+    void projectionResult() {
         String jpql = "select e.name from Employee e " +
                 "where e.address.city=:city";
         Object[] params = {"city", CITY_NAMES[0]};
@@ -744,7 +745,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testCollectionValuedParameters() {
+    void collectionValuedParameters() {
 	    String jpql = "select e from Employee e where e.name in :names";
 	    Object[] params1 = {"names",
 	            Arrays.asList(new String[]{EMPLOYEE_NAMES[0],
@@ -764,43 +765,43 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testQueryProjectionNotCandidateClass() {
+    void queryProjectionNotCandidateClass() {
         String jpql = "select e.department from Employee e";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testQueryMultipleProjectionClass() {
+    void queryMultipleProjectionClass() {
         String jpql = "select d, e from Department d, in (d.employees) e";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testQueryWithOrderByClause() {
+    void queryWithOrderByClause() {
         String jpql = "select e.name from Employee e order by e.id";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testQueryCount() {
+    void queryCount() {
         String jpql = "select count(e),d from Department d join d.employees e group by d";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testProjectRepeatsTerm() {
+    void projectRepeatsTerm() {
         String jpql = "select e.name, e.name from Employee e";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testProjectEmbedded() {
+    void projectEmbedded() {
         String jpql = "select e.address from Employee e";
         compare(jpql, !IS_NAMED_QUERY);
     }
 
     @Test
-    public void testNeedsTypeConversion() {
+    void needsTypeConversion() {
         String jpql = "select e.name, e.isManager from Employee e";
         compare(jpql, !IS_NAMED_QUERY);
     }
@@ -810,7 +811,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testPositional() {
+    void positional() {
         String jpql = "select p from Person p where p.firstName=?1" +
                       " and p.lastName='Doe' and p.age > ?2";
         EntityManager em = emf.createEntityManager();
@@ -834,7 +835,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testNamed() {
+    void named() {
         String jpql = "select p from Person p where p.firstName=:first" +
                       " and p.lastName='Doe' and p.age > :age";
         EntityManager em = emf.createEntityManager();
@@ -858,7 +859,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testWrongParameterValueTypeThrowException() {
+    void wrongParameterValueTypeThrowException() {
         String jpql = "select p from Person p where p.firstName=:first"
                     + " and p.age > :age";
         EntityManager em = emf.createEntityManager();
@@ -875,7 +876,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testNullParameterValueForPrimitiveTypeThrowsException() {
+    void nullParameterValueForPrimitiveTypeThrowsException() {
         String jpql = "select p from Person p where p.firstName=:first"
                     + " and p.age > :age";
         EntityManager em = emf.createEntityManager();
@@ -892,14 +893,14 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testQueryWithLazyRelationIsCached() {
+    void queryWithLazyRelationIsCached() {
         // Author is lazily related to Book
         String jpql = "select p from Author p";
         EntityManager em = emf.createEntityManager();
 
         Query q1 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(),
-                JPQLParser.LANG_JPQL);
+        assertEquals(
+            JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
         List<Author> authors1 = q1.getResultList();
         assertFalse(authors1.isEmpty());
         Author author1 = authors1.iterator().next();
@@ -910,8 +911,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         // do the same thing again, this time query should be cached
         em = emf.createEntityManager();
         Query q2 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(),
-                QueryLanguages.LANG_PREPARED_SQL);
+        assertEquals(
+            QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
         List<Author> authors2 = q2.getResultList();
         assertFalse(authors2.isEmpty());
         Author author2 = authors2.iterator().next();
@@ -921,14 +922,14 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testQueryWithEagerRelationIsNotCached() {
+    void queryWithEagerRelationIsNotCached() {
         // Book is eagerly related to Author
         String jpql = "select b from Book b";
         EntityManager em = emf.createEntityManager();
 
         Query q1 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q1).getLanguage(),
-                JPQLParser.LANG_JPQL);
+        assertEquals(
+            JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
         List<Book> books = q1.getResultList();
         assertFalse(books.isEmpty());
         Book book1 = books.iterator().next();
@@ -941,8 +942,8 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         // because it requires multiple selects
         em = emf.createEntityManager();
         Query q2 = em.createQuery(jpql);
-        assertEquals(OpenJPAPersistence.cast(q2).getLanguage(),
-                JPQLParser.LANG_JPQL);
+        assertEquals(
+            JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q2).getLanguage());
         List<Book> books2 = q2.getResultList();
         assertFalse(books2.isEmpty());
         Book book2 = books2.iterator().next();
@@ -953,7 +954,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testQueryWithUserDefinedAndInternalParamtersInSubquery() {
+    void queryWithUserDefinedAndInternalParamtersInSubquery() {
         String jpql = "Select a From Address a Where Not Exists ("
             + "     Select s.id From Singer As s Where "
             + "        s.address = a  And "
@@ -990,7 +991,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testPreparedQueryIgnoredWhenLockModeIsSet() {
+    void preparedQueryIgnoredWhenLockModeIsSet() {
         String jpql = "select p from Author p";
         EntityManager em = emf.createEntityManager();
 
@@ -1006,13 +1007,13 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         q2.setLockMode(LockModeType.OPTIMISTIC);
         LockModeType lmode2 = q2.getLockMode();
         assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q2).getLanguage());
-        assertFalse(lmode1.equals(lmode2));
+        assertNotEquals(lmode1, lmode2);
         List<Author> authors2 = q2.getResultList();
         em.getTransaction().rollback();
     }
 
     @Test
-    public void testEnumParameter() {
+    void enumParameter() {
         String jpql = "select e from Employee e where e.status=:current and e.hireStatus=:hire";
         EntityManager em = emf.createEntityManager();
 
@@ -1031,7 +1032,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testMultithreadedAccess() {
+    void multithreadedAccess() {
         OpenJPAEntityManager em1 = emf.createEntityManager();
         String jpql = "select p from Author p where p.name=:name";
         int N = 5;
@@ -1058,7 +1059,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testParameterOnExternalizedFieldIsExcluded() {
+    void parameterOnExternalizedFieldIsExcluded() {
         String jpql = "select b from Book b where b.title=:title and b.token=:token";
         Query q1 = em.createQuery(jpql)
           .setParameter("title", "title-1")
@@ -1074,7 +1075,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testNoParameterOnExternalizedFieldIsIncluded() {
+    void noParameterOnExternalizedFieldIsIncluded() {
         String jpql = "select b from Book b where b.title=:title";
         Query q1 = em.createQuery(jpql)
           .setParameter("title", "title-1");
@@ -1088,7 +1089,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testSubqueryParameters() {
+    void subqueryParameters() {
         EntityManager em = emf.createEntityManager();
         String query = "select e from Employee e "
             + "inner join e.department d "
@@ -1107,17 +1108,17 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         TypedQuery<Employee> q1 = em.createQuery(query, Employee.class);
         q1.setParameter("companyName", "acme.org");
         q1.setParameter("departmentName", "Engineering");
-        assertEquals(q1.getResultList().size(), 6);
+        assertEquals(6, q1.getResultList().size());
 
         TypedQuery<Employee> q2 = em.createQuery(query, Employee.class);
         q2.setParameter("companyName", "acme.org");
         q2.setParameter("departmentName", "Engineering");
-        assertEquals(q2.getResultList().size(), 6);
+        assertEquals(6, q2.getResultList().size());
         em.getTransaction().rollback();
     }
 
     @Test
-    public void testRepeatedParameterInSubqueryInDifferentOrder() {
+    void repeatedParameterInSubqueryInDifferentOrder() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql =  "select o from OrderJPA o "
                              + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
@@ -1149,7 +1150,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testRepeatedParameterInSubqueryInSameOrder() {
+    void repeatedParameterInSubqueryInSameOrder() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql =  "select o from OrderJPA o "
                              + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
@@ -1181,7 +1182,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testPartiallyRepeatedParameterInSubquery() {
+    void partiallyRepeatedParameterInSubquery() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql =  "select o from OrderJPA o "
                              + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
@@ -1212,7 +1213,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testPartiallyRepeatedParameterInMainquery() {
+    void partiallyRepeatedParameterInMainquery() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql =  "select o from OrderJPA o "
                              + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
@@ -1243,7 +1244,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testRangeIsExcluded() {
+    void rangeIsExcluded() {
         List<Company> l = null;
 
         l = getAllCompaniesPaged(0, 1);
@@ -1397,7 +1398,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testRepeatedQueryInBetweenParameters() {
+    void repeatedQueryInBetweenParameters() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.clear();
 

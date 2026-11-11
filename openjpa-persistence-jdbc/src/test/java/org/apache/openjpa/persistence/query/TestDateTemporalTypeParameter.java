@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * parameter or as the value of a DATE attribute, is bound as a java.sql.Date without its time of day, so that
  * dates compare equal also on databases such as Oracle whose DATE values have a time of day.
  */
-public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
+class TestDateTemporalTypeParameter extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCalendarAndDateParametersAreBoundWithoutTimeOfDay() {
+    void calendarAndDateParametersAreBoundWithoutTimeOfDay() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);
         java.sql.Date today = java.sql.Date.valueOf(LocalDate.of(now.get(Calendar.YEAR),
@@ -78,7 +78,7 @@ public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDateAttributesAreStoredWithoutTimeOfDay() {
+    void dateAttributesAreStoredWithoutTimeOfDay() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);
         java.sql.Date today = java.sql.Date.valueOf(LocalDate.of(now.get(Calendar.YEAR),
@@ -105,7 +105,7 @@ public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSqlDateWithTimeOfDayIsBoundWithoutIt() {
+    void sqlDateWithTimeOfDayIsBoundWithoutIt() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);
         java.sql.Date today = java.sql.Date.valueOf(LocalDate.of(now.get(Calendar.YEAR),

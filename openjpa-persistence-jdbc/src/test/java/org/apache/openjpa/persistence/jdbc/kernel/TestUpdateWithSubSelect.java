@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestUpdateWithSubSelect extends SQLListenerTestCase {
+class TestUpdateWithSubSelect extends SQLListenerTestCase {
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
@@ -61,7 +61,7 @@ public class TestUpdateWithSubSelect extends SQLListenerTestCase {
      * Tests that a bulk update issues a single SQL and that uses a join.
      */
     @Test
-    public void testUpdateBySubSelect() {
+    void updateBySubSelect() {
         String jpql = "UPDATE Person p SET p.age = :age WHERE p.address.city = :city";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

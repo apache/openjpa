@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.detach;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDetachNoProxy extends SingleEMFTestCase {
+class TestDetachNoProxy extends SingleEMFTestCase {
 
     private static final int numEntities = 3;
     private static final String PROXY = new String("$proxy");
@@ -68,7 +65,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that an in-place detached entity does not use the proxy classes.
      */
     @Test
-    public void testDetach20() {
+    void detach20() {
         Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -116,7 +113,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that a detachCopy() returned entity does not contain any proxy classes.
      */
     @Test
-    public void testDetachCopy20() {
+    void detachCopy20() {
         Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -168,7 +165,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that in-place detachAll entities do not use the proxy classes.
      */
     @Test
-    public void testDetachAll20() {
+    void detachAll20() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
@@ -224,7 +221,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
     @Test
-    public void testClear10Compat() {
+    void clear10Compat() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy1Compat", "org/apache/openjpa/persistence/detach/persistence1.xml");
@@ -279,7 +276,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
     @Test
-    public void testClear20Compat() {
+    void clear20Compat() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2Compat", "org/apache/openjpa/persistence/detach/persistence2.xml");
@@ -334,7 +331,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * Verify that after EM.clear() entities do not contain proxy classes for 2.0 apps.
      */
     @Test
-    public void testClear20New() {
+    void clear20New() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "NoProxy2New", "org/apache/openjpa/persistence/detach/persistence2.xml");
@@ -394,14 +391,14 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      * @param usesProxyAfter verify that the entity uses the $proxy classes
      *        after serialization if true and does not if false.
      */
-    private void verifySerializable(Entity20 e20, boolean usesProxyBefore,
-            boolean usesProxyAfter) {
+    private void verifySerializable(Entity20 e20, boolean usesProxyBefore, boolean usesProxyAfter) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
         byte[] e20bytes = null;
 
-        if (_log.isTraceEnabled())
+        if (_log.isTraceEnabled()) {
             _log.trace("verifySerializable() - before serialize");
+        }
         verifyEntities(e20, usesProxyBefore);
 
         // first serialize
@@ -413,8 +410,9 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             fail(e.toString());
         } finally {
             try {
-                if (oos != null)
+                if (oos != null) {
                     oos.close();
+                }
             } catch (IOException e) {
             }
         }
@@ -431,11 +429,11 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             verifyEntities(e20new, usesProxyAfter);
         } catch (IOException | ClassNotFoundException e) {
             fail(e.toString());
-        }
-        finally {
+        } finally {
             try {
-                if (ois != null)
+                if (ois != null) {
                     ois.close();
+                }
             } catch (IOException e) {
             }
         }
@@ -447,11 +445,11 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             _log.trace("verifyEntities() - asserting expected proxy usage is " + usesProxy);
             printClassNames(e20);
         }
-        assertTrue(usesProxy == e20.getDate().getClass().getCanonicalName().endsWith(PROXY),
+        assertEquals(usesProxy, e20.getDate().getClass().getCanonicalName().endsWith(PROXY),
             "Expected sqlDate endsWith($proxy) to return " + usesProxy);
-        assertTrue(usesProxy == e20.getTime().getClass().getCanonicalName().endsWith(PROXY),
+        assertEquals(usesProxy, e20.getTime().getClass().getCanonicalName().endsWith(PROXY),
             "Expected sqlTime endsWith($proxy) to return " + usesProxy);
-        assertTrue(usesProxy == e20.getTimestamp().getClass().getCanonicalName().endsWith(PROXY),
+        assertEquals(usesProxy, e20.getTimestamp().getClass().getCanonicalName().endsWith(PROXY),
             "Expected sqlTimestamp endsWith($proxy) to return " + usesProxy);
 
     }

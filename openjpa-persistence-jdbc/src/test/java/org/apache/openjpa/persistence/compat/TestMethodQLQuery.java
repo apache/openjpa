@@ -58,7 +58,7 @@ public class TestMethodQLQuery extends SingleEMTestCase {
     }
 
     @Test
-    public void testMethodQLWithoutParametersDeclared() {
+    void methodQLWithoutParametersDeclared() {
         try {
             OpenJPAQuery q = em.createQuery(QueryLanguages.LANG_METHODQL,
                 getClass().getName() + ".echo");

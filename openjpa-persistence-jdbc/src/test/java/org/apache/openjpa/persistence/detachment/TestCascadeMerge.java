@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCascadeMerge extends SingleEMFTestCase {
+class TestCascadeMerge extends SingleEMFTestCase {
 
     private EntityG enG1;
     private EntityG enG2;
@@ -50,7 +50,7 @@ public class TestCascadeMerge extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCascadeMerge() {
+    void cascadeMerge() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

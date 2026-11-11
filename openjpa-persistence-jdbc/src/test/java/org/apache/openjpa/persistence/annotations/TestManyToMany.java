@@ -43,13 +43,13 @@ public class TestManyToMany extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
     }
 
     @Test
-    public void testManyToMany() {
+    void manyToMany() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         long lid = 4;
@@ -87,7 +87,7 @@ public class TestManyToMany extends AnnotationTestCase
     }
 
     @Test
-    public void testInverseOwnerManyToMany() {
+    void inverseOwnerManyToMany() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         long lid = 4;

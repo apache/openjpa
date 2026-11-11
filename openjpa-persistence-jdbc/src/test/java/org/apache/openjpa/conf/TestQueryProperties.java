@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestQueryProperties extends SingleEMFTestCase {
+class TestQueryProperties extends SingleEMFTestCase {
 
     private Map<String,String> props = null;
 
@@ -64,7 +64,7 @@ public class TestQueryProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNoProperties() {
+    void noProperties() {
         getLog().trace("testNoProperties() - no properties in persistence.xml");
         OpenJPAEntityManagerFactory emf1 = null, emf2 = null;
         OpenJPAEntityManager em1 = null, em2 = null;
@@ -189,7 +189,7 @@ public class TestQueryProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithProperties() {
+    void withProperties() {
         getLog().trace("testWithProperties() - properties in persistence.xml");
         OpenJPAEntityManagerFactory emf1 = null, emf2 = null;
         OpenJPAEntityManager em1 = null, em2 = null;

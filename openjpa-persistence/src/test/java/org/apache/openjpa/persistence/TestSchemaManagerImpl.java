@@ -35,7 +35,7 @@ import jakarta.persistence.SchemaValidationException;
  * Tests that {@link SchemaManagerImpl} reports a store which does not implement the
  * schema operations as an unsupported operation rather than as a schema failure.
  */
-public class TestSchemaManagerImpl {
+class TestSchemaManagerImpl {
 
     /**
      * A minimal, non-JDBC {@link AbstractBrokerFactory} which inherits the default
@@ -99,7 +99,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateReportsUnsupportedOperationInsteadOfValidationFailure() {
+    void validateReportsUnsupportedOperationInsteadOfValidationFailure() {
         SchemaManager schemaManager = new SchemaManagerImpl(new NoSchemaBrokerFactory());
 
         UnsupportedOperationException uoe =
@@ -109,7 +109,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testCreateDropAndTruncateReportUnsupportedOperation() {
+    void createDropAndTruncateReportUnsupportedOperation() {
         SchemaManager schemaManager = new SchemaManagerImpl(new NoSchemaBrokerFactory());
 
         assertThrows(UnsupportedOperationException.class, () -> schemaManager.create(true));
@@ -118,7 +118,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateWrapsRealValidationFailures() {
+    void validateWrapsRealValidationFailures() {
         SchemaManager schemaManager = new SchemaManagerImpl(new FailingBrokerFactory());
 
         SchemaValidationException sve =
@@ -129,7 +129,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateNeverReportsANullMessage() {
+    void validateNeverReportsANullMessage() {
         SchemaManager schemaManager = new SchemaManagerImpl(new SilentlyFailingBrokerFactory());
 
         SchemaValidationException sve =

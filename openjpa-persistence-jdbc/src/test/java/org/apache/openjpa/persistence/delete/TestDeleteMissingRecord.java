@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * row (BatchingPreparedStatementManagerImpl.flushSingleRow) and a batch of
  * several rows (BatchingPreparedStatementManagerImpl.checkUpdateCount).
  */
-public class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
+class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
 
     private EntityManagerFactory newEmf(int batchLimit) {
         return createEMF(
@@ -53,32 +53,32 @@ public class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testUnversionedDeleteMissingRecordUnbatched() {
+    void unversionedDeleteMissingRecordUnbatched() {
         assertUnversionedDeleteTolerated(0, 1);
     }
 
     @Test
-    public void testVersionedDeleteMissingRecordUnbatched() {
+    void versionedDeleteMissingRecordUnbatched() {
         assertVersionedDeleteThrows(0, 1);
     }
 
     @Test
-    public void testUnversionedDeleteMissingRecordSingleRowBatch() {
+    void unversionedDeleteMissingRecordSingleRowBatch() {
         assertUnversionedDeleteTolerated(100, 1);
     }
 
     @Test
-    public void testVersionedDeleteMissingRecordSingleRowBatch() {
+    void versionedDeleteMissingRecordSingleRowBatch() {
         assertVersionedDeleteThrows(100, 1);
     }
 
     @Test
-    public void testUnversionedDeleteMissingRecordMultiRowBatch() {
+    void unversionedDeleteMissingRecordMultiRowBatch() {
         assertUnversionedDeleteTolerated(100, 2);
     }
 
     @Test
-    public void testVersionedDeleteMissingRecordMultiRowBatch() {
+    void versionedDeleteMissingRecordMultiRowBatch() {
         assertVersionedDeleteThrows(100, 2);
     }
 

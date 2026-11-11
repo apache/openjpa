@@ -39,7 +39,7 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(EmbeddableSuperSub.class);
     }
 
@@ -107,7 +107,7 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
     }
 */
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EmbeddableSuperSub parent = new EmbeddableSuperSub();
         parent.setClob("parent");
         EmbeddableSuperSub sub = new EmbeddableSuperSub();

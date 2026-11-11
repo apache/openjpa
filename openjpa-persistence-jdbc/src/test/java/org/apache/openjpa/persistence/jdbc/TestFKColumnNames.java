@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Testcase that verifies the names for Foreign Key columns is as expected.
  */
-public class TestFKColumnNames extends AbstractPersistenceTestCase {
+class TestFKColumnNames extends AbstractPersistenceTestCase {
     private String getName(Column col) {
         IdentifierConfiguration cfg = Normalizer.getNamingConfiguration();
         return col.getIdentifier().getName()
@@ -55,7 +55,7 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
      * </P>
      */
     @Test
-    public void testSQLKeywords() {
+    void sqlKeywords() {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) Persistence
                     .createEntityManagerFactory("test");

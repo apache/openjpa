@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
+class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -33,7 +33,7 @@ public class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityAsIdentityField001() {
+    void entityAsIdentityField001() {
         EntityManager em = emf.createEntityManager();
 
         Query query = em.createQuery("select p from Person p");

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * A query whose Calendar parameter is bound with setParameter(Parameter, Calendar, TemporalType) is cached under the
  * converted value. QueryResultCache.pin/evict(Query) must build the same key, or they do not find the cached result.
  */
-public class TestQueryCacheTemporalTypeParameter extends SingleEMFTestCase {
+class TestQueryCacheTemporalTypeParameter extends SingleEMFTestCase {
     private static final String JPQL = "SELECT p FROM TimeKeeper p WHERE p.date = :d";
 
     @BeforeEach
@@ -49,7 +49,7 @@ public class TestQueryCacheTemporalTypeParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEvictFindsResultOfCalendarParameterWithTemporalType() {
+    void evictFindsResultOfCalendarParameterWithTemporalType() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<TimeKeeper> q = em.createQuery(JPQL, TimeKeeper.class);
         Parameter<Calendar> d = (Parameter<Calendar>) q.getParameter("d");

@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestSpecification {
+class TestSpecification {
 
     @Test
-    public void testStaticConstruction() {
+    void staticConstruction() {
         Specification spec1 = new Specification("JPA 2.3");
         assertEquals("JPA", spec1.getName());
         assertEquals(2, spec1.getVersion());
@@ -57,7 +57,7 @@ public class TestSpecification {
     }
 
     @Test
-    public void testEqualityByName() {
+    void equalityByName() {
         Specification spec1 = new Specification("JPA 2.3");
         Specification spec2 = new Specification("JPA 1.0");
         Specification spec3 = new Specification("JDO 3.1");
@@ -71,11 +71,11 @@ public class TestSpecification {
     }
 
     @Test
-    public void testVersionCompare() {
+    void versionCompare() {
         Specification spec1 = new Specification("JPA 1.1");
         Specification spec2 = new Specification("JPA 2.2");
         assertTrue(spec1.compareVersion(spec2) < 0);
         assertTrue(spec2.compareVersion(spec1) > 0);
-        assertTrue(spec1.compareVersion(spec1) == 0);
+        assertEquals(0, spec1.compareVersion(spec1));
     }
 }

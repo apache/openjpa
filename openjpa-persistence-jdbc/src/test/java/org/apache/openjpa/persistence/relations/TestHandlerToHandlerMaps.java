@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestHandlerToHandlerMaps
+class TestHandlerToHandlerMaps
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -38,7 +38,7 @@ public class TestHandlerToHandlerMaps
     }
 
     @Test
-    public void testHandlerToHandlerMaps() {
+    void handlerToHandlerMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerToHandlerMapInstance.class);
         FieldMapping fm = cm.getFieldMapping("map");

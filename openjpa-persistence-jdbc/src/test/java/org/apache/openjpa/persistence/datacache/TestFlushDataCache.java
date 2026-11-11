@@ -43,12 +43,12 @@ public class TestFlushDataCache
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(FlushDataCacheObject.class);
     }
 
     @Test
-    public void testQueryFlushPlusDataCache() {
+    void queryFlushPlusDataCache() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -102,7 +102,7 @@ public class TestFlushDataCache
     }
 
     @Test
-    public void testEmptyCommit() {
+    void emptyCommit() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");

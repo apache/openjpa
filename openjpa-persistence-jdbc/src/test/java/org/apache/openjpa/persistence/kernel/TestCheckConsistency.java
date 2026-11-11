@@ -40,12 +40,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCheckConsistency extends BaseKernelTest {
+class TestCheckConsistency extends BaseKernelTest {
 
     private Object _oid = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class);
 
         RuntimeTest1 pc = new RuntimeTest1();
@@ -55,7 +55,7 @@ public class TestCheckConsistency extends BaseKernelTest {
     }
 
     @Test
-    public void testConsistentDatastoreTransaction() {
+    void consistentDatastoreTransaction() {
 
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(false);
@@ -85,7 +85,7 @@ public class TestCheckConsistency extends BaseKernelTest {
     }
 
     @Test
-    public void testConsistentDatastoreTransactionWithRollback() {
+    void consistentDatastoreTransactionWithRollback() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(false);
         pm.validateChanges();        // no-op outside trans
@@ -124,14 +124,14 @@ public class TestCheckConsistency extends BaseKernelTest {
 
     //FIXME jthomas
 /*
-        public void testInconsistentDatastoreTransaction() {
-            OpenJPAEntityManager pm = getPM();
-            FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
-            pm.setOptimistic(false);
-            pm.setRetainState(false);
-            pm.validateChanges();        // no-op outside trans
-            pm.begin();
-      */
+            public void testInconsistentDatastoreTransaction() {
+                OpenJPAEntityManager pm = getPM();
+                FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
+                pm.setOptimistic(false);
+                pm.setRetainState(false);
+                pm.validateChanges();        // no-op outside trans
+                pm.begin();
+          */
     //FIXME jthomas
     /*
    fetch.setReadLockLevel(pm.LOCK_NONE);
@@ -172,7 +172,7 @@ try {
        }
     */
     @Test
-    public void testConsistentOptimisticTransaction() {
+    void consistentOptimisticTransaction() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
@@ -209,7 +209,7 @@ try {
     }
 
     @Test
-    public void testConsistentOptimisticTransactionWithRollback() {
+    void consistentOptimisticTransactionWithRollback() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans

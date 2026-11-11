@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test JPQL subquery
  */
-public class TestSubquery
+class TestSubquery
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -227,7 +227,7 @@ public class TestSubquery
         };
 
     @Test
-    public void testSubquery2() {
+    void subquery2() {
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys2.length; i++) {
             String q = querys2[i];
@@ -240,7 +240,7 @@ public class TestSubquery
 
 
     @Test
-    public void testSubquery() {
+    void subquery() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
 
@@ -283,7 +283,7 @@ public class TestSubquery
      * syntax.
      */
     @Test
-    public void testSubSelectMaxDateRange() {
+    void subSelectMaxDateRange() {
         String query =
             "SELECT e,d from Employee e, Dependent d "
                 + "WHERE e.empId = :empid "
@@ -300,7 +300,7 @@ public class TestSubquery
     }
 
     @Test
-    public void testUpdateWithCorrelatedSubquery() {
+    void updateWithCorrelatedSubquery() {
         String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
            " (select o from  in(c.orders)  o)";
         EntityManager em = emf.createEntityManager();

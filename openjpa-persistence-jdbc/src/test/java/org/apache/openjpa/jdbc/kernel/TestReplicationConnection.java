@@ -34,6 +34,8 @@ import jakarta.persistence.LockModeType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,8 +46,9 @@ import org.junit.jupiter.api.Test;
  * connections. Derby stands in for the replica: it rejects the writes of a
  * read-only connection.
  */
-public class TestReplicationConnection extends SingleEMFTestCase {
+class TestReplicationConnection extends SingleEMFTestCase {
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         if (!isDerby()) {
@@ -61,6 +64,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         return url.startsWith("jdbc:derby:");
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (emf != null) {
@@ -69,7 +73,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
     }
 
     @Test
-    public void testReadOnlyOutsideOfTransaction() throws Exception {
+    void readOnlyOutsideOfTransaction() throws Exception {
         if (emf == null) {
             return;
         }
@@ -86,7 +90,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWritesInTransaction() {
+    void writesInTransaction() {
         if (emf == null) {
             return;
         }
@@ -106,7 +110,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
      * the transaction begins.
      */
     @Test
-    public void testWritesInTransactionOnRetainedConnection() throws Exception {
+    void writesInTransactionOnRetainedConnection() throws Exception {
         if (emf == null) {
             return;
         }

@@ -37,6 +37,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,9 +45,10 @@ import org.junit.jupiter.api.Test;
  * selection and ordering of a criteria query must not be written unquoted into
  * the SQL (OPENJPA-2935).
  */
-public class TestTemporalCoalesce extends SingleEMFTestCase {
+class TestTemporalCoalesce extends SingleEMFTestCase {
     private CriteriaBuilder cb;
 
+    @BeforeEach
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, TemporalHolder.class);
@@ -70,43 +72,43 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTimestamp() {
+    void timestamp() {
         verify("due", Timestamp.valueOf("2025-04-08 11:56:02.0"), Timestamp.valueOf("2020-01-02 03:04:05.0"));
     }
 
     @Test
-    public void testSqlDate() {
+    void sqlDate() {
         verify("dueDate", Date.valueOf("2025-04-08"), Date.valueOf("2020-01-02"));
     }
 
     @Test
-    public void testSqlTime() {
+    void sqlTime() {
         verify("dueTime", Time.valueOf("11:56:02"), Time.valueOf("03:04:05"));
     }
 
     @Test
-    public void testUtilDate() {
+    void utilDate() {
         verify("dueUtilDate", new java.util.Date(Timestamp.valueOf("2025-04-08 11:56:02.0").getTime()),
                 new java.util.Date(Timestamp.valueOf("2020-01-02 03:04:05.0").getTime()));
     }
 
     @Test
-    public void testLocalDateTime() {
+    void localDateTime() {
         verify("dueLocalDateTime", LocalDateTime.of(2025, 4, 8, 11, 56, 2), LocalDateTime.of(2020, 1, 2, 3, 4, 5));
     }
 
     @Test
-    public void testLocalDate() {
+    void localDate() {
         verify("dueLocalDate", LocalDate.of(2025, 4, 8), LocalDate.of(2020, 1, 2));
     }
 
     @Test
-    public void testLocalTime() {
+    void localTime() {
         verify("dueLocalTime", LocalTime.of(11, 56, 2), LocalTime.of(3, 4, 5));
     }
 
     @Test
-    public void testTimestampInCase() {
+    void timestampInCase() {
         Timestamp fallback = Timestamp.valueOf("2020-01-02 03:04:05.0");
         for (boolean limit : new boolean[] { false, true }) {
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -126,7 +128,7 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
      * not written as its unquoted toString().
      */
     @Test
-    public void testCharacter() {
+    void character() {
         for (boolean limit : new boolean[] { false, true }) {
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<TemporalHolder> root = cq.from(TemporalHolder.class);

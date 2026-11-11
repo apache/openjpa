@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 // org.apache.openjpa.persistence.TestMixedMappingLocation
-public class TestMixedMappingLocation extends SingleEMFTestCase {
+class TestMixedMappingLocation extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
@@ -49,7 +49,7 @@ public class TestMixedMappingLocation extends SingleEMFTestCase {
      * @throws Exception
      */
     @Test
-    public void testMixedOrmAnno() throws Exception {
+    void mixedOrmAnno() throws Exception {
         OpenJPAEntityManagerSPI  em = emf.createEntityManager();
         em.close();
     }

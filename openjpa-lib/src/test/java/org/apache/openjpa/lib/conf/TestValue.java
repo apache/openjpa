@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-public class TestValue  {
+class TestValue  {
 
     private static class SimpleValue extends Value {
 
@@ -56,7 +56,7 @@ public class TestValue  {
     }
 
     @Test
-    public void testSetAliasesByValue() {
+    void setAliasesByValue() {
         String alias = "alias";
         String aName = "Johnny";
         String bName = "Pete";
@@ -71,7 +71,7 @@ public class TestValue  {
     }
 
     @Test
-    public void testEquivalentValueCanBeSet() {
+    void equivalentValueCanBeSet() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");
         v.addEquivalentKey("eqivalent1");
@@ -87,7 +87,7 @@ public class TestValue  {
     }
 
     @Test
-    public void testEquivalentValuesAreUnmodifable() {
+    void equivalentValuesAreUnmodifable() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");
         v.addEquivalentKey("eqivalent1");

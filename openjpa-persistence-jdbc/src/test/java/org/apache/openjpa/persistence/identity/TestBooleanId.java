@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * @author Dianne Richards
  * @since 2.1.0
  */
-public class TestBooleanId extends SQLListenerTestCase {
+class TestBooleanId extends SQLListenerTestCase {
     private EntityManager em;
     private BooleanIdEntity se;
     private CompoundBooleanIdEntity ce;
@@ -56,14 +55,14 @@ public class TestBooleanId extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSimpleBooleanIdEntity() {
+    void simpleBooleanIdEntity() {
         se = new BooleanIdEntity(true,"name");
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(se);
         em.getTransaction().commit();
-        assertEquals(true, se.getId());
+        assertTrue(se.getId());
         em.close();
 
         em = emf.createEntityManager();
@@ -72,19 +71,19 @@ public class TestBooleanId extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCompoundIdEntity() {
+    void compoundIdEntity() {
         em = emf.createEntityManager();
-        testCompoundIdEntity("string1", true, true);
-        testCompoundIdEntity("string1", true, false); // Expect duplicate key exception
-        testCompoundIdEntity("string1", false, true);
-        testCompoundIdEntity("string2", true, true);
-        testCompoundIdEntity("string2", false, true);
+        compoundIdEntity("string1", true, true);
+        compoundIdEntity("string1", true, false); // Expect duplicate key exception
+        compoundIdEntity("string1", false, true);
+        compoundIdEntity("string2", true, true);
+        compoundIdEntity("string2", false, true);
         createCompoundIdEntityWithoutBoolean("string3");
         em.close();
     }
 
     @Test
-    private void testCompoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
+    private void compoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
         // create and persist the entity
         try {
             em.getTransaction().begin();

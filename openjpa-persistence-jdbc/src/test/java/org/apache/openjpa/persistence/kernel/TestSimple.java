@@ -40,14 +40,14 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSimple extends BaseKernelTest {
+class TestSimple extends BaseKernelTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
     @Test
-    public void testSimple() {
+    void simple() {
         // test create
         {
             OpenJPAEntityManager pm = getPM();

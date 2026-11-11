@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestConfigurationProviderPrefixes {
+class TestConfigurationProviderPrefixes {
 
     private static final String CUSTOM_PREFIX =
         TestConfigurationProviderPrefixes.class.getName();
@@ -39,7 +39,7 @@ public class TestConfigurationProviderPrefixes {
     private String[] _origPrefixes;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _origPrefixes = ProductDerivations.getConfigurationPrefixes();
         List l = new ArrayList(Arrays.asList(_origPrefixes));
         l.add(CUSTOM_PREFIX);
@@ -48,48 +48,48 @@ public class TestConfigurationProviderPrefixes {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         ProductDerivations.setConfigurationPrefixes(_origPrefixes);
     }
 
     @Test
-    public void testPrefixContents() {
+    void prefixContents() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         Assertions.assertEquals(CUSTOM_PREFIX, prefixes[prefixes.length - 1]);
         Assertions.assertEquals("openjpa", prefixes[0]);
     }
 
     @Test
-    public void testPartialKeyAndNullMap() {
+    void partialKeyAndNullMap() {
         assertEquals("openjpa.Foo", "Foo", (Map) null, null);
     }
 
     @Test
-    public void testPartialKeyWithInvalidPrefix() {
+    void partialKeyWithInvalidPrefix() {
         Map<String, String> map = Map.of("bar.Foo", "value");
         assertEquals("openjpa.Foo", "Foo", map, null);
     }
 
     @Test
-    public void testPartialKeyWithoutMatch() {
+    void partialKeyWithoutMatch() {
         Map<String, String> map = Map.of("bar.Baz", "value");
         assertEquals("openjpa.Foo", "Foo", map, null);
     }
 
     @Test
-    public void testPartialKeyWithOpenJPAMatch() {
+    void partialKeyWithOpenJPAMatch() {
         Map<String, String> map = Map.of("openjpa.Foo", "value");
         assertEquals("openjpa.Foo", "Foo", map, "value");
     }
 
     @Test
-    public void testPartialKeyWithCustomMatch() {
+    void partialKeyWithCustomMatch() {
         Map<String, String> map = Map.of(CUSTOM_PREFIX + ".Foo", "value");
         assertEquals(CUSTOM_PREFIX + ".Foo", "Foo", map, "value");
     }
 
     @Test
-    public void testPartialKeyDuplicateFullKeys() {
+    void partialKeyDuplicateFullKeys() {
         Map<String, String> map = Map.of(CUSTOM_PREFIX + ".Foo", "value",
             "openjpa.Foo", "value");
         try {

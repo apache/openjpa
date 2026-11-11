@@ -101,7 +101,7 @@ public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase
     }
 
     @Test
-    public void testInfoMessage() {
+    void infoMessage() {
         EntityManagerFactory emf =
             createEMF("openjpa.Log", this.getClass().getCanonicalName(), "openjpa.ConnectionRetainMode", "always");
 
@@ -111,7 +111,7 @@ public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase
     }
 
     @Test
-    public void testInfoMessageNotFound() {
+    void infoMessageNotFound() {
         EntityManagerFactory emf =
             createEMF("openjpa.Log", this.getClass().getCanonicalName(), "openjpa.ConnectionRetainMode", "on-demand");
 

@@ -36,13 +36,13 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSerialize extends BaseKernelTest {
+class TestSerialize extends BaseKernelTest {
 
     private int _oid = 0;
     private Object _oid2 = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         RuntimeTest1 a = new RuntimeTest1("1NAME", 1);
         a.setSelfOneOne(new RuntimeTest1("2NAME", 2));
 
@@ -56,7 +56,7 @@ public class TestSerialize extends BaseKernelTest {
     }
 
     @Test
-    public void testConfigurationSerializable()
+    void configurationSerializable()
         throws Exception {
         // validate that the hashCode() and equals() method hold true
         // for the round-trip.
@@ -64,7 +64,7 @@ public class TestSerialize extends BaseKernelTest {
     }
 
     @Test
-    public void testSerialize()
+    void serialize()
         throws Exception {
         OpenJPAEntityManager pm = getPM();
         //FIXME jthomas

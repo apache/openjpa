@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJoinedInheritanceHierarchy
+class TestJoinedInheritanceHierarchy
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -38,7 +38,7 @@ public class TestJoinedInheritanceHierarchy
     }
 
     @Test
-    public void testInverseRelationNotNull() {
+    void inverseRelationNotNull() {
 
     	InheritanceHierarchyConcrete parent = new InheritanceHierarchyConcrete();
     	InheritanceHierarchyConcrete child = new InheritanceHierarchyConcrete();

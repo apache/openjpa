@@ -47,7 +47,7 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
     }
 
     @Test
-    public void testMapping() {
+    void mapping() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.getTransaction().commit();

@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashMap;
@@ -51,7 +50,7 @@ import org.junit.jupiter.api.Test;
  * with "Numeric value out of range", as the column was created as
  * <code>BIGINT</code> (OPENJPA-3058).
  */
-public class TestBigIntegerMapping extends SingleEMFTestCase {
+class TestBigIntegerMapping extends SingleEMFTestCase {
 
     private static final BigInteger WIDE_ID = new BigInteger("123456789012345678901234567890");
     private static final BigInteger WIDE_AMOUNT = new BigInteger("-98765432109876543210987654321");
@@ -86,7 +85,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testValueIsKeptOnFind() {
+    void valueIsKeptOnFind() {
         try (EntityManager em = emf.createEntityManager()) {
             BigIntegerEntity e = em.find(BigIntegerEntity.class, id);
             assertNotNull(e);
@@ -96,7 +95,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testValueIsKeptOnUpdate() {
+    void valueIsKeptOnUpdate() {
         BigInteger updated = amount.add(BigInteger.ONE);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -109,7 +108,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testValueIsComparedInQuery() {
+    void valueIsComparedInQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             List<BigInteger> ids = em.createQuery("SELECT e.id FROM BigIntegerEntity e "
                 + "WHERE e.amount = :amount", BigInteger.class)
@@ -126,7 +125,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testForeignKeyToBigIntegerId() {
+    void foreignKeyToBigIntegerId() {
         try (EntityManager em = emf.createEntityManager()) {
             BigIntegerRefEntity ref = em.find(BigIntegerRefEntity.class, 1L);
             assertNotNull(ref.getTarget());
@@ -142,7 +141,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testColumnTypesOnH2() throws SQLException {
+    void columnTypesOnH2() throws Exception {
         if (!(getDictionary() instanceof H2Dictionary)) {
             return;
         }
@@ -168,7 +167,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
      * columns, which still hold values in the range of a <code>long</code>.
      */
     @Test
-    public void testExistingBigintColumnsOnH2() throws SQLException {
+    void existingBigintColumnsOnH2() throws Exception {
         if (!(getDictionary() instanceof H2Dictionary)) {
             return;
         }

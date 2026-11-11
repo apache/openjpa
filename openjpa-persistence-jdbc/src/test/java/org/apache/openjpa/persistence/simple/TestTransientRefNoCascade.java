@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * an assigned identity must not cause a datastore lookup, because an
  * instance without identity can never have been persisted.
  */
-public class TestTransientRefNoCascade extends SQLListenerTestCase {
+class TestTransientRefNoCascade extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * flush must fail and must not probe the datastore for it.
      */
     @Test
-    public void testTransientWithoutIdentityIsRejectedWithoutLookup() {
+    void transientWithoutIdentityIsRejectedWithoutLookup() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedNCEmployee emp = new UnenhancedNCEmployee(1L, "Smith");
@@ -78,7 +78,7 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * persisted either, so the flush must still fail after the lookup.
      */
     @Test
-    public void testTransientWithIdentityIsRejected() {
+    void transientWithIdentityIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedNCEmployee emp = new UnenhancedNCEmployee(2L, "Jones");
@@ -105,7 +105,7 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * store record exists for the default value of the identity type.
      */
     @Test
-    public void testTransientWithoutAssignedIdentityIsRejectedWithoutLookup() {
+    void transientWithoutAssignedIdentityIsRejectedWithoutLookup() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(new UnenhancedNCAssignedDepartment(0L, "Zero"));
@@ -140,7 +140,7 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * store record settles the question.
      */
     @Test
-    public void testDetachedReferenceWithDefaultIdentityIsTolerated() {
+    void detachedReferenceWithDefaultIdentityIsTolerated() {
         UnenhancedNCAssignedDepartment dept =
             new UnenhancedNCAssignedDepartment(0L, "Zero");
         try (EntityManager em = emf.createEntityManager()) {
@@ -172,7 +172,7 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * A detached instance stays allowed on a relation without cascade.
      */
     @Test
-    public void testDetachedReferenceIsTolerated() {
+    void detachedReferenceIsTolerated() {
         UnenhancedNCDepartment dept = new UnenhancedNCDepartment(null, "Marketing");
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

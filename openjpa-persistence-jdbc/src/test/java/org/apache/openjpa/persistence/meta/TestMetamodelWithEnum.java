@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMetamodelWithEnum extends SingleEMFTestCase {
+class TestMetamodelWithEnum extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestMetamodelWithEnum extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEnsureEnumDontFail() { // OPENJPA-2743
+    void ensureEnumDontFail() { // OPENJPA-2743
         assertNotNull(emf.getMetamodel());
     }
 

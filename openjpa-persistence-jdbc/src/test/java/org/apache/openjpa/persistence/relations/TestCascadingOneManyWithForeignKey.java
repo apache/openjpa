@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestCascadingOneManyWithForeignKey
+class TestCascadingOneManyWithForeignKey
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -49,7 +49,7 @@ public class TestCascadingOneManyWithForeignKey
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
         for (int i = 0; i < 2; i++) {
@@ -79,7 +79,7 @@ public class TestCascadingOneManyWithForeignKey
     }
 
     @Test
-    public void testDelete() {
+    void delete() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
         for (int i = 0; i < 2; i++) {
@@ -118,7 +118,7 @@ public class TestCascadingOneManyWithForeignKey
     }
 
     @Test
-    public void testForeignKey() {
+    void foreignKey() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         if (!conf.getDBDictionaryInstance().supportsForeignKeys)
             return;

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * - uses element collection - lazy fetch (default)
  * - uses element collection - eager fetch
  */
-public class TestBasicLockScope extends LockScopeTestCase {
+class TestBasicLockScope extends LockScopeTestCase {
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
@@ -71,12 +71,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalBasicLock() {
+    void normalBasicLock() {
         commonBasicLock("testNormalBasicLock", 000, false);
     }
 
     @Test
-    public void testExtendedBasicLock() {
+    void extendedBasicLock() {
         commonBasicLock("testExtendedBasicLock", 010, true);
     }
 
@@ -239,12 +239,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalSecTableLock() {
+    void normalSecTableLock() {
         commonSecTableLock("testNormalSecTableLock", 100, false);
     }
 
     @Test
-    public void testExtendedSecTableLock() {
+    void extendedSecTableLock() {
         commonSecTableLock("testExtendedSecTableLock", 110, true);
     }
 
@@ -466,12 +466,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalSingleTableLock() {
+    void normalSingleTableLock() {
         commonSingleTableLock("testNormalSingleTableLock", 200, false);
     }
 
     @Test
-    public void testExtendedlSingleTableLock() {
+    void extendedlSingleTableLock() {
         commonSingleTableLock("testExtendedlSingleTableLock", 210, true);
     }
 
@@ -650,12 +650,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalJoinedLock() {
+    void normalJoinedLock() {
         commonJoinedLock("testNormalJoinedLock", 400, false);
     }
 
     @Test
-    public void testExtendedJoinedLock() {
+    void extendedJoinedLock() {
         commonJoinedLock("testExtendedJoinedLock", 410, true);
     }
 
@@ -872,12 +872,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalElementCollectionLock() {
+    void normalElementCollectionLock() {
         commonElementCollectionLock("testNormalElementCollectionLock", 500, false);
     }
 
     @Test
-    public void testExtendedElementCollectionLock() {
+    void extendedElementCollectionLock() {
         commonElementCollectionLock("testExtendedElementCollectionLock", 510, true);
     }
 
@@ -1042,12 +1042,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalElementCollectionEagerLock() {
+    void normalElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testNormalElementCollectionEagerLock", 600, false);
     }
 
     @Test
-    public void testExtendedElementCollectionEagerLock() {
+    void extendedElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testExtendedElementCollectionEagerLock", 610, true);
     }
 

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestBrokerFactoryListenerRegistry
+class TestBrokerFactoryListenerRegistry
     extends SingleEMFTestCase {
 
     private int persistCount = 0;
@@ -62,7 +62,7 @@ public class TestBrokerFactoryListenerRegistry
     }
 
     @Test
-    public void testLifecycleListenerRegistry() {
+    void lifecycleListenerRegistry() {
         beginCount = 0;
         persistCount = 0;
         EntityManager em = emf.createEntityManager();

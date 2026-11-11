@@ -27,13 +27,13 @@ import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
 import org.junit.jupiter.api.Test;
 
-public class TestOracleDictionary {
+class TestOracleDictionary {
 
     /**
      * Oracle has no EXTRACT(QUARTER) and no EXTRACT(WEEK); the ISO week is the IW format of TO_CHAR.
      */
     @Test
-    public void testExtractQuarterAndIsoWeek() {
+    void extractQuarterAndIsoWeek() {
         DBDictionary dict = new OracleDictionary();
         assertEquals("TO_NUMBER(TO_CHAR({1}, 'Q'))", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.QUARTER));
         assertEquals("TO_NUMBER(TO_CHAR({1}, 'IW'))", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
@@ -43,7 +43,7 @@ public class TestOracleDictionary {
      * EXTRACT(HOUR/MINUTE/SECOND) is only allowed on TIMESTAMP values, but times are held in DATE columns.
      */
     @Test
-    public void testExtractTimeFieldsFromTimestamp() {
+    void extractTimeFieldsFromTimestamp() {
         DBDictionary dict = new OracleDictionary();
         assertEquals("EXTRACT(HOUR FROM CAST({1} AS TIMESTAMP))",
             dict.getExtractDateTimeFieldFunction(DateTimeExtractField.HOUR));
@@ -59,7 +59,7 @@ public class TestOracleDictionary {
      * Oracle has no CURRENT_TIME; a time is held as the time of day on 1970-01-01, as the driver binds it.
      */
     @Test
-    public void testCurrentTime() {
+    void currentTime() {
         assertEquals("(DATE '1970-01-01' + (CURRENT_DATE - TRUNC(CURRENT_DATE)))", new OracleDictionary().currentTimeFunction);
     }
 
@@ -67,7 +67,7 @@ public class TestOracleDictionary {
      * The CURRENT_DATE of Oracle is a DATE with the time of day.
      */
     @Test
-    public void testCurrentDate() {
+    void currentDate() {
         assertEquals("TRUNC(CURRENT_DATE)", new OracleDictionary().currentDateFunction);
     }
 
@@ -76,7 +76,7 @@ public class TestOracleDictionary {
      * and EXTRACT(TIME) moves its time of day to 1970-01-01.
      */
     @Test
-    public void testExtractDateAndTimePart() {
+    void extractDateAndTimePart() {
         DBDictionary dict = new OracleDictionary();
         assertEquals("TRUNC({1})", dict.getExtractDateTimePartFunction(DateTimeExtractPart.DATE));
         assertEquals("(DATE '1970-01-01' + (CAST({1} AS DATE) - TRUNC({1})))",
@@ -93,7 +93,7 @@ public class TestOracleDictionary {
      * gives NULL, the empty string of Oracle.
      */
     @Test
-    public void testRight() {
+    void right() {
         DBDictionary dict = new OracleDictionary();
         SQLBuffer buf = new SQLBuffer(dict);
         dict.right(buf, value(null, "t0.NAME"), value(3, "?"));

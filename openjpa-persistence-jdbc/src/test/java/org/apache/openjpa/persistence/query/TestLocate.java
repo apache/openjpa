@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for JPQL LOCATE function.
  */
-public class TestLocate extends SingleEMTestCase {
+class TestLocate extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -45,7 +45,7 @@ public class TestLocate extends SingleEMTestCase {
     }
 
     @Test
-    public void testLocate() {
+    void locate() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where LOCATE('bar', o.value) = 1").getSingleResult());
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
@@ -59,7 +59,7 @@ public class TestLocate extends SingleEMTestCase {
     }
 
     @Test
-    public void testLocateInMemory() {
+    void locateInMemory() {
         List<SimpleEntity> allEntities = em.createQuery("select o from simple o", SimpleEntity.class).getResultList();
         Object inMemoryResult = em.createQuery("select LOCATE('bar', o.value) from simple o")
             .setCandidateCollection(allEntities).getSingleResult();

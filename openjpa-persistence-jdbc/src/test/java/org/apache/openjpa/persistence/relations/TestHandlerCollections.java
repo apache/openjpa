@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestHandlerCollections
+class TestHandlerCollections
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -37,7 +37,7 @@ public class TestHandlerCollections
     }
 
     @Test
-    public void testHandlerCollections() {
+    void handlerCollections() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerCollectionInstance.class);
         assertEquals(HandlerCollectionTableFieldStrategy.class,

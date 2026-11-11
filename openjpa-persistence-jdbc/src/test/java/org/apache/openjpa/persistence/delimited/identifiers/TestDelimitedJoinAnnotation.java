@@ -107,7 +107,7 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate() {
+    void create() {
         id++;
         createHandI(id);
         // TODO: Maybe create another one.

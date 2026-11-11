@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLiteralInSQL extends SQLListenerTestCase {
+class TestLiteralInSQL extends SQLListenerTestCase {
     @Override
     protected boolean isSupported(DBDictionary dict) {
         //Disable on Postgres for now....
@@ -42,7 +42,7 @@ public class TestLiteralInSQL extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTrueInSQL() {
+    void trueInSQL() {
         EntityManager em = emf.createEntityManager();
 
         em = emf.createEntityManager();

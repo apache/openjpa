@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * OPENJPA-3034). Inserts are ordered by logical foreign keys since
  * OPENJPA-2940; this is the delete side.
  */
-public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
+class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -73,7 +73,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
     }
 
     @Test
-    public void testRelationIsMappedToALogicalForeignKey() {
+    void relationIsMappedToALogicalForeignKey() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(FkoChild.class, null, true);
         ForeignKey fk = mapping.getFieldMapping("parent").getForeignKey();
@@ -86,7 +86,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * referencing row has to be deleted before it all the same.
      */
     @Test
-    public void testRemoveReferencedEntityFirst() {
+    void removeReferencedEntityFirst() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -123,7 +123,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * instead of failing the flush - for the inserts and for the deletes.
      */
     @Test
-    public void testCycleOfNonNullableLogicalForeignKeys() {
+    void cycleOfNonNullableLogicalForeignKeys() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -163,7 +163,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * violate the constraint.
      */
     @Test
-    public void testCycleOfNullableLogicalForeignKeys() {
+    void cycleOfNullableLogicalForeignKeys() {
         // the statements are counted, so they are not batched, as on Oracle and DB2 by default
         DBDictionary dict = getDbDictionary(emf);
         int batchLimit = dict.getBatchLimit();

@@ -45,7 +45,7 @@ public class TestEntityOrderBy extends AnnotationTestCase
 //    private ClassMetaData _meta;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
 //        _meta = ((OpenJPAConfiguration) getConfiguration()).
 //            getMetaDataRepositoryInstance().getMetaData(OrderByEntity.class,
@@ -63,7 +63,7 @@ public class TestEntityOrderBy extends AnnotationTestCase
        }
     */
     @Test
-    public void testUse() {
+    void use() {
         // note: functionality thoroughly tested in kodo.meta.TestOrderBy;
         // this is just a sanity check on JPA use
         deleteAll(OrderByEntity.class);

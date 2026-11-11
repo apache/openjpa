@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * Date: 02-Nov-2007
  * Time: 21:36:36
  */
-public class TestHungarianNotationRemoval extends SingleEMFTestCase {
+class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -46,7 +46,7 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleColumnNameTruncation() {
+    void simpleColumnNameTruncation() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFields.class);
 
@@ -66,7 +66,7 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCustomNameNotAltered() {
+    void customNameNotAltered() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFields.class);
 

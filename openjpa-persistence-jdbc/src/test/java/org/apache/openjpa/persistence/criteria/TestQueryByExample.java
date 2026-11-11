@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestQueryByExample extends CriteriaTest {
+class TestQueryByExample extends CriteriaTest {
     DBDictionary dict = null;
 
     @BeforeEach
@@ -63,7 +63,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testBasicFieldsWithNonDefaultValue() {
+    void basicFieldsWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -80,7 +80,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testExcludeBasicFieldWithNonDefaultValue() {
+    void excludeBasicFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -97,7 +97,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testBasicFieldWithDefaultValueExcludedByDefaultStyle() {
+    void basicFieldWithDefaultValueExcludedByDefaultStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -114,7 +114,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testBasicFieldWithDefaultValueCanBeIncludedByStyle() {
+    void basicFieldWithDefaultValueCanBeIncludedByStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -131,7 +131,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testRelationFieldWithNonDefaultValue() {
+    void relationFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department.name='ExampleDept'";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -152,7 +152,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testRelationFieldWithNullValueIncluded() {
+    void relationFieldWithNullValueIncluded() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -173,7 +173,7 @@ public class TestQueryByExample extends CriteriaTest {
     }
 
     @Test
-    public void testEmbeddedField() {
+    void embeddedField() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);

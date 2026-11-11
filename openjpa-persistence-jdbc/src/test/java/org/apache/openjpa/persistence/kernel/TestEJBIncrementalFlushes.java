@@ -35,7 +35,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         EntityManager em = currentEntityManager();
@@ -57,7 +57,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
 //	}
 
     @Test
-    public void testFlushNoChange() {
+    void flushNoChange() {
         EntityManager em = currentEntityManager();
         startTx(em);
         InstanceCallbacksTest a = new InstanceCallbacksTest("foo", 10);
@@ -72,7 +72,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
     }
 
     @Test
-    public void testOptimisticLockGivesCorrectError() {
+    void optimisticLockGivesCorrectError() {
         EntityManager pm1 = currentEntityManager();
         EntityManager pm2 = currentEntityManager();
 

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
  */
-public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCase {
+class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * instances are marked for deletion, so the commit deletes their rows.
      */
     @Test
-    public void testInMemoryDeleteIsNotFlushed() {
+    void inMemoryDeleteIsNotFlushed() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, deleteInMemory(em));
@@ -67,7 +67,7 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * value and the commit writes it.
      */
     @Test
-    public void testInMemoryUpdateIsNotFlushed() {
+    void inMemoryUpdateIsNotFlushed() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, updateInMemory(em));
@@ -83,7 +83,7 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * the operation outright.
      */
     @Test
-    public void testClearedContextLosesTheDelete() {
+    void clearedContextLosesTheDelete() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, deleteInMemory(em));
@@ -102,7 +102,7 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * for.
      */
     @Test
-    public void testUnrelatedPendingChangeStaysPending() {
+    void unrelatedPendingChangeStaysPending() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.COMMIT);
             em.getTransaction().begin();

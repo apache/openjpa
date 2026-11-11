@@ -76,7 +76,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQuery() {
+    void simpleQuery() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         cq.select(cq.from(BlogUser.class));
@@ -92,7 +92,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryBytesNotNull() {
+    void simpleQueryBytesNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);
@@ -109,7 +109,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryBytesNull() {
+    void simpleQueryBytesNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);
@@ -125,7 +125,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryCharactersNotNull() {
+    void simpleQueryCharactersNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);
@@ -142,7 +142,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryCharactersNull() {
+    void simpleQueryCharactersNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);
@@ -158,7 +158,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryCharsNotNull() {
+    void simpleQueryCharsNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);
@@ -175,7 +175,7 @@ public class TestByteArray extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleQueryCharsNull() {
+    void simpleQueryCharsNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
         Root<BlogUser> bloguser = cq.from(BlogUser.class);

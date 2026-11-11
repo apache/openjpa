@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for JPA AttributeConverter support.
  */
-public class TestAttributeConverter extends SingleEMFTestCase {
+class TestAttributeConverter extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -54,7 +54,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Test basic same-type converter (String -> String).
      */
     @Test
-    public void testSameTypeConverter() {
+    void sameTypeConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ConvertEntity e = new ConvertEntity(1, "hello", "42");
@@ -76,7 +76,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Test cross-type converter (String entity -> Integer DB).
      */
     @Test
-    public void testCrossTypeConverter() {
+    void crossTypeConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ConvertEntity e = new ConvertEntity(2, "world", "123");
@@ -97,7 +97,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Test that converter is applied via JPQL query results.
      */
     @Test
-    public void testConverterWithJPQL() {
+    void converterWithJPQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertEntity(3, "jpql-test", "999"));
@@ -120,7 +120,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * PersistenceException.
      */
     @Test
-    public void testConverterExceptionOnPersist() {
+    void converterExceptionOnPersist() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -151,7 +151,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Tested separately once element collection support is working.
      */
     @Test
-    public void testElementCollectionConverter() {
+    void elementCollectionConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ConvertCollectionEntity e = new ConvertCollectionEntity("coll1");

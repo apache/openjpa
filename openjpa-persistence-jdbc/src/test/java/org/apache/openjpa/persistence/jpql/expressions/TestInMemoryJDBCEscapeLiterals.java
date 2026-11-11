@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.jpql.expressions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * memory is a date, time or timestamp, as it is on the database, and not the
  * text of the escape.
  */
-public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
+class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
 
     private static final Pattern TIMESTAMP_TEXT =
         Pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?");
@@ -79,7 +79,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExtractInMemory() {
+    void extractInMemory() {
         EntityManager em = emf.createEntityManager();
         List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
 
@@ -104,7 +104,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompareInMemory() {
+    void compareInMemory() {
         EntityManager em = emf.createEntityManager();
         List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
         assertCompareInMemory(em, all);
@@ -115,7 +115,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
      * Candidates that are not managed hold plain dates instead of proxies.
      */
     @Test
-    public void testCompareUnmanagedInMemory() {
+    void compareUnmanagedInMemory() {
         EntityManager em = emf.createEntityManager();
         List<AllFieldTypes> all = new ArrayList<>();
         all.add(newEntity("2021-01-03", "10:00:00"));
@@ -166,7 +166,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
      * accepts these comparisons, so only the in-memory result is checked.
      */
     @Test
-    public void testCompareOtherKindInMemory() {
+    void compareOtherKindInMemory() {
         EntityManager em = emf.createEntityManager();
         List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
 
@@ -186,7 +186,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCaseAndNullIfInMemory() {
+    void caseAndNullIfInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             List<?> all = em.createQuery("SELECT e FROM AllFieldTypes e").getResultList();
 
@@ -207,7 +207,7 @@ public class TestInMemoryJDBCEscapeLiterals extends SingleEMFTestCase {
                 List<?> values = em.createQuery(jpql).getResultList();
                 List<String> db = sorted(s.startsWith("NULLIF") && s.contains("{d ") ? dates(values) : timestamps(values));
                 assertEquals(2, db.size(), jpql);
-                assertFalse(db.get(0).equals(db.get(1)), jpql);
+                assertNotEquals(db.get(0), db.get(1), jpql);
                 assertEquals(db, sorted(inMemory(em, all, jpql)), jpql);
             }
 

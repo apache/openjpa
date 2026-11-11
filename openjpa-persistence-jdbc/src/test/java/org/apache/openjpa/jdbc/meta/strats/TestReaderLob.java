@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @since 1.1.0
  */
 
-public class TestReaderLob extends AbstractLobTest {
+class TestReaderLob extends AbstractLobTest {
 
     @Override
     protected LobEntity newLobEntity(String s, int id) {
@@ -93,7 +93,7 @@ public class TestReaderLob extends AbstractLobTest {
      * more than one byte in UTF-8.
      */
     @Test
-    public void testInsertAndUpdateMultiByteContent() throws IOException {
+    void insertAndUpdateMultiByteContent() throws Exception {
         String s = repeatString("\u00e4\u00f6\u00fc \u20ac\u00df, ", 2000);
         insert(newLobEntity(s, 1));
         try (EntityManager em = emf.createEntityManager()) {
@@ -112,7 +112,7 @@ public class TestReaderLob extends AbstractLobTest {
     }
 
     @Test
-    public void testInsertEmpty() throws IOException {
+    void insertEmpty() throws Exception {
         insert(newLobEntity("", 1));
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

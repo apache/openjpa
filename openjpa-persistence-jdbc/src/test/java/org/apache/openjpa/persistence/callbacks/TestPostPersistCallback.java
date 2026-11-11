@@ -33,10 +33,10 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestPostPersistCallback extends SingleEMFTestCase {
+class TestPostPersistCallback extends SingleEMFTestCase {
 
     @Test
-    public void testPostPersistCalledAfterFlush() {
+    void postPersistCalledAfterFlush() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -64,7 +64,7 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistCalledAfterCommit() {
+    void postPersistCalledAfterCommit() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -84,7 +84,7 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostPersistCalledAfterPersist() {
+    void postPersistCalledAfterPersist() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class,
             "openjpa.Callbacks", "PostPersistCallbackImmediate=true");
         assertTrue(emf.getConfiguration().getCallbackOptionsInstance()

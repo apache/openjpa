@@ -27,9 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -48,13 +46,13 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.jupiter.api.Test;
 
-public class TestJDBCType extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestJDBCType extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     /**
      * Tests that application identity classes are returned correctly.
      */
     @Test
-    public void testSchemaGeneration() {
+    void schemaGeneration() {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
@@ -75,8 +73,7 @@ public class TestJDBCType extends org.apache.openjpa.persistence.jdbc.kernel.Bas
                     cls.getName());
             }
         } else
-            assertTrue(mapping.getFieldMapping("toClob").getStrategy()
-                instanceof StringFieldStrategy);
+            assertInstanceOf(StringFieldStrategy.class, mapping.getFieldMapping("toClob").getStrategy());
 
         cls = mapping.getFieldMapping("toBlob").getHandler().getClass();
         assertTrue(BlobValueHandler.class.isAssignableFrom(cls),

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * returns for the operation. MySQL, for example, returns BIGINT for the sum of
  * two INTEGER columns.
  */
-public class TestArithmeticResultType extends SingleEMFTestCase {
+class TestArithmeticResultType extends SingleEMFTestCase {
     private CriteriaBuilder cb;
     private EntityManager em;
 
@@ -66,7 +66,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIntegerOperands() {
+    void integerOperands() {
         assertResult(Integer.valueOf(10), r -> cb.sum(r.get("intA"), r.get("intB")));
         assertResult(Integer.valueOf(4), r -> cb.diff(r.get("intA"), r.get("intB")));
         assertResult(Integer.valueOf(21), r -> cb.prod(r.get("intA"), r.get("intB")));
@@ -77,7 +77,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIntegerOperandAndLiteral() {
+    void integerOperandAndLiteral() {
         assertResult(Integer.valueOf(12), r -> cb.sum(5, r.<Integer> get("intA")));
         assertResult(Integer.valueOf(12), r -> cb.sum(r.<Integer> get("intA"), 5));
         assertResult(Integer.valueOf(-2), r -> cb.diff(5, r.<Integer> get("intA")));
@@ -87,7 +87,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testLongOperands() {
+    void longOperands() {
         assertResult(Long.valueOf(14), r -> cb.sum(r.get("longA"), r.get("longB")));
         assertResult(Long.valueOf(6), r -> cb.diff(r.get("longA"), r.get("longB")));
         assertResult(Long.valueOf(40), r -> cb.prod(r.get("longA"), r.get("longB")));
@@ -97,7 +97,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMixedOperands() {
+    void mixedOperands() {
         assertResult(Long.valueOf(17), r -> cb.sum(r.<Integer> get("intA"), r.<Long> get("longA")));
         assertResult(Long.valueOf(17), r -> cb.sum(r.<Long> get("longA"), r.<Integer> get("intA")));
         assertResult(Long.valueOf(3), r -> cb.diff(r.<Integer> get("intA"), r.<Long> get("longB")));
@@ -116,7 +116,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIntegerDivision() {
+    void integerDivision() {
         // MySQL returns DECIMAL for the division of two INTEGER columns
         assertResult(Integer.valueOf(2), r -> cb.quot(r.<Integer> get("intA"), r.<Integer> get("intB")));
         assertResult(Long.valueOf(2), r -> cb.quot(r.<Long> get("longA"), r.<Long> get("longB")));
@@ -127,7 +127,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testJPQLProjection() {
+    void jpqlProjection() {
         Object[] row = (Object[]) em.createQuery("SELECT n.intA + n.intB, n.intA - n.intB, "
             + "n.intA * n.intB, n.intA + n.longA, n.longA - n.intB, n.intA - 5, n.intB + n.decA "
             + "FROM NumericOperands n").getSingleResult();
@@ -151,7 +151,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConstructorWithIntParameters() {
+    void constructorWithIntParameters() {
         CriteriaQuery<IntPair> q = cb.createQuery(IntPair.class);
         Root<NumericOperands> r = q.from(NumericOperands.class);
         q.select(cb.construct(IntPair.class, cb.diff(r.get("intA"), r.get("intB")),
@@ -168,7 +168,7 @@ public class TestArithmeticResultType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testComparison() {
+    void comparison() {
         CriteriaQuery<NumericOperands> q = cb.createQuery(NumericOperands.class);
         Root<NumericOperands> r = q.from(NumericOperands.class);
         q.where(cb.equal(cb.neg(r.<Integer> get("intA")), -7),

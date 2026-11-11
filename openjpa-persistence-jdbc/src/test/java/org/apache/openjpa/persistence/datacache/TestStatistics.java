@@ -42,7 +42,7 @@ import org.opentest4j.AssertionFailedError;
  * Tests statistics of data cache operation.
  *
  */
-public class TestStatistics extends SingleEMFTestCase {
+class TestStatistics extends SingleEMFTestCase {
     private static final boolean L2Cached = true;
     private static final boolean L1Cached = true;
     private static final String cls = CachedEntityStatistics.class.getName();
@@ -75,7 +75,7 @@ public class TestStatistics extends SingleEMFTestCase {
      * Test that the CacheStatistics is disabled by default.
      */
     @Test
-    public void testDefaultSettings() {
+    void defaultSettings() {
         Object[] props = { "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm" };
         OpenJPAEntityManagerFactory emf1 = createNamedEMF("second-persistence-unit", props);
         assertFalse(emf1.getStoreCache().getStatistics().isEnabled());
@@ -86,7 +86,7 @@ public class TestStatistics extends SingleEMFTestCase {
      * Finding an entity from a clean should hit the L2 cache.
      */
     @Test
-    public void testSimpleFind() {
+    void simpleFind() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics person = createData(false, false);
         em.clear();
@@ -109,7 +109,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFind() {
+    void find() {
         int hit = 0, evict = 0, read = 0, write = 0;
         CachedEntityStatistics person = createData(true, true);
         em.clear();
@@ -183,7 +183,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultipleUnits() {
+    void multipleUnits() {
         OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
         OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
         assertNotSame(emf1, emf2);
@@ -196,7 +196,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         int hit = 0, read = 0, write = 0;
 
         em = emf.createEntityManager();
@@ -223,7 +223,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRefresh() {
+    void refresh() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
         em = emf.createEntityManager();
@@ -242,7 +242,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMerge() {
+    void merge() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
         em = emf.createEntityManager();

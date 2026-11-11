@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestResultClsXml extends SQLListenerTestCase {
+class TestResultClsXml extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() {
         setUp(ResultClsXml.class, DROP_TABLES);
@@ -42,7 +42,7 @@ public class TestResultClsXml extends SQLListenerTestCase {
     }
 
     @Test
-    public void testIt() {
+    void it() {
         EntityManager em = emf.createEntityManager();
 
         try {

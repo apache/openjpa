@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests JPA 3.2 @EnumeratedValue for custom enum-to-DB mapping.
  */
-public class TestEnumeratedValue extends SingleEMFTestCase {
+class TestEnumeratedValue extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestEnumeratedValue extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueEntity e = new EnumeratedValueEntity();
@@ -59,7 +59,7 @@ public class TestEnumeratedValue extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAllEnumValues() {
+    void allEnumValues() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueStatus.values().length; i++) {
@@ -82,7 +82,7 @@ public class TestEnumeratedValue extends SingleEMFTestCase {
     }
 
     @Test
-    public void testStoredAsCustomValue() {
+    void storedAsCustomValue() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueEntity e = new EnumeratedValueEntity();

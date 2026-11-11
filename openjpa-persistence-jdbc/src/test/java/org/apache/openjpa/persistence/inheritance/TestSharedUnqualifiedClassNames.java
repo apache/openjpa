@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1049">JIRA</A>
  *
  */
-public class TestSharedUnqualifiedClassNames
+class TestSharedUnqualifiedClassNames
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -57,7 +57,7 @@ public class TestSharedUnqualifiedClassNames
     @AllowFailure(message = "MappedSuperclass can be aliased and has higher" +
         "search order in alias if it clashes with other types's alias")
     @Test
-    public void testMappedSuperclass() {
+    void mappedSuperclass() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData("SharedName1", getClass().getClassLoader(), true);
@@ -67,7 +67,7 @@ public class TestSharedUnqualifiedClassNames
     }
 
     @Test
-    public void testEmbeddable() {
+    void embeddable() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData("SharedName2", getClass().getClassLoader(), true);

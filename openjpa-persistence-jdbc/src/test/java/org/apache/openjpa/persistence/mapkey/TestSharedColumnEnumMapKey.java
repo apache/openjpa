@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * and the ORDINAL handler must correctly read/write ordinal values
  * as strings in the VARCHAR column.
  */
-public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
+class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +55,7 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrdinalMapKeyPersistAndLoad() {
+    void ordinalMapKeyPersistAndLoad() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -113,7 +113,7 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
     }
 
     @Test
-    public void testStringMapKeyPersistAndLoad() {
+    void stringMapKeyPersistAndLoad() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -171,7 +171,7 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBothTypesCoexist() {
+    void bothTypesCoexist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

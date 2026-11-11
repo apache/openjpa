@@ -36,7 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
+class TestSequenceGenerationOnMT extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, GeneratedIdObject.class,
@@ -44,7 +44,7 @@ public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdGenerationInMultithreadedEnvironment() {
+    void idGenerationInMultithreadedEnvironment() {
         int nThreads = 5;
         ExecutorService threads = Executors.newFixedThreadPool(nThreads);
         List<Callable<Boolean>> tasks = new ArrayList<>();

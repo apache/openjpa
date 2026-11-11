@@ -31,7 +31,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,18 +54,18 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryObj() throws Exception {
+    void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -132,7 +131,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, Student.class);
         rs = q.getResultList();
-        assertEquals(((Course) rs.get(0)).getId(), 1);
+        assertEquals(1, ((Course) rs.get(0)).getId());
 
         em.close();
     }
@@ -192,7 +191,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public void assertStudent(Student s) {
         int id = s.getId();
         Map enrollment = s.getEnrollment();
-        Assertions.assertEquals(2, enrollment.size());
+        assertEquals(2, enrollment.size());
     }
 
     public void assertCourse(Course c) {

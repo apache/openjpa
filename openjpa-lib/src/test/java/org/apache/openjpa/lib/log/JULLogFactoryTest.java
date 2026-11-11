@@ -28,9 +28,9 @@ import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
-public class JULLogFactoryTest {
+class JULLogFactoryTest {
     @Test
-    public void log() {
+    void log() {
         final JULLogFactory factory = new JULLogFactory();
         final String logger = getClass().getName() + "__log";
         final Logger jul = Logger.getLogger(logger);

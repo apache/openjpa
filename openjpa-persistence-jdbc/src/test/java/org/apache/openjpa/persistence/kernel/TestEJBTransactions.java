@@ -36,11 +36,11 @@ public class TestEJBTransactions extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
     }
 
     @Test
-    public void testTxCannotBeCommittedTwiceInDiffThreads() throws Throwable {
+    void txCannotBeCommittedTwiceInDiffThreads() throws Throwable {
         final ArrayList list = new ArrayList();
 
         final EntityManager em = currentEntityManager();
@@ -80,7 +80,7 @@ public class TestEJBTransactions extends AbstractTestCase {
     }
 
     @Test
-    public void testTransactionsCannotBeCommittedTwice() {
+    void transactionsCannotBeCommittedTwice() {
         EntityManager pm = currentEntityManager();
         rollbackTx(pm);
 
@@ -97,7 +97,7 @@ public class TestEJBTransactions extends AbstractTestCase {
     }
 
     @Test
-    public void testTransactionsCannotBeRolledBackTwice() {
+    void transactionsCannotBeRolledBackTwice() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 

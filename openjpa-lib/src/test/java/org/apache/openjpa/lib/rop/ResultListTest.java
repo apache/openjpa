@@ -82,7 +82,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIterator() {
+    public void iterator() {
         for (ResultList list : _lists) {
             Iterator itr = list.iterator();
             int count = 0;
@@ -99,7 +99,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIteratorModification() {
+    public void iteratorModification() {
         for (ResultList list : _lists) {
             try {
                 Iterator itr = list.iterator();
@@ -113,7 +113,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorForward() {
+    public void listIteratorForward() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator();
             int count = 0;
@@ -132,7 +132,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorIndex() {
+    public void listIteratorIndex() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator(50);
             int count = 50;
@@ -151,7 +151,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorReverse() {
+    public void listIteratorReverse() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator(100);
             int count = 99;
@@ -170,7 +170,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorModification() {
+    public void listIteratorModification() {
         for (ResultList list : _lists) {
             try {
                 ListIterator itr = list.listIterator();
@@ -184,14 +184,14 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMultipleIterations() {
-        testListIteratorIndex();
-        testListIteratorForward();
-        testListIteratorReverse();
+    public void multipleIterations() {
+        listIteratorIndex();
+        listIteratorForward();
+        listIteratorReverse();
     }
 
     @Test
-    public void testContains() {
+    public void contains() {
         for (ResultList list : _lists) {
             assertTrue(list.contains("0"));
             assertTrue(list.contains("50"));
@@ -207,7 +207,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testModification() {
+    public void modification() {
         for (ResultList list : _lists) {
             try {
                 list.add("foo");
@@ -231,7 +231,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetBegin() {
+    public void getBegin() {
         for (ResultList list : _lists) {
             for (int j = 0; j < 10; j++)
                 assertEquals(String.valueOf(j), list.get(j));
@@ -245,14 +245,14 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetMiddle() {
+    public void getMiddle() {
         for (ResultList list : _lists)
             for (int j = 50; j < 60; j++)
                 assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
-    public void testGetEnd() {
+    public void getEnd() {
         for (ResultList list : _lists) {
             for (int j = 90; j < 100; j++)
                 assertEquals(String.valueOf(j), list.get(j));
@@ -266,36 +266,36 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetReverse() {
+    public void getReverse() {
         for (ResultList list : _lists)
             for (int j = 99; j > -1; j--)
                 assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
-    public void testMultipleGet() {
-        testGetMiddle();
-        testGetBegin();
-        testGetEnd();
+    public void multipleGet() {
+        getMiddle();
+        getBegin();
+        getEnd();
 
         // take list size and traverse list to cache values if not already
         for (ResultList list : _lists) list.size();
-        testListIteratorForward();
+        listIteratorForward();
 
-        testGetMiddle();
-        testGetBegin();
-        testGetEnd();
+        getMiddle();
+        getBegin();
+        getEnd();
     }
 
     @Test
-    public void testSize() {
+    public void size() {
         for (ResultList list : _lists)
             assertTrue(list.size() == 100
                     || list.size() == Integer.MAX_VALUE);
     }
 
     @Test
-    public void testEmpty() {
+    public void empty() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
         for (ResultObjectProvider rop : rops) {
@@ -306,7 +306,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSubList() {
+    public void subList() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
         for (ResultObjectProvider rop : rops) {

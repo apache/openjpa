@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCacheMarshaller extends SingleEMFTestCase {
+class TestCacheMarshaller extends SingleEMFTestCase {
 
     private CacheMarshaller cm;
 
@@ -46,17 +46,17 @@ public class TestCacheMarshaller extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCacheMarshallerType() {
+    void cacheMarshallerType() {
         assertEquals(CacheMarshallerImpl.class, cm.getClass());
     }
 
     @Test
-    public void testConfiguration() {
+    void configuration() {
         assertEquals(getClass().getName(), cm.getId());
     }
 
     @Test
-    public void testValidation() {
+    void validation() {
         ValidationPolicy vp = ((CacheMarshallerImpl) cm).getValidationPolicy();
         assertEquals(OpenJPAVersionAndConfigurationTypeValidationPolicy.class,
             vp.getClass());
@@ -71,14 +71,14 @@ public class TestCacheMarshaller extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRoundTrip() {
+    void roundTrip() {
         Object o = "foo";
         cm.store(o);
         assertEquals(o, cm.load());
     }
 
     @Test
-    public void testendConfiguration() {
+    void testendConfiguration() {
         ((CacheMarshallerImpl)cm).setInputURL(null);
         ((CacheMarshallerImpl)cm)
             .setInputResource(getClass().getName() + ".ser");

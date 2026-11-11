@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestTableNamesDefaultToEntityNames
+class TestTableNamesDefaultToEntityNames
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -35,7 +35,7 @@ public class TestTableNamesDefaultToEntityNames
     }
 
     @Test
-    public void testEntityNames() {
+    void entityNames() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(
             emf, NamedEntity.class);
         assertEquals("named", cm.getTable().getName());

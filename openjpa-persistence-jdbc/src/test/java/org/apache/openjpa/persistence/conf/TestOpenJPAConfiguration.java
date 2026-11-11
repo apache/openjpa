@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.conf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -59,7 +61,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
      * objects.
      */
     @Test
-    public void testSetObjects() {
+    void setObjects() {
         Map map = new HashMap();
         Object cfactory = new Object();
         Object cfactory2 = new Object();
@@ -75,8 +77,8 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
         conf.fromProperties(map);
         assertEquals(cfactory, conf.getConnectionFactory());
         assertEquals(cfactory2, conf.getConnectionFactory2());
-        assertEquals(false, conf.getOptimistic());
-        assertEquals(false, conf.getPostLoadOnMerge());
+        assertFalse(conf.getOptimistic());
+        assertFalse(conf.getPostLoadOnMerge());
         assertEquals(503, conf.getLockTimeout());
         assertEquals(1500, conf.getQueryTimeout());
 
@@ -85,8 +87,8 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
         assertEquals(conf, conf2);
 
         Map p = conf.toProperties(false);
-        assertTrue(!p.containsKey("openjpa.ConnectionFactory"));
-        assertTrue(!p.containsKey("openjpa.ConnectionFactory2"));
+        assertFalse(p.containsKey("openjpa.ConnectionFactory"));
+        assertFalse(p.containsKey("openjpa.ConnectionFactory2"));
         assertEquals("false", p.get("openjpa.Optimistic"));
         assertEquals("503", p.get("openjpa.LockTimeout"));
         assertEquals(p, conf2.toProperties(false));
@@ -98,7 +100,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
     }
 
     @Test
-    public void testClassAliases()
+    void classAliases()
         throws Exception {
         OpenJPAConfiguration conf = getConfiguration();
         if (!(conf instanceof OpenJPAConfigurationImpl))
@@ -134,7 +136,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
     }
 
     @Test
-    public void testBeanAccessors()
+    void beanAccessors()
         throws Exception {
         OpenJPAConfiguration conf = getConfiguration();
         OpenJPAConfigurationImpl simp = (OpenJPAConfigurationImpl) conf.clone();
@@ -188,7 +190,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
      * type.
      */
     @Test
-    public void testInvalidPlugins() {
+    void invalidPlugins() {
         OpenJPAConfiguration config = new OpenJPAConfigurationImpl();
         config.setLog("log3j");
         try {
@@ -202,7 +204,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
     }
 
     @Test
-    public void testInvalidConfigurationWarnings() {
+    void invalidConfigurationWarnings() {
         Properties props = new Properties();
         props.setProperty("openjpa.MaxxFetchDepth", "1");
 
@@ -235,7 +237,7 @@ public class TestOpenJPAConfiguration extends AbstractTestCase {
      * type.
      */
     @Test
-    public void testInvalidNonPluginValues() {
+    void invalidNonPluginValues() {
         OpenJPAConfiguration config = new OpenJPAConfigurationImpl();
         try {
             config.setConnectionFactoryMode("aoeu");

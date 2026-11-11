@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.instrumentation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Random;
 import java.util.Set;
@@ -71,13 +68,13 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      * for data cache and query cache.
      */
     @Test
-    public void testProviderConfig() {
+    void providerConfig() {
         // Verify an EMF was created with the supplied instrumentation
         assertNotNull(emf);
 
         // Verify the instrumentation value was stored in the config
         String instrValue = emf.getConfiguration().getInstrumentation();
-        assertEquals(instrValue, SINGLE_PROVIDER);
+        assertEquals(SINGLE_PROVIDER, instrValue);
 
         // Verify an instrumentation manager is available
         InstrumentationManager mgr = emf.getConfiguration().getInstrumentationManagerInstance();
@@ -88,7 +85,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), SimpleProvider.class);
+        assertEquals(SimpleProvider.class, provider.getClass());
 
         // Verify the provider has instruments registered for the caches
         Set<Instrument> instruments = provider.getInstruments();
@@ -98,15 +95,15 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         // Lightweight verification of the instruments
         Instrument inst = provider.getInstrumentByName(DCInstrument.NAME);
         assertNotNull(inst);
-        assertTrue(inst instanceof DataCacheInstrument);
+        assertInstanceOf(DataCacheInstrument.class, inst);
         DataCacheInstrument dci = (DataCacheInstrument)inst;
-        assertEquals(dci.getCacheName(), "default");
+        assertEquals("default", dci.getCacheName());
         inst = provider.getInstrumentByName(QCInstrument.NAME);
         assertNotNull(inst);
-        assertTrue(inst instanceof QueryCacheInstrument);
+        assertInstanceOf(QueryCacheInstrument.class, inst);
         inst = provider.getInstrumentByName(QSCInstrument.NAME);
         assertNotNull(inst);
-        assertTrue(inst instanceof PreparedQueryCacheInstrument);
+        assertInstanceOf(PreparedQueryCacheInstrument.class, inst);
     }
 
     /**
@@ -114,7 +111,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      * has been initialized within the persistence unit.
      */
     @Test
-    public void testDynamicInstrumentConfig() {
+    void dynamicInstrumentConfig() {
         InstrumentationManager mgr = emf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
 
@@ -122,7 +119,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), SimpleProvider.class);
+        assertEquals(SimpleProvider.class, provider.getClass());
 
         verifyBrokerLevelInstrument(provider);
     }
@@ -132,7 +129,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      * the persistence unit has been created.
      */
     @Test
-    public void testDynamicProviderConfig() {
+    void dynamicProviderConfig() {
         InstrumentationManager mgr = emf.getConfiguration().getInstrumentationManagerInstance();
         assertNotNull(mgr);
 
@@ -168,7 +165,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      * Verifies the data cache metrics are available through simple instrumentation.
      */
     @Test
-    public void testDataCacheInstrument() {
+    void dataCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createEMF(
             "openjpa.Instrumentation", DC_PROVIDER,
             "openjpa.DataCache", "true(EnableStatistics=true)",
@@ -192,12 +189,12 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), SimpleProvider.class);
+        assertEquals(SimpleProvider.class, provider.getClass());
         Instrument inst = provider.getInstrumentByName(DCInstrument.NAME);
         assertNotNull(inst);
-        assertTrue(inst instanceof DataCacheInstrument);
+        assertInstanceOf(DataCacheInstrument.class, inst);
         DataCacheInstrument dci = (DataCacheInstrument)inst;
-        assertEquals(dci.getCacheName(), "default");
+        assertEquals("default", dci.getCacheName());
 
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
 
@@ -228,7 +225,7 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
      * Verifies multiple instrumentation providers can be specified.
      */
     @Test
-    public void testMultipleProviderConfig() {
+    void multipleProviderConfig() {
         OpenJPAEntityManagerFactorySPI oemf = createEMF(
             "openjpa.Instrumentation",
             MULTI_PROVIDER,

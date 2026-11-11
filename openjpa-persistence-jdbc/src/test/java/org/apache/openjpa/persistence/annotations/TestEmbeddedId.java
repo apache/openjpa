@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.Query;
 
@@ -50,7 +46,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     EmbeddedIdClass _roid;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(EmbeddedIdEntity.class);
 
         _oid = new EmbeddedIdClass();
@@ -78,7 +74,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testGetObjectId() {
+    void getObjectId() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         EmbeddedIdEntity e = em.find(EmbeddedIdEntity.class, _oid);
         assertNotNull(e);
@@ -96,7 +92,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testMutateEmbeddedIdFieldValueOfNew() {
+    void mutateEmbeddedIdFieldValueOfNew() {
         EmbeddedIdEntity e1 = new EmbeddedIdEntity();
         e1.setValue("e1");
         EmbeddedIdEntity e2 = new EmbeddedIdEntity();
@@ -145,7 +141,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testMutateEmbeddedIdFieldValueOfExisting()
+    void mutateEmbeddedIdFieldValueOfExisting()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -165,7 +161,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testDetachAttach() {
+    void detachAttach() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         EmbeddedIdEntity e = em.find(EmbeddedIdEntity.class, _oid);
         e.getRelation();
@@ -178,9 +174,9 @@ public class TestEmbeddedId extends AnnotationTestCase
         startTx(em);
         EmbeddedIdEntity me = (EmbeddedIdEntity) em.mergeAll(e,
             e.getRelation())[0];
-        assertTrue(me != e);
+        assertNotSame(me, e);
         assertNotNull(me.getRelation());
-        assertTrue(me.getRelation() != e.getRelation());
+        assertNotSame(me.getRelation(), e.getRelation());
         assertEquals("echanged", me.getValue());
         assertEquals("rchanged", me.getRelation().getValue());
         assertEquals(_oid, me.getId());
@@ -192,7 +188,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         Query q = em.createQuery("select e from EmbeddedIdEntity e "
             + "where e.id.pk1 = 1");
@@ -211,7 +207,7 @@ public class TestEmbeddedId extends AnnotationTestCase
     }
 
     @Test
-    public void testAutoAssigned() {
+    void autoAssigned() {
         // begin with null id object
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);

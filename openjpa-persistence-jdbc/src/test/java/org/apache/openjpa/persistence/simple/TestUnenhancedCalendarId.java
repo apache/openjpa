@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * mirroring the TCK entity A2_Property which uses property access
  * with @Id @Temporal(TemporalType.DATE) on a Calendar getter.
  */
-public class TestUnenhancedCalendarId extends SingleEMFTestCase {
+class TestUnenhancedCalendarId extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestUnenhancedCalendarId extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCreateEMFWithCalendarId() {
+    void createEMFWithCalendarId() {
         // Verify that creating the EMF with a Calendar @Id entity doesn't throw
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
@@ -52,7 +52,7 @@ public class TestUnenhancedCalendarId extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFindWithCalendarId() {
+    void persistAndFindWithCalendarId() {
         Calendar now = Calendar.getInstance();
         // Truncate to day precision to match @Temporal(DATE)
         now.set(Calendar.HOUR_OF_DAY, 0);

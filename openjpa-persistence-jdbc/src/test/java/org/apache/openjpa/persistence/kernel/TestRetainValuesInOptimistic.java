@@ -40,12 +40,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRetainValuesInOptimistic extends BaseKernelTest {
+class TestRetainValuesInOptimistic extends BaseKernelTest {
 
     private Object _oid = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
 
         deleteAll(RuntimeTest1.class);
@@ -60,13 +60,13 @@ public class TestRetainValuesInOptimistic extends BaseKernelTest {
     }
 
     @Test
-    public void testRetain() {
+    void retain() {
         clearTest(true);
         optLockTest(true);
     }
 
     @Test
-    public void testNotRetain() {
+    void notRetain() {
         clearTest(false);
         optLockTest(false);
     }

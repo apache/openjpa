@@ -34,12 +34,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestStaticInnerClasses extends BaseKernelTest {
+class TestStaticInnerClasses extends BaseKernelTest {
 
     private Object _oid = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         super.setUp(StaticInnerClassesContainer.Inner.class);
         StaticInnerClassesContainer.Inner inner = new StaticInnerClassesContainer.Inner("foo");
@@ -53,7 +53,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
     }
 
     @Test
-    public void testGetById() {
+    void getById() {
         OpenJPAEntityManager pm = getPM();
         StaticInnerClassesContainer.Inner inner = pm.find(StaticInnerClassesContainer.Inner.class, _oid);
         assertNotNull(inner);
@@ -62,7 +62,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
     }
 
     @Test
-    public void testGetByQuery() {
+    void getByQuery() {
 //        OpenJPAEntityManager pm = getPM();
 //
 //        OpenJPAQuery q = pm.createNativeQuery("",Inner.class);

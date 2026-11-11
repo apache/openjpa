@@ -27,11 +27,11 @@ import org.apache.openjpa.persistence.kernel.common.apps.DateVersion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
 	{
 		deleteAll(DateVersion.class);
 
@@ -48,7 +48,7 @@ public class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kern
 	}
 
     @Test
-    public void testOptLock ()	throws InterruptedException
+    void optLock() throws Exception
 {
 	EntityManager pm1 = currentEntityManager();
 	EntityManager pm2 = currentEntityManager();

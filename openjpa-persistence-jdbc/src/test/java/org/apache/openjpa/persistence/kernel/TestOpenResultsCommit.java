@@ -38,9 +38,9 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestOpenResultsCommit extends BaseKernelTest {
+class TestOpenResultsCommit extends BaseKernelTest {
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
 
         deleteAll(RuntimeTest1.class);
@@ -54,9 +54,9 @@ public class TestOpenResultsCommit extends BaseKernelTest {
     }
 
     @Test
-    public void testCommitWithModeTransaction() {
+    void commitWithModeTransaction() {
         try {
-            testCommitWithOpenResults("transaction");
+            commitWithOpenResults("transaction");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -66,9 +66,9 @@ public class TestOpenResultsCommit extends BaseKernelTest {
     }
 
     @Test
-    public void testCommitWithModeOpenJPAEntityManager() {
+    void commitWithModeOpenJPAEntityManager() {
         try {
-            testCommitWithOpenResults("persistence-manager");
+            commitWithOpenResults("persistence-manager");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -78,9 +78,9 @@ public class TestOpenResultsCommit extends BaseKernelTest {
     }
 
     @Test
-    public void testCommitWithModeOnDemand() {
+    void commitWithModeOnDemand() {
         try {
-            testCommitWithOpenResults("on-demand");
+            commitWithOpenResults("on-demand");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -90,7 +90,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
     }
 
     @Test
-    private void testCommitWithOpenResults(String crm) {
+    private void commitWithOpenResults(String crm) {
         Map props = new HashMap();
         props.put("openjpa.DefaultFetchThreshold", 1 + "");
         props.put("openjpa.ConnectionRetainMode", crm);

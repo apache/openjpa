@@ -18,12 +18,7 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Random;
 
@@ -44,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * does updates does not have the data cache enabled thus, it does not send
  * sjvm updates upon commit.
  */
-public class TestMultiEMFCacheModes extends SingleEMFTestCase {
+class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -59,7 +54,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * entity is updated in the database.
      */
     @Test
-    public void testCacheRefreshModeRefresh() {
+    void cacheRefreshModeRefresh() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -80,9 +75,9 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));
         assertTrue(cache.contains(CacheableEntity.class, ceid));
-        assertTrue(em.getLockMode(ce) == LockModeType.NONE);
-        assertEquals(ce.getName(), "Cached Entity");
-        assertEquals(ce.getVersion(), 1);
+        assertSame(em.getLockMode(ce), LockModeType.NONE);
+        assertEquals("Cached Entity", ce.getName());
+        assertEquals(1, ce.getVersion());
         em.getTransaction().commit();
 
         // Create a new EMF -WITHOUT- the L2 enabled.  If the L2 was enabled, the
@@ -137,7 +132,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * record is removed from the database.
      */
     @Test
-    public void testCacheRefreshModeRefreshDelete() {
+    void cacheRefreshModeRefreshDelete() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -155,9 +150,9 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));
         assertTrue(cache.contains(CacheableEntity.class, ceid));
-        assertTrue(em.getLockMode(ce) == LockModeType.NONE);
-        assertEquals(ce.getName(), "Cached Entity");
-        assertEquals(ce.getVersion(), 1);
+        assertSame(em.getLockMode(ce), LockModeType.NONE);
+        assertEquals("Cached Entity", ce.getName());
+        assertEquals(1, ce.getVersion());
         em.getTransaction().commit();
 
         // Create a new EMF -WITHOUT- the L2 enabled.  If the L2 was enabled, the

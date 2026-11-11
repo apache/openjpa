@@ -27,10 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.LazySchemaFactory;
@@ -47,7 +44,7 @@ public class TestLazySchemaFactory extends org.apache.openjpa.persistence.jdbc.k
     private boolean _fks = true;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         // see if the dict supports foreign keys; mysql can support them, but
         // can't detect keys added through alter table commands, which is what
@@ -66,12 +63,12 @@ public class TestLazySchemaFactory extends org.apache.openjpa.persistence.jdbc.k
     }
 
     @Test
-    public void testLazySchemaFactory() {
+    void lazySchemaFactory() {
         // should read tables 1 and 2...
         Table table = _group.findTable("T1");
         assertNotNull(table);
         Table table2 = _group.findTable("t1");
-        assertTrue(table == table2);
+        assertSame(table, table2);
 
         int expectedColumns = 2;
 
@@ -86,18 +83,18 @@ public class TestLazySchemaFactory extends org.apache.openjpa.persistence.jdbc.k
         table2 = _group.findTable("T2");
         assertNotNull(table2);
         if (_fks)
-            assertTrue(table.getForeignKeys()[0].getPrimaryKeyColumns()[0].
-                getTable() == table2);
+            assertSame(table.getForeignKeys()[0].getPrimaryKeyColumns()[0].
+                getTable(), table2);
 
         assertNull(table.getSchema().getTable("T3"));
 
         // should read table 3 only...
         Table table3 = _group.findTable("T3");
         assertNotNull(table3);
-        assertTrue(table.getSchema().getTable("T3") == table3);
+        assertSame(table.getSchema().getTable("T3"), table3);
         if (_fks)
-            assertTrue(table3.getForeignKeys()[0].getPrimaryKeyColumns()[0].
-                getTable() == table);
+            assertSame(table3.getForeignKeys()[0].getPrimaryKeyColumns()[0].
+                getTable(), table);
 
         assertNull(table3.getSchema().getTable("T4"));
     }

@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * getReference(entity), merge with property access,
  * and rollback on RuntimeException from closed EM methods.
  */
-public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
+class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * isJoinedToTransaction() should return true when a transaction is active.
      */
     @Test
-    public void testIsJoinedToTransaction() {
+    void isJoinedToTransaction() {
         EntityManager em = emf.createEntityManager();
         try {
             assertFalse(em.isJoinedToTransaction(),
@@ -71,7 +71,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * isJoinedToTransaction should return false after rollback.
      */
     @Test
-    public void testIsJoinedToTransactionAfterRollback() {
+    void isJoinedToTransactionAfterRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -91,7 +91,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * detach(non-entity) should throw IllegalArgumentException.
      */
     @Test
-    public void testDetachNonEntityThrowsIAE() {
+    void detachNonEntityThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -111,7 +111,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * detach(non-entity) with active tx should mark tx for rollback.
      */
     @Test
-    public void testDetachNonEntityMarksRollback() {
+    void detachNonEntityMarksRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -134,7 +134,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * createQuery(CriteriaQuery) with no root should throw IAE.
      */
     @Test
-    public void testCreateQueryInvalidCriteriaThrowsIAE() {
+    void createQueryInvalidCriteriaThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -155,7 +155,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * find(Entity.class, null, map) should throw IAE.
      */
     @Test
-    public void testFindWithNullPKThrowsIAE() {
+    void findWithNullPKThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -176,7 +176,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * getCriteriaBuilder() on closed EM should throw and mark tx for rollback.
      */
     @Test
-    public void testGetCriteriaBuilderOnClosedEMMarksRollback() {
+    void getCriteriaBuilderOnClosedEMMarksRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.close();
@@ -197,7 +197,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * getCriteriaBuilder on closed EM throws RuntimeException.
      */
     @Test
-    public void testGetCriteriaBuilderOnClosedEMThrows() {
+    void getCriteriaBuilderOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
         try {
@@ -212,7 +212,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * getDelegate on closed EM throws RuntimeException.
      */
     @Test
-    public void testGetDelegateOnClosedEMThrows() {
+    void getDelegateOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
         try {
@@ -227,7 +227,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * getMetamodel on closed EM throws RuntimeException.
      */
     @Test
-    public void testGetMetamodelOnClosedEMThrows() {
+    void getMetamodelOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
         try {
@@ -243,7 +243,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * (or PersistenceException on execute).
      */
     @Test
-    public void testCreateStoredProcedureQueryNonExistentThrowsIAE() {
+    void createStoredProcedureQueryNonExistentThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createStoredProcedureQuery("DOESNOTEXIST");

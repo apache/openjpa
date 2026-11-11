@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * - propertyDotNotationTest
  * - fieldDotNotationTest
  */
-public class TestOrderByDotNotation extends SingleEMFTestCase {
+class TestOrderByDotNotation extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -59,7 +59,7 @@ public class TestOrderByDotNotation extends SingleEMFTestCase {
      * Corresponds to: addr2, addr3, addr1
      */
     @Test
-    public void testPropertyDotNotationOrderBy() {
+    void propertyDotNotationOrderBy() {
         UnenhancedObAddress addr1 = new UnenhancedObAddress(
             "1 Network Drive", "Burlington", "MA",
             new UnenhancedObZipCode("01801"));
@@ -108,7 +108,7 @@ public class TestOrderByDotNotation extends SingleEMFTestCase {
      * Expected order DESC: 88444, 01824, 01801
      */
     @Test
-    public void testFieldDotNotationOrderBy() {
+    void fieldDotNotationOrderBy() {
         UnenhancedObAddress addr1 = new UnenhancedObAddress(
             "1 Network Drive", "Burlington", "MA",
             new UnenhancedObZipCode("01801"));

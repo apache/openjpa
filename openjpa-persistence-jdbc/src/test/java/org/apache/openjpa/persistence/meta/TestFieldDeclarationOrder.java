@@ -37,7 +37,7 @@ public class TestFieldDeclarationOrder
     }
 
     @Test
-    public void testSubclass() {
+    void subclass() {
         ClassMetaData meta = JPAFacadeHelper
             .getMetaData(getEmf(),
                 FieldOrderPCSubclass.class);
@@ -58,7 +58,7 @@ public class TestFieldDeclarationOrder
     }
 
     @Test
-    public void testSuperclass() {
+    void superclass() {
         ClassMetaData meta = JPAFacadeHelper
             .getMetaData(getEmf(),
                 FieldOrderPC.class);

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * type, so a list or a bean converted to a string got a BLOB (BYTEA on
  * PostgreSQL) and a string converted to bytes got a CLOB.
  */
-public class TestLobConverted extends SingleEMFTestCase {
+class TestLobConverted extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -59,22 +59,22 @@ public class TestLobConverted extends SingleEMFTestCase {
     }
 
     @Test
-    public void testListConvertedToStringIsClob() {
+    void listConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("items", false).getType());
     }
 
     @Test
-    public void testItemConvertedToStringIsClob() {
+    void itemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("item", false).getType());
     }
 
     @Test
-    public void testElementConvertedToBytesIsBlob() {
+    void elementConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("elements", true).getType());
     }
 
     @Test
-    public void testStringConvertedToBytesIsBlob() {
+    void stringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("bytes", false).getType());
     }
 
@@ -84,19 +84,19 @@ public class TestLobConverted extends SingleEMFTestCase {
      * the value back passed the driver's Blob to the converter.
      */
     @Test
-    public void testStringConvertedToBytesWithoutLobIsReadAsBytes() {
+    void stringConvertedToBytesWithoutLobIsReadAsBytes() {
         assertEquals(JavaSQLTypes.BYTES, column("plainBytes", false).getJavaType());
     }
 
     @Test
-    public void testLobsWithoutConverterAreUnchanged() {
+    void lobsWithoutConverterAreUnchanged() {
         assertEquals(Types.CLOB, column("text", false).getType());
         assertEquals(Types.BLOB, column("data", false).getType());
         assertEquals(Types.BLOB, column("serial", false).getType());
     }
 
     @Test
-    public void testRoundTrip() {
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             LobConvertedEntity e = new LobConvertedEntity();

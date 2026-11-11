@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestTransaction extends SliceTestCase {
+class TestTransaction extends SliceTestCase {
     private static final Random rng = new Random(System.currentTimeMillis());
     Manufacturer[] manufacturers;
 
@@ -62,7 +62,7 @@ public class TestTransaction extends SliceTestCase {
     }
 
     @Test
-    public void testCommitsAreAtomic() {
+    void commitsAreAtomic() {
         int nCarStart = count(Car.class);
         persistCars(false);
         int nCarStage1 = count(Car.class);

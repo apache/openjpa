@@ -30,7 +30,9 @@ import io.fabric8.kubernetes.api.model.PodList;
 import io.fabric8.kubernetes.api.model.PodStatusBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import io.fabric8.kubernetes.client.server.mock.EnableKubernetesMockClient;
+import io.fabric8.kubernetes.client.server.mock.KubernetesMockServer;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+@EnableKubernetesMockClient(https = true, crud = true)
 public class KubernetesTCPRemoteCommitProviderTest {
 
     private static final String NAMESPACE = "ns1";
@@ -74,7 +77,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
     @RegisterExtension
     public Mockery context = new JUnit5Mockery();
 
-    public KubernetesServer server = new KubernetesServer(true, true);
+    KubernetesMockServer server;
 
     private Pod pod1;
 
@@ -85,8 +88,8 @@ public class KubernetesTCPRemoteCommitProviderTest {
     private Pod pod4;
 
     @BeforeEach
-    public void setupKubernetes() {
-        KubernetesClient client = server.getClient();
+    void setupKubernetes() {
+        KubernetesClient client = server.createClient();
 
         PodCondition condition = new PodCondition();
         condition.setType("Ready");
@@ -135,7 +138,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
     }
 
     @Test
-    public void addresses() throws Exception {
+    void addresses() throws Exception {
         // prepare KubernetesTCPRemoteCommitProvider instance, inject mocked Kubernetes client
         KubernetesTCPRemoteCommitProvider rcp = new KubernetesTCPRemoteCommitProvider() {
 
@@ -145,7 +148,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
                 // fetchDynamicAddresses() closes the client it is given, so handing out the
                 // shared client of the mock server would make every subsequent refresh fail
                 // and hence drop all addresses again
-                return server.getKubernetesMockServer().createClient();
+                return server.createClient();
             }
         };
         rcp.setNamespace(NAMESPACE);

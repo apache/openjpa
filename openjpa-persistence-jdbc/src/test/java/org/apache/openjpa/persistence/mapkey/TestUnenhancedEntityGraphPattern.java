@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Employee has @Id on both field and getter + @ManyToOne on getter,
  * Department has @OneToMany(mappedBy) @MapKey on getter.
  */
-public class TestUnenhancedEntityGraphPattern extends SingleEMFTestCase {
+class TestUnenhancedEntityGraphPattern extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestUnenhancedEntityGraphPattern extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFindWithMappedByMap() {
+    void persistAndFindWithMappedByMap() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

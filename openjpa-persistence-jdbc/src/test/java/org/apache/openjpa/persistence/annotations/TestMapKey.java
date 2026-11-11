@@ -48,7 +48,7 @@ public class TestMapKey extends AnnotationTestCase
     //private ClassMapping _mapping;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         deleteAll(Flat1.class);
         deleteAll(AnnoTest2.class);
@@ -59,33 +59,33 @@ public class TestMapKey extends AnnotationTestCase
     }
 
     /** public void testDefaultMapKeyMapping() {
-             FieldMapping fm = _mapping.getFieldMapping("defaultMapKey");
-             assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
-             assertEquals("pk", fm.getKey().getValueMappedBy());
-             assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
-                 true).getField("pk"), fm.getKey().getValueMappedByMetaData());
-         }
-
-         public void testNamedMapKeyMapping() {
-             FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
-             assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
-             assertEquals("basic", fm.getKey().getValueMappedBy());
-             assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
-                 true).getField("basic"), fm.getKey().getValueMappedByMetaData());
-         }
-
-         public void testInverseOwnerMapKeyMapping() {
-             FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
-             assertTrue(fm.getStrategy() instanceof
-                 RelationMapInverseKeyFieldStrategy);
-             assertEquals("basic", fm.getKey().getValueMappedBy());
-             assertEquals(_mapping.getRepository().getMetaData(AnnoTest2.class,
-                 null, true).getField("basic"), fm.getKey().
-                 getValueMappedByMetaData());
-         }**/
+                  FieldMapping fm = _mapping.getFieldMapping("defaultMapKey");
+                  assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+                  assertEquals("pk", fm.getKey().getValueMappedBy());
+                  assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
+                      true).getField("pk"), fm.getKey().getValueMappedByMetaData());
+              }
+     
+              public void testNamedMapKeyMapping() {
+                  FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
+                  assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+                  assertEquals("basic", fm.getKey().getValueMappedBy());
+                  assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
+                      true).getField("basic"), fm.getKey().getValueMappedByMetaData());
+              }
+     
+              public void testInverseOwnerMapKeyMapping() {
+                  FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
+                  assertTrue(fm.getStrategy() instanceof
+                      RelationMapInverseKeyFieldStrategy);
+                  assertEquals("basic", fm.getKey().getValueMappedBy());
+                  assertEquals(_mapping.getRepository().getMetaData(AnnoTest2.class,
+                      null, true).getField("basic"), fm.getKey().
+                      getValueMappedByMetaData());
+              }**/
 
     @Test
-    public void testInsertAndRetrieve()
+    void insertAndRetrieve()
     {
 
         Flat1 f1 = new Flat1(1);

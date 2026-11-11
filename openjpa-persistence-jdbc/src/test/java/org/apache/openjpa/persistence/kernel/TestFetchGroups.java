@@ -63,7 +63,7 @@ public class TestFetchGroups extends BaseKernelTest {
     private int oidc1;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(FetchGroupTestObject.class, FetchGroupTestObjectChild.class,
             AttachA.class, AttachB.class, AttachC.class, AttachD.class, AttachE.class, AttachF.class);
 
@@ -120,7 +120,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testFetchGroupsFromConfiguration() {
+    void fetchGroupsFromConfiguration() {
         Map props = new HashMap();
         props.put("openjpa.FetchGroups", "default,fg1,fg2");
         OpenJPAEntityManagerFactory factory = getEmf(props);
@@ -131,7 +131,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testFetchGroupsNoConfiguration() {
+    void fetchGroupsNoConfiguration() {
         OpenJPAEntityManager pm = getPM();
 
         FetchGroupTestObject o1 = getO1(pm);
@@ -155,7 +155,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testRetrieveAll() {
+    void retrieveAll() {
         OpenJPAEntityManager pm = getPM();
 
         FetchGroupTestObject o1 = getO1(pm);
@@ -181,7 +181,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testFetchGroupConfiguration() {
+    void fetchGroupConfiguration() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan fetch = pm.getFetchPlan();
 
@@ -220,7 +220,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testFetchGroupsChildWithConfiguration() {
+    void fetchGroupsChildWithConfiguration() {
         OpenJPAEntityManager pm = getPM();
         pm.getFetchPlan().addFetchGroup("g1");
         pm.getFetchPlan().addFetchGroup("g3");
@@ -243,7 +243,7 @@ public class TestFetchGroups extends BaseKernelTest {
     }
 
     @Test
-    public void testFetchGroupsWithConfiguration() {
+    void fetchGroupsWithConfiguration() {
         OpenJPAEntityManager pm = getPM();
 
         pm.getFetchPlan().addFetchGroup("g1");
@@ -273,7 +273,7 @@ public class TestFetchGroups extends BaseKernelTest {
      * they are in one of the PM's configured fetch groups.
      */
     @Test
-    public void testRelationsLoaded() {
+    void relationsLoaded() {
         OpenJPAEntityManager pm = getPM();
         pm.getFetchPlan().addFetchGroup("g2");
 
@@ -361,7 +361,7 @@ public class TestFetchGroups extends BaseKernelTest {
      * managed object.
      */
     @Test
-    public void testFetchGroupInstantiated() {
+    void fetchGroupInstantiated() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         AttachE e = new AttachE();

@@ -19,9 +19,7 @@
 
 package org.apache.openjpa.persistence.query.results;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -113,7 +111,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultipleConstructor() {
+    void multipleConstructor() {
         String query = "SELECT NEW Foo(f.fid,f.fint), b, NEW FooBar(f.fid, b.bid) " +
                     "from Foo f JOIN f.bar b WHERE f.bar=b";
         EntityManager em = emf.createEntityManager();
@@ -123,20 +121,20 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         assertFalse(result.isEmpty());
         for (Object[] row : result) {
             assertEquals(3, row.length);
-            assertTrue(row[0] instanceof Foo, "0-th element " + row[0].getClass() + " is not Foo");
-            assertTrue(row[1] instanceof Bar, "1-st element " + row[1].getClass() + " is not Bar");
-            assertTrue(row[2] instanceof FooBar, "2-nd element " + row[2].getClass() + " is not FooBar");
+            assertInstanceOf(Foo.class, row[0], "0-th element " + row[0].getClass() + " is not Foo");
+            assertInstanceOf(Bar.class, row[1], "1-st element " + row[1].getClass() + " is not Bar");
+            assertInstanceOf(FooBar.class, row[2], "2-nd element " + row[2].getClass() + " is not FooBar");
         }
 
     }
 
     @Test
-    public void testMultipleConstructorMixWithMultiSelect() {
+    void multipleConstructorMixWithMultiSelect() {
         String query = "SELECT NEW Person(p.name), p.id, NEW Person(p.name), p.name FROM Person p ORDER BY p.name";
         EntityManager em = emf.createEntityManager();
         Query jpqlQuery = em.createQuery(query);
         List<Object[]> result = jpqlQuery.getResultList();
-        assertTrue(!result.isEmpty());
+        assertFalse(result.isEmpty());
         for (Object[] row : result) {
             assertEquals(4, row.length);
 
@@ -157,7 +155,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
      * @throws Exception
      */
     @Test
-    public void testMultiSelect() throws Exception {
+    void multiSelect() throws Exception {
         // get results from traditional JPQL
         EntityManager em = emf.createEntityManager();
         Query jpqlQuery =
@@ -169,8 +167,8 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
 
         for (Object[] os : jpqlResults) {
             assertEquals(2, os.length);
-            assertTrue(os[0] instanceof Order);
-            assertTrue(os[1] instanceof Producer);
+            assertInstanceOf(Order.class, os[0]);
+            assertInstanceOf(Producer.class, os[1]);
         }
 
         em.close();

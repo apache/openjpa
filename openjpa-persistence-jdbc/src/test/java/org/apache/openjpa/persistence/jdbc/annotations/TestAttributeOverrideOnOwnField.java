@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * Also tests @OrderBy with dot notation on @ElementCollection of
  * embeddable types, and @OrderBy on @ElementCollection of basic types.
  */
-public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
+class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +51,7 @@ public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
      * Before the fix, just creating the EntityManager would fail.
      */
     @Test
-    public void testEntityCreation() {
+    void entityCreation() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -75,7 +75,7 @@ public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
      * with @OrderBy on embeddable field works.
      */
     @Test
-    public void testElementCollectionOrderBy() {
+    void elementCollectionOrderBy() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

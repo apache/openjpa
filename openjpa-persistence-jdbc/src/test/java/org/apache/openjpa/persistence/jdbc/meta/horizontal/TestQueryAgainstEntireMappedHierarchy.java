@@ -27,7 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Locale;
 
@@ -45,8 +46,8 @@ public class TestQueryAgainstEntireMappedHierarchy extends TestSQLListenerTestCa
     public void setUpTestCase()
     {
         // this test depends on this fact
-        assertTrue(HorizJ.class.getSuperclass() == HorizD.class);
-        assertTrue(HorizK.class.getSuperclass() == HorizJ.class);
+        assertSame(HorizJ.class.getSuperclass(), HorizD.class);
+        assertSame(HorizK.class.getSuperclass(), HorizJ.class);
 
        deleteAll(HorizD.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -72,13 +73,13 @@ public class TestQueryAgainstEntireMappedHierarchy extends TestSQLListenerTestCa
     }
 
     @Test
-    public void testQueryAgainstEntireMappedHierarchy() {
+    void queryAgainstEntireMappedHierarchy() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         sql.clear();
         //FIXME jthomas
         //pm.newQuery(HorizD.class).execute();
         String lastStatement = (String) sql.get(sql.size() - 1);
-        assertTrue(lastStatement.toLowerCase(Locale.ROOT).indexOf("in (") == -1);
+        assertEquals(-1, lastStatement.toLowerCase(Locale.ROOT).indexOf("in ("));
         pm.close();
     }
 

@@ -42,15 +42,15 @@ import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCalendarFields extends BaseKernelTest {
+class TestCalendarFields extends BaseKernelTest {
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(CalendarFields.class);
     }
 
     @Test
-    public void testFieldDefaultTimeZone() {
+    void fieldDefaultTimeZone() {
         CalendarFields cal = new CalendarFields();
 
         OpenJPAEntityManager pm;
@@ -72,7 +72,7 @@ public class TestCalendarFields extends BaseKernelTest {
     }
 
     @Test
-    public void testTimeZoneEquals() {
+    void timeZoneEquals() {
         CalendarFields c1 = new CalendarFields();
         CalendarFields c2 = new CalendarFields();
         assertTimeZonesEquals(c1, c2);
@@ -96,7 +96,7 @@ public class TestCalendarFields extends BaseKernelTest {
     }
 
     @Test
-    public void testCalendarQuery() {
+    void calendarQuery() {
         long time = 1136660560572L;
 
         CalendarFields cal = new CalendarFields();
@@ -158,7 +158,7 @@ public class TestCalendarFields extends BaseKernelTest {
     }
 
     @Test
-    public void testMutateCalendarDirties() {
+    void mutateCalendarDirties() {
         CalendarFields c1 = new CalendarFields();
 
         OpenJPAEntityManager pm;

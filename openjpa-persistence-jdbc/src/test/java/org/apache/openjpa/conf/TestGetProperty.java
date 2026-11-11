@@ -32,22 +32,22 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGetProperty {
+class TestGetProperty {
     private EntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         emf = Persistence.createEntityManagerFactory("test");
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         emf.close();
         emf = null;
     }
 
     @Test
-    public void testGetProperty() {
+    void getProperty() {
         try {
             Collection<Thread> tests = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
@@ -65,7 +65,7 @@ public class TestGetProperty {
     }
 
     @Test
-    public void testGetPersistenceUnitName() {
+    void getPersistenceUnitName() {
         assertEquals("test", emf.getName());
     }
 

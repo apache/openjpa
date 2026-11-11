@@ -28,14 +28,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInverseManager extends SingleEMFTestCase {
+class TestInverseManager extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Toy.class, ToyBox.class, "openjpa.InverseManager", "true(ManageLRS=true)");
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();

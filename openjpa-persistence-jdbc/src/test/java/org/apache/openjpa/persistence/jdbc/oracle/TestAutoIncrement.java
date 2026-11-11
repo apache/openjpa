@@ -50,7 +50,7 @@ import org.junit.jupiter.api.Test;
  */
 
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
-public class TestAutoIncrement extends SingleEMFTestCase {
+class TestAutoIncrement extends SingleEMFTestCase {
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
@@ -74,7 +74,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAutoIncrementIdentityWithNamedSequence() {
+    void autoIncrementIdentityWithNamedSequence() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObject pc1 = new PObject();
@@ -88,7 +88,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testAutoIncrementIdentityWithNativeSequence() {
+    void autoIncrementIdentityWithNativeSequence() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObjectNative pc1 = new PObjectNative();

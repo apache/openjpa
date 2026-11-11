@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
  */
-public class TestSQLBigIntegerId
+class TestSQLBigIntegerId
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -41,7 +41,7 @@ public class TestSQLBigIntegerId
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
         BigInteger integer = new BigDecimal(time).toBigInteger();
 

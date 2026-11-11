@@ -31,14 +31,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLazyFields extends SingleEMFTestCase {
+class TestLazyFields extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Outer.class, Inner.class);
     }
 
     @Test
-    public void testMergeOfLazyFields() {
+    void mergeOfLazyFields() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

@@ -32,7 +32,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,12 +60,12 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -158,7 +157,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryObj() throws Exception {
+    void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
@@ -271,25 +270,25 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public void assertItem1(Item1 item) {
         int id = item.getId();
         Map<String, String> images = item.getImages();
-        Assertions.assertEquals(numImagesPerItem, images.size());
+        assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertItem2(Item2 item) {
         int id = item.getId();
         Map<String, String> images = item.getImages();
-        Assertions.assertEquals(numImagesPerItem, images.size());
+        assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertCompany1(Compny1 c) {
         int id = c.getId();
         Map<Division, VicePresident> organization = c.getOrganization();
-        Assertions.assertEquals(2,organization.size());
+        assertEquals(2,organization.size());
     }
 
     public void assertCompany2(Compny2 c) {
         int id = c.getId();
         Map<Division, VicePresident> organization = c.getOrganization();
-        Assertions.assertEquals(2,organization.size());
+        assertEquals(2,organization.size());
     }
 
     public void assertDivision(Division d) {

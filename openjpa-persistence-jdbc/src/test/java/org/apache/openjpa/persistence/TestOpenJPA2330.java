@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestOpenJPA2330 extends SingleEMFTestCase {
+class TestOpenJPA2330 extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOpenJPA2330() {
+    void openJPA2330() {
         try (final EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             EntityA a = new EntityA();
@@ -65,7 +65,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOpenJPA2335() {
+    void openJPA2335() {
         EntityA a = new EntityA();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -105,7 +105,7 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrthanRemoval() {
+    void orthanRemoval() {
         EntityA a = new EntityA("testA_forRemoval");
         EntityB b1 = new EntityB();
         b1.setName("b1");

@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Roberto Cortez
  */
-public class TestSchemaGenerationProperties extends BaseJDBCTest {
+class TestSchemaGenerationProperties extends BaseJDBCTest {
     private static final String[] TABLES_NAME = {
             "AUTOINCPC1",
             "AUTOINCPC3",
@@ -76,7 +76,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     protected void addProperties(Map map) {}
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
 
         OpenJPAEntityManagerFactory pmf = getEmf(new HashMap());
         pmf.createEntityManager();
@@ -91,7 +91,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     // TODO - Add validation when source uses script but no script is provided?.
 
     @Test
-    public void testSchemaGenMetadataDrop() throws Exception {
+    void schemaGenMetadataDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
 
@@ -104,7 +104,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenMetadataCreate() throws Exception {
+    void schemaGenMetadataCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
 
@@ -117,7 +117,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenMetadataDropAndCreate() throws Exception {
+    void schemaGenMetadataDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
 
@@ -130,8 +130,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenScriptDrop() throws Exception {
-        testSchemaGenMetadataCreate();
+    void schemaGenScriptDrop() throws Exception {
+        schemaGenMetadataCreate();
 
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
@@ -148,9 +148,9 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenScriptCreate() throws Exception {
+    void schemaGenScriptCreate() throws Exception {
 
-        testSchemaGenMetadataDrop();
+        schemaGenMetadataDrop();
 
         JDBCConfiguration conf = (JDBCConfiguration) getPM().getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -179,8 +179,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenScriptDropAndCreate() throws Exception {
-        testSchemaGenMetadataCreate();
+    void schemaGenScriptDropAndCreate() throws Exception {
+        schemaGenMetadataCreate();
 
         JDBCConfiguration conf = (JDBCConfiguration) getPM().getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -214,7 +214,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenMetadataThenScriptDropAndCreate() throws Exception {
+    void schemaGenMetadataThenScriptDropAndCreate() throws Exception {
         try {
             OpenJPAEntityManagerFactory pmf = getEmf();
             pmf.createEntityManager();
@@ -246,7 +246,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenNoCreateSourceSpecifiedAndCreateScriptSourceSpecified() throws Exception {
+    void schemaGenNoCreateSourceSpecifiedAndCreateScriptSourceSpecified() throws Exception {
         try {
             OpenJPAEntityManagerFactory pmf = getEmf();
             pmf.createEntityManager();
@@ -269,7 +269,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenNoCreateSourceAndCreateScriptSourceSpecified() throws Exception {
+    void schemaGenNoCreateSourceAndCreateScriptSourceSpecified() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
 
@@ -282,8 +282,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenNoDropSourceSpecifiedAndDropScriptSourceSpecified() throws Exception {
-        testSchemaGenMetadataCreate();
+    void schemaGenNoDropSourceSpecifiedAndDropScriptSourceSpecified() throws Exception {
+        schemaGenMetadataCreate();
 
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
@@ -299,8 +299,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenScriptLoad() throws Exception {
-        testSchemaGenMetadataDropAndCreate();
+    void schemaGenScriptLoad() throws Exception {
+        schemaGenMetadataDropAndCreate();
 
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.sql-load-script-source",
@@ -324,7 +324,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenOutputScriptCreate() throws Exception {
+    void schemaGenOutputScriptCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
         properties.put("jakarta.persistence.schema-generation.scripts.create-target",
@@ -338,7 +338,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenOutputScriptDrop() throws Exception {
+    void schemaGenOutputScriptDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
         properties.put("jakarta.persistence.schema-generation.scripts.drop-target",
@@ -352,7 +352,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     }
 
     @Test
-    public void testSchemaGenOutputScriptDropAndCreate() throws Exception {
+    void schemaGenOutputScriptDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
         properties.put("jakarta.persistence.schema-generation.scripts.create-target",

@@ -25,14 +25,14 @@ import org.junit.jupiter.api.Test;
 /**
  * Verifies the type names rendered as the target of a SQL CAST, see OPENJPA-2966.
  */
-public class TestCastTypeNames {
+class TestCastTypeNames {
 
     /**
      * A 64 bit value must not be cast to an unsized DECIMAL: that defaults to DECIMAL(10,0) on
      * MySQL/MariaDB (silent truncation) and to DECIMAL(5,0) on Derby (SQLState 22003).
      */
     @Test
-    public void testLongCastTypeName() {
+    void longCastTypeName() {
         assertEquals("BIGINT", new DBDictionary().getNumberCastTypeName(long.class));
         assertEquals("BIGINT", new DerbyDictionary().getNumberCastTypeName(long.class));
         assertEquals("BIGINT", new H2Dictionary().getNumberCastTypeName(long.class));
@@ -52,7 +52,7 @@ public class TestCastTypeNames {
      * field initialisation (e.g. DB2 z/OS v8 in connectedConfiguration()) is honoured.
      */
     @Test
-    public void testLongCastTypeNameIsResolvedLazily() {
+    void longCastTypeNameIsResolvedLazily() {
         DBDictionary dict = new DB2Dictionary();
         dict.bigintTypeName = "DECIMAL(31,0)";
         assertEquals("DECIMAL(31,0)", dict.getNumberCastTypeName(long.class));
@@ -62,7 +62,7 @@ public class TestCastTypeNames {
     }
 
     @Test
-    public void testOtherNumberCastTypeNames() {
+    void otherNumberCastTypeNames() {
         assertEquals("INTEGER", new DBDictionary().getNumberCastTypeName(int.class));
         assertEquals("SIGNED", new MySQLDictionary().getNumberCastTypeName(int.class));
         assertEquals("NUMBER", new OracleDictionary().getNumberCastTypeName(int.class)); // tests lazy inint
@@ -75,7 +75,7 @@ public class TestCastTypeNames {
      * CAST(x AS CHARACTER{0}).
      */
     @Test
-    public void testStringCastTypeName() {
+    void stringCastTypeName() {
         assertEquals("VARCHAR", new DBDictionary().getStringCastTypeName());
         assertEquals("CHARACTER", new FoxProDictionary().getStringCastTypeName());
         assertEquals("CHAR(255)", new MySQLDictionary().getStringCastTypeName());

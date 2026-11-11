@@ -28,8 +28,8 @@ import org.apache.openjpa.util.ImplHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="excluded")
-public class TestEnhancementConfiguration extends SingleEMFTestCase {
+@AllowFailure(message = "excluded")
+class TestEnhancementConfiguration extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -38,7 +38,7 @@ public class TestEnhancementConfiguration extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEnhancementConfiguration() {
+    void enhancementConfiguration() {
         try {
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
                 UnenhancedFieldAccess.class));

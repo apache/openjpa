@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.query;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test that query pagination works properly.
  */
-public class TestQueryPagination
+class TestQueryPagination
     extends SQLListenerTestCase {
 
     @BeforeEach
@@ -54,32 +55,32 @@ public class TestQueryPagination
     }
 
     @Test
-    public void testFirstThenMax() {
+    void firstThenMax() {
         helper(true, 2, 3, 3);
     }
 
     @Test
-    public void testMaxThenFirst() {
+    void maxThenFirst() {
         helper(false, 2, 3, 3);
     }
 
     @Test
-    public void testNoResultsFirstFirst() {
+    void noResultsFirstFirst() {
         helper(true, 10, 3, 0);
     }
 
     @Test
-    public void testNoResultsFirstLast() {
+    void noResultsFirstLast() {
         helper(false, 10, 3, 0);
     }
 
     @Test
-    public void testAllResultsFirstFirst() {
+    void allResultsFirstFirst() {
         helper(true, 0, 10, 6);
     }
 
     @Test
-    public void testAllResultsFirstLast() {
+    void allResultsFirstLast() {
         helper(false, 0, 10, 6);
     }
 

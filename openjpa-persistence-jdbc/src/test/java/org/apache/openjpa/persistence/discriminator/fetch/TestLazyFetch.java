@@ -43,7 +43,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -77,7 +77,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchOneSideFirst() {
+    void fetchOneSideFirst() {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
 
@@ -99,7 +99,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchManySideFirst() {
+    void fetchManySideFirst() {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
 

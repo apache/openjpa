@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSecondaryTable extends SingleEMFTestCase {
+class TestSecondaryTable extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(Parent.class, PChild.class, PChildBi.class
@@ -39,7 +39,7 @@ public class TestSecondaryTable extends SingleEMFTestCase {
      * Added for OPENJPA-2247.
      */
     @Test
-    public void testMappingInfo() {
+    void mappingInfo() {
         FieldMapping fm = getMapping(Parent.class).getFieldMapping("child");
         assertNotNull(fm);
         assertEquals("CHILD_REF", fm.getColumns()[0].getIdentifier().getName());

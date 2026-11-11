@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestReplication extends SingleEMFTestCase {
+class TestReplication extends SingleEMFTestCase {
     private static int CHILD_COUNT = 3;
 
     @BeforeEach
@@ -66,7 +66,7 @@ public class TestReplication extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistInReplicatedSlices() {
+    void persistInReplicatedSlices() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -100,7 +100,7 @@ public class TestReplication extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select p from ReplicatedParent p where p.name=:name";
         ReplicatedParent parent = (ReplicatedParent) em.createQuery(jpql)
@@ -114,7 +114,7 @@ public class TestReplication extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAggregateQuery() {
+    void aggregateQuery() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select count(p) from ReplicatedParent p";
         long pCount = (Long) em.createQuery(jpql).getSingleResult();

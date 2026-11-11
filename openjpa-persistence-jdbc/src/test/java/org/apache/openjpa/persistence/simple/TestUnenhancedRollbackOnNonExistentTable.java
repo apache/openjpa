@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * auto-created. This mirrors the TCK scenario where the DoesNotExist
  * table is intentionally absent from the DDL scripts.
  */
-public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase {
+class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -58,7 +58,7 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
      * and mark transaction for rollback.
      */
     @Test
-    public void testCriteriaDeleteOnNonExistentTable() {
+    void criteriaDeleteOnNonExistentTable() {
         EntityManager em = emf.createEntityManager();
         boolean pass = false;
         try {
@@ -95,7 +95,7 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
      * and mark transaction for rollback.
      */
     @Test
-    public void testCriteriaUpdateOnNonExistentTable() {
+    void criteriaUpdateOnNonExistentTable() {
         EntityManager em = emf.createEntityManager();
         boolean pass = false;
         try {

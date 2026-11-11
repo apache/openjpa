@@ -22,7 +22,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestUnenhancedCompoundPK
+class TestUnenhancedCompoundPK
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -32,7 +32,7 @@ public class TestUnenhancedCompoundPK
     }
 
     @Test
-    public void testCompoundPKFieldAccessUserDefined() {
+    void compoundPKFieldAccessUserDefined() {
         UnenhancedCompoundPKFieldAccess un
             = new UnenhancedCompoundPKFieldAccess(17, 31);
         UnenhancedCompoundPKFieldAccess.PK oid
@@ -41,7 +41,7 @@ public class TestUnenhancedCompoundPK
     }
 
     @Test
-    public void testCompoundPKFieldAccessOpenJPADefined() {
+    void compoundPKFieldAccessOpenJPADefined() {
         UnenhancedCompoundPKFieldAccess un
             = new UnenhancedCompoundPKFieldAccess(17, 31);
         UnenhancedCompoundPKFieldAccess.PK oid
@@ -50,7 +50,7 @@ public class TestUnenhancedCompoundPK
     }
 
     @Test
-    public void testCompoundPKPropertyAccessUserDefined() {
+    void compoundPKPropertyAccessUserDefined() {
         UnenhancedCompoundPKPropertyAccess un
             = new UnenhancedCompoundPKPropertyAccess(17, 31);
         UnenhancedCompoundPKPropertyAccess.PK oid
@@ -59,7 +59,7 @@ public class TestUnenhancedCompoundPK
     }
 
     @Test
-    public void testCompoundPKPropertyAccessOpenJPADefined() {
+    void compoundPKPropertyAccessOpenJPADefined() {
         UnenhancedCompoundPKPropertyAccess un
             = new UnenhancedCompoundPKPropertyAccess(17, 31);
         UnenhancedCompoundPKPropertyAccess.PK oid

@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import jakarta.persistence.EntityManager;
@@ -113,7 +112,7 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 	}
 
     @Test
-    public void testPersist() {
+    void persist() {
 		em.getTransaction().begin();
 
 		for (int i = 0; i < PARENT_ID_TYPES.length; i++) {
@@ -123,15 +122,15 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 			assertEquals(CHILD_COUNT, parent.getChildren().size());
 			for (Child child : parent.getChildren()) {
                 assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
-                assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
-						.getId());
+                assertEquals(child.getParentIdType(VALUE_STRATEGIES[i]), parent
+                    .getId());
 			}
 		}
 		em.getTransaction().commit();
 	}
 
     @Test
-    public void testUpdate() {
+    void update() {
 		em.getTransaction().begin();
 
 		Child newChild = new Child();
@@ -154,8 +153,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
             assertEquals(CHILD_COUNT + 1, parent.getChildren().size());
 			for (Child child : parent.getChildren()) {
                 assertFalse(child.getParentIdType(VALUE_STRATEGIES[i]) == 0);
-                assertTrue(child.getParentIdType(VALUE_STRATEGIES[i]) == parent
-						.getId());
+                assertEquals(child.getParentIdType(VALUE_STRATEGIES[i]), parent
+                    .getId());
 			}
 		}
 		em.getTransaction().commit();

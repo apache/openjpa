@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
@@ -35,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Test the merge of a new object that has an Entity as
  * part of its Id
  */
-public class TestMergeNew extends SQLListenerTestCase {
+class TestMergeNew extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
@@ -45,7 +44,7 @@ public class TestMergeNew extends SQLListenerTestCase {
     }
 
     @Test
-    public void testMergeNewParent() {
+    void mergeNewParent() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ParentPK pk = new ParentPK(1);
@@ -66,13 +65,13 @@ public class TestMergeNew extends SQLListenerTestCase {
             assertNotNull(newParent);
 
             // verify key fields
-            assertEquals(newParent.getKey1(), "K1");
+            assertEquals("K1", newParent.getKey1());
             assertEquals(newParent.getKey2(), Integer.valueOf(1));
 
             // verify Child field
             ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
             assertNotNull(childs);
-            assertEquals(childs.size(), 1);
+            assertEquals(1, childs.size());
             Child newChild = childs.get(0);
             assertNotSame(child, newChild);
             Parent childParent = newChild.getParent();
@@ -82,7 +81,7 @@ public class TestMergeNew extends SQLListenerTestCase {
             // verify GrandChild field
             ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
             assertNotNull(grandChilds);
-            assertEquals(grandChilds.size(), 1);
+            assertEquals(1, grandChilds.size());
             GrandChild newGrandChild = grandChilds.get(0);
             assertNotSame(newGrandChild, grandChild);
             Child grandChildChild = newGrandChild.getChild();
@@ -93,7 +92,7 @@ public class TestMergeNew extends SQLListenerTestCase {
     }
 
     @Test
-    public void testMergeParentRoundTrip() throws ClassNotFoundException, IOException {
+    void mergeParentRoundTrip() throws Exception {
         Parent p3;
         Child child = new Child();
         GrandChild grandChild = new GrandChild();
@@ -126,13 +125,13 @@ public class TestMergeNew extends SQLListenerTestCase {
             assertNotNull(newParent);
 
             // verify key fields
-            assertEquals(newParent.getKey1(), "K1");
+            assertEquals("K1", newParent.getKey1());
             assertEquals(newParent.getKey2(), Integer.valueOf(1));
 
             // verify Child field
             ArrayList<Child> childs = (ArrayList<Child>)newParent.getChilds();
             assertNotNull(childs);
-            assertEquals(childs.size(), 1);
+            assertEquals(1, childs.size());
             Child newChild = childs.get(0);
             assertNotSame(child, newChild);
             Parent childParent = newChild.getParent();
@@ -142,7 +141,7 @@ public class TestMergeNew extends SQLListenerTestCase {
             // verify GrandChild field
             ArrayList<GrandChild> grandChilds = (ArrayList<GrandChild>)newChild.getGrandChilds();
             assertNotNull(grandChilds);
-            assertEquals(grandChilds.size(), 1);
+            assertEquals(1, grandChilds.size());
             GrandChild newGrandChild = grandChilds.get(0);
             assertNotSame(newGrandChild, grandChild);
             Child grandChildChild = newGrandChild.getChild();

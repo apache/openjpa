@@ -28,7 +28,7 @@
 package org.apache.openjpa.persistence.jdbc.meta;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -44,16 +44,16 @@ import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest5;
 import org.junit.jupiter.api.Test;
 
 
-public class TestJoinToBaseClass extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestJoinToBaseClass extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @Test
-    public void testMapping() {
+    void mapping() {
         ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
             getMappingRepositoryInstance().
             getMapping(MappingTest5.class, null, true);
 
         Table supTable = mapping.getPCSuperclassMapping().getTable();
-        assertTrue(mapping.getTable() != supTable);
+        assertNotSame(mapping.getTable(), supTable);
         FieldMapping field = mapping.getFieldMapping("vertRel");
         ForeignKey fk = field.getForeignKey();
         assertEquals(mapping.getTable(), fk.getTable());
@@ -65,7 +65,7 @@ public class TestJoinToBaseClass extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     @Test
-    public void testConstraintAnalysis() {
+    void constraintAnalysis() {
         //FIXME jthomas
         //PersistenceManagerFactory factory = getPMFactory(new String[]{
           //  "openjpa.jdbc.SchemaFactory", "native(ForeignKeys=true)",

@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +40,7 @@ public class TestAdvAnnot extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 		deleteAll(Schedule.class);
 		deleteAll(FlightSchedule.class);
 
@@ -70,7 +67,7 @@ public class TestAdvAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testTimeTemporalAnnot()
+    void timeTemporalAnnot()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 
@@ -82,13 +79,13 @@ public class TestAdvAnnot extends AnnotationTestCase
 		              .getSingleResult();
 
 		assertNotNull(obj);
-		assertTrue(obj instanceof Date);
+        assertInstanceOf(Date.class, obj);
 
 		endEm(em);
 	}
 
     @Test
-    public void testCalendarTemporalAnnot()
+    void calendarTemporalAnnot()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		String query = "SELECT d FROM FlightSchedule d";
@@ -111,7 +108,7 @@ public class TestAdvAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testUniqueConstraintAnnot()
+    void uniqueConstraintAnnot()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);

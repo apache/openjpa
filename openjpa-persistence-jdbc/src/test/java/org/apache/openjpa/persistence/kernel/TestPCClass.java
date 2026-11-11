@@ -26,9 +26,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Serializable;
 
@@ -43,14 +41,14 @@ import org.apache.openjpa.persistence.kernel.common.apps.PCClassPC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPCClass extends BaseKernelTest {
+class TestPCClass extends BaseKernelTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(PCClassPC.class);
     }
 
     @Test
-    public void testMetaData() {
+    void metaData() {
 
         MetaDataRepository repos = getConfiguration()
             .getMetaDataRepositoryInstance();
@@ -114,7 +112,7 @@ public class TestPCClass extends BaseKernelTest {
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         PCClassPC pc = new PCClassPC();
         pc.setSpecificPC(pc);
         pc.setGenericPC(pc);
@@ -135,16 +133,16 @@ public class TestPCClass extends BaseKernelTest {
 
         pc = pm.find(PCClassPC.class, oid);
 
-        assertTrue(pc == pc.getSpecificPC());
-        assertTrue(pc == pc.getGenericPC());
+        assertSame(pc, pc.getSpecificPC());
+        assertSame(pc, pc.getGenericPC());
         assertNotNull(pc.getGenericObject());
-        assertTrue(pc == pc.getGenericObject());
-        assertTrue(pc == pc.getSpecificInterface());
-        assertTrue(pc == pc.getDefaultInterface());
+        assertSame(pc, pc.getGenericObject());
+        assertSame(pc, pc.getSpecificInterface());
+        assertSame(pc, pc.getDefaultInterface());
         assertNotNull(pc.getGenericInterface());
-        assertTrue(pc == pc.getGenericInterface());
+        assertSame(pc, pc.getGenericInterface());
         assertNotNull(pc.getSerializableInterface());
-        assertTrue(pc == pc.getSerializableInterface());
+        assertSame(pc, pc.getSerializableInterface());
 
         endEm(pm);
     }

@@ -39,13 +39,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestXMLWriter {
+class TestXMLWriter {
 
     /**
      * Tests the formatting works.
      */
     @Test
-    public void testPrettyPrint() throws Exception {
+    void prettyPrint() throws Exception {
         // get the raw xml from a file
         StreamSource source = new StreamSource
             (getClass().getResourceAsStream("raw-source.xml"));

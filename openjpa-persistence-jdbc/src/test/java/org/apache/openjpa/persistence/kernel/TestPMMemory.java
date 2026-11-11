@@ -57,11 +57,11 @@ public class TestPMMemory extends BaseKernelTest {
     public static void main(String[] args) throws Exception {
         TestPMMemory testpm = new TestPMMemory();
         testpm.setUp();
-        testpm.testMemoryUse();
+        testpm.memoryUse();
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // About to delete all
         deleteAllStaged(getPM(), RuntimeTest1.class);
         // deleteAll (RuntimeTest1.class);
@@ -144,7 +144,7 @@ public class TestPMMemory extends BaseKernelTest {
     }
 
     @Test
-    public void testMemoryUse() throws Exception {
+    void memoryUse() throws Exception {
 
         // Baseline, starting memory for N objects of NUM_OBJECTS
         OpenJPAEntityManagerFactory kpmf =

@@ -20,6 +20,8 @@ package org.apache.openjpa.slice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,12 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 /**
  * Tests basic create, read, update and delete operations.
@@ -42,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestBasic extends SliceTestCase {
+class TestBasic extends SliceTestCase {
     /**
      * Specify persistence unit name as System property <code>-Dunit</code> or
      * use the default value as <code>"slice"</code>.
@@ -88,7 +90,7 @@ public class TestBasic extends SliceTestCase {
      * Delete a single object by EntityManager.remove()
      */
     @Test
-    public void testDelete() {
+    void delete() {
         int N = 10;
         createIndependentObjects(N);
         EntityManager em = emf.createEntityManager();
@@ -107,7 +109,7 @@ public class TestBasic extends SliceTestCase {
      * Delete in bulk by query.
      */
     @Test
-    public void testBulkDelete() {
+    void bulkDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         int c = count(PObject.class);
@@ -123,7 +125,7 @@ public class TestBasic extends SliceTestCase {
      * Store and find the same object.
      */
     @Test
-    public void testFind() {
+    void find() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
 
@@ -140,7 +142,7 @@ public class TestBasic extends SliceTestCase {
      * Store and find the same object via reference.
      */
     @Test
-    public void testReference() {
+    void reference() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
 
@@ -164,7 +166,7 @@ public class TestBasic extends SliceTestCase {
 
 
     @Test
-    public void testPersistIndependentObjects() {
+    void persistIndependentObjects() {
         int before = count(PObject.class);
         EntityManager em = emf.createEntityManager();
         int N = 2;
@@ -178,7 +180,7 @@ public class TestBasic extends SliceTestCase {
     }
 
     @Test
-    public void testPersistConnectedObjectGraph() {
+    void persistConnectedObjectGraph() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Person p1 = new Person("A");
@@ -228,7 +230,7 @@ public class TestBasic extends SliceTestCase {
      * from which the instance was fetched.
      */
     @Test
-    public void testMerge() {
+    void merge() {
         PObject pc = createIndependentObjects(1).get(0);
         int value = pc.getValue();
         pc.setValue(value + 1);
@@ -246,7 +248,7 @@ public class TestBasic extends SliceTestCase {
     }
 
     @Test
-    public void testPersistReplicatedObjects() {
+    void persistReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] names = {"USA", "India", "China"};
@@ -272,7 +274,7 @@ public class TestBasic extends SliceTestCase {
      * information structure.
      */
     @Test
-    public void testUpdateReplicatedObjects() {
+    void updateReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] names = {"USA", "India", "China"};
@@ -304,7 +306,7 @@ public class TestBasic extends SliceTestCase {
             Query query = em.createQuery(jpql).setParameter("name", "India");
             query.setHint(SlicePersistence.HINT_TARGET, hint);
             india = (Country)query.getSingleResult();
-            assertEquals(india.getPopulation(), 1201);
+            assertEquals(1201, india.getPopulation());
             assertTrue(SlicePersistence.isReplicated(india));
             assertTrue(SlicePersistence.getSlice(india).indexOf("One") != -1);
             assertTrue(SlicePersistence.getSlice(india).indexOf("Two") != -1);
@@ -313,7 +315,7 @@ public class TestBasic extends SliceTestCase {
     }
 
     @Test
-    public void testQuerySingleObject() {
+    void querySingleObject() {
     	PObject pc = createIndependentObject();
     	long pid = pc.getId();
         int value = pc.getValue();
@@ -330,14 +332,14 @@ public class TestBasic extends SliceTestCase {
     }
 
     @Test
-    public void testGetConnection() {
+    void getConnection() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Object con = em.getConnection();
-        assertTrue(con instanceof Connection);
+        assertInstanceOf(Connection.class, con);
     }
 
     @Test
-    public void testDynamicSlice() {
+    void dynamicSlice() {
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {
             @Override

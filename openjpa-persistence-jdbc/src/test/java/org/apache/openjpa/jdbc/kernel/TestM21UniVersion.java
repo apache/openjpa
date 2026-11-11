@@ -78,7 +78,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNonRelationalFieldInverseSideVersionUpdate() {
+    void nonRelationalFieldInverseSideVersionUpdate() {
         // Change only non-relation fields on Department.
         // Version number of Department should be updated.
         // Version numbers of Employee should not be updated.
@@ -114,7 +114,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
 
 
     @Test
-    public void testNonRelationalFieldOwnerSideVersionUpdate() {
+    void nonRelationalFieldOwnerSideVersionUpdate() {
         // Change only non-relation fields on Employee.
         // Version number of Employee should be updated.
         // Version number of Department should not change.
@@ -149,7 +149,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRelationalFieldOwnerSideVersionUpdate() {
+    void relationalFieldOwnerSideVersionUpdate() {
         // Assign employees to a new Department.
         // Since there is a unidirectional ManyToOne relationship
         // from  Employee to Department, only the Employee

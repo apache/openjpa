@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestOneToMany
+class TestOneToMany
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestOneToMany
     }
 
     @Test
-    public void testOneToMany() {
+    void oneToMany() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -73,7 +73,7 @@ public class TestOneToMany
     }
 
     @Test
-    public void testInverseOwnerOneToMany() {
+    void inverseOwnerOneToMany() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);

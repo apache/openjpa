@@ -24,12 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJoinedMultiInheritanceHierarchy
+class TestJoinedMultiInheritanceHierarchy
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -40,7 +39,7 @@ public class TestJoinedMultiInheritanceHierarchy
     }
 
     @Test
-    public void testCacheSqlGeneration() throws PersistenceException {
+    void cacheSqlGeneration() throws Exception {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();

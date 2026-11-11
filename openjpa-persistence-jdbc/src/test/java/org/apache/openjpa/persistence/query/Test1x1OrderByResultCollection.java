@@ -46,7 +46,7 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
     }
 
     @Test
-    public void testCollectionSizeNoOrderBy() {
+    void collectionSizeNoOrderBy() {
        Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();
@@ -57,7 +57,7 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
    }
 
     @Test
-    public void testCollectionSizeOrderBy() {
+    void collectionSizeOrderBy() {
         Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo order by h.techOwner.name");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();
@@ -68,7 +68,7 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
    }
 
     @Test
-    public void testCollectionSizeOrderByDesc() {
+    void collectionSizeOrderByDesc() {
         Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo order by h.techOwner.name desc");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();

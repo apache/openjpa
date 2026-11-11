@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jpql.joins;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests JQPL and Criteria API equivalent using left join fetch with QueryCache and DataCache enabled.
  */
-public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
+class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     EntityManager em;
 
     @BeforeEach
@@ -80,7 +79,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testJPQLNoFetch() {
+    void jpqlNoFetch() {
         EntityManager em = emf.createEntityManager();
         List<Department> ds = em.createQuery("SELECT DISTINCT d FROM Department d WHERE d.deptno = 10").getResultList();
         em.clear();
@@ -94,7 +93,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testJPQLOneFetch() {
+    void jpqlOneFetch() {
         EntityManager em = emf.createEntityManager();
         List<Department> ds =
             em.createQuery("SELECT DISTINCT d FROM Department d LEFT JOIN FETCH d.employee2s " + "WHERE d.deptno = 10")
@@ -111,7 +110,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testJPQLTwoFetch() {
+    void jpqlTwoFetch() {
         EntityManager em = emf.createEntityManager();
         List<Department> ds =
             em.createQuery(
@@ -130,7 +129,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCriteriaAPINoFetch() {
+    void criteriaAPINoFetch() {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -156,7 +155,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCriteriaAPIOneFetch() {
+    void criteriaAPIOneFetch() {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -191,7 +190,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCriteriaAPITwoFetch() {
+    void criteriaAPITwoFetch() {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -220,7 +219,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testConsecutiveJPQLJoinFetchCall() {
+    void consecutiveJPQLJoinFetchCall() {
         doQuery(emf, false);
         doQuery(emf, true);
     }
@@ -240,7 +239,7 @@ public class TestJoinFetchWithQueryDataCache extends SQLListenerTestCase {
         }
         em.close();
         if (cached) {
-            assertTrue(sql.size() == 0);
+            assertEquals(0, sql.size());
         }
     }
 }

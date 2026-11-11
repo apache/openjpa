@@ -55,13 +55,13 @@ public class TestEJBEmbedded extends AnnotationTestCase
     }
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         deleteAll (EmbedOwner.class);
     }
 
     @Test
-    public void testEmbedded()
+    void embedded()
     {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -91,7 +91,7 @@ public class TestEJBEmbedded extends AnnotationTestCase
     }
 
     @Test
-    public void testNull() {
+    void testNull() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         EmbedOwner owner = new EmbedOwner();

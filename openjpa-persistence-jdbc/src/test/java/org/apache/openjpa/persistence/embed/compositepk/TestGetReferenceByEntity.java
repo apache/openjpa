@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * JPA 3.2 getReference(entity) for single, IdClass and EmbeddedId identities,
  * using detached instances as well as new instances with assigned ids.
  */
-public class TestGetReferenceByEntity extends SingleEMFTestCase {
+class TestGetReferenceByEntity extends SingleEMFTestCase {
 
     private SimpleOrderEntity order;
     private Subject subject;
@@ -59,7 +59,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSingleIdDetached() {
+    void singleIdDetached() {
         EntityManager em = emf.createEntityManager();
         try {
             SimpleOrderEntity ref = em.getReference(order);
@@ -72,7 +72,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSingleIdNewInstance() {
+    void singleIdNewInstance() {
         EntityManager em = emf.createEntityManager();
         try {
             SimpleOrderEntity ref = em.getReference(new SimpleOrderEntity(1, 0, null));
@@ -84,7 +84,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSingleIdManaged() {
+    void singleIdManaged() {
         EntityManager em = emf.createEntityManager();
         try {
             SimpleOrderEntity managed = em.find(SimpleOrderEntity.class, 1);
@@ -95,7 +95,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdClassDetached() {
+    void idClassDetached() {
         EntityManager em = emf.createEntityManager();
         try {
             SubjectWithIdClass ref = em.getReference(subjectWithIdClass);
@@ -108,7 +108,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdClassNewInstance() {
+    void idClassNewInstance() {
         EntityManager em = emf.createEntityManager();
         try {
             SubjectWithIdClass ref = em.getReference(newSubjectWithIdClass(2, "Type"));
@@ -121,7 +121,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdClassManaged() {
+    void idClassManaged() {
         EntityManager em = emf.createEntityManager();
         try {
             SubjectWithIdClass managed = em.createQuery("select s from SubjectWithIdClass s",
@@ -133,7 +133,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdClassUnassignedId() {
+    void idClassUnassignedId() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getReference(newSubjectWithIdClass(null, null));
@@ -146,7 +146,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbeddedIdDetached() {
+    void embeddedIdDetached() {
         EntityManager em = emf.createEntityManager();
         try {
             Subject ref = em.getReference(subject);
@@ -159,7 +159,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbeddedIdNewInstance() {
+    void embeddedIdNewInstance() {
         EntityManager em = emf.createEntityManager();
         try {
             Subject s = new Subject();
@@ -173,7 +173,7 @@ public class TestGetReferenceByEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbeddedIdUnassignedId() {
+    void embeddedIdUnassignedId() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getReference(new Subject());

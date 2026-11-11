@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,7 +63,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <a href="https://issues.apache.org/jira/browse/OPENJPA-3014">OPENJPA-3014</a>
  */
-public class TestNamedSequenceGenerator extends SQLListenerTestCase {
+class TestNamedSequenceGenerator extends SQLListenerTestCase {
 
     private static final int ENTITY1_COUNT = 10;
     private static final int ENTITY2_COUNT = 5;
@@ -120,7 +117,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * database dictionary does not support native sequences</code>.
      */
     @Test
-    public void testNamedGeneratorYieldsUniqueIdentifiers() {
+    void namedGeneratorYieldsUniqueIdentifiers() {
         List<Long> ids = new ArrayList<>();
 
         EntityManager em = emf.createEntityManager();
@@ -196,7 +193,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * is the number of statements that advance the generator's counter: one
      * allocation per block of {@link NamedSeqGenEntity#ALLOCATE}, not one per
      * value. The span assertion in
-     * {@link #testNamedGeneratorYieldsUniqueIdentifiers()} cannot see this -
+     * {@link #namedGeneratorYieldsUniqueIdentifiers()} cannot see this -
      * a generator that fetched a fresh block of one per value would still
      * hand out consecutive identifiers - so it is asserted here.
      *<p>
@@ -204,7 +201,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * both: see {@link #sequenceAllocations()}.
      */
     @Test
-    public void testAllocationSizeIsHonouredByTheGenerator() {
+    void allocationSizeIsHonouredByTheGenerator() {
         int count = 15;
         // connect the dictionary before the statements are collected, so that
         // sequenceAllocations() sees only the statements of the run below
@@ -280,7 +277,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * same name identifies the sequence object.
      */
     @Test
-    public void testQualifiedSequenceNameReachesTheSequence() {
+    void qualifiedSequenceNameReachesTheSequence() {
         OpenJPAEntityManagerFactorySPI other = createEMF(QualifiedSeqGenEntity.class);
         try {
             JDBCConfiguration conf = (JDBCConfiguration) other.getConfiguration();
@@ -292,13 +289,13 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
             assertNotNull(smd);
             Seq seq = smd.getInstance(null);
             if (dict.nextSequenceQuery == null) {
-                assertTrue(seq instanceof ValueTableJDBCSeq, "expected a table backed sequence on " + dict.platform
+                assertInstanceOf(ValueTableJDBCSeq.class, seq, "expected a table backed sequence on " + dict.platform
                     + ", got " + seq.getClass().getName());
                 assertEquals(QualifiedSeqGenEntity.CATALOG + "."
                     + QualifiedSeqGenEntity.SCHEMA + "." + QualifiedSeqGenEntity.SEQUENCE,
                     ((ValueTableJDBCSeq) seq).getPrimaryKeyValue());
             } else {
-                assertTrue(seq instanceof NativeJDBCSeq, "expected a native sequence on " + dict.platform
+                assertInstanceOf(NativeJDBCSeq.class, seq, "expected a native sequence on " + dict.platform
                     + ", got " + seq.getClass().getName());
                 assertEquals(QualifiedSeqGenEntity.SEQUENCE,
                     ((NativeJDBCSeq) seq).getSequence());
@@ -315,7 +312,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * back the failure it replaced.
      */
     @Test
-    public void testCompatibilityOptionRestoresTheFailure() {
+    void compatibilityOptionRestoresTheFailure() {
         if (hasNativeSequences()) {
             skip(dict().platform + " has native sequences, so no generator"
                 + " falls back and the option makes no difference");
@@ -347,7 +344,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
      * generator.
      */
     @Test
-    public void testInitialValueAndAllocationSizeReachTheSequence() {
+    void initialValueAndAllocationSizeReachTheSequence() {
         MetaDataRepository repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         // resolving the entity registers the generator it declares
         repos.getMetaData(NamedSeqGenEntity.class, null, true);
@@ -358,8 +355,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
 
         Seq seq = smd.getInstance(null);
         if (dict().nextSequenceQuery == null) {
-            assertTrue(seq instanceof ValueTableJDBCSeq,
-                "expected a table backed sequence on "
+            assertInstanceOf(ValueTableJDBCSeq.class, seq, "expected a table backed sequence on "
                 + dict().platform + ", got " + seq.getClass().getName());
             // keyed by the sequence name, so entities sharing the generator
             // share one counter
@@ -370,8 +366,7 @@ public class TestNamedSequenceGenerator extends SQLListenerTestCase {
             assertEquals(NamedSeqGenEntity.ALLOCATE,
                 ((TableJDBCSeq) seq).getAllocate());
         } else {
-            assertTrue(seq instanceof NativeJDBCSeq,
-                "expected a native sequence on " + dict().platform
+            assertInstanceOf(NativeJDBCSeq.class, seq, "expected a native sequence on " + dict().platform
                 + ", got " + seq.getClass().getName());
             assertEquals(NamedSeqGenEntity.INITIAL,
                 ((NativeJDBCSeq) seq).getInitialValue());

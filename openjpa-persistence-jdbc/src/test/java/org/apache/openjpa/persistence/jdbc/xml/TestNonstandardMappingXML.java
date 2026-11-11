@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.jdbc.xml;
 import org.apache.openjpa.persistence.jdbc.annotations.TestNonstandardMappingAnnotations;
 import org.junit.jupiter.api.BeforeEach;
 
-public class TestNonstandardMappingXML extends
+class TestNonstandardMappingXML extends
     TestNonstandardMappingAnnotations {
 
     @BeforeEach

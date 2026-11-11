@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.slice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +37,15 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestConfiguration extends SliceTestCase {
+class TestConfiguration extends SliceTestCase {
     @Override
     protected String getPersistenceUnitName() {
         return "per-slice";
     }
 
     @Test
-    public void testConfig() {
-        assertTrue(emf.getConfiguration() instanceof DistributedConfiguration);
+    void config() {
+        assertInstanceOf(DistributedConfiguration.class, emf.getConfiguration());
         DistributedJDBCConfiguration conf =
                 (DistributedJDBCConfiguration) emf.getConfiguration();
         List<String> slices = conf.getAvailableSliceNames();
@@ -72,7 +69,7 @@ public class TestConfiguration extends SliceTestCase {
     }
 
     @Test
-    public void testDynamicConfiguration() {
+    void dynamicConfiguration() {
         DistributedJDBCConfiguration conf = (DistributedJDBCConfiguration) emf.getConfiguration();
         List<String> slices = conf.getAvailableSliceNames();
         assertTrue(slices.contains("One"));

@@ -43,12 +43,12 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestMerge extends AbstractPersistenceTestCase {
+class TestMerge extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
@@ -67,7 +67,7 @@ public class TestMerge extends AbstractPersistenceTestCase {
      * the state of the persistent entity is properly set.
      */
     @Test
-    public void testMergeNew() {
+    void mergeNew() {
         getLog().trace("testMergeNew() started");
 
         // Part 1 - Create and persist a valid entity
@@ -119,7 +119,7 @@ public class TestMerge extends AbstractPersistenceTestCase {
      * the state of the persistent entity is properly set.
      */
     @Test
-    public void testMergeExisting() {
+    void mergeExisting() {
         getLog().trace("testMergeExisting() started");
 
         // Part 1 - Create and persist a valid entity

@@ -37,14 +37,14 @@ import org.apache.openjpa.persistence.kernel.common.apps.BlobTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestStoreBlob extends BaseKernelTest {
+class TestStoreBlob extends BaseKernelTest {
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(BlobTest.class);
     }
 
     @Test
-    public void testStoreBlob() {
+    void storeBlob() {
         OpenJPAEntityManager pm;
 
         pm = getPM(false, false);

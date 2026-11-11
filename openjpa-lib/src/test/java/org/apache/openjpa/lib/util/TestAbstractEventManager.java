@@ -30,12 +30,12 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestAbstractEventManager {
+class TestAbstractEventManager {
 
     private EventManager _em = new EventManager();
 
     @Test
-    public void testReentrantAdd() {
+    void reentrantAdd() {
         Listener l1 = new Listener(Listener.ADD);
         Listener l2 = new Listener(Listener.NONE);
         _em.addListener(l1);
@@ -47,7 +47,7 @@ public class TestAbstractEventManager {
     }
 
     @Test
-    public void testReentrantRemove() {
+    void reentrantRemove() {
         Listener l1 = new Listener(Listener.REMOVE);
         Listener l2 = new Listener(Listener.NONE);
         _em.addListener(l1);

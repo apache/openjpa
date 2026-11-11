@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.enhance;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -45,7 +43,7 @@ public class TestNoNoArgs
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
@@ -55,16 +53,16 @@ public class TestNoNoArgs
     }
 
     @Test
-    public void testNoNoArgs()
-        throws IOException {
+    void noNoArgs()
+        throws Exception {
         PCEnhancer.run((OpenJPAConfiguration) conf,
             new String[]{ },
             flags, repos, null, loader);
     }
 
     @Test
-    public void testNo2NoArgs()
-        throws IOException {
+    void no2NoArgs()
+        throws Exception {
         flags.addDefaultConstructor = false;
         boolean caughtException = false;
         try {
@@ -77,8 +75,8 @@ public class TestNoNoArgs
     }
 
     @Test
-    public void testNo3NoArgs()
-        throws IOException {
+    void no3NoArgs()
+        throws Exception {
         PCEnhancer.run((OpenJPAConfiguration) conf,
             new String[]{ "persistence.enhance.common.apps.Entity1" },
             flags, repos, null, loader);

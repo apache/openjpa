@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestConfigurations extends AbstractTestCase {
+class TestConfigurations extends AbstractTestCase {
 
     @Test
-    public void testParsePlugin() {
+    void parsePlugin() {
         String str = null;
         assertNull(Configurations.getClassName(str));
         assertNull(Configurations.getProperties(str));
@@ -62,7 +62,7 @@ public class TestConfigurations extends AbstractTestCase {
     }
 
     @Test
-    public void testParseProperties() {
+    void parseProperties() {
         Options opts = Configurations.parseProperties(null);
         assertEquals(0, opts.size());
 
@@ -90,7 +90,7 @@ public class TestConfigurations extends AbstractTestCase {
     }
 
     @Test
-    public void testCombinePlugins() {
+    void combinePlugins() {
         assertPluginsCombined("jpa", null,
             null, null,
             "jpa", null);

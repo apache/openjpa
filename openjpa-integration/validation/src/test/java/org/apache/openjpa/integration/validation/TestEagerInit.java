@@ -30,11 +30,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEagerInit extends AbstractPersistenceTestCase {
+class TestEagerInit extends AbstractPersistenceTestCase {
     OpenJPAEntityManagerFactorySPI _emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.InitializeEagerly", "true");
         _emf =
@@ -49,7 +49,7 @@ public class TestEagerInit extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testNonNullEmf() {
+    void nonNullEmf() {
         assertNotNull(_emf);
     }
 }

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -43,7 +43,7 @@ public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase 
      * emptied outright.
      */
     @Test
-    public void testBulkDeleteThroughBaseClass() {
+    void bulkDeleteThroughBaseClass() {
         assertEquals(2, delete("delete from BulkDeleteBase b"));
 
         assertEquals(0, count(BulkDeleteBase.class));
@@ -63,7 +63,7 @@ public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase 
      * class survive.
      */
     @Test
-    public void testBulkDeleteOfSubclassKeepsBaseRows() {
+    void bulkDeleteOfSubclassKeepsBaseRows() {
         assertEquals(1, delete("delete from BulkDeleteSub s"));
 
         assertEquals(1, count(BulkDeleteBase.class));

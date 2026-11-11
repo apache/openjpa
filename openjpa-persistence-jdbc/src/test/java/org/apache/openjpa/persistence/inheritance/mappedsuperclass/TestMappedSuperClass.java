@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -43,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @author Fay Wang
  * @author Pinaki Poddar
  */
-public class TestMappedSuperClass extends SingleEMFTestCase {
+class TestMappedSuperClass extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -54,7 +52,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMappedSuperClass() {
+    void mappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < 3; i++) {
@@ -75,7 +73,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
         // test polymorphic queries
         String query = "select s from CashBaseEntity s where TYPE(s) = SituationDA";
         List rs = em.createQuery(query).getResultList();
-        for (Object r : rs) assertTrue(r instanceof SituationDA);
+        for (Object r : rs) assertInstanceOf(SituationDA.class, r);
 
         query = "select s from CashBaseEntity s where TYPE(s) <> ValuableItemDA";
         try {
@@ -92,7 +90,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
      * super class that does not declare an identity field.
      */
     @Test
-    public void testMergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
+    void mergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final long id = System.currentTimeMillis();

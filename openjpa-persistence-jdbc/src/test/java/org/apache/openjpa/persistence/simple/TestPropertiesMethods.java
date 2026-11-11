@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +58,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Map config = new HashMap(System.getProperties());
 
 /* numeric   */ config.put("openjpa.DataCacheTimeout", 300);
@@ -95,14 +92,14 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 //    }
 
     @Test
-    public void testConfigurationPrefixes() {
+    void configurationPrefixes() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         assertEquals("openjpa", prefixes[0]);
         assertTrue(Arrays.asList(prefixes).contains("jakarta.persistence"));
     }
 
     @Test
-    public void testEMNumericPropertyValueForEnumTypeIsReturnedAsString() {
+    void eMNumericPropertyValueForEnumTypeIsReturnedAsString() {
         Map<String, Object> props = em.getProperties();
 
         assertProperty("openjpa.AutoClear", props, AutoClearType.DATASTORE);
@@ -110,11 +107,11 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testEMPluginPropertyParameterIsPreserved() {
+    void eMPluginPropertyParameterIsPreserved() {
         Map<String,Object> props = emf.getProperties();
         Object val = props.get("openjpa.ProxyManager");
         assertNotNull(val);
-        assertTrue(val instanceof String);
+        assertInstanceOf(String.class, val);
         String proxyManager = (String)val;
         assertEquals("default(TrackChanges=false)", proxyManager);
     }
@@ -123,7 +120,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * Test the EntityManagerFactory getProperties() method.
      */
     @Test
-    public void testFactoryPropertiesContainDefaultValue() {
+    void factoryPropertiesContainDefaultValue() {
         Map<String, Object> props = emf.getProperties();
 
         assertEquals("default", props.get("openjpa.DataCacheManager"));
@@ -131,13 +128,13 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testFactoryPropertiesContainUserSpecifiedValue() {
+    void factoryPropertiesContainUserSpecifiedValue() {
         Map<String, Object> props = emf.getProperties();
         assertEquals(300, props.get("openjpa.DataCacheTimeout"));
     }
 
     @Test
-    public void testFactoryPropertiesAddPlatformOrVendor() {
+    void factoryPropertiesAddPlatformOrVendor() {
         Map<String, Object> props = emf.getProperties();
         assertTrue(props.containsKey("Platform"));
         assertNotNull(props.containsKey("VendorName"));
@@ -147,7 +144,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * Test the EntityManagerFactory getSupportedProperties() method.
      */
     @Test
-    public void testFactorySupportedProperties() {
+    void factorySupportedProperties() {
         Set<String> props = emf.getSupportedProperties();
         assertTrue(props.contains("openjpa.IgnoreChanges"));
     }
@@ -156,7 +153,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * Test the EntityManager getSupportedProperties() method.
      */
     @Test
-    public void testEMGetSupportedProperties() {
+    void eMGetSupportedProperties() {
         Set<String> emSupportedProperties = em.getSupportedProperties();
         assertNotNull(emSupportedProperties);
         assertTrue(emSupportedProperties.contains("openjpa.AutoDetach"));
@@ -178,19 +175,19 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * return enum type rather than an integer.
      */
     @Test
-    public void testEMPropertyValueTypeIsPreserved() {
+    void eMPropertyValueTypeIsPreserved() {
         Map<String, Object> props = em.getProperties();
 
         Object autoClear = props.get("openjpa.AutoClear");
-        assertTrue(autoClear instanceof AutoClearType, "AutoClear " + autoClear + " is of " + autoClear.getClass());
+        assertInstanceOf(AutoClearType.class, autoClear, "AutoClear " + autoClear + " is of " + autoClear.getClass());
         assertEquals(AutoClearType.DATASTORE, autoClear);
 
         Object ignoreChanges = props.get("openjpa.IgnoreChanges");
-        assertTrue(ignoreChanges instanceof Boolean);
+        assertInstanceOf(Boolean.class, ignoreChanges);
     }
 
     @Test
-    public void testFactoryPropertiesExcludeEntityManagerValues() {
+    void factoryPropertiesExcludeEntityManagerValues() {
         Map<String, Object> props = emf.getProperties();
 
         assertFalse(props.containsKey("FetchBatchSize"),
@@ -202,7 +199,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testFactoryPropertiesCanBeReusedToCreateFactory() {
+    void factoryPropertiesCanBeReusedToCreateFactory() {
         try (EntityManagerFactory recreated =
             Persistence.createEntityManagerFactory(UNIT_NAME, emf.getProperties())) {
             assertNotNull(recreated);
@@ -211,11 +208,11 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testEMFPluginPropertyParameterIsPreserved() {
+    void emfPluginPropertyParameterIsPreserved() {
         Map<String,Object> props = emf.getProperties();
         Object val = props.get("openjpa.ProxyManager");
         assertNotNull(val);
-        assertTrue(val instanceof String);
+        assertInstanceOf(String.class, val);
         String proxyManager = (String)val;
         assertEquals("default(TrackChanges=false)", proxyManager);
     }
@@ -252,14 +249,14 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * return enum type rather than an integer.
      */
     @Test
-    public void testPropertyValueTypeIsPreserved() {
+    void propertyValueTypeIsPreserved() {
         Map<String, Object> props = em.getProperties();
         assertProperty("openjpa.AutoClear", props, AutoClearType.DATASTORE);
         assertProperty("openjpa.IgnoreChanges", props, Boolean.FALSE);
     }
 
     @Test
-    public void testPluginPropertyParameterIsPreserved() {
+    void pluginPropertyParameterIsPreserved() {
         Map<String,Object> props = emf.getProperties();
         assertProperty("openjpa.ProxyManager", props, "default(TrackChanges=false)");
     }
@@ -268,7 +265,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * Test that property value changes are reflected when mutated directly.
      */
     @Test
-    public void testChangePropertyValue() {
+    void changePropertyValue() {
         Map<String, Object> props = em.getProperties();
         Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
         assertNotNull(original);
@@ -283,7 +280,7 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
      * Test that property value changes are reflected when instantiated with configuration.
      */
     @Test
-    public void testConfiguredPropertyValue() {
+    void configuredPropertyValue() {
         Map<String, Object> props = em.getProperties();
         Boolean original = (Boolean)props.get("openjpa.IgnoreChanges");
         assertNotNull(original);
@@ -298,14 +295,14 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
 
 
     @Test
-    public void testEquivalentKeysArePresentInSupportedProperties() {
+    void equivalentKeysArePresentInSupportedProperties() {
         Set<String> keys = em.getSupportedProperties();
         assertTrue(keys.contains("openjpa.ConnectionURL"));
         assertTrue(keys.contains("jakarta.persistence.jdbc.url"));
     }
 
     @Test
-    public void testPasswordValuesAreInvisible() {
+    void passwordValuesAreInvisible() {
         Map<String, Object> props = em.getProperties();
         assertProperty("openjpa.Connection2Password", props, Value.INVISIBLE);
     }

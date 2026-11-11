@@ -34,18 +34,18 @@ import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
 import org.junit.jupiter.api.Test;
 
 
-public class TestSequenceGeneratorEnsureCapacityCall extends TestSQLListenerTestCase {
+class TestSequenceGeneratorEnsureCapacityCall extends TestSQLListenerTestCase {
 
     // class SeqA uses the default sequence factory.
     @Test
-    public void testDBSequenceFactory() {
+    void dBSequenceFactory() {
         TableJDBCSeq seq = (TableJDBCSeq) seqForClass(SeqA.class);
         incrementTest(SeqA.class, seq.getAllocate());
     }
 
     // class SeqD uses the db-class sequence factory.
     @Test
-    public void testClassDBSequenceFactory() {
+    void classDBSequenceFactory() {
         ClassTableJDBCSeq seq = (ClassTableJDBCSeq) seqForClass(SeqD.class);
         incrementTest(SeqD.class, seq.getAllocate());
     }

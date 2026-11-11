@@ -40,7 +40,7 @@ public class TestPojoWithoutAnnotationsCannotBePersisted extends AbstractTestCas
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(new Object[] {});
         pojo = new UnAnnotPojo();
         pojo.setName("failure");
@@ -51,7 +51,7 @@ public class TestPojoWithoutAnnotationsCannotBePersisted extends AbstractTestCas
       * Try to persist pojo with no metadata
       */
     @Test
-    public void testPersistingUnAnnotatedObject() {
+    void persistingUnAnnotatedObject() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

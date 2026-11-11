@@ -27,16 +27,16 @@ import org.junit.jupiter.api.Test;
 /**
  * OPENJPA-2789 connection didn't get closed properly
  */
-public class TestBulkDelete extends AbstractTestCase {
+class TestBulkDelete extends AbstractTestCase {
 
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(CalendarFields.class);
     }
 
     @Test
-    public void testConnectionClosing() throws Exception {
+    void connectionClosing() throws Exception {
         for (int i = 0; i < 30; i++) {
             EntityManager em = getEmf().createEntityManager();
             em.getTransaction().begin();

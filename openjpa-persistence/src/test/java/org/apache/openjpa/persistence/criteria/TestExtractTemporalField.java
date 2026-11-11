@@ -40,12 +40,12 @@ import org.junit.jupiter.api.Test;
  * Tests that EXTRACT resolves each temporal field constant of the specification to its
  * kernel equivalent, rather than deriving it from the constant's textual representation.
  */
-public class TestExtractTemporalField {
+class TestExtractTemporalField {
 
     private final CriteriaBuilderImpl cb = new CriteriaBuilderImpl();
 
     @Test
-    public void testLocalDateFields() {
+    void localDateFields() {
         assertExtracts(DateTimeExtractField.YEAR, LocalDateField.YEAR, LocalDate.class);
         assertExtracts(DateTimeExtractField.QUARTER, LocalDateField.QUARTER, LocalDate.class);
         assertExtracts(DateTimeExtractField.MONTH, LocalDateField.MONTH, LocalDate.class);
@@ -54,14 +54,14 @@ public class TestExtractTemporalField {
     }
 
     @Test
-    public void testLocalTimeFields() {
+    void localTimeFields() {
         assertExtracts(DateTimeExtractField.HOUR, LocalTimeField.HOUR, LocalTime.class);
         assertExtracts(DateTimeExtractField.MINUTE, LocalTimeField.MINUTE, LocalTime.class);
         assertExtracts(DateTimeExtractField.SECOND, LocalTimeField.SECOND, LocalTime.class);
     }
 
     @Test
-    public void testLocalDateTimeFields() {
+    void localDateTimeFields() {
         assertExtracts(DateTimeExtractField.YEAR, LocalDateTimeField.YEAR, LocalDateTime.class);
         assertExtracts(DateTimeExtractField.QUARTER, LocalDateTimeField.QUARTER, LocalDateTime.class);
         assertExtracts(DateTimeExtractField.MONTH, LocalDateTimeField.MONTH, LocalDateTime.class);
@@ -77,7 +77,7 @@ public class TestExtractTemporalField {
      * JPQL only, so the criteria API must reject them with a meaningful error.
      */
     @Test
-    public void testUnsupportedFieldIsRejected() {
+    void unsupportedFieldIsRejected() {
         assertThrows(IllegalArgumentException.class,
             () -> extract(LocalDateTimeField.DATE, LocalDateTime.class));
         assertThrows(IllegalArgumentException.class,

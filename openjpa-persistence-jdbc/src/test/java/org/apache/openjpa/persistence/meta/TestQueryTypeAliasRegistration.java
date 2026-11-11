@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
+class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
     private final int threads = 100;
 
     @BeforeEach
@@ -53,7 +53,7 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
      * exception.
      */
     @Test
-    public void testMultiThreadGetMetaDataAlias() throws Exception {
+    void multiThreadGetMetaDataAlias() throws Exception {
         try {
             List<Worker> workers = new ArrayList<>();
             Set<Exception> exceptions = new HashSet<>();
@@ -71,7 +71,7 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
                     exceptions.add(w.getException());
                 }
             }
-            assertTrue(exceptions.size() == 0, "Caught "  + exceptions.toString());
+            assertEquals(0, exceptions.size(), "Caught " + exceptions.toString());
         } finally {
             if (emf != null) {
                 emf.close();

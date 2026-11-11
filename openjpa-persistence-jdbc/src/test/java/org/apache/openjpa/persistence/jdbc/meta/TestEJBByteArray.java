@@ -28,15 +28,15 @@ import org.apache.openjpa.persistence.kernel.common.apps.ByteArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBByteArray
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBByteArray
+    extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _null;
 	private int _empty;
 	private int _small;
 	private int _large;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
 	{
 		deleteAll(ByteArray.class);
 
@@ -71,7 +71,7 @@ public class TestEJBByteArray
 	}
 
     @Test
-    public void testNull ()
+    void testNull()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -95,7 +95,7 @@ public class TestEJBByteArray
 	}
 
     @Test
-    public void testEmpty ()
+    void empty()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -118,7 +118,7 @@ public class TestEJBByteArray
 	}
 
     @Test
-    public void testLarge ()
+    void large()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);

@@ -18,7 +18,12 @@
  */
 package org.apache.openjpa.persistence.fetchgroups;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,85 +33,62 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.metamodel.Attribute;
 
-public class TestEntityManagerFactoryLoading {
-	
+class TestEntityManagerFactoryLoading {
+
 	private static final int MANAGERS_COUNT = 3;
-	
+
 	private static final int EMPLOYEES_PER_MANAGER = 5;
-	
+
 	private static final int EMPLOYEES_COUNT = MANAGERS_COUNT * EMPLOYEES_PER_MANAGER;
-	
+
 	private EntityManagerFactory emf;
-	
+
 	private Map<Integer, FGManager> managers = new HashMap<>();
-	
+
 	private Set<FGEmployee> employees = new HashSet<FGEmployee>();
-	
-	@BeforeEach
-	public void beforeEach() {
+
+    @BeforeEach
+    void beforeEach() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		conf.managedClass(FGManager.class);
 		conf.managedClass(FGDepartment.class);
 		conf.managedClass(FGEmployee.class);
 		conf.managedClass(FGAddress.class);
-		
+
 		emf = Persistence.createEntityManagerFactory(conf);
 		emf.runInTransaction(this::loadTestData);
 	}
-	
-	@AfterEach
-	public void afterEach() {
+
+    @AfterEach
+    void afterEach() {
 		if (emf != null && emf.isOpen()) {
 			emf.close();
 		}
 	}
 
-	@Test
-	public void testLoadingLazyAttributeByName() {
+    @Test
+    void loadingLazyAttributeByName() {
 		assertNotNull(emf);
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
-			
+
 			FGManager manager = em.find(FGManager.class, 1);
-			
+
 			assertFalse(emf.getPersistenceUnitUtil().isLoaded(manager, "employees"));
-			
+
 			emf.getPersistenceUnitUtil().load(manager, "employees");
-			
+
 			assertTrue(emf.getPersistenceUnitUtil().isLoaded(manager, "employees"));
-			
-			assertEquals(EMPLOYEES_PER_MANAGER, manager.getEmployees().size());
-		} finally {
-			if (em != null && em.isOpen()) {
-				em.close();
-			}
-		}
-	}
-	
-	@Test
-	public void testLoadingLazyAttribute() {
-		assertNotNull(emf);
-		EntityManager em = null;
-		try {
-			em = emf.createEntityManager();
-			
-			FGManager manager = em.find(FGManager.class, 1);
-			Attribute<? super FGManager,?> attribute = em.getMetamodel().entity(FGManager.class).getCollection("employees"); 
-			
-			assertFalse(emf.getPersistenceUnitUtil().isLoaded(manager, attribute));
-			
-			emf.getPersistenceUnitUtil().load(manager, attribute);
-			
-			assertTrue(emf.getPersistenceUnitUtil().isLoaded(manager, attribute));
-			
+
 			assertEquals(EMPLOYEES_PER_MANAGER, manager.getEmployees().size());
 		} finally {
 			if (em != null && em.isOpen()) {
@@ -115,22 +97,46 @@ public class TestEntityManagerFactoryLoading {
 		}
 	}
 
-	@Test
-	public void testLoadingUnmanagedEntity() {
+    @Test
+    void loadingLazyAttribute() {
+		assertNotNull(emf);
+		EntityManager em = null;
+		try {
+			em = emf.createEntityManager();
+
+			FGManager manager = em.find(FGManager.class, 1);
+			Attribute<? super FGManager,?> attribute = em.getMetamodel().entity(FGManager.class).getCollection("employees");
+
+			assertFalse(emf.getPersistenceUnitUtil().isLoaded(manager, attribute));
+
+			emf.getPersistenceUnitUtil().load(manager, attribute);
+
+			assertTrue(emf.getPersistenceUnitUtil().isLoaded(manager, attribute));
+
+			assertEquals(EMPLOYEES_PER_MANAGER, manager.getEmployees().size());
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+		}
+	}
+
+    @Test
+    void loadingUnmanagedEntity() {
 		FGManager manager = new FGManager();
 		manager.setId(1);
-		
+
 		try {
 			emf.getPersistenceUnitUtil().load(manager);
 			fail("Should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException ex) {
 			assertTrue(ex.getMessage().contains("not persistent"));
 		}
-		
+
 	}
-	
-	@Test
-	public void testLoadingEntity() {
+
+    @Test
+    void loadingEntity() {
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
@@ -139,17 +145,17 @@ public class TestEntityManagerFactoryLoading {
 			manager.setFirstName("Changed name");
 			assertNotEquals(originalName, manager.getFirstName());
 			emf.getPersistenceUnitUtil().load(manager);
-			assertEquals(originalName, manager.getFirstName());			
+			assertEquals(originalName, manager.getFirstName());
 		} finally {
 			if (em != null && em.isOpen()) {
 				em.close();
 			}
 		}
-		
+
 	}
 
     private void loadTestData(EntityManager em) {
-    	
+
     	managers.clear();
     	employees.clear();
 

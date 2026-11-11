@@ -26,7 +26,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.sql.Driver;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +40,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
-public class TestDelimitIdentifiers {
+class TestDelimitIdentifiers {
 
     public static class LowercaseSchemaDerbyDBDictionary extends DerbyDictionary {
 
@@ -57,7 +56,7 @@ public class TestDelimitIdentifiers {
     private static final Logger logger = Logger.getLogger(TestDelimitIdentifiers.class.getCanonicalName());
 
     @Test
-    public void testDelimitIdentifiers() throws SQLException {
+    void delimitIdentifiers() throws Exception {
 
         Driver derbyDriver;
         try {

@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBAutoIncrement extends BaseJDBCTest
+class TestEJBAutoIncrement extends BaseJDBCTest
 {
 
 //	private boolean  = Boolean.valueOf(bool);
@@ -39,7 +39,7 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 	private long oid3a;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(AutoIncrementPC1.class);
 		deleteAll(AutoIncrementPC2.class);
@@ -48,7 +48,7 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInsert ()
+    void insert()
 	{
 		AutoIncrementPC2 pc1 = new AutoIncrementPC2 (1);
 		pc1.setStringField ("pc1");
@@ -98,7 +98,7 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 	}
 
     @Test
-    public void testUpdate ()
+    void update()
 	{
 		AutoIncrementPC2 pc2 = new AutoIncrementPC2 (1);
 		pc2.setStringField ("pc2");
@@ -141,7 +141,7 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 	}
 
     @Test
-    public void testCircularReferences ()
+    void circularReferences()
 	{
 		AutoIncrementPC2 pc2a = new AutoIncrementPC2 (1);
 		pc2a.setStringField ("pc2a");
@@ -185,7 +185,7 @@ public class TestEJBAutoIncrement extends BaseJDBCTest
 	}
 
     @Test
-    public void testMultipleFlushes ()
+    void multipleFlushes()
 	{
 		AutoIncrementPC2 pc2 = new AutoIncrementPC2 (1);
 		pc2.setStringField ("pc2");

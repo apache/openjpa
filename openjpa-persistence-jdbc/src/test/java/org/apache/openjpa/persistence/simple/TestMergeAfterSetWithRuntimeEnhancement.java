@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * Mirrors the TCK pattern: persist entity, then set fields, merge, flush.
  * TCK tests like queryTest8 fail because totalPrice set via merge isn't persisted.
  */
-public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
+class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -54,7 +54,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
      * This mirrors TCK createOrderData: persist order, then setTotalPrice, merge.
      */
     @Test
-    public void testSetFieldAfterPersistAndMerge() {
+    void setFieldAfterPersistAndMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -95,7 +95,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
      * This is exactly what createOrderData does.
      */
     @Test
-    public void testTCKPatternPersistFlushSetMergeFlushCommitThenQuery() {
+    void tckPatternPersistFlushSetMergeFlushCommitThenQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -149,7 +149,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
      * Test: persist entity in one transaction, then find+set+merge in another.
      */
     @Test
-    public void testSetFieldAfterFindAndMerge() {
+    void setFieldAfterFindAndMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

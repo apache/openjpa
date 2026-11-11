@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRecursiveRelationships extends SingleEMFTestCase {
+class TestRecursiveRelationships extends SingleEMFTestCase {
     private int _l1Nodes = 3;
     private int _l2Nodes = 3;
 
@@ -37,7 +37,7 @@ public class TestRecursiveRelationships extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRecursiveNodes() {
+    void recursiveNodes() {
         EntityManager em = emf.createEntityManager();
 
         // set up initial tree

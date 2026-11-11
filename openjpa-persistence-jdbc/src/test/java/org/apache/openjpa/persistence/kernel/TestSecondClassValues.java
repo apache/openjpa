@@ -26,10 +26,7 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -62,7 +59,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     private String newline = System.getProperty("line.separator");
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         pm = getPM(true, false);
     }
 
@@ -71,7 +68,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testMapDeletion() {
+    void mapDeletion() {
         OpenJPAEntityManager pm;
         pm = getPM();
         startTx(pm);
@@ -103,7 +100,7 @@ public class TestSecondClassValues extends BaseKernelTest {
         map = test.getStrIntMap();
         assertEquals(11, map.size());
         assertEquals(1, map.get("foo"));
-        assertTrue(map.get("bar") == null);
+        assertNull(map.get("bar"));
 
         map.clear();
 
@@ -118,7 +115,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testStringCollection()
+    void stringCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -128,7 +125,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testLongCollection()
+    void longCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -142,7 +139,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testShortCollection()
+    void shortCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -151,7 +148,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testBigIntegerCollection()
+    void bigIntegerCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -160,7 +157,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testBigDecimalCollection()
+    void bigDecimalCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -173,7 +170,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testIntegerCollection()
+    void integerCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -182,7 +179,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testByteCollection()
+    void byteCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -191,7 +188,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testBooleanCollection()
+    void booleanCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -200,7 +197,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatCollection()
+    void floatCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -213,7 +210,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleCollection()
+    void doubleCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -226,7 +223,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testDateCollection()
+    void dateCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -238,7 +235,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testBigDecimalBigIntegerMap()
+    void bigDecimalBigIntegerMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -251,7 +248,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testStrIntMap()
+    void strIntMap()
         throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
@@ -260,7 +257,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testIntLongMap() throws Exception {
+    void intLongMap() throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
             map.put(randomInt(), randomLong());
@@ -274,7 +271,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testFloatByteMap()
+    void floatByteMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -287,7 +284,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testByteDoubleMap()
+    void byteDoubleMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -300,7 +297,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testDoubleCharMap()
+    void doubleCharMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -313,7 +310,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testCharBooleanMap()
+    void charBooleanMap()
         throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
@@ -322,7 +319,7 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     @Test
-    public void testDateStrMap() throws Exception {
+    void dateStrMap() throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
             map.put(randomDate(), randomString());

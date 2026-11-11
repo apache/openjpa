@@ -56,7 +56,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Catalina Wei, Albert Lee, Donald Woods
  */
-public class TestIndex extends SingleEMFTestCase {
+class TestIndex extends SingleEMFTestCase {
 
     private Log log = null;
 
@@ -121,7 +121,7 @@ public class TestIndex extends SingleEMFTestCase {
 
     // original testcase by Catalina
     @Test
-    public void testO2MTreeQueryIndex() {
+    void o2mTreeQueryIndex() {
         int[] fanOuts = {2,3,4};
         createTreeNodeEntities(fanOuts);
         EntityManager em = emf.createEntityManager();
@@ -137,37 +137,37 @@ public class TestIndex extends SingleEMFTestCase {
 
     // Testcases added by Donald with code reused from annonxml tests by Albert
     @Test
-    public void testO2MQueryIndex() {
+    void o2mQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
     }
 
     @Test
-    public void testO2MXMLQueryIndex() {
+    void o2mxmlQueryIndex() {
         createEntities(JPQLIndexEntityClasses.XMLOrderedOneToManyEntity, XMLUnorderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.XMLOrderedOneToManyEntity, XMLUnorderedNameEntity.class);
     }
 
     @Test
-    public void testM2MQueryIndex() {
+    void m2mQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
     }
 
     @Test
-    public void testM2MXMLQueryIndex() {
+    void m2mxmlQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
     }
 
     @Test
-    public void testElementQueryIndex() {
+    void elementQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedElementEntity, String.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedElementEntity, String.class);
     }
 
     @Test
-    public void testElementXMLQueryIndex() {
+    void elementXMLQueryIndex() {
         createEntities(JPQLIndexEntityClasses.XMLOrderedElementEntity, String.class);
         verifyEntities(JPQLIndexEntityClasses.XMLOrderedElementEntity, String.class);
     }

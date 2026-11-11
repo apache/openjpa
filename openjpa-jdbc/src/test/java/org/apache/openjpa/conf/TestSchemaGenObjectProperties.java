@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * and {@link Reader} objects. Those are picked out of the properties before the
  * generic string handling sees them, which must not disturb the caller's map.
  */
-public class TestSchemaGenObjectProperties {
+class TestSchemaGenObjectProperties {
 
     private static final String CREATE_TARGET =
         "jakarta.persistence.schema-generation.scripts.create-target";
@@ -57,7 +55,7 @@ public class TestSchemaGenObjectProperties {
     }
 
     @Test
-    public void testObjectsAreCaptured() {
+    void objectsAreCaptured() {
         Map<String, Object> props = allFour();
         OpenJPAConfigurationImpl conf = new OpenJPAConfigurationImpl();
         conf.fromProperties(props);
@@ -70,7 +68,7 @@ public class TestSchemaGenObjectProperties {
     }
 
     @Test
-    public void testCallersMapIsNotModified() {
+    void callersMapIsNotModified() {
         Map<String, Object> props = allFour();
         Map<String, Object> before = new HashMap<>(props);
 
@@ -80,7 +78,7 @@ public class TestSchemaGenObjectProperties {
     }
 
     @Test
-    public void testUnmodifiableMapIsAccepted() {
+    void unmodifiableMapIsAccepted() {
         Map<String, Object> props = Map.copyOf(allFour());
         OpenJPAConfigurationImpl conf = new OpenJPAConfigurationImpl();
 
@@ -91,7 +89,7 @@ public class TestSchemaGenObjectProperties {
     }
 
     @Test
-    public void testStringValuesStillWork() {
+    void stringValuesStillWork() {
         Map<String, Object> props = new HashMap<>();
         props.put(CREATE_TARGET, "create.sql");
         OpenJPAConfigurationImpl conf = new OpenJPAConfigurationImpl();
@@ -99,7 +97,7 @@ public class TestSchemaGenObjectProperties {
         conf.fromProperties(props);
 
         assertEquals("create.sql", conf.getCreateScriptTarget());
-        assertEquals(null, conf.getCreateScriptTargetWriter());
+        assertNull(conf.getCreateScriptTargetWriter());
         assertTrue(props.containsKey(CREATE_TARGET));
     }
 }

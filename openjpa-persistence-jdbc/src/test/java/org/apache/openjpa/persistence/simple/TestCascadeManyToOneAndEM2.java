@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * - getReferenceForNonExistingEntityTest: getReference(entity) for non-existing entity
  * - runWithConnectionTest / callWithConnectionTest: JPA 3.2 connection methods
  */
-public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
+class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -57,7 +57,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * The cascade should re-persist A, and b.getA() should not be null.
      */
     @Test
-    public void testCascadeAllMX1RePersistRemoved() {
+    void cascadeAllMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -102,7 +102,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * Same as above but with cascade=PERSIST only.
      */
     @Test
-    public void testPersistMX1RePersistRemoved() {
+    void persistMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -148,7 +148,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * when the proxy is accessed.
      */
     @Test
-    public void testGetReferenceForNonExistingEntity() {
+    void getReferenceForNonExistingEntity() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             SimpleOrderEntity order = new SimpleOrderEntity(99999, 0, "nonexistent");
@@ -171,7 +171,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * JPA 3.2 runWithConnection should provide a working JDBC connection.
      */
     @Test
-    public void testRunWithConnection() {
+    void runWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -208,7 +208,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * JPA 3.2 callWithConnection should provide a working JDBC connection and return a value.
      */
     @Test
-    public void testCallWithConnection() {
+    void callWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             em.getTransaction().begin();

@@ -25,6 +25,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.Test;
 public class TestLogFactory extends SingleEMFTestCase {
     String systemPropLog = null;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         // Maven users may disable logging via a global system prop - which breaks this testcase.
@@ -41,6 +44,7 @@ public class TestLogFactory extends SingleEMFTestCase {
         super.setUp();
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -50,7 +54,7 @@ public class TestLogFactory extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSLF4J() {
+    void slf4j() {
         try {
             EntityManager em = emf.createEntityManager();
             // do some logging

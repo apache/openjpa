@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * a Map @ElementCollection refer to the map value (the embeddable),
  * not the key.
  */
-public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
+class TestMapKeyAttributeOverride extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -57,7 +57,7 @@ public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
      * property in the embedded type" error.
      */
     @Test
-    public void testMapKeyEnumeratedWithAttributeOverride() {
+    void mapKeyEnumeratedWithAttributeOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -99,7 +99,7 @@ public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
      * and retrieved.
      */
     @Test
-    public void testMapKeyTemporalWithAttributeOverride() {
+    void mapKeyTemporalWithAttributeOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

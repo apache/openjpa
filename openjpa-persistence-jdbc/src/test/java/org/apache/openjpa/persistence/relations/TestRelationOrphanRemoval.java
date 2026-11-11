@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestRelationOrphanRemoval extends SingleEMTestCase {
+class TestRelationOrphanRemoval extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -35,7 +35,7 @@ public class TestRelationOrphanRemoval extends SingleEMTestCase {
     }
 
     @Test
-    public void testRelationOrphanRemoval() {
+    void relationOrphanRemoval() {
         EntityTransaction tx = em.getTransaction();
 
         int origId = 10;

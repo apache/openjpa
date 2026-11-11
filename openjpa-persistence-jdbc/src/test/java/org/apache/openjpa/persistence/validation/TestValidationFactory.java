@@ -13,9 +13,7 @@
  */
 package org.apache.openjpa.persistence.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +39,7 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidationFactory extends SingleEMFTestCase {
+class TestValidationFactory extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +51,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   1) By default, ValidationFactory is null
      */
     @Test
-    public void testValidationFactory1() {
+    void validationFactory1() {
         getLog().trace("testValidationFactory1() - Default is null");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -65,8 +63,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify default validation mode
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals(null,
-            conf.getValidationFactoryInstance(),
+        assertNull(conf.getValidationFactoryInstance(),
             "Default ValidationFactory");
         closeEMF(emf);
     }
@@ -77,7 +74,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *      cause an exception
      */
     @Test
-    public void testValidationFactory2() {
+    void validationFactory2() {
         getLog().trace("testValidationFactory2() - ignored invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -108,7 +105,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *      cause an exception
      */
     @Test
-    public void testValidationFactory3() {
+    void validationFactory3() {
         getLog().trace("testValidationFactory3() - optional invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -139,7 +136,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *      cause a fatal exception
      */
     @Test
-    public void testValidationFactory4() {
+    void validationFactory4() {
         getLog().trace("testValidationFactory4() - required invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 

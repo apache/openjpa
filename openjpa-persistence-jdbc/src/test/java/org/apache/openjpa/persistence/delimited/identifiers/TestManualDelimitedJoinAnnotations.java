@@ -35,7 +35,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
+class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     EntityC entityC;
@@ -112,7 +112,7 @@ public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate() {
+    void create() {
         id++;
         createCandD(id);
         // TODO: Maybe create another one.

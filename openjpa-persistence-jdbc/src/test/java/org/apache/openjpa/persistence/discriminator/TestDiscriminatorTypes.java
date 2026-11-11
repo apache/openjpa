@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.discriminator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -33,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDiscriminatorTypes extends SingleEMFTestCase {
+class TestDiscriminatorTypes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -45,7 +43,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCharDiscriminators() {
+    void charDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load types
 
         Discriminator discrim = getMapping("CharAbstractEntity")
@@ -82,7 +80,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIntDiscriminators() {
+    void intDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
 
         Discriminator discrim = getMapping("IntegerAbstractEntity")
@@ -122,7 +120,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testStringDiscriminators() {
+    void stringDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
         Discriminator discrim = getMapping("StringAbstractEntity")
                 .getDiscriminator();
@@ -158,7 +156,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExistsQuery() {
+    void existsQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -183,7 +181,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         List<StringAbstractEntity> list = q.getResultList();
         assertEquals(0, list.size());
         for (StringAbstractEntity entity : list)
-            assertTrue(entity instanceof StringLeafEntity);
+            assertInstanceOf(StringLeafEntity.class, entity);
         em.close();
     }
 }

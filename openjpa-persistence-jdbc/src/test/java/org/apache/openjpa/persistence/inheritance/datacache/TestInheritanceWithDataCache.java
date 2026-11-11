@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 
@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInheritanceWithDataCache extends SingleEMFTestCase {
+class TestInheritanceWithDataCache extends SingleEMFTestCase {
     Object[] props =
         new Object[] { FTEmployee.class, Employee.class, Manager.class, PTEmployee.class, Department.class,
             "openjpa.DataCache", "true", CLEAR_TABLES };
@@ -43,7 +43,7 @@ public class TestInheritanceWithDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             // Create a manager and a department
@@ -63,11 +63,11 @@ public class TestInheritanceWithDataCache extends SingleEMFTestCase {
 
             Employee e = em.find(Employee.class, 1);
             assertNotNull(e);
-            assertTrue(e instanceof Manager);
+            assertInstanceOf(Manager.class, e);
             em.clear();
             e = em.find(Employee.class, 1);
             assertNotNull(e);
-            assertTrue(e instanceof Manager);
+            assertInstanceOf(Manager.class, e);
         } finally {
             em.close();
         }

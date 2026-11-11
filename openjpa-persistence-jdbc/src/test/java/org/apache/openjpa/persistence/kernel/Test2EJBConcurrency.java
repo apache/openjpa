@@ -36,7 +36,7 @@ public class Test2EJBConcurrency extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         deleteAll(Entity1.class);
 
         EntityManager em = currentEntityManager();
@@ -54,7 +54,7 @@ public class Test2EJBConcurrency extends AbstractTestCase {
      * Test optimistic concurrency.
      */
     @Test
-    public void testOptConcurrency1()
+    void optConcurrency1()
         throws Exception {
         EntityManager em1 = currentEntityManager();
         startTx(em1);

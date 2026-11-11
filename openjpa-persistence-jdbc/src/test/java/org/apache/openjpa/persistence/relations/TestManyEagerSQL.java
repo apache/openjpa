@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestManyEagerSQL
+class TestManyEagerSQL
     extends SQLListenerTestCase {
 
     @BeforeEach
@@ -76,7 +76,7 @@ public class TestManyEagerSQL
     }
 
     @Test
-    public void testManyToOneEagerQuery() {
+    void manyToOneEagerQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -115,7 +115,7 @@ public class TestManyEagerSQL
     }
 
     @Test
-    public void testManyToOneLazyQuery() {
+    void manyToOneLazyQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -161,7 +161,7 @@ public class TestManyEagerSQL
     }
 
     @Test
-    public void testOneToManyEagerQuery() {
+    void oneToManyEagerQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -208,7 +208,7 @@ public class TestManyEagerSQL
     }
 
     @Test
-    public void testOneToOneParentQuery() {
+    void oneToOneParentQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -236,7 +236,7 @@ public class TestManyEagerSQL
     }
 
     @Test
-    public void testOneToOneChildQuery() {
+    void oneToOneChildQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();

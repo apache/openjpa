@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * native sequence suffixed with "_seq" is in use.  This test only runs when
  * the configured database supports native sequences.
  */
-public class TestDropAddSequence extends SingleEMFTestCase {
+class TestDropAddSequence extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -66,7 +66,7 @@ public class TestDropAddSequence extends SingleEMFTestCase {
      * named native sequence suffixed with "_seq".
      */
     @Test
-    public void testDropAddSequence() {
+    void dropAddSequence() {
 
         if (!supportsSequences(emf)) {
             return;

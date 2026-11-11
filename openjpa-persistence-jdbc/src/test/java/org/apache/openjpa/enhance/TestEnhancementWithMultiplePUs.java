@@ -42,11 +42,11 @@ import org.apache.xbean.asm9.Type;
 import org.junit.jupiter.api.Test;
 
 
-public class TestEnhancementWithMultiplePUs
+class TestEnhancementWithMultiplePUs
     extends AbstractCachedEMFTestCase {
 
     @Test
-    public void testExplicitEnhancementWithClassNotInFirstPU() throws ClassNotFoundException {
+    void explicitEnhancementWithClassNotInFirstPU() throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, new Options());
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
@@ -84,8 +84,8 @@ public class TestEnhancementWithMultiplePUs
     }
 
     @Test
-    public void testEnhancementOfSecondPUWithClassNotInFirstPU()
-        throws IOException {
+    void enhancementOfSecondPUWithClassNotInFirstPU()
+        throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = new Options();
         opts.setProperty("p",
@@ -122,8 +122,8 @@ public class TestEnhancementWithMultiplePUs
     }
 
     @Test
-    public void testEnhancementOfAllPUsWithinAResource()
-        throws IOException {
+    void enhancementOfAllPUsWithinAResource()
+        throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = new Options();
         opts.setProperty("p", "META-INF/persistence.xml");

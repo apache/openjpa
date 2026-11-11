@@ -17,12 +17,7 @@
  * under the License.
  */
 package org.apache.openjpa.util;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -68,12 +63,12 @@ public class TestProxyManager {
     private ProxyManagerImpl _mgr;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _mgr = new ProxyManagerImpl();
     }
 
     @Test
-    public void testCopyLists() {
+    void copyLists() {
         List orig = new ArrayList();
         populate(orig);
         assertListsEqual(orig, (List) _mgr.copyCollection(orig));
@@ -102,14 +97,14 @@ public class TestProxyManager {
      * Assert that the given lists are exactly the same.
      */
     private static void assertListsEqual(List l1, List l2) {
-        assertTrue(l1.getClass() == l2.getClass());
+        assertSame(l1.getClass(), l2.getClass());
         assertEquals(l1.size(), l2.size());
         for (int i = 0; i < l1.size(); i++)
-            assertTrue(l1.get(i) == l2.get(i), l1.get(i) + " != " + l2.get(i));
+            assertSame(l1.get(i), l2.get(i), l1.get(i) + " != " + l2.get(i));
     }
 
     @Test
-    public void testCopySets() {
+    void copySets() {
         Set orig = new HashSet();
         populate(orig);
         assertSetsEqual(orig, (Set) _mgr.copyCollection(orig));
@@ -123,13 +118,13 @@ public class TestProxyManager {
      * Assert that the given sets are exactly the same.
      */
     private static void assertSetsEqual(Set s1, Set s2) {
-        assertTrue(s1.getClass() == s2.getClass());
+        assertSame(s1.getClass(), s2.getClass());
         assertEquals(s1.size(), s2.size());
         assertEquals(s1, s2);
     }
 
     @Test
-    public void testCopySortedSets() {
+    void copySortedSets() {
         SortedSet orig = new TreeSet();
         populate(orig);
         assertSortedSetsEqual(orig, (SortedSet) _mgr.copyCollection(orig));
@@ -162,7 +157,7 @@ public class TestProxyManager {
      * Assert that the given sets are exactly the same.
      */
     private static void assertSortedSetsEqual(SortedSet s1, SortedSet s2) {
-        assertTrue(s1.getClass() == s2.getClass());
+        assertSame(s1.getClass(), s2.getClass());
         assertSortedSetsEquals(s1, s2);
     }
 
@@ -175,39 +170,39 @@ public class TestProxyManager {
         Iterator itr1 = s1.iterator();
         Iterator itr2 = s2.iterator();
         while (itr1.hasNext())
-            assertTrue(itr1.next() == itr2.next());
-        assertTrue(s1.equals(s2));
+            assertSame(itr1.next(), itr2.next());
+        assertEquals(s1, s2);
     }
 
     @Test
-    public void testCopyNullCollection() {
+    void copyNullCollection() {
         assertNull(_mgr.copyCollection(null));
     }
 
     @Test
-    public void testCopyProxyCollection() {
+    void copyProxyCollection() {
         List orig = (List) _mgr.newCollectionProxy(ArrayList.class, null, null, true);
         populate(orig);
         assertListsEqual(new ArrayList(orig), (List) _mgr.copyCollection(orig));
 
         TreeSet torig = (TreeSet) _mgr.newCollectionProxy(TreeSet.class, null, new CustomComparator(), true);
-        assertTrue(torig.comparator() instanceof CustomComparator);
+        assertInstanceOf(CustomComparator.class, torig.comparator());
         populate(torig);
         assertSortedSetsEqual(new TreeSet(torig), (SortedSet) _mgr.copyCollection(torig));
     }
 
     @Test
-    public void testCloneProxyCollection() {
+    void cloneProxyCollection() {
         // List doesn't support clone()
 
         TreeSet torig = (TreeSet) _mgr.newCollectionProxy(TreeSet.class, null, new CustomComparator(), true);
-        assertTrue(torig.comparator() instanceof CustomComparator);
+        assertInstanceOf(CustomComparator.class, torig.comparator());
         populate(torig);
         assertSortedSetsEquals(new TreeSet(torig), (SortedSet) torig.clone());
     }
 
     @Test
-    public void testListMethodsProxied() throws Exception {
+    void listMethodsProxied() throws Exception {
         Class proxy = _mgr.newCollectionProxy(ArrayList.class, null, null, true).getClass();
         assertListMethodsProxied(proxy);
 
@@ -251,7 +246,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testSetMethodsProxied() throws Exception {
+    void setMethodsProxied() throws Exception {
         Class proxy = _mgr.newCollectionProxy(HashSet.class, null, null, true).getClass();
         assertCollectionMethodsProxied(proxy);
 
@@ -266,7 +261,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testQueueMethodsProxied() throws Exception {
+    void queueMethodsProxied() throws Exception {
         Class queue = getQueueClass();
         if (queue == null)
             return;
@@ -286,7 +281,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testLinkedListMethodsProxied() throws Exception {
+    void linkedListMethodsProxied() throws Exception {
         Class proxy = _mgr.newCollectionProxy(LinkedList.class, null, null, true).getClass();
         assertListMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("addFirst", new Class[] { Object.class }));
@@ -296,7 +291,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testVectorMethodsProxied() throws Exception {
+    void vectorMethodsProxied() throws Exception {
         Class proxy = _mgr.newCollectionProxy(Vector.class, null, null, true).getClass();
         assertListMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("addElement", new Class[] { Object.class }));
@@ -308,57 +303,57 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testListChangeTracker() {
+    void listChangeTracker() {
         Proxy coll = _mgr.newCollectionProxy(ArrayList.class, null, null, true);
         assertNotNull(coll);
         assertNotNull(coll.getChangeTracker());
-        assertTrue(coll.getChangeTracker() instanceof CollectionChangeTrackerImpl);
+        assertInstanceOf(CollectionChangeTrackerImpl.class, coll.getChangeTracker());
         CollectionChangeTrackerImpl ct = (CollectionChangeTrackerImpl) coll.getChangeTracker();
         assertTrue(ct.allowsDuplicates());
         assertTrue(ct.isOrdered());
     }
 
     @Test
-    public void testSetChangeTracker() {
+    void setChangeTracker() {
         Proxy coll = _mgr.newCollectionProxy(HashSet.class, null, null, true);
         assertNotNull(coll);
         assertNotNull(coll.getChangeTracker());
-        assertTrue(coll.getChangeTracker() instanceof CollectionChangeTrackerImpl);
+        assertInstanceOf(CollectionChangeTrackerImpl.class, coll.getChangeTracker());
         CollectionChangeTrackerImpl ct = (CollectionChangeTrackerImpl) coll.getChangeTracker();
         assertFalse(ct.allowsDuplicates());
         assertFalse(ct.isOrdered());
     }
 
     @Test
-    public void testCollectionInterfaceProxy() {
+    void collectionInterfaceProxy() {
         Proxy coll = _mgr.newCollectionProxy(Collection.class, null, null, true);
         assertNotNull(coll);
     }
 
     @Test
-    public void testListInterfaceProxy() {
+    void listInterfaceProxy() {
         Proxy coll = _mgr.newCollectionProxy(List.class, null, null, true);
         assertNotNull(coll);
-        assertTrue(coll instanceof List);
+        assertInstanceOf(List.class, coll);
     }
 
     @Test
-    public void testSetInterfaceProxy() {
+    void setInterfaceProxy() {
         Proxy coll = _mgr.newCollectionProxy(Set.class, null, null, true);
         assertNotNull(coll);
-        assertTrue(coll instanceof Set);
+        assertInstanceOf(Set.class, coll);
         assertFalse(coll instanceof SortedSet);
     }
 
     @Test
-    public void testSortedSetInterfaceProxy() {
+    void sortedSetInterfaceProxy() {
         Proxy coll = _mgr.newCollectionProxy(SortedSet.class, null, null, true);
         assertNotNull(coll);
-        assertTrue(coll instanceof SortedSet);
+        assertInstanceOf(SortedSet.class, coll);
     }
 
     @Test
-    public void testQueueInterfaceProxy() {
+    void queueInterfaceProxy() {
         Class queue = getQueueClass();
         if (queue == null)
             return;
@@ -369,7 +364,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testProxyCustomDefaultScopedType() throws Exception {
+    void proxyCustomDefaultScopedType() throws Exception {
         // Use reflection to instantiate a type that isn't in the current package.
         Class<?> cls = Class.forName("org.apache.openjpa.util.custom.CustomProxyDefaultScopeType");
         assertNotNull(cls);
@@ -383,7 +378,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testProxyCustomDefaultScopedList() throws Exception {
+    void proxyCustomDefaultScopedList() throws Exception {
         // Use reflection to instantiate a type that isn't in the current package.
         Class<?> cls = Class.forName("org.apache.openjpa.util.custom.CustomProxyDefaultScopeList");
         assertNotNull(cls);
@@ -408,7 +403,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCopyMaps() {
+    void copyMaps() {
         Map orig = new HashMap();
         populate(orig);
         assertMapsEqual(orig, (Map) _mgr.copyMap(orig));
@@ -438,13 +433,13 @@ public class TestProxyManager {
      * Assert that the given maps are exactly the same.
      */
     private static void assertMapsEqual(Map m1, Map m2) {
-        assertTrue(m1.getClass() == m2.getClass());
+        assertSame(m1.getClass(), m2.getClass());
         assertEquals(m1.size(), m2.size());
         assertEquals(m1, m2);
     }
 
     @Test
-    public void testCopySortedMaps() {
+    void copySortedMaps() {
         SortedMap orig = new TreeMap();
         populate(orig);
         assertSortedMapsEqual(orig, (SortedMap) _mgr.copyMap(orig));
@@ -466,7 +461,7 @@ public class TestProxyManager {
      * Assert that the given maps are exactly the same.
      */
     private static void assertSortedMapsEqual(SortedMap m1, SortedMap m2) {
-        assertTrue(m1.getClass() == m2.getClass());
+        assertSame(m1.getClass(), m2.getClass());
         assertSortedMapsEquals(m1, m2);
     }
 
@@ -483,41 +478,41 @@ public class TestProxyManager {
         while (itr1.hasNext()) {
             entry1 = (Map.Entry) itr1.next();
             entry2 = (Map.Entry) itr2.next();
-            assertTrue(entry1.getKey() == entry2.getKey());
-            assertTrue(entry1.getValue() == entry2.getValue());
+            assertSame(entry1.getKey(), entry2.getKey());
+            assertSame(entry1.getValue(), entry2.getValue());
         }
-        assertTrue(m1.equals(m2));
+        assertEquals(m1, m2);
     }
 
     @Test
-    public void testCopyNullMap() {
+    void copyNullMap() {
         assertNull(_mgr.copyMap(null));
     }
 
     @Test
-    public void testCopyProxyMap() {
+    void copyProxyMap() {
         Map orig = (Map) _mgr.newMapProxy(HashMap.class, null, null, null, true);
         populate(orig);
         assertMapsEqual(new HashMap(orig), (Map) _mgr.copyMap(orig));
 
         TreeMap torig = (TreeMap) _mgr.newMapProxy(TreeMap.class, null, null, new CustomComparator(), true);
-        assertTrue(torig.comparator() instanceof CustomComparator);
+        assertInstanceOf(CustomComparator.class, torig.comparator());
         populate(torig);
         assertSortedMapsEqual(new TreeMap(torig), (SortedMap) _mgr.copyMap(torig));
     }
 
     @Test
-    public void testCloneProxyMap() {
+    void cloneProxyMap() {
         // Map does not support clone()
 
         TreeMap torig = (TreeMap) _mgr.newMapProxy(TreeMap.class, null, null, new CustomComparator(), true);
-        assertTrue(torig.comparator() instanceof CustomComparator);
+        assertInstanceOf(CustomComparator.class, torig.comparator());
         populate(torig);
         assertSortedMapsEquals(new TreeMap(torig), (SortedMap) torig.clone());
     }
 
     @Test
-    public void testMapMethodsProxied() throws Exception {
+    void mapMethodsProxied() throws Exception {
         Class proxy = _mgr.newMapProxy(HashMap.class, null, null, null, true).getClass();
         assertMapMethodsProxied(proxy);
 
@@ -560,7 +555,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testPropertiesMethodsProxied() throws Exception {
+    void propertiesMethodsProxied() throws Exception {
         Class proxy = _mgr.newMapProxy(Properties.class, null, null, null, true).getClass();
         assertMapMethodsProxied(proxy);
         assertNotNull(proxy.getDeclaredMethod("setProperty", new Class[] { String.class, String.class }));
@@ -569,7 +564,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCopyDates() {
+    void copyDates() {
         Date orig = new Date(1999);
         assertDatesEqual(orig, (Date) _mgr.copyDate(orig));
 
@@ -592,7 +587,7 @@ public class TestProxyManager {
      * Assert that the given dates are exactly the same.
      */
     private static void assertDatesEqual(Date d1, Date d2) {
-        assertTrue(d1.getClass() == d2.getClass());
+        assertSame(d1.getClass(), d2.getClass());
         assertDatesEquals(d1, d2);
     }
 
@@ -600,30 +595,30 @@ public class TestProxyManager {
      * Assert that the given dates are exactly the same (minus the class).
      */
     private static void assertDatesEquals(Date d1, Date d2) {
-        assertTrue(d1.equals(d2));
+        assertEquals(d1, d2);
     }
 
     @Test
-    public void testCopyNullDate() {
+    void copyNullDate() {
         assertNull(_mgr.copyDate(null));
     }
 
     @Test
-    public void testCopyProxyDate() {
+    void copyProxyDate() {
         Date orig = (Date) _mgr.newDateProxy(Time.class);
         orig.setTime(1999);
         assertDatesEqual(new Time(orig.getTime()), (Date) _mgr.copyDate(orig));
     }
 
     @Test
-    public void testCloneProxyDate() {
+    void cloneProxyDate() {
         Date orig = (Date) _mgr.newDateProxy(Time.class);
         orig.setTime(1999);
         assertDatesEquals(new Time(orig.getTime()), (Date) orig.clone());
     }
 
     @Test
-    public void testDateMethodsProxied() throws Exception {
+    void dateMethodsProxied() throws Exception {
         Class proxy = _mgr.newDateProxy(Date.class).getClass();
         assertDateMethodsProxied(proxy);
 
@@ -671,7 +666,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCopyCalendars() {
+    void copyCalendars() {
         Calendar orig = new GregorianCalendar();
         populate(orig);
         assertCalendarsEqual(orig, _mgr.copyCalendar(orig));
@@ -693,7 +688,7 @@ public class TestProxyManager {
      * Assert that the given dates are exactly the same.
      */
     private static void assertCalendarsEqual(Calendar c1, Calendar c2) {
-        assertTrue(c1.getClass() == c2.getClass());
+        assertSame(c1.getClass(), c2.getClass());
         assertCalendarsEquals(c1, c2);
     }
 
@@ -701,16 +696,16 @@ public class TestProxyManager {
      * Assert that the given dates are exactly the same (minus the class).
      */
     private static void assertCalendarsEquals(Calendar c1, Calendar c2) {
-        assertTrue(c1.equals(c2));
+        assertEquals(c1, c2);
     }
 
     @Test
-    public void testCopyNullCalendar() {
+    void copyNullCalendar() {
         assertNull(_mgr.copyCalendar(null));
     }
 
     @Test
-    public void testCopyProxyCalendar() {
+    void copyProxyCalendar() {
         Calendar orig = (Calendar) _mgr.newCalendarProxy(GregorianCalendar.class, TimeZone.getTimeZone("CST"));
         populate(orig);
         Calendar cal = new GregorianCalendar();
@@ -719,7 +714,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCloneProxyCalendar() {
+    void cloneProxyCalendar() {
         Calendar orig = (Calendar) _mgr.newCalendarProxy(GregorianCalendar.class, TimeZone.getTimeZone("CST"));
         populate(orig);
         Calendar cal = new GregorianCalendar();
@@ -728,13 +723,13 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCalendarAbstractClassProxy() {
+    void calendarAbstractClassProxy() {
         Proxy cal = _mgr.newCalendarProxy(Calendar.class, null);
         assertNotNull(cal);
     }
 
     @Test
-    public void testCalendarMethodsProxied() throws Exception {
+    void calendarMethodsProxied() throws Exception {
         Class proxy = _mgr.newCalendarProxy(GregorianCalendar.class, TimeZone.getDefault()).getClass();
         assertCalendarMethodsProxied(proxy);
 
@@ -766,7 +761,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testCopyBeans() {
+    void copyBeans() {
         CustomBean orig = new CustomBean();
         populate(orig);
         assertBeansEqual(orig, (CustomBean) _mgr.copyCustom(orig));
@@ -798,7 +793,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testNonproxyableBean() {
+    void nonproxyableBean() {
         NonproxyableBean orig = new NonproxyableBean(1);
         populate(orig);
         assertNull(_mgr.copyCustom(orig));
@@ -807,7 +802,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testIsUnproxyable() {
+    void isUnproxyable() {
         CustomBean validBean = new CustomBean();
         populate(validBean);
         assertNotNull(_mgr.copyCustom(validBean));
@@ -837,18 +832,18 @@ public class TestProxyManager {
      * Assert that the given beans are exactly the same.
      */
     private static void assertBeansEqual(CustomBean b1, CustomBean b2) {
-        assertTrue(b1.getClass() == b2.getClass());
-        assertTrue(b1.getString() == b2.getString());
-        assertTrue(b1.getNumber() == b2.getNumber());
+        assertSame(b1.getClass(), b2.getClass());
+        assertSame(b1.getString(), b2.getString());
+        assertEquals(b1.getNumber(), b2.getNumber());
     }
 
     @Test
-    public void testCopyNullBean() {
+    void copyNullBean() {
         assertNull(_mgr.copyCustom(null));
     }
 
     @Test
-    public void testCopyProxyBean() {
+    void copyProxyBean() {
         CustomBean orig = (CustomBean) _mgr.newCustomProxy(new CustomBean(), true);
         populate(orig);
         CustomBean comp = new CustomBean();
@@ -857,7 +852,7 @@ public class TestProxyManager {
     }
 
     @Test
-    public void testBeanMethodsProxied() throws Exception {
+    void beanMethodsProxied() throws Exception {
         Class proxy = _mgr.newCustomProxy(new CustomBean(), true).getClass();
         assertBeanMethodsProxied(proxy);
 

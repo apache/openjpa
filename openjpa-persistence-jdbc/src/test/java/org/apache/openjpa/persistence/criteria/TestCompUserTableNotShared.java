@@ -39,10 +39,10 @@ import org.junit.jupiter.api.Test;
  * dozen such rotations - the criteria tests create one factory per test method, so a single
  * test class is enough (OPENJPA-3016).
  */
-public class TestCompUserTableNotShared extends CriteriaTest {
+class TestCompUserTableNotShared extends CriteriaTest {
 
     @Test
-    public void testTheTwoCompUserHierarchiesDoNotShareATable() {
+    void theTwoCompUserHierarchiesDoNotShareATable() {
         String criteriaTable = tableOf(getEntityManagerFactory(), CompUser.class);
 
         OpenJPAEntityManagerFactorySPI other = createNamedEMF(

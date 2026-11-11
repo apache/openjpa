@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestTargetedIFaceRelations
+class TestTargetedIFaceRelations
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class TestTargetedIFaceRelations
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         TargetedIFaceRelationParent parent = new TargetedIFaceRelationParent();
         parent.setName("parent");
         TargetedIFaceRelationParent child = new TargetedIFaceRelationParent();

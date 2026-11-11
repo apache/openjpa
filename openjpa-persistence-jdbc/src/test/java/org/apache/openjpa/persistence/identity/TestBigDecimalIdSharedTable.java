@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * The fix is in ImmutableValueHandler.toObjectValue() which now converts
  * numeric values to the expected field type when a mismatch is detected.
  */
-public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
+class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -62,7 +60,7 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Mirrors TCK FieldBigDecimalIdTest.
      */
     @Test
-    public void testFieldBigDecimalIdPersistAndFind() {
+    void fieldBigDecimalIdPersistAndFind() {
         BigDecimal id = new BigDecimal(new BigInteger("1"));
         BigDecimal value = new BigDecimal(new BigInteger("1"));
 
@@ -88,7 +86,7 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Ensures BigInteger still works after the BigDecimal fix.
      */
     @Test
-    public void testFieldBigIntegerIdPersistAndFind() {
+    void fieldBigIntegerIdPersistAndFind() {
         BigInteger id = new BigInteger("2");
         BigInteger value = new BigInteger("2");
 
@@ -113,7 +111,7 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Mirrors TCK PropertyBigDecimalIdTest.
      */
     @Test
-    public void testPropertyBigDecimalIdPersistAndFind() {
+    void propertyBigDecimalIdPersistAndFind() {
         BigDecimal id = new BigDecimal(new BigInteger("1"));
         BigDecimal value = new BigDecimal(new BigInteger("1"));
 
@@ -139,7 +137,7 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Ensures BigInteger still works after the BigDecimal fix.
      */
     @Test
-    public void testPropertyBigIntegerIdPersistAndFind() {
+    void propertyBigIntegerIdPersistAndFind() {
         BigInteger id = new BigInteger("2");
         BigInteger value = new BigInteger("2");
 
@@ -164,7 +162,7 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * in the same persistence unit and be loaded in sequence.
      */
     @Test
-    public void testMixedBigDecimalBigIntegerFind() {
+    void mixedBigDecimalBigIntegerFind() {
         BigDecimal decId = new BigDecimal("100");
         BigInteger intId = new BigInteger("200");
 
@@ -184,10 +182,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
 
         assertNotNull(decFound, "BigDecimal entity should be found");
         assertNotNull(intFound, "BigInteger entity should be found");
-        assertTrue(decFound.getValue() instanceof BigDecimal,
-            "BigDecimal value type check");
-        assertTrue(intFound.getValue() instanceof BigInteger,
-            "BigInteger value type check");
+        assertInstanceOf(BigDecimal.class, decFound.getValue(), "BigDecimal value type check");
+        assertInstanceOf(BigInteger.class, intFound.getValue(), "BigInteger value type check");
         em.close();
     }
 }

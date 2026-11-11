@@ -41,7 +41,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
      * TransactionRequiredException if there is no transaction
      */
     @Test
-    public void testFindTxReqExceptions() {
+    void findTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -82,7 +82,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
      *      detached entity
      */
     @Test
-    public void testFindIllegalArgrumentExceptions() {
+    void findIllegalArgrumentExceptions() {
         // Test invalid entity argument throws IllegalArgumentException.
         Object[][] threadMainInvEntityIllegalArgTest = {
             {Act.CreateEm},
@@ -202,7 +202,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
      * OptimisticLockException will be thrown.
      */
     @Test
-    public void testLockOptimisticLockExceptions() {
+    void lockOptimisticLockExceptions() {
         commonLockOptimisticLockExceptions(
             LockModeType.NONE, true, false);
 //        commonLockOptimisticLockExceptions(

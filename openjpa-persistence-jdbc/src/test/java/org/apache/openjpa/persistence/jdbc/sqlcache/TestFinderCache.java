@@ -79,7 +79,7 @@ public class TestFinderCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testFinder() {
+    void finder() {
         //closeEMF(emf);  // close EMF provided by SingleEMFTestCase
         OpenJPAEntityManagerFactorySPI emf1 = createEMF("openjpa.jdbc.FinderCache", "false");
         run(1, Book.class, BOOK_IDS); // for warmup
@@ -91,7 +91,7 @@ public class TestFinderCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSQLEventListener() {
+    void sqlEventListener() {
         EntityManager em = emf.createEntityManager();
         int N = 3;
         sql.clear();

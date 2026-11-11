@@ -39,7 +39,7 @@ public class TestPCEnhancerFindField {
     }
 
     @Test
-    public void testPCEnhancerFindField() throws Exception {
+    void pCEnhancerFindField() throws Exception {
         ClassNode classNode = AsmHelper.readClassNode(this.getClass().getClassLoader(), TestPCEnhancerFindField.class.getName());
 
         Method meth = TestPCEnhancerFindField.class.getMethod("myMethod");

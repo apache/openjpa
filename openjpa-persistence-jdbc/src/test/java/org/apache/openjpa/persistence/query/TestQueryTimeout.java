@@ -49,6 +49,7 @@ import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.QueryTimeoutException;
 import org.apache.openjpa.persistence.query.common.apps.QTimeout;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -165,7 +166,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * 6000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout1a() {
+    void queryTimeout1a() {
         if (skipTests) {
             getLog().trace("testQueryTimeout1a - test is " +
                 "being skipped for " + dict.platform);
@@ -180,7 +181,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify no default jakarta.persistence.query.timeout is supplied
             Map<String, Object> hints = q.getHints();
             assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 long startTime = System.currentTimeMillis();
                 @SuppressWarnings("unchecked")
                 List results = q.getResultList();
@@ -192,9 +193,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 assertTrue(runTime > 5900, "Should have taken 6+ secs, but was msecs=" +
                     runTime);
                 assertEquals(2, results.size(), "Verify we found 2 results.");
-            } catch (Exception e) {
-                fail("Unexpected testQueryTimeout1a() exception = " + e);
-            }
+            }, "Unexpected testQueryTimeout1a() exception = ");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
@@ -208,7 +207,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout1c() {
+    void queryTimeout1c() {
         if (skipTests) {
             getLog().trace("testQueryTimeout1c - test is " +
                 "being skipped for " + dict.platform);
@@ -255,7 +254,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout21b() {
+    void queryTimeout21b() {
         if (skipTests) {
             getLog().trace("testQueryTimeout21b - test is " +
                 "being skipped for " + dict.platform);
@@ -290,7 +289,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             assertEquals(setTime.intValue(), q.getFetchPlan().getQueryTimeout(),
                 "Map provided query timeout");
 
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 long startTime = System.currentTimeMillis();
                 Object result = q.getSingleResult();
                 long endTime = System.currentTimeMillis();
@@ -301,9 +300,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
                     runTime);
                 assertNotNull(result, "Verify we received a result.");
-            } catch (Exception e) {
-                fail("Unexpected testQueryTimeout21b() exception = " + e);
-            }
+            }, "Unexpected testQueryTimeout21b() exception = ");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
@@ -318,7 +315,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 6000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout22a() {
+    void queryTimeout22a() {
         if (skipTests) {
             getLog().trace("testQueryTimeout22a - test is " +
                 "being skipped for " + dict.platform);
@@ -338,7 +335,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "jakarta.persistence.query.timeout=" + timeout);
             assertEquals(timeout, Integer.valueOf(0));
 
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 long startTime = System.currentTimeMillis();
                 @SuppressWarnings("unchecked")
                 List results = q.getResultList();
@@ -350,9 +347,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 assertTrue(runTime > 5900, "Should have taken 6+ secs, but was msecs=" +
                     runTime);
                 assertEquals(2, results.size(), "Verify we found 2 results.");
-            } catch (Exception e) {
-                fail("Unexpected testQueryTimeout22a() exception = " + e);
-            }
+            }, "Unexpected testQueryTimeout22a() exception = ");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
@@ -367,7 +362,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout23b() {
+    void queryTimeout23b() {
         if (skipTests) {
             getLog().trace("testQueryTimeout23b - test is " +
                 "being skipped for " + dict.platform);
@@ -397,7 +392,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "jakarta.persistence.query.timeout=" + timeout);
             assertEquals(timeout, setTime);
 
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 long startTime = System.currentTimeMillis();
                 Object result = q.getSingleResult();
                 long endTime = System.currentTimeMillis();
@@ -408,9 +403,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
                     runTime);
                 assertNotNull(result, "Verify we received a result.");
-            } catch (Exception e) {
-                fail("Unexpected testQueryTimeout23b() exception = " + e);
-            }
+            }, "Unexpected testQueryTimeout23b() exception = ");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
@@ -425,7 +418,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout31c() {
+    void queryTimeout31c() {
         if (skipExceptionTests) {
             getLog().trace("testQueryTimeout31c - test is " +
                 "being skipped for " + dict.platform);
@@ -506,7 +499,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: QueryTimeoutException or PersistenceException
      */
     @Test
-    public void testQueryTimeout32a() {
+    void queryTimeout32a() {
         if (skipExceptionTests || noSelectTimeouts) {
             getLog().trace("testQueryTimeout32a - test is " +
                 "being skipped for " + dict.platform);
@@ -581,7 +574,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: QueryTimeoutException or PersistenceException
      */
     @Test
-    public void testQueryTimeout33b() {
+    void queryTimeout33b() {
         if (skipExceptionTests || noSelectTimeouts) {
             getLog().trace("testQueryTimeout33b - test is " +
                 "being skipped for " + dict.platform);
@@ -642,7 +635,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: QueryTimeoutException (Derby) or PersistenceException
      */
     @Test
-    public void testQueryTimeout33c() {
+    void queryTimeout33c() {
         if (skipExceptionTests) {
             getLog().trace("testQueryTimeout33c - test is " +
                 "being skipped for " + dict.platform);
@@ -739,7 +732,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout4() {
+    void queryTimeout4() {
         if (skipTests) {
             getLog().trace("testQueryTimeout4 - test is " +
                 "being skipped for " + dict.platform);
@@ -771,21 +764,19 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 + timeout);
             assertEquals(timeout, setTime);
 
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 long startTime = System.currentTimeMillis();
                 Object result = q.getSingleResult();
                 long endTime = System.currentTimeMillis();
                 long runTime = endTime - startTime;
                 getLog().trace(
                     "testQueryTimeout4() - NoHintSingle runTime msecs="
-                    + runTime);
+                        + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
                 assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
                     runTime);
                 assertNotNull(result, "Verify we received a result.");
-            } catch (Exception e) {
-                fail("Unexpected testQueryTimeout4() exception = " + e);
-            }
+            }, "Unexpected testQueryTimeout4() exception = ");
         } finally {
             if ((em != null) && em.isOpen()) {
                 em.close();
@@ -799,7 +790,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: IllegalArgumentException
      */
     @Test
-    public void testQueryTimeout5() {
+    void queryTimeout5() {
         Integer setTime = -2000;
         getLog().trace("testQueryTimeout5() - setHint(" + setTime + ")");
         EntityManager em = null;
@@ -837,7 +828,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * takes 2000+ msecs to complete.
      */
     @Test
-    public void testQueryTimeout6() {
+    void queryTimeout6() {
         if (skipTests) {
             getLog().trace("testQueryTimeout6 - test is " +
                 "being skipped for " + dict.platform);

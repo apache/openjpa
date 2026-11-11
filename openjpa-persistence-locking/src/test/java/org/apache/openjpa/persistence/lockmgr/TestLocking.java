@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLocking extends SQLListenerTestCase {
+class TestLocking extends SQLListenerTestCase {
     String _phone = "5075555555";
 
     @Override
@@ -51,7 +51,7 @@ public class TestLocking extends SQLListenerTestCase {
     }
 
     @Test
-    public void testExtendedLockScope() throws Exception {
+    void extendedLockScope() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);
 

@@ -27,17 +27,17 @@ import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSimple extends BaseQueryTest {
+class TestSimple extends BaseQueryTest {
 
     private Query q = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Entity1.class);
     }
 
     @Test
-    public void testSimple() throws java.io.IOException {
+    void simple() throws Exception {
         // test create
         {
             EntityManager em = currentEntityManager();

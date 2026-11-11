@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestInExpressionParameterBinding extends SingleEMFTestCase {
+class TestInExpressionParameterBinding extends SingleEMFTestCase {
     private static OpenJPAEntityManagerFactory _emf;
     private static List<Integer> ORIGINAL_ZIPS;
     private OpenJPAEntityManager _em;
@@ -91,7 +91,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithCollectionParamOfDifferentSize() {
+    void withCollectionParamOfDifferentSize() {
         String jpql = "select a from Address a where a.zip in (:p)";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
         List<Address> result1 = _em.createQuery(jpql, Address.class).setParameter("p", zips1).getResultList();
@@ -105,7 +105,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithCollectionParamOfDifferentSizeNoParentheses() {
+    void withCollectionParamOfDifferentSizeNoParentheses() {
         String jpql = "select a from Address a where a.zip in :p";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
         List<Address> result1 = _em.createQuery(jpql, Address.class).setParameter("p", zips1).getResultList();
@@ -118,7 +118,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithSingleParam() {
+    void withSingleParam() {
         String jpql = "select a from Address a where a.zip in (:p)";
         Integer zip1 = ORIGINAL_ZIPS.get(4);
         List<Address> result1 = _em.createQuery(jpql, Address.class).setParameter("p", zip1).getResultList();
@@ -133,7 +133,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithMultiplParamOfDifferentSizeNoParentheses() {
+    void withMultiplParamOfDifferentSizeNoParentheses() {
         String jpql = "select a from Address a where a.zip in (:p1,:p2,:p3)";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
         TypedQuery<Address> query1 = _em.createQuery(jpql, Address.class);
@@ -154,7 +154,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWithSingleParamNoParentheses() {
+    void withSingleParamNoParentheses() {
         OpenJPAEntityManager em = _emf.createEntityManager();
         String jpql = "select a from Address a where a.zip in :p";
         Integer zip = ORIGINAL_ZIPS.get(4);

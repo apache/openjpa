@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestStatistics extends SingleEMFTestCase {
+class TestStatistics extends SingleEMFTestCase {
 	private CacheStatistics stats;
 
     @BeforeEach
@@ -65,7 +65,7 @@ public class TestStatistics extends SingleEMFTestCase {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testPerfectCache() {
+    void perfectCache() {
 		// populate a bunch of customer and order
 		int nCustomer = 20;
 		int nOrder    = 10;

@@ -23,6 +23,7 @@ import jakarta.persistence.EntityManager;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,8 +31,9 @@ import org.junit.jupiter.api.Test;
  * are filled with the value of the matching id column of the referenced entity
  * once the owner is flushed (OPENJPA-2929).
  */
-public class TestCompoundRefColumn extends SingleEMFTestCase {
+class TestCompoundRefColumn extends SingleEMFTestCase {
 
+    @BeforeEach
     @Override
     public void setUp() {
         setUp(CLEAR_TABLES, CompoundRefTarget.class, CompoundRefOwner.class, CompoundRefSwappedOwner.class,
@@ -40,7 +42,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompoundRefColumnsAreFilled() {
+    void compoundRefColumnsAreFilled() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CompoundRefTarget b = new CompoundRefTarget("first", "second", "b");
@@ -64,7 +66,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompoundRefColumnsAreFilledWithSwappedJoinColumns() {
+    void compoundRefColumnsAreFilledWithSwappedJoinColumns() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CompoundRefTarget b = new CompoundRefTarget("first", "second", "b");
@@ -88,7 +90,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompoundRefColumnsAreUpdatedWhenRelationChanges() {
+    void compoundRefColumnsAreUpdatedWhenRelationChanges() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CompoundRefTarget b1 = new CompoundRefTarget("first", "second", "b1");
@@ -115,7 +117,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompoundRefColumnsAreFilledForEmbeddedId() {
+    void compoundRefColumnsAreFilledForEmbeddedId() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CompoundRefEmbeddedTarget b = new CompoundRefEmbeddedTarget("first", "second", "b");
@@ -139,7 +141,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompoundRefColumnsAreFilledWhenIdColumnNamesDifferFromAttributeNames() {
+    void compoundRefColumnsAreFilledWhenIdColumnNamesDifferFromAttributeNames() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CompoundRefRenamedTarget b = new CompoundRefRenamedTarget("first", "second", "b");

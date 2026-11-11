@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  *
  */
-public class TestDetachStateCascade extends SingleEMFTestCase {
+class TestDetachStateCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Compatibility compat;
@@ -105,7 +105,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * E is not loaded but DETACH cascade is NOT specified
      */
     @Test
-    public void testLoaded() {
+    void loaded() {
         em.getTransaction().begin();
         // Clear the persistence context so we start fresh
         em.persist(entityA);
@@ -140,7 +140,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * DETACH cascade is NOT specified for C and E
      */
     @Test
-    public void testDetachStateAll() {
+    void detachStateAll() {
         em.setDetachState(DetachStateType.ALL);
         em.getTransaction().begin();
         // Clear the persistence context so we start fresh
@@ -173,7 +173,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * E is not loaded but DETACH cascade is NOT specified
      */
     @Test
-    public void testDetachStateFetchGroup() {
+    void detachStateFetchGroup() {
         em.setDetachState(DetachStateType.FETCH_GROUPS);
         em.getFetchPlan().addFetchGroup("loadD");
         em.getTransaction().begin();

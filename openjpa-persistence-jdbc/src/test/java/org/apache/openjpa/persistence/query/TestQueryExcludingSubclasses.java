@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestQueryExcludingSubclasses
+class TestQueryExcludingSubclasses
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -68,7 +68,7 @@ public class TestQueryExcludingSubclasses
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
             + "where e.name like 'e%' order by e.name asc");
@@ -86,7 +86,7 @@ public class TestQueryExcludingSubclasses
     }
 
     @Test
-    public void testQueryExcludingSubclasses() {
+    void queryExcludingSubclasses() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
             + "where e.name like 'e%' order by e.name asc");

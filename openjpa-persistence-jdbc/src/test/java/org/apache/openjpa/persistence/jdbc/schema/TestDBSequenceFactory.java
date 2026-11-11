@@ -54,7 +54,7 @@ public class TestDBSequenceFactory
      * Will fail for dbs without pessimistic locking.
      */
     @Test
-    public void testSequence()
+    void sequence()
         throws Exception {
         _broker = getBrokerFactory().newBroker();
 

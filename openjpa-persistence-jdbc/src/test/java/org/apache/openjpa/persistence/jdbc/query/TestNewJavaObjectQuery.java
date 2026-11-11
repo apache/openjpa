@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2153">OPENJPA-2153</A>
  *
  */
-public class TestNewJavaObjectQuery extends SingleEMFTestCase {
+class TestNewJavaObjectQuery extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Game.class,
@@ -63,7 +63,7 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
 //	}
 
     @Test
-    public void testNewJavaObjectQueryResultList() {
+    void newJavaObjectQueryResultList() {
         String jpql = "SELECT new org.apache.openjpa.persistence.jdbc.query.model.GameBean(g) FROM Game g";
         EntityManager em = emf.createEntityManager();
 
@@ -73,7 +73,7 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNewJavaObjectNamedQueryResultList() {
+    void newJavaObjectNamedQueryResultList() {
         EntityManager em = emf.createEntityManager();
 
         List<?> names = em.createNamedQuery("getDataSourceFieldById").getResultList();

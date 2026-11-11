@@ -59,12 +59,12 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, RuntimeTest4.class, RuntimeTest5.class);
     }
 
     @Test
-    public void testSimple() {
+    void simple() {
         doSimpleTest(true, 0, 0);
         doSimpleTest(true, 2, 0);
         doSimpleTest(true, 0, 2);
@@ -131,7 +131,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testCleanOrdering() {
+    void cleanOrdering() {
         OpenJPAEntityManager pm = getPM();
         ModRuntimeTest1 pc = new ModRuntimeTest1("orig", 1);
         startTx(pm);
@@ -159,7 +159,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testLastSavepoint() {
+    void lastSavepoint() {
         OpenJPAEntityManager pm = getPM();
         ModRuntimeTest1 pc = new ModRuntimeTest1("orig", 1);
         startTx(pm);
@@ -190,7 +190,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testNewRollback() {
+    void newRollback() {
         doNewRollbackTest(false, 0, 0);
         doNewRollbackTest(false, 2, 0);
         doNewRollbackTest(false, 0, 2);
@@ -233,7 +233,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testNewRelation() {
+    void newRelation() {
         doNewRelationTest(true, 0, 0);
         doNewRelationTest(true, 2, 0);
         doNewRelationTest(true, 0, 2);
@@ -306,7 +306,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testNullRelation() {
+    void nullRelation() {
         doNullRelationTest(true, 0, 0);
         doNullRelationTest(true, 2, 0);
         doNullRelationTest(true, 0, 2);
@@ -366,7 +366,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testCollection() {
+    void collection() {
         doCollectionTest(true, 0, 0);
         doCollectionTest(true, 2, 0);
         doCollectionTest(true, 0, 2);
@@ -459,7 +459,7 @@ public class TestSavepoints extends BaseKernelTest {
     }
 
     @Test
-    public void testChangeTracker() {
+    void changeTracker() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         RuntimeTest4 pc = new RuntimeTest4("orig");

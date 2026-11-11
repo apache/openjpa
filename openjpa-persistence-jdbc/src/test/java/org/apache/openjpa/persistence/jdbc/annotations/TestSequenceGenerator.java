@@ -51,7 +51,7 @@ import org.junit.jupiter.api.Test;
  * @author Jeremy Bauer
  */
 @AllowFailure(true)
-public class TestSequenceGenerator extends SingleEMFTestCase {
+class TestSequenceGenerator extends SingleEMFTestCase {
 
     private boolean enabled = true;
 
@@ -84,7 +84,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * currently allowed to fail.
      */
     @Test
-    public void testSequenceSchema() {
+    void sequenceSchema() {
         if (enabled) {
             OpenJPAEntityManagerSPI em = emf.createEntityManager();
             NativeSequenceEntity nse = new NativeSequenceEntity();
@@ -109,7 +109,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * currently allowed to fail.
      */
     @Test
-    public void testORMSequenceSchema() {
+    void ormSequenceSchema() {
         if (enabled) {
             OpenJPAEntityManagerSPI em = emf.createEntityManager();
             NativeORMSequenceEntity nse = new NativeORMSequenceEntity();

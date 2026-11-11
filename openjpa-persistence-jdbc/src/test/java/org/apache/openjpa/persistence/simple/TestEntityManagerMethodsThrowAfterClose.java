@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Craig Russell
  */
-public class TestEntityManagerMethodsThrowAfterClose
+class TestEntityManagerMethodsThrowAfterClose
     extends SingleEMTestCase {
 
     private AllFieldTypes aft = new AllFieldTypes();
@@ -45,7 +45,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testPersistAfterClose() {
+    void persistAfterClose() {
         try {
             em.persist(aft);
             fail("Expected exception not thrown " +
@@ -57,7 +57,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testMergeAfterClose() {
+    void mergeAfterClose() {
         try {
             em.merge(aft);
             fail("Expected exception not thrown " +
@@ -69,7 +69,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testRemoveAfterClose() {
+    void removeAfterClose() {
         try {
             em.remove(aft);
             fail("Expected exception not thrown " +
@@ -81,7 +81,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testFindAfterClose() {
+    void findAfterClose() {
         try {
             em.find(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
@@ -93,7 +93,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testGetReferenceAfterClose() {
+    void getReferenceAfterClose() {
         try {
             em.getReference(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
@@ -105,7 +105,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testFlushAfterClose() {
+    void flushAfterClose() {
         try {
             em.flush();
             fail("Expected exception not thrown " +
@@ -117,7 +117,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testSetFlushModeAfterClose() {
+    void setFlushModeAfterClose() {
         try {
             em.setFlushMode(FlushModeType.AUTO);
             fail("Expected exception not thrown " +
@@ -129,7 +129,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testGetFlushModeAfterClose() {
+    void getFlushModeAfterClose() {
         try {
             em.getFlushMode();
             fail("Expected exception not thrown " +
@@ -141,7 +141,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testLockAfterClose() {
+    void lockAfterClose() {
         try {
             em.lock(aft, LockModeType.WRITE);
             fail("Expected exception not thrown " +
@@ -153,7 +153,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testRefreshAfterClose() {
+    void refreshAfterClose() {
         try {
             em.refresh(aft);
             fail("Expected exception not thrown " +
@@ -165,7 +165,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testClearAfterClose() {
+    void clearAfterClose() {
         try {
             em.clear();
             fail("Expected exception not thrown " +
@@ -177,7 +177,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testContainsAfterClose() {
+    void containsAfterClose() {
         try {
             em.contains(aft);
             fail("Expected exception not thrown " +
@@ -189,7 +189,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testCreateQueryAfterClose() {
+    void createQueryAfterClose() {
         try {
             em.createQuery("SELECT Object(aft) FROM AllFieldTypes aft");
             fail("Expected exception not thrown " +
@@ -201,7 +201,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testCreateNamedQueryAfterClose() {
+    void createNamedQueryAfterClose() {
         try {
             em.createNamedQuery("NamedQuery");
             fail("Expected exception not thrown " +
@@ -213,7 +213,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testCreateNativeQueryAfterClose() {
+    void createNativeQueryAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ");
             fail("Expected exception not thrown " +
@@ -225,7 +225,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testCreateNativeQueryWithMappingAfterClose() {
+    void createNativeQueryWithMappingAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ",
                     AllFieldTypes.class);
@@ -238,7 +238,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testJoinTransactionAfterClose() {
+    void joinTransactionAfterClose() {
         try {
             em.joinTransaction();
             fail("Expected exception not thrown " +
@@ -250,7 +250,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testGetDelegateAfterClose() {
+    void getDelegateAfterClose() {
         try {
             em.getDelegate();
             fail("Expected exception not thrown " +
@@ -262,7 +262,7 @@ public class TestEntityManagerMethodsThrowAfterClose
     }
 
     @Test
-    public void testCloseAfterClose() {
+    void closeAfterClose() {
         try {
             em.close();
             fail("Expected exception not thrown when calling em.close " +

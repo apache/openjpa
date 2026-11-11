@@ -25,7 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGetMetaData extends SingleEMFTestCase {
+class TestGetMetaData extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -34,7 +34,7 @@ public class TestGetMetaData extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetMetaData() {
+    void getMetaData() {
         assertNotNull(JPAFacadeHelper.getMetaData(emf, Item.class));
         assertNotNull(JPAFacadeHelper.getMetaData(emf, Person.class));
     }

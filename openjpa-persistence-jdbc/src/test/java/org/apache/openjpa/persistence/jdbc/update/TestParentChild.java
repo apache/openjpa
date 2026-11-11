@@ -75,7 +75,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @author Pinaki Poddar
  *
  */
-public class TestParentChild extends SQLListenerTestCase {
+class TestParentChild extends SQLListenerTestCase {
     // Each of these property keys can take multiple possible values
     private static String Key_UpdateManager = "openjpa.jdbc.UpdateManager";
     private static String Key_SchemaFactory = "openjpa.jdbc.SchemaFactory";
@@ -123,7 +123,7 @@ public class TestParentChild extends SQLListenerTestCase {
      */
     @ParameterizedTest
     @MethodSource("provideOptions")
-    public void testInsert(CombinatorialOption option) {
+    void insert(CombinatorialOption option) {
         current = option;
         sql.clear();
         super.setUp(option.getProps(DROP_TABLES, Parent.class, Child.class));

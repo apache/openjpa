@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -36,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * annotation-defined NamedStoredProcedureQuery and provides
  * constructor-result within sql-result-set-mapping.
  */
-public class TestStoredProcedureXmlOverride extends SingleEMFTestCase {
+class TestStoredProcedureXmlOverride extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,14 +51,13 @@ public class TestStoredProcedureXmlOverride extends SingleEMFTestCase {
      * to procedure "TESTSIMPLE", but the XML should override it to "TESTOVERRIDE".
      */
     @Test
-    public void testNamedStoredProcedureQueryXmlOverride() {
+    void namedStoredProcedureQueryXmlOverride() {
         QueryMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getQueryMetaData(null, "EntityWithStoredProcedure.simple",
                 null, true);
         assertNotNull(meta, "Query metadata should exist");
-        assertTrue(meta instanceof MultiQueryMetaData,
-            "Should be MultiQueryMetaData");
+        assertInstanceOf(MultiQueryMetaData.class, meta, "Should be MultiQueryMetaData");
         MultiQueryMetaData mqm = (MultiQueryMetaData) meta;
         // The XML maps it to TESTOVERRIDE, not TESTSIMPLE
         assertEquals("TESTOVERRIDE", mqm.getProcedureName());
@@ -72,7 +69,7 @@ public class TestStoredProcedureXmlOverride extends SingleEMFTestCase {
      * Test that XML constructor-result within sql-result-set-mapping is parsed.
      */
     @Test
-    public void testConstructorResultXmlParsing() {
+    void constructorResultXmlParsing() {
         MappingRepository repos = (MappingRepository) emf.getConfiguration()
             .getMetaDataRepositoryInstance();
         QueryResultMapping mapping = repos.getQueryResultMapping(

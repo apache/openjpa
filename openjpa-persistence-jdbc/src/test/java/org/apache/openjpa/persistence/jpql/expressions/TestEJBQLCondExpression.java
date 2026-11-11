@@ -43,7 +43,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CompUser.class);
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -81,7 +81,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNothing() {
+    void nothing() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o FROM CompUser o";
 
@@ -94,7 +94,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testBetweenExpr() {
+    void betweenExpr() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM CompUser o WHERE" +
             " o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
@@ -110,7 +110,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNotBetweenExpr() {
+    void notBetweenExpr() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM CompUser o " +
             "WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
@@ -124,7 +124,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testInExpr() {
+    void inExpr() {
         EntityManager em = currentEntityManager();
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age IN (29, 40, 10)";
@@ -141,7 +141,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNotInExpr() {
+    void notInExpr() {
         EntityManager em = currentEntityManager();
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age NOT IN (29, 40, 10)";
@@ -157,7 +157,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testLikeExpr() {
+    void likeExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
@@ -209,7 +209,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
      * query cache.
      */
     @Test
-    public void testLikeWithoutEscapeTreatsBackslashLiterally() {
+    void likeWithoutEscapeTreatsBackslashLiterally() {
         EntityManager em = currentEntityManager();
 
         String literal = "SELECT o.name FROM CompUser o WHERE o.name LIKE 'tes\\%'";
@@ -243,7 +243,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNullExpr() {
+    void nullExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL" +
@@ -261,7 +261,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNullExpr2() {
+    void nullExpr2() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -276,7 +276,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testIsEmptyExpr() {
+    void isEmptyExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -291,7 +291,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testIsEmptyExpr2() {
+    void isEmptyExpr2() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -311,7 +311,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
      */
 
     @Test
-    public void testExistExpr() {
+    void existExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS" +
@@ -330,7 +330,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testNotExistExpr() {
+    void notExistExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -347,7 +347,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testAnyExpr() {
+    void anyExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -364,7 +364,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
     }
 
     @Test
-    public void testConstructorExpr() {
+    void constructorExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT NEW org.apache.openjpa.persistence.common.apps" +

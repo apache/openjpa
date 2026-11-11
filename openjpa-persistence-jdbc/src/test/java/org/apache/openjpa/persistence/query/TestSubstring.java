@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSubstring extends SingleEMTestCase {
+class TestSubstring extends SingleEMTestCase {
     @Override
     protected boolean isSupported(DBDictionary dict) {
         // Expressions as substring parameters fail on PostgreSQL.
@@ -52,7 +52,7 @@ public class TestSubstring extends SingleEMTestCase {
     }
 
     @Test
-    public void testSingleCharacterSubstringInWhere() {
+    void singleCharacterSubstringInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1, 1) = 'b'").getSingleResult());
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
@@ -62,7 +62,7 @@ public class TestSubstring extends SingleEMTestCase {
     }
 
     @Test
-    public void testMultiCharacterSubstringInWhere() {
+    void multiCharacterSubstringInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1, 2) = 'ba'").getSingleResult());
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
@@ -76,7 +76,7 @@ public class TestSubstring extends SingleEMTestCase {
     }
 
     @Test
-    public void testSubstringInSelect() {
+    void substringInSelect() {
         assertEquals("b", em.createQuery("select substring(o.value, 1, 1) " +
             "from simple o").getSingleResult());
         assertEquals("a", em.createQuery("select substring(o.value, 2, 1) " +
@@ -88,7 +88,7 @@ public class TestSubstring extends SingleEMTestCase {
     }
 
     @Test
-    public void testSubstringInMemory() {
+    void substringInMemory() {
         List<SimpleEntity> allEntities = em.createQuery("select o from simple o", SimpleEntity.class).getResultList();
         Object inMemoryResult = em.createQuery("select substring(o.value, 1, 1) from simple o")
             .setCandidateCollection(allEntities).getSingleResult();
@@ -99,7 +99,7 @@ public class TestSubstring extends SingleEMTestCase {
     }
 
     @Test
-    public void testSubstringWithExpressionsInWhere() {
+    void substringWithExpressionsInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1+1, 1+1) = 'ar'").getSingleResult());
     }

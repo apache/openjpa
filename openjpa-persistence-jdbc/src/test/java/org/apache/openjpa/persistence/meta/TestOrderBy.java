@@ -46,23 +46,23 @@ public class TestOrderBy
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(OrderByPCRel.class);
         deleteAll(OrderByPC.class);
     }
 
     @Test
-    public void testStringList() {
+    void stringList() {
         stringListTest(false, false);
     }
 
     @Test
-    public void testEagerParallelStringList() {
+    void eagerParallelStringList() {
         stringListTest(true, true);
     }
 
     @Test
-    public void testEagerJoinStringList() {
+    void eagerJoinStringList() {
         stringListTest(true, false);
     }
 
@@ -102,7 +102,7 @@ public class TestOrderBy
     }
 
     @Test
-    public void testIntArray() {
+    void intArray() {
         int[] ints = new int[]{ 9, 0, 5, 1, 3, 7, 8, 2, 6, 4, };
         OrderByPC pc = new OrderByPC();
         pc.setId(1L);
@@ -125,32 +125,32 @@ public class TestOrderBy
     }
 
     @Test
-    public void testOrderByPK() {
+    void orderByPK() {
         orderByPKTest(false, false, false);
     }
 
     @Test
-    public void testEagerJoinOrderByPK() {
+    void eagerJoinOrderByPK() {
         orderByPKTest(true, false, false);
     }
 
     @Test
-    public void testEagerParallelOrderByPK() {
+    void eagerParallelOrderByPK() {
         orderByPKTest(true, true, false);
     }
 
     @Test
-    public void testOneToManyOrderByPK() {
+    void oneToManyOrderByPK() {
         orderByPKTest(false, false, true);
     }
 
     @Test
-    public void testEagerJoinOneToManyOrderByPK() {
+    void eagerJoinOneToManyOrderByPK() {
         orderByPKTest(true, false, true);
     }
 
     @Test
-    public void testEagerParallelOneToManyOrderByPK() {
+    void eagerParallelOneToManyOrderByPK() {
         orderByPKTest(true, true, true);
     }
 
@@ -204,7 +204,7 @@ public class TestOrderBy
     }
 
     @Test
-    public void testOrderByRelatedField() {
+    void orderByRelatedField() {
         String[] strs = new String[]{
             "9", "0", "5", "1", "3", "7", "8", "2", "6", "4",
         };
@@ -235,17 +235,17 @@ public class TestOrderBy
     }
 
     @Test
-    public void testOrderByPKAndRelatedField() {
+    void orderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(false, false);
     }
 
     @Test
-    public void testEagerJoinOrderByPKAndRelatedField() {
+    void eagerJoinOrderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(true, false);
     }
 
     @Test
-    public void testEagerParallelOrderByPKAndRelatedField() {
+    void eagerParallelOrderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(true, true);
     }
 

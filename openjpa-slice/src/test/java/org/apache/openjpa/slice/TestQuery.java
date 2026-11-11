@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestQuery extends SliceTestCase {
+class TestQuery extends SliceTestCase {
 
     private int POBJECT_COUNT = 25;
     private int VALUE_MIN = 100;
@@ -89,7 +89,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testOrderedQueryResultWhenOrderableItemSelected() {
+    void orderedQueryResultWhenOrderableItemSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery(
@@ -109,7 +109,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testOrderedQueryResultWhenOrderableItemNotSelected() {
+    void orderedQueryResultWhenOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query =
@@ -126,7 +126,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testOrderedQueryResultWhenNavigatedOrderableItemNotSelected() {
+    void orderedQueryResultWhenNavigatedOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery(
@@ -147,7 +147,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testAggregateQuery() {
+    void aggregateQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Object count = em.createQuery("SELECT COUNT(p) FROM PObject p")
@@ -175,7 +175,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testAggregateQueryWithMissingValueFromSlice() {
+    void aggregateQueryWithMissingValueFromSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Object max = em.createQuery(
@@ -187,7 +187,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testSetMaxResult() {
+    void setMaxResult() {
         EntityManager em = emf.createEntityManager();
         int limit = 3;
         em.getTransaction().begin();
@@ -206,7 +206,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testHint() {
+    void hint() {
         List<String> targets = new ArrayList<>();
         targets.add("Even");
         EntityManager em = emf.createEntityManager();
@@ -222,7 +222,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testQueryTargetPolicy() {
+    void queryTargetPolicy() {
         List<String> targets = new ArrayList<>();
         targets.add("Even");
         EntityManager em = emf.createEntityManager();
@@ -238,7 +238,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testInMemoryOrderBy() {
+    void inMemoryOrderBy() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query =
@@ -248,7 +248,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testQueryParameter() {
+    void queryParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery(
@@ -259,7 +259,7 @@ public class TestQuery extends SliceTestCase {
     }
 
     @Test
-    public void testQueryParameterEntity() {
+    void queryParameterEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Address a = (Address)em.createQuery(
@@ -289,7 +289,7 @@ public class TestQuery extends SliceTestCase {
      *
      */
     @Test
-    public void testCollocationConstraintViolation() {
+    void collocationConstraintViolation() {
         // This transaction will store Manufacturer only
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.enhance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -30,9 +32,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -60,6 +59,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+
 public class TestSubclassedBehavior extends AbstractTestCase {
 
     public TestSubclassedBehavior() {
@@ -68,7 +70,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(BasicSubclassInstance.class);
         deleteAll(BackingFieldNameMismatchInstance.class);
         deleteAll(BaseEntity.class);
@@ -77,7 +79,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         DerivedEntity de = (DerivedEntity) newInstance(pm, DerivedEntity.class);
@@ -95,7 +97,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         pm = (OpenJPAEntityManager) currentEntityManager();
 
         Object o = pm.find(DerivedEntity.class, oid);
-        assertTrue(o instanceof DerivedEntity);
+        assertInstanceOf(DerivedEntity.class, o);
         de = (DerivedEntity) o;
         Broker b = JPAFacadeHelper.toBroker(pm);
         OpenJPAStateManager sm = b.getStateManager(de);
@@ -113,8 +115,8 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testBasicSubclassPersistenceOperations()
-        throws ClassNotFoundException {
+    void basicSubclassPersistenceOperations()
+        throws Exception {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BasicSubclassInstance o = (BasicSubclassInstance) newInstance(pm,
@@ -123,7 +125,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testBackingFieldNameMismatch() {
+    void backingFieldNameMismatch() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BackingFieldNameMismatchInstance o = (BackingFieldNameMismatchInstance)
@@ -172,7 +174,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testPolymorphicQueries() {
+    void polymorphicQueries() {
         deleteAll(BaseEntity.class);
         deleteAll(BasicSubclassInstance.class);
 
@@ -213,13 +215,13 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         assertEquals(1, ((BaseEntity) l.get(1)).getShortField());
         assertEquals(2, ((BaseEntity) l.get(2)).getShortField());
         assertEquals(3, ((BaseEntity) l.get(3)).getShortField());
-        assertTrue(l.get(2) instanceof DerivedEntity);
-        assertTrue(l.get(3) instanceof DerivedEntity);
+        assertInstanceOf(DerivedEntity.class, l.get(2));
+        assertInstanceOf(DerivedEntity.class, l.get(3));
         endEm(pm);
     }
 
     @Test
-    public void testEnhancedClassChangesOutsideTxWithoutNTW() {
+    void enhancedClassChangesOutsideTxWithoutNTW() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -246,7 +248,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testSubclassChangesOutsideTxWithoutNTW() {
+    void subclassChangesOutsideTxWithoutNTW() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BasicSubclassInstance basic = (BasicSubclassInstance) newInstance(pm,
@@ -273,7 +275,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testBasicPMUses() {
+    void basicPMUses() {
         // retain so we don't reload in the reads after the tx commit
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -332,7 +334,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testGetObjectId() {
+    void getObjectId() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BasicSubclassInstance basic = new BasicSubclassInstance();
@@ -368,7 +370,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testChangesOutsideTxWithNTW() {
+    void changesOutsideTxWithNTW() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BasicSubclassInstance basic = new BasicSubclassInstance();
@@ -398,7 +400,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testChangesOutsideTxWithoutNTW() {
+    void changesOutsideTxWithoutNTW() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         BasicSubclassInstance basic = new BasicSubclassInstance();
@@ -460,7 +462,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
      */
 
     @Test
-    public void testVersionIncrementAndIdField() {
+    void versionIncrementAndIdField() {
         // make sure that version increments happen correctly, and are
         // visible in the user-visible instance.
         OpenJPAEntityManager pm =
@@ -492,7 +494,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
      */
 
     @Test
-    public void testJPABasics() {
+    void jpaBasics() {
         EntityManager em = currentEntityManager();
         BasicSubclassInstance basic = (BasicSubclassInstance) createInstance(
             em, BasicSubclassInstance.class);
@@ -529,7 +531,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
      */
 
     @Test
-    public void testSingleValuedInverseManagement() {
+    void singleValuedInverseManagement() {
         Map map = new HashMap();
         map.put("openjpa.InverseManager", "true");
         OpenJPAEntityManager pm = (OpenJPAEntityManager)
@@ -550,7 +552,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
     }
 
     @Test
-    public void testBackingFieldConfigurationWithTwoFactories() {
+    void backingFieldConfigurationWithTwoFactories() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         // this causes DerivedEntity.class to get loaded into PCRegistry

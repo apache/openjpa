@@ -38,9 +38,9 @@ import org.junit.jupiter.api.Test;
  * This verifies the fix for the JPA TCK flushModeTest5 failure where
  * a modified entity was not visible in a query with FlushModeType.AUTO.
  */
-public class TestFlushModeAutoQuery extends BaseQueryTest {
+class TestFlushModeAutoQuery extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Entity1.class);
 
         // Create test data
@@ -58,7 +58,7 @@ public class TestFlushModeAutoQuery extends BaseQueryTest {
      * to the query. This corresponds to JPA TCK flushModeTest5.
      */
     @Test
-    public void testFlushModeAutoSeesUnflushedChanges() {
+    void flushModeAutoSeesUnflushedChanges() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -89,7 +89,7 @@ public class TestFlushModeAutoQuery extends BaseQueryTest {
      * the query (the query may not see unflushed changes via DB).
      */
     @Test
-    public void testFlushModeCommitMayNotSeeChanges() {
+    void flushModeCommitMayNotSeeChanges() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

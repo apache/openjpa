@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestConcurrentMap extends SingleEMTestCase {
+class TestConcurrentMap extends SingleEMTestCase {
     @BeforeEach
     public void setUp() {
         setUp(ConcurrentEntityLeft.class, ConcurrentEntityRight.class,
@@ -32,7 +32,7 @@ public class TestConcurrentMap extends SingleEMTestCase {
     }
 
     @Test
-    public void testConcurrentMap001() {
+    void concurrentMap001() {
         em.getTransaction().begin();
 
         ConcurrentEntityLeft left = new ConcurrentEntityLeft();

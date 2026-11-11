@@ -27,11 +27,7 @@ package org.apache.openjpa.persistence.jdbc.kernel;
  */
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /*
  * TestByteArrayAppId.java
@@ -79,7 +75,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         // we have to use getbytes/setbytes for byte arrays to work properly
         if (!_init) {
             _pmf =(OpenJPAEntityManagerFactory) getEmf(getProps());
@@ -136,7 +132,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests that application identity classes are returned correctly.
      */
     @Test
-    public void testGetObjectIdClass() {
+    void getObjectIdClass() {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager pm = OpenJPAPersistence.cast (em);
 
@@ -153,7 +149,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests finding an instance by a manually-created id value.
      */
     @Test
-    public void testGetSubclassObjectById() {
+    void getSubclassObjectById() {
         ByteArrayPKPC2 bytes2 = getChild();
         assertNotNull(bytes2);
         assertEquals(1, bytes2.getPK()[0]);
@@ -173,7 +169,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests finding an instance by a manually-created id value.
      */
     @Test
-    public void testGetObjectById() {
+    void getObjectById() {
         ByteArrayPKPC bytes = getParent();
         assertNotNull(bytes);
         assertEquals(3, bytes.getPK()[0]);
@@ -189,7 +185,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * prevent by-reference modification by the user.
      */
     @Test
-    public void testGetObjectId() {
+    void getObjectId() {
 
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
@@ -201,7 +197,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         oid.pk = new byte[]{ 1, 2 };
         ByteArrayPKPC bytes = (ByteArrayPKPC) kem.getObjectId(oid);
         ByteArrayPKPCId oidCopy = (ByteArrayPKPCId) kem.getObjectId(bytes);
-        assertTrue(oid != oidCopy, "Oid not copied.");
+        assertNotSame(oid, oidCopy, "Oid not copied.");
         assertEquals(1, oidCopy.pk[0]);
         assertEquals(2, oidCopy.pk[1]);
 
@@ -213,7 +209,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests that changing primary key values will fail.
      */
     @Test
-    public void testChangeIdentity() {
+    void changeIdentity() {
         ByteArrayPKPC2 bytes = getChild();
         OpenJPAEntityManager pm = OpenJPAPersistence.getEntityManager(bytes);
         startTx(pm);
@@ -233,7 +229,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests that pk fields are retained on state transition to hollow.
      */
     @Test
-    public void testPKRetain() {
+    void pKRetain() {
         ByteArrayPKPC2 bytes = getChild();
         OpenJPAEntityManager pm = OpenJPAPersistence.getEntityManager(bytes);
 
@@ -261,7 +257,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     }
 
     @Test
-    public void testDeleteAndInsert() {
+    void deleteAndInsert() {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
 
@@ -310,7 +306,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager pm = _pmf.createEntityManager();
         //FIXME jthomas - partly commented
         //Query q = pm.newQuery(ByteArrayPKPC.class, "pk == bytes");
@@ -327,7 +323,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     }
 
     @Test
-    public void testConflictingIds() {
+    void conflictingIds() {
         OpenJPAEntityManager pm = _pmf.createEntityManager();
         startTx(pm);
 

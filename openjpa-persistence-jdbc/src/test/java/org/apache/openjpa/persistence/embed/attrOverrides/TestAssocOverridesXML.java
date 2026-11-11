@@ -34,9 +34,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
+class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
     protected List<String> _sql = new ArrayList<>();
 
@@ -45,7 +46,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
      * collection
      */
     @Test
-    public void testElementCollectionAssocOverrides() {
+    void elementCollectionAssocOverrides() {
 
         _sql.clear();
         HashMap<String, Object> props = new HashMap<>();
@@ -91,13 +92,11 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
                 " .*value_emba_entb.*value_emba_mentb");
         }
         finally {
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 if (emf1 != null)
                     cleanupEMF(emf1);
                 _sql.clear();
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            });
         }
     }
 

@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.conf.test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.openjpa.lib.conf.PluginListValue;
@@ -38,7 +37,7 @@ import org.junit.jupiter.api.Test;
 public class TestPluginValue extends AbstractTestCase {
 
     @Test
-    public void testDefault() {
+    void testDefault() {
         defaultTest(new StringValue("testKey"));
         defaultTest(new PluginValue("testKey", true));
         defaultTest(new PluginListValue("testKey"));
@@ -73,11 +72,11 @@ public class TestPluginValue extends AbstractTestCase {
         assertEquals(1, val.get());
         val.set(null);
         assertEquals("foo", val.getString());
-        assertEquals(null, val.get());
+        assertNull(val.get());
     }
 
     @Test
-    public void testAlias() {
+    void alias() {
         aliasTest(new StringValue("testKey"));
         aliasTest(new PluginValue("testKey", true));
         aliasTest(new PluginListValue("testKey"));
@@ -131,11 +130,11 @@ public class TestPluginValue extends AbstractTestCase {
 
         val.setAliases(new String[]{ "none", null });
         val.setString("none");
-        assertTrue(((PluginListValue) val).getClassNames().length == 0);
+        assertEquals(0, ((PluginListValue) val).getClassNames().length);
     }
 
     @Test
-    public void testPluginListParsing() {
+    void pluginListParsing() {
         PluginListValue val = new PluginListValue("testKey");
         assertEquals(0, val.getClassNames().length);
         val.setString("foo");

@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * - Customer is persisted with Address objects set on it
  * - flush() is called after each persist
  */
-public class TestCascadeOneToOneFlushOrder {
+class TestCascadeOneToOneFlushOrder {
 
     /**
      * Creates the schema with explicit FK constraints,
@@ -138,8 +138,8 @@ public class TestCascadeOneToOneFlushOrder {
      * 3. Flush — must insert Address rows BEFORE Customer
      */
     @Test
-    public void testPersistCustomerWithCascadedAddresses()
-            throws Exception {
+    void persistCustomerWithCascadedAddresses()
+        throws Exception {
         EntityManagerFactory emf = createEMF();
 
         // Pre-create schema with FK constraints like the TCK
@@ -202,8 +202,8 @@ public class TestCascadeOneToOneFlushOrder {
      * Schema pre-created with FK constraints.
      */
     @Test
-    public void testPersistMultipleCustomersWithFlushAfterEach()
-            throws Exception {
+    void persistMultipleCustomersWithFlushAfterEach()
+        throws Exception {
         EntityManagerFactory emf = createEMF();
 
         // Pre-create schema with FK constraints like the TCK

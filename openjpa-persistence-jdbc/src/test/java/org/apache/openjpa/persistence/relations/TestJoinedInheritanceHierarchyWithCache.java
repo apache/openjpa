@@ -23,13 +23,12 @@ import java.util.Set;
 
 import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.datacache.common.apps.FlushDataCacheObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJoinedInheritanceHierarchyWithCache
+class TestJoinedInheritanceHierarchyWithCache
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -41,7 +40,7 @@ public class TestJoinedInheritanceHierarchyWithCache
     }
 
     @Test
-    public void testCacheSqlGeneration() throws PersistenceException {
+    void cacheSqlGeneration() throws Exception {
 
 		InheritanceHierarchyConcrete parent = new InheritanceHierarchyConcrete();
 		InheritanceHierarchyConcrete child = new InheritanceHierarchyConcrete();

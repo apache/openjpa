@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.event;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,7 +49,7 @@ public class RemoteEventBase extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         datacatch.evictAll();
     }
@@ -139,8 +137,8 @@ public class RemoteEventBase extends AbstractTestCase {
             }
         }
         assertTrue(pass, "pass = " + pass);
-        assertTrue(listener2.updated.size() == 0);
-        assertTrue(listener2.deleted.size() == 0);
+        assertEquals(0, listener2.updated.size());
+        assertEquals(0, listener2.deleted.size());
 
         // modify an object
         startTx(pm);
@@ -172,8 +170,8 @@ public class RemoteEventBase extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(listener2.added.size() == 0);
-        assertTrue(listener2.deleted.size() == 0);
+        assertEquals(0, listener2.added.size());
+        assertEquals(0, listener2.deleted.size());
 
         // delete an object
         startTx(pm);
@@ -205,8 +203,8 @@ public class RemoteEventBase extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(listener2.added.size() == 0);
-        assertTrue(listener2.updated.size() == 0);
+        assertEquals(0, listener2.added.size());
+        assertEquals(0, listener2.updated.size());
     }
 
     protected static class RemoteCommitListenerTestImpl implements

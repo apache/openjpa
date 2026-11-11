@@ -16,6 +16,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * Test that a {@link MappingTool#ACTION_REFRESH} uses the right
  * types for new columns and takes any mapping in DBDictionary into account.
  */
-public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
+class TestMappingToolRefresh extends AbstractPersistenceTestCase {
 
     /**
      * First we create a schema mapping with boolean representation as CHAR(1).
@@ -44,7 +45,7 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
      * This should result in an empty diff.
      */
     @Test
-    public void testSchemaCreation() throws Exception {
+    void schemaCreation() throws Exception {
         Map<String, Object> emfProps = getPropertiesMap(EntityBoolChar.class,
                 "openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true, SchemaAction='add,deleteTableContents')",

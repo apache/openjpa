@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestMultipleSameTypedEmbeddedWithEagerRelations
+class TestMultipleSameTypedEmbeddedWithEagerRelations
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -68,7 +68,7 @@ public class TestMultipleSameTypedEmbeddedWithEagerRelations
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select m from MultipleSameTypedEmbedded m "
             + "where m.embed1.rel.name = 'm1' "

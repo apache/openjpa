@@ -94,7 +94,7 @@ public class TestJointableOneToMany extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         EntityManager em = emf.createEntityManager();
         try {
             // Verify the Class exists, and that from it we can get the Package.

@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2965">OPENJPA-2965</A>
  */
-public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
 
     private static final int PART_COUNT = 3;
     private static final int NOTE_COUNT = 2;
@@ -109,7 +109,7 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
      * collection table.
      */
     @Test
-    public void testFilteredDeleteCleansOwnedTablesOfDependentFields() {
+    void filteredDeleteCleansOwnedTablesOfDependentFields() {
         assertEquals(1, delete(
             "delete from BulkDeleteDependentOwner o where o.name=:n",
             "n", "owner"));
@@ -132,7 +132,7 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
      * leaves the dependent entities alone.
      */
     @Test
-    public void testUnfilteredDeleteCleansOwnedTablesOfDependentFields() {
+    void unfilteredDeleteCleansOwnedTablesOfDependentFields() {
         assertEquals(1, delete("delete from BulkDeleteDependentOwner o"));
 
         assertEquals(0, count(BulkDeleteDependentOwner.class));

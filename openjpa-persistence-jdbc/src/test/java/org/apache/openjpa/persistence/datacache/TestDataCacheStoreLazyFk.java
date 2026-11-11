@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
+class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
     Object[] p = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
 
     @BeforeEach
@@ -38,7 +38,7 @@ public class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCacheHit() throws Exception {
+    void cacheHit() throws Exception {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         // Change the eager field to lazy to make testing easier.
         ClassMetaData cmd =

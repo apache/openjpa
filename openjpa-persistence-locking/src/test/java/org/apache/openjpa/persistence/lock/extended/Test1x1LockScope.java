@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  * - Uni-1x1 use join table - eager fetch (default)
  * - Uni-1x1 use join table - lazy fetch
  */
-public class Test1x1LockScope extends LockScopeTestCase {
+class Test1x1LockScope extends LockScopeTestCase {
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
@@ -63,12 +63,12 @@ public class Test1x1LockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1x1Lock() {
+    void normalUni1x1Lock() {
         common1x1Lock("testNormalUni1x1Lock", 1111201, false);
     }
 
     @Test
-    public void testExtendedUni1x1Lock() {
+    void extendedUni1x1Lock() {
         common1x1Lock("testExtendedUni1x1Lock", 1111211, true);
     }
 
@@ -353,12 +353,12 @@ public class Test1x1LockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1x1LazyLock() {
+    void normalUni1x1LazyLock() {
         common1x1LazyLock("testNormalUni1x1LazyLock", 1111101, false);
     }
 
     @Test
-    public void testExtendedUni1x1LazyLock() {
+    void extendedUni1x1LazyLock() {
         common1x1LazyLock("testExtendedUni1x1LazyLock", 1111111, true);
     }
 
@@ -541,12 +541,12 @@ public class Test1x1LockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1x1JTLock() {
+    void normalUni1x1JTLock() {
         common1x1JTLock("testNormalUni1x1JTLock", 1112201, false);
     }
 
     @Test
-    public void testExtendedUni1x1JTLock() {
+    void extendedUni1x1JTLock() {
         common1x1JTLock("testExtendedUni1x1JTLock", 1112211, true);
     }
 
@@ -852,12 +852,12 @@ public class Test1x1LockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1x1JTLazyLock() {
+    void normalUni1x1JTLazyLock() {
         common1x1JTLazyLock("testNormalUni1x1JTLazyLock", 1112101, false);
     }
 
     @Test
-    public void testExtendedUni1x1JTLazyLock() {
+    void extendedUni1x1JTLazyLock() {
         common1x1JTLazyLock("testExtendedUni1x1JTLazyLock", 1112111, true);
     }
 

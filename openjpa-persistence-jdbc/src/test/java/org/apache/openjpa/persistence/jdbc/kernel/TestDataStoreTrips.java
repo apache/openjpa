@@ -49,7 +49,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestDataStoreTrips extends BaseJDBCTest{
+class TestDataStoreTrips extends BaseJDBCTest{
 
 
 //    private boolean  = true;//Boolean.valueOf(bool);
@@ -59,7 +59,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
     private SelectCounter _counter = null;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
        deleteAll(DataStoreTripsPC.class);
 
@@ -111,7 +111,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
     }
 
     @Test
-    public void testTrips() {
+    void trips() {
         OpenJPAEntityManager pm = _factory.createEntityManager();
         Extent ext = pm.createExtent(DataStoreTripsPC.class, true);
         for (Iterator itr = ext.iterator(); itr.hasNext();)
@@ -128,7 +128,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
     }
 
     @Test
-    public void testExistsCalls() {
+    void existsCalls() {
         OpenJPAEntityManager pm = _factory.createEntityManager();
 
         // first time there shouldn't be any call to exists b/c the data

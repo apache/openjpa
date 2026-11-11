@@ -46,7 +46,7 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
     }
 
     @Test
-    public void testMapping() {
+    void mapping() {
 
         // If the database does not support unique constraints, exit
         if (!supportsUniqueConstraints())

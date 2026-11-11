@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.arrays.model.XMLExceptionEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestXMLExceptionEntity extends SingleEMFTestCase {
+class TestXMLExceptionEntity extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
@@ -37,7 +37,7 @@ public class TestXMLExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionArrayAsLob() {
+    void exceptionArrayAsLob() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -65,7 +65,7 @@ public class TestXMLExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionPersistentCollection() {
+    void exceptionPersistentCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -93,7 +93,7 @@ public class TestXMLExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionElementCollection() {
+    void exceptionElementCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestFlatInheritance extends SingleEMFTestCase {
+class TestFlatInheritance extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestFlatInheritance extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Flat1 pc = new Flat1(1);

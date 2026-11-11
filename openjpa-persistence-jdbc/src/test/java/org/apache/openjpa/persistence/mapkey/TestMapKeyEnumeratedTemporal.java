@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * Reproduces TCK failures from mapkeyenumerated and mapkeytemporal tests.
  * Uses runtime enhancement (subclassing mode) to match TCK behavior.
  */
-public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
+class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -62,7 +62,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Mirrors TCK mapKeyEnumeratedTest.
      */
     @Test
-    public void testMapKeyEnumerated() {
+    void mapKeyEnumerated() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -124,7 +124,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * mapkeyenumerated.
      */
     @Test
-    public void testMapKeyEnumeratedElementCollection() {
+    void mapKeyEnumeratedElementCollection() {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -169,7 +169,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Mirrors TCK mapKeyTemporalTest.
      */
     @Test
-    public void testMapKeyTemporal() throws Exception {
+    void mapKeyTemporal() throws Exception {
         Date d1 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-02-14");
         Date d2 = new SimpleDateFormat("yyyy-MM-dd").parse("2001-06-27");
         Date d3 = new SimpleDateFormat("yyyy-MM-dd").parse("2002-07-07");
@@ -235,7 +235,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * mapkeytemporal.
      */
     @Test
-    public void testMapKeyTemporalElementCollection() throws Exception {
+    void mapKeyTemporalElementCollection() throws Exception {
         Date d6 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-10-14");
         Date d7 = new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-27");
 
@@ -285,7 +285,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * not just "KEY" or "KEY0" or "KEY2".
      */
     @Test
-    public void testDefaultMapKeyColumnName() {
+    void defaultMapKeyColumnName() {
         // Force metadata resolution by opening an EM
         EntityManager em = emf.createEntityManager();
 

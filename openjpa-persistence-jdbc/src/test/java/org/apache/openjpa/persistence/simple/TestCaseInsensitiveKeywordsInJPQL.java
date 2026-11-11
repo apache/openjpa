@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCaseInsensitiveKeywordsInJPQL
+class TestCaseInsensitiveKeywordsInJPQL
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -37,7 +37,7 @@ public class TestCaseInsensitiveKeywordsInJPQL
     }
 
     @Test
-    public void testCaseInsensitiveBooleans() {
+    void caseInsensitiveBooleans() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

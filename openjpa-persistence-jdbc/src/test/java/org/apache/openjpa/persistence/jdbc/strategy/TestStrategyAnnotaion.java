@@ -31,7 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestStrategyAnnotaion extends SingleEMFTestCase {
+class TestStrategyAnnotaion extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestStrategyAnnotaion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testStrategy() {
+    void strategy() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
             "testStrategy", System.getProperties());
         EntityManager em = emf.createEntityManager();

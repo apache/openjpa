@@ -42,7 +42,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(LifeCycleDDEntity.class);
 		deleteAll(LifeCycleDDEntity2.class);
@@ -50,7 +50,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @Test
-    public void testDDPrpPop()
+    void dDPrpPop()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -70,7 +70,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @Test
-    public void testDDPrrPor()
+    void dDPrrPor()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -98,7 +98,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @Test
-    public void testDDPouPru()
+    void dDPouPru()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -131,7 +131,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @Test
-    public void testDDPol()
+    void dDPol()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -169,7 +169,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
     /**  DEFAULT LISTENER DD TESTING **/
 
     @Test
-    public void testDefaultPrePostPersistListener()
+    void defaultPrePostPersistListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -193,7 +193,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
     //FIX-ME Default-Entity-listener Impl. is over firing
     @Test
-    public void testDefaultPrePostUpdateListener()
+    void defaultPrePostUpdateListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -230,7 +230,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
     //FIX-ME Default-Entity-listener Impl. is over firing
     @Test
-    public void testDefaultPostLoadListener()
+    void defaultPostLoadListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -264,7 +264,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     @Test
-    public void testSubClassOverrideSuperCallbacksInh()
+    void subClassOverrideSuperCallbacksInh()
 	{
        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);

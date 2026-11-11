@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * converters on the fields. The mapping file is read before the annotations,
  * so the kind of LOB can only follow the converter once the field is mapped.
  */
-public class TestLobConvertedXml extends SingleEMFTestCase {
+class TestLobConvertedXml extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -58,22 +58,22 @@ public class TestLobConvertedXml extends SingleEMFTestCase {
     }
 
     @Test
-    public void testListConvertedToStringIsClob() {
+    void listConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("items"));
     }
 
     @Test
-    public void testItemConvertedToStringIsClob() {
+    void itemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("item"));
     }
 
     @Test
-    public void testStringConvertedToBytesIsBlob() {
+    void stringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, columnType("bytes"));
     }
 
     @Test
-    public void testRoundTrip() {
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlLobConvertedEntity e = new XmlLobConvertedEntity();

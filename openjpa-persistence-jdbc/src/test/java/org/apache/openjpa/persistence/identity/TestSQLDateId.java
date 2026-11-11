@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestSQLDateId
+class TestSQLDateId
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestSQLDateId
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
 
         SQLDateIdEntity e = new SQLDateIdEntity();

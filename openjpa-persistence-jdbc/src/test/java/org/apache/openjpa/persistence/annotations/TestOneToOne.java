@@ -41,13 +41,13 @@ public class TestOneToOne extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
     }
 
     @Test
-    public void testOneToOne() {
+    void oneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);
@@ -68,7 +68,7 @@ public class TestOneToOne extends AnnotationTestCase
     }
 
     @Test
-    public void testSelfOneToOne() {
+    void selfOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);
@@ -88,7 +88,7 @@ public class TestOneToOne extends AnnotationTestCase
     }
 
     @Test
-    public void testPKJoinSelfOneToOne() {
+    void pKJoinSelfOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);
@@ -108,7 +108,7 @@ public class TestOneToOne extends AnnotationTestCase
     }
 
     @Test
-    public void testOtherTableOneToOne() {
+    void otherTableOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);
@@ -129,7 +129,7 @@ public class TestOneToOne extends AnnotationTestCase
     }
 
     @Test
-    public void testInverseOneToOne() {
+    void inverseOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);

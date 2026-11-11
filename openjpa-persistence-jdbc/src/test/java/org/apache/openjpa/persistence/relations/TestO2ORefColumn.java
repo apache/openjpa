@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * of aText (aEvident) with JoinColumn(..referencedColumnName=..) overridden to non-standard foreign key,
  * a constraint violation will occur when aEvident is persisted to the data store.
  */
-public class TestO2ORefColumn extends SingleEMFTestCase {
+class TestO2ORefColumn extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp () {
@@ -50,7 +50,7 @@ public class TestO2ORefColumn extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRefColumnJoinEntities () {
+    void refColumnJoinEntities() {
         AEvident aEvident = new AEvident();
         aEvident.setName("Evident_A");
 

@@ -44,7 +44,7 @@ public class TestRangeQuery extends BaseJDBCTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
        deleteAll(HelperPC.class);
        deleteAll(EagerOuterJoinPC2.class);
@@ -52,7 +52,7 @@ public class TestRangeQuery extends BaseJDBCTest {
     }
 
     @Test
-    public void testQueryRange() {
+    void queryRange() {
         insertManyStringList();
 
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();

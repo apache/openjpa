@@ -56,7 +56,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestPersistentGraph extends SingleEMFTestCase {
+class TestPersistentGraph extends SingleEMFTestCase {
 	
 	private static final Logger logger = Logger.getLogger(TestPersistentGraph.class.getCanonicalName());
 	
@@ -106,7 +106,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * Verifies that fields are mapped with expected strategy or value handlers.
      */
     @Test
-    public void testMapping() {
+    void mapping() {
         assertStrategy(PersistentRelation.class, "source", HandlerFieldStrategy.class, UntypedPCValueHandler.class);
         assertStrategy(PersistentRelation.class, "target", HandlerFieldStrategy.class, UntypedPCValueHandler.class);
         assertStrategy(PersistentRelation.class, "attrs", HandlerHandlerMapTableFieldStrategy.class, null);
@@ -180,7 +180,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * assertions of the created graph.
      */
     @Test
-    public void testCreateGraph() {
+    void createGraph() {
         em.getTransaction().begin();
         assertFalse(em.contains(graph));
         graph = em.find(PersistentGraph.class, graph.getId());
@@ -207,7 +207,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * correctly.
      */
     @Test
-    public void testQueryRelation() {
+    void queryRelation() {
         String jpql = "select r from PersistentRelation r";
         List<PersistentRelation> relations = em.createQuery(jpql, PersistentRelation.class).getResultList();
         for (Relation<?, ?> r : relations) {
@@ -242,7 +242,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * Tests that a relation can be queried predicated on its source vertex.
      */
     @Test
-    public void testQueryRelationOnSourceParameter() {
+    void queryRelationOnSourceParameter() {
         People p1 = em.find(People.class, SSN[0]);
         String jpql = "select r from PersistentRelation r where r.source = :node";
         List<PersistentRelation> result = em.createQuery(jpql, PersistentRelation.class)
@@ -255,7 +255,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * Tests that a relation can be queried predicated on its attribute key.
      */
     @Test
-    public void testQueryRelationOnSingleAttributeKey() {
+    void queryRelationOnSingleAttributeKey() {
         String jpql = "select r from PersistentRelation r join r.attrs a where key(a) = :key";
         List<PersistentRelation> result = em.createQuery(jpql, PersistentRelation.class)
                                   .setParameter("key", ATTR_EMOTION)
@@ -269,7 +269,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * key-value pair.
      */
     @Test
-    public void testQueryRelationOnSingleAttributeKeyValue() {
+    void queryRelationOnSingleAttributeKeyValue() {
         String jpql = "select r from PersistentRelation r join r.attrs a where key(a) = :key and value(a) = :value";
         String value = EMOTIONS[0][2].toString();
         List<PersistentRelation> result = em.createQuery(jpql, PersistentRelation.class)
@@ -287,7 +287,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
      * wrong result.
      */
     @Test
-    public void testQueryRelationOnMultipleAttributeKeyValuePairs() {
+    void queryRelationOnMultipleAttributeKeyValuePairs() {
         String jpql = "select r from PersistentRelation r join r.attrs a1 join r.attrs a2 "
                     + "where key(a1) = :key1 and value(a1) = :value1 "
                     + "and key(a2) = :key2 and value(a2) = :value2";
@@ -319,7 +319,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAddRemoveAttribute() {
+    void addRemoveAttribute() {
         em.getTransaction().begin();
         People p1 = em.find(People.class, SSN[0]);
         String jpql = "select r from PersistentRelation r where r.source = :node";

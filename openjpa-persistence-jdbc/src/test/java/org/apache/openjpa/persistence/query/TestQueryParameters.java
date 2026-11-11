@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Parameter;
@@ -51,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestQueryParameters extends SingleEMFTestCase {
+class TestQueryParameters extends SingleEMFTestCase {
     private static OpenJPAEntityManagerFactorySPI oemf;
     private static int TEST_COUNT = 0;
     private EntityManager em;
@@ -77,7 +74,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterUsingReservedWord() {
+    void namedParameterUsingReservedWord() {
         String jpql = "select e from simple e WHERE e.id=:key and e.name=:value";
         Query q = em.createQuery(jpql)
                     .setParameter("key", 100)
@@ -96,7 +93,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterInJPQLQuery() {
+    void positionalParameterInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
@@ -115,7 +112,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterInJPQLQuery() {
+    void namedParameterInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
@@ -134,7 +131,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterMissingInJPQLQuery() {
+    void positionalParameterMissingInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
@@ -144,7 +141,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterMissingInJPQLQuery() {
+    void namedParameterMissingInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
@@ -154,7 +151,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterWrongValueInJPQLQuery() {
+    void positionalParameterWrongValueInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
@@ -165,7 +162,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterWrongValueInJPQLQuery() {
+    void namedParameterWrongValueInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
@@ -176,39 +173,39 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterValueTypeInJPQLQuery() {
+    void positionalParameterValueTypeInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=?1 and e.name=?2";
         Query q = em.createQuery(jpql)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
 
         Parameter<?> param1 = q.getParameter(1);
-        assertTrue(param1 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param1);
         assertEquals(long.class, param1.getParameterType());
 
         Parameter<?> param2 = q.getParameter(2);
-        assertTrue(param2 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param2);
         assertEquals(String.class, param2.getParameterType());
     }
 
     @Test
-    public void testNamedParameterValueTypeInJPQLQuery() {
+    void namedParameterValueTypeInJPQLQuery() {
         String jpql = "select e from simple e WHERE e.id=:id and e.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
 
         Parameter<?> param1 = q.getParameter("id");
-        assertTrue(param1 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param1);
         assertEquals(long.class, param1.getParameterType());
 
         Parameter<?> param2 = q.getParameter("name");
-        assertTrue(param2 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param2);
         assertEquals(String.class, param2.getParameterType());
     }
 
     @Test
-    public void testNamedParameterInPreparedQuery() {
+    void namedParameterInPreparedQuery() {
         String jpql = "select x from simple x WHERE x.id=:id and x.name=:name";
         Query q = em.createQuery(jpql)
                     .setParameter("id", 100)
@@ -229,7 +226,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     // Similar tests with NamedQuery
     //--------------------------------------------------------------------------------------------
     @Test
-    public void testPositionalParameterInNamedQuery() {
+    void positionalParameterInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
@@ -247,7 +244,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterInNamedQuery() {
+    void namedParameterInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
@@ -265,7 +262,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterMissingInNamedQuery() {
+    void positionalParameterMissingInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
@@ -274,7 +271,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterMissingInNamedQuery() {
+    void namedParameterMissingInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
@@ -283,7 +280,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterWrongValueInNamedQuery() {
+    void positionalParameterWrongValueInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
@@ -293,7 +290,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedParameterWrongValueInNamedQuery() {
+    void namedParameterWrongValueInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
@@ -303,37 +300,37 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPositionalParameterValueTypeInNamedQuery() {
+    void positionalParameterValueTypeInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_POSITIONAL_PARAMS)
                     .setParameter(1, 100)
                     .setParameter(2, "XYZ");
 
         Parameter<?> param1 = q.getParameter(1);
-        assertTrue(param1 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param1);
         assertEquals(long.class, param1.getParameterType());
 
         Parameter<?> param2 = q.getParameter(2);
-        assertTrue(param2 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param2);
         assertEquals(String.class, param2.getParameterType());
     }
 
     @Test
-    public void testNamedParameterValueTypeInNamedQuery() {
+    void namedParameterValueTypeInNamedQuery() {
         Query q = em.createNamedQuery(SimpleEntity.NAMED_QUERY_WITH_NAMED_PARAMS)
                     .setParameter("id", 100)
                     .setParameter("name", "XYZ");
 
         Parameter<?> param1 = q.getParameter("id");
-        assertTrue(param1 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param1);
         assertEquals(long.class, param1.getParameterType());
 
         Parameter<?> param2 = q.getParameter("name");
-        assertTrue(param2 instanceof ParameterImpl);
+        assertInstanceOf(ParameterImpl.class, param2);
         assertEquals(String.class, param2.getParameterType());
     }
 
     @Test
-    public void testCriteriaQueryWithNamedParameter() {
+    void criteriaQueryWithNamedParameter() {
         Metamodel model = oemf.getMetamodel();
         EntityType<SimpleEntity> entity = model.entity(SimpleEntity.class);
         SingularAttribute<SimpleEntity, Long> id =
@@ -359,7 +356,7 @@ public class TestQueryParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCriteriaQueryWithUnnamedParameter() {
+    void criteriaQueryWithUnnamedParameter() {
         Metamodel model = oemf.getMetamodel();
         EntityType<SimpleEntity> entity = model.entity(SimpleEntity.class);
         SingularAttribute<SimpleEntity, Long> id =

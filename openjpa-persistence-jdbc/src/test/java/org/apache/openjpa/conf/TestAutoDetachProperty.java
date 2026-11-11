@@ -34,12 +34,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestAutoDetachProperty {
+class TestAutoDetachProperty {
     private EntityManager em;
     private EntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         // Don't modify system props, as we are trying to get as close as
         // possible to testing props in persistence.xml
         HashMap props = new HashMap(System.getProperties());
@@ -51,7 +51,7 @@ public class TestAutoDetachProperty {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         em.close();
         em = null;
         emf.close();
@@ -59,19 +59,19 @@ public class TestAutoDetachProperty {
     }
 
     @Test
-    public void testIsAutoDetachingOnClose() {
+    void testIsAutoDetachingOnClose() {
         assertTrue(isAutoDetachingOnClose(),
                 "not autodetaching on close as expected");
     }
 
     @Test
-    public void testIsAutoDetachingOnCommit() {
+    void testIsAutoDetachingOnCommit() {
         assertTrue(isAutoDetachingOnCommit(),
                 "not autodetaching on commit as expected");
     }
 
     @Test
-    public void testIsAutoDetachingOnNonTxRead() {
+    void testIsAutoDetachingOnNonTxRead() {
         assertTrue(isAutoDetachingOnNonTxRead(),
                 "not autodetaching on nontransactional read as expected");
     }

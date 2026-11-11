@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author <a href="mailto:struberg@apache.org">Mark Struberg</a>
  */
-public class TestMixedAccessSubclassing extends SingleEMTestCase {
+class TestMixedAccessSubclassing extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -40,7 +40,7 @@ public class TestMixedAccessSubclassing extends SingleEMTestCase {
     }
 
     @Test
-    public void testDynamicEnhancement() {
+    void dynamicEnhancement() {
         int pk = -1;
         {
             em.getTransaction().begin();

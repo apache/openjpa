@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.detachment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import jakarta.persistence.EntityManager;
 
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestAttachConstructedCopy
+class TestAttachConstructedCopy
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestAttachConstructedCopy
     }
 
     @Test
-    public void testAttachConstructedCopyWithGeneratedPKAndNoVersion() {
+    void attachConstructedCopyWithGeneratedPKAndNoVersion() {
         Record record = new Record();
         record.setContent("orig");
 
@@ -60,7 +60,7 @@ public class TestAttachConstructedCopy
         em = emf.createEntityManager();
         em.getTransaction().begin();
         record = em.merge(copy);
-        assertTrue(record != copy);
+        assertNotSame(record, copy);
         assertEquals("new", record.getContent());
         em.getTransaction().commit();
         em.close();

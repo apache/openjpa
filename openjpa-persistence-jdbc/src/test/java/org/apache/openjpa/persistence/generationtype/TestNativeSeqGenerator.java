@@ -56,7 +56,7 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
     }
 
     @Test
-    public void testGetIdGeneratorSeqGen() {
+    void getIdGeneratorSeqGen() {
         createEntityE2();
         em.getTransaction().begin();
         em.persist(entityE2);
@@ -73,7 +73,7 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
      * @since 2.2.0
      */
     @Test
-    public void testAllocationSize() {
+    void allocationSize() {
         // Turn off statement batching for easier INSERT counting.
         dict.setBatchLimit(0);
         em.getTransaction().begin();

@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  * Test JPA 2.0 em.refresh(LockMode) exception behaviors with "mixed"
  * lock manager.
  */
-public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
+class TestMixedLockManagerRefreshException extends SequencedActionsTest {
     @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
@@ -40,7 +40,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
      * TransactionRequiredException if there is no transaction
      */
     @Test
-    public void testRefreshNoTxReqExceptions() {
+    void refreshNoTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -80,7 +80,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
      * TransactionRequiredException if there is no transaction
      */
     @Test
-    public void testRefreshTxReqExceptions() {
+    void refreshTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -121,7 +121,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
      *      detached entity
      */
     @Test
-    public void testRefreshIllegalArgrumentExceptions() {
+    void refreshIllegalArgrumentExceptions() {
         // Test invalid entity argument throws IllegalArgumentException.
         Object[][] threadMainInvEntityIllegalArgTest = {
             {Act.CreateEm},

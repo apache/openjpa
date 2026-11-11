@@ -38,12 +38,12 @@ import org.junit.jupiter.api.Test;
  * HardwareProduct (subclass) inherits @Id from Product (parent) and
  * the enhancer fails to map the inherited property to its backing field.
  */
-public class TestInheritedPropertyAccessPersist {
+class TestInheritedPropertyAccessPersist {
 
     private EntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
@@ -57,7 +57,7 @@ public class TestInheritedPropertyAccessPersist {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
@@ -70,7 +70,7 @@ public class TestInheritedPropertyAccessPersist {
      * pcAttributeIndexToFieldName() returns null for inherited PK field.
      */
     @Test
-    public void testPersistSubclassWithInheritedId() {
+    void persistSubclassWithInheritedId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {
@@ -111,7 +111,7 @@ public class TestInheritedPropertyAccessPersist {
      * Test persisting the parent class directly works too.
      */
     @Test
-    public void testPersistParentClassDirectly() {
+    void persistParentClassDirectly() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {

@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TupleQueryTest
+class TupleQueryTest
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -47,7 +47,7 @@ public class TupleQueryTest
     }
 
     @Test
-    public void testNormalQuery() {
+    void normalQuery() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery("select e.name from named e", Tuple.class);

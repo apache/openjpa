@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * OpenJPA JIRA: {@link http://issues.apache.org/jira/browse/OPENJPA-1061}
  *
  */
-public class TestMappedSuperclass extends SingleEMFTestCase {
+class TestMappedSuperclass extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(BaseClass.class, SubclassC.class, MappedSuper.class,
@@ -53,7 +53,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * context by calling EntityManager.persist() on the new entity object.
      */
     @Test
-    public void testMappedSuperclassContract001() {
+    void mappedSuperclassContract001() {
         EntityManager em = emf.createEntityManager();
 
         // Create two entities, SubclassC and SubclassD, with the same
@@ -86,7 +86,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * context by calling EntityManager.merge() on the new entity object.
      */
     @Test
-    public void testMappedSuperclassContract002() {
+    void mappedSuperclassContract002() {
         EntityManager em = emf.createEntityManager();
 
         // Create two entities, SubclassC and SubclassD, with the same

@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -55,7 +54,7 @@ public class TestDB2Dictionary {
      * When DS1 is non null we should get a connection and use it to obtain the schema name.
      */
     @Test
-    public void testGetDefaultSchemaNameDS1() throws Exception {
+    void getDefaultSchemaNameDS1() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
@@ -102,7 +101,7 @@ public class TestDB2Dictionary {
      * When ds1 is null, fallback to ds2
      */
     @Test
-    public void testGetDefaultSchemaNameDS2() throws Exception {
+    void getDefaultSchemaNameDS2() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
@@ -152,7 +151,7 @@ public class TestDB2Dictionary {
      * When ds1 is null, fallback to ds2
      */
     @Test
-    public void testGetDefaultSchemaNameNoDS() throws Exception {
+    void getDefaultSchemaNameNoDS() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
@@ -173,14 +172,14 @@ public class TestDB2Dictionary {
         DBDictionary dict = new DB2Dictionary();
         dict.setConfiguration(mockConfiguration);
         assertNotNull(dict);
-        assertEquals(null, dict.getDefaultSchemaName());
+        assertNull(dict.getDefaultSchemaName());
     }
 
     /*
      * TestWhitespace trim
      */
     @Test
-    public void testGetDefaultSchemaNameTrimmed() throws Exception {
+    void getDefaultSchemaNameTrimmed() throws Exception {
         final String schema2 = "abcd     ";
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
@@ -228,7 +227,7 @@ public class TestDB2Dictionary {
      * Verifies that the ConnectedConfiguration method only uses the DBMetaData to determine the correct behavior.
      */
     @Test
-    public void testConnectedConfigurationOnlyUsesMetaData() throws Exception {
+    void connectedConfigurationOnlyUsesMetaData() throws Exception {
         context.checking(new Expectations()
         {
             {

@@ -36,19 +36,19 @@ public class TestBulkUpdate extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(Entity1.class);
         deleteAll(Entity2.class);
     }
 
     @Test
-    public void testSimpleBulkUpdate() {
+    void simpleBulkUpdate() {
         for (int i = 1; i < 5; i++)
-            testSimpleBulkUpdate(i);
+            simpleBulkUpdate(i);
     }
 
     @Test
-    public void testSimpleBulkUpdate(int num) {
+    void simpleBulkUpdate(int num) {
         deleteAll(Entity1.class);
 
         EntityManager em = currentEntityManager();

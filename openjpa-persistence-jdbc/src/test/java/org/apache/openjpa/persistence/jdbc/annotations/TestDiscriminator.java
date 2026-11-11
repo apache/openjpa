@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestDiscriminator
+class TestDiscriminator
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -63,13 +63,12 @@ public class TestDiscriminator
 //    }
 
     @Test
-    public void testJoinedDiscriminatorWithColumn() {
+    void joinedDiscriminatorWithColumn() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         MappingRepository repo = conf.getMappingRepositoryInstance();
         ClassMapping cls = repo.getMapping(AnnoTest1.class,
             null, true);
-        assertTrue(cls.getDiscriminator().getStrategy()
-            instanceof ValueMapDiscriminatorStrategy);
+        assertInstanceOf(ValueMapDiscriminatorStrategy.class, cls.getDiscriminator().getStrategy());
         assertEquals(1, cls.getDiscriminator().getColumns().length);
         assertEquals("ANNOCLS", cls.getDiscriminator().getColumns()[0].
             getName());

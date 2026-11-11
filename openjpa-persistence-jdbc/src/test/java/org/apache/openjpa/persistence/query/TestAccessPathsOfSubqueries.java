@@ -42,9 +42,9 @@ import org.apache.openjpa.persistence.query.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest5;
 import org.junit.jupiter.api.Test;
 
-public class TestAccessPathsOfSubqueries extends BaseQueryTest {
+class TestAccessPathsOfSubqueries extends BaseQueryTest {
     @Test
-    public void testSimpleSubqueryAccessPath() {
+    void simpleSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
             "SELECT o FROM RuntimeTest1 o WHERE EXISTS ("
@@ -64,7 +64,7 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
     }
 
     @Test
-    public void testRelationTraversalSubqueryAccessPath() {
+    void relationTraversalSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
             "SELECT o FROM RuntimeTest1 o WHERE EXISTS ("

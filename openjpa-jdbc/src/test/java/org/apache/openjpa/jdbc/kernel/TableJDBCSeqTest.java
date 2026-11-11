@@ -52,32 +52,32 @@ public class TableJDBCSeqTest {
     final DatabaseMetaData mockMetaData = context.mock(DatabaseMetaData.class);
 
     @Test
-    public void testTableJDBCSeq() throws Exception {
+    void tableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new TableJDBCSeq());
     }
 
     @Test
-    public void testTableJDBCSeqDelimitAll() throws Exception {
+    void tableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new TableJDBCSeq());
     }
 
     @Test
-    public void testClassTableJDBCSeq() throws Exception {
+    void classTableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new ClassTableJDBCSeq());
     }
 
     @Test
-    public void testClassTableJDBCSeqDelimitAll() throws Exception {
+    void classTableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new ClassTableJDBCSeq());
     }
 
     @Test
-    public void testValueTableJDBCSeq() throws Exception {
+    void valueTableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new ValueTableJDBCSeq());
     }
 
     @Test
-    public void testValueTableJDBCSeqDelimitAll() throws Exception {
+    void valueTableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new ValueTableJDBCSeq());
     }
 

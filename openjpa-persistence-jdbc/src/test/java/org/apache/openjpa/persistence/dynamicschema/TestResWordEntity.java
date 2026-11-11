@@ -34,14 +34,14 @@ import org.junit.jupiter.api.Test;
  * invoked, and the SchemaFactory setting will cause the LazySchemaFactory to
  * be invoked.
  */
-public class TestResWordEntity extends SingleEMFTestCase {
+class TestResWordEntity extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
     }
 
     @Test
-    public void testMultipleSchemafactories1() {
+    void multipleSchemafactories1() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)",
@@ -67,7 +67,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultipleSchemafactories2() {
+    void multipleSchemafactories2() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)",
@@ -93,7 +93,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultipleSchemafactories3() {
+    void multipleSchemafactories3() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
@@ -118,7 +118,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMultipleSchemafactories4() {
+    void multipleSchemafactories4() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");

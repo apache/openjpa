@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * Tests record embeddables with @AttributeOverride to map the same
  * record type to different column names within one entity.
  */
-public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
+class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndLoadWithAttributeOverride() {
+    void persistAndLoadWithAttributeOverride() {
         final AddressRecord ship =
                 new AddressRecord("10 Dock Rd", "PortCity", "30001");
         final AddressRecord bill =
@@ -75,7 +75,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateOneOverriddenEmbeddable() {
+    void updateOneOverriddenEmbeddable() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Update",
                 new AddressRecord("Old Ship St", "OldCity", "11111"),
                 new AddressRecord("Old Bill St", "OldCity", "22222"));
@@ -112,7 +112,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeleteWithAttributeOverride() {
+    void deleteWithAttributeOverride() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Delete",
                 new AddressRecord("S", "C", "00000"),
                 new AddressRecord("S2", "C2", "99999"));
@@ -139,7 +139,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOneEmbeddableNull() {
+    void oneEmbeddableNull() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Partial",
                 new AddressRecord("Ship St", "ShipCity", "55555"),
                 null);
@@ -161,7 +161,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
     }
 
     @Test
-    public void testRecordEqualityAcrossOverrides() {
+    void recordEqualityAcrossOverrides() {
         final AddressRecord same =
                 new AddressRecord("Same St", "SameCity", "77777");
         final WarehouseEntity wh =

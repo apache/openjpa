@@ -93,7 +93,7 @@ public class TestQueryTargetPolicy extends SliceTestCase {
     public static final String QueryPersonByNameSwap = "select q from Person q where q.name=:name";
 
     @Test
-    public void testTargetSingleSlice() {
+    void targetSingleSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query q1 = em.createQuery(QueryPersonByName);

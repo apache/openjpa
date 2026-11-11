@@ -32,21 +32,21 @@ import jakarta.persistence.PersistenceConfiguration;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.junit.jupiter.api.Test;
 
-public class TestEntityManagerFactory {
+class TestEntityManagerFactory {
 
     /*
      * This test uses a mis-configured persistence unit to verify that we will
      * not connect to the database when an unused emf is closed.
      */
     @Test
-    public void testCloseUnusedEMF() {
+    void closeUnusedEMF() {
         EntityManagerFactory emf =
                 Persistence.createEntityManagerFactory("invalid");
         emf.close();
     }
 
     @Test
-    public void testEMFCreation() {
+    void emfCreation() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -74,7 +74,7 @@ public class TestEntityManagerFactory {
 	}
 
     @Test
-    public void testEMFCreationDoesNotMutateConfiguration() {
+    void emfCreationDoesNotMutateConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -87,7 +87,7 @@ public class TestEntityManagerFactory {
 	}
 
     @Test
-    public void testRepeatedEMFCreationFromSameConfiguration() {
+    void repeatedEMFCreationFromSameConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -104,7 +104,7 @@ public class TestEntityManagerFactory {
 	}
 
     @Test
-    public void testEMFCreationMergesUserMetaDataFactory() {
+    void emfCreationMergesUserMetaDataFactory() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property("openjpa.MetaDataFactory", "jpa");
@@ -118,7 +118,7 @@ public class TestEntityManagerFactory {
 	}
 
     @Test
-    public void testEMFCreationHonoursMappingFiles() {
+    void emfCreationHonoursMappingFiles() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.mappingFile("org/apache/openjpa/persistence/simple/persistence-configuration-orm.xml");

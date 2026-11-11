@@ -40,7 +40,7 @@ public class TestDBDictionaryGeneratedSQL {
     public Mockery context = new JUnit5Mockery();
 
     @Test
-    public void testCreateTableLongNameException() {
+    void createTableLongNameException() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -72,7 +72,7 @@ public class TestDBDictionaryGeneratedSQL {
 
 
     @Test
-    public void testThrowsExceptionWithSchemaSet() {
+    void throwsExceptionWithSchemaSet() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -104,7 +104,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testSchemaNameIsNotConsidered() {
+    void schemaNameIsNotConsidered() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -133,7 +133,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testOverrideProperty() {
+    void overrideProperty() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -166,7 +166,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testOverridePropertyShortName() {
+    void overridePropertyShortName() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -196,7 +196,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testDropColumnWithDelimiters() {
+    void dropColumnWithDelimiters() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -223,6 +223,6 @@ public class TestDBDictionaryGeneratedSQL {
 
         String[] sqls = dict.getDropColumnSQL(column);
         assertEquals(1, sqls.length);
-        assertEquals(sqls[0], "ALTER TABLE `NameIsRight` DROP COLUMN `MyColumn`");
+        assertEquals("ALTER TABLE `NameIsRight` DROP COLUMN `MyColumn`", sqls[0]);
     }
 }

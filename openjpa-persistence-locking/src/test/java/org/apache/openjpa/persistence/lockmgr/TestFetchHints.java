@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -48,6 +46,7 @@ import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.jdbc.JoinSyntax;
 import org.apache.openjpa.persistence.jdbc.LRSSizeAlgorithm;
 import org.apache.openjpa.persistence.jdbc.ResultSetType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +88,7 @@ import org.junit.jupiter.api.Test;
  *   openjpa.jdbc.SubclassFetchMode
  *   openjpa.jdbc.TransactionIsolation
  */
-public class TestFetchHints extends SequencedActionsTest {
+class TestFetchHints extends SequencedActionsTest {
     @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
@@ -102,7 +101,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchBatchSize" hint
      */
     @Test
-    public void testFetchBatchSizeHint() {
+    void fetchBatchSizeHint() {
         String hintName = "openjpa.FetchBatchSize";
 
         EntityManager em = emf.createEntityManager();
@@ -127,7 +126,7 @@ public class TestFetchHints extends SequencedActionsTest {
         try {
             fPlan.setFetchBatchSize(999);
             fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
-            assertEquals(fPlan.getFetchBatchSize(), -1);
+            assertEquals(-1, fPlan.getFetchBatchSize());
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
         }
@@ -138,7 +137,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.FetchBatchSize" hint
      */
     @Test
-    public void testFetchPlanFetchBatchSizeHint() {
+    void fetchPlanFetchBatchSizeHint() {
         String hintName = "openjpa.FetchPlan.FetchBatchSize";
 
         EntityManager em = emf.createEntityManager();
@@ -163,7 +162,7 @@ public class TestFetchHints extends SequencedActionsTest {
         try {
             fPlan.setFetchBatchSize(999);
             fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
-            assertEquals(fPlan.getFetchBatchSize(), -1);
+            assertEquals(-1, fPlan.getFetchBatchSize());
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
         }
@@ -186,7 +185,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.EagerFetchMode" hint
      */
     @Test
-    public void testFetchPlanEagerFetchModeHint() {
+    void fetchPlanEagerFetchModeHint() {
         String hintName = "openjpa.FetchPlan.EagerFetchMode";
 
         EntityManager em = emf.createEntityManager();
@@ -247,7 +246,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.EagerFetchMode" hint
      */
     @Test
-    public void testJdbcEagerFetchModeHint() {
+    void jdbcEagerFetchModeHint() {
         String hintName = "openjpa.jdbc.EagerFetchMode";
 
         EntityManager em = emf.createEntityManager();
@@ -303,7 +302,7 @@ public class TestFetchHints extends SequencedActionsTest {
         }
         try {
             fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
-            assertEquals(fPlan.getEagerFetchMode(), FetchMode.PARALLEL);
+            assertEquals(FetchMode.PARALLEL, fPlan.getEagerFetchMode());
         } catch (Exception e) {
               fail("Unexpected " + e.getClass().getName());
         }
@@ -326,7 +325,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.JoinSyntax" hint
      */
     @Test
-    public void testFetchPlanJoinSyntaxHint() {
+    void fetchPlanJoinSyntaxHint() {
         String hintName = "openjpa.FetchPlan.JoinSyntax";
 
         EntityManager em = emf.createEntityManager();
@@ -388,7 +387,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.JoinSyntax" hint
      */
     @Test
-    public void testJdbcJoinSyntaxHint() {
+    void jdbcJoinSyntaxHint() {
         String hintName = "openjpa.jdbc.JoinSyntax";
 
         EntityManager em = emf.createEntityManager();
@@ -467,7 +466,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.FetchDirection" hint
      */
     @Test
-    public void testFetchPlanFetchDirectionHint() {
+    void fetchPlanFetchDirectionHint() {
         String hintName = "openjpa.FetchPlan.FetchDirection";
 
         EntityManager em = emf.createEntityManager();
@@ -531,7 +530,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.FetchDirection" hint
      */
     @Test
-    public void testJdbcFetchDirectionHint() {
+    void jdbcFetchDirectionHint() {
         String hintName = "openjpa.jdbc.FetchDirection";
 
         EntityManager em = emf.createEntityManager();
@@ -587,7 +586,7 @@ public class TestFetchHints extends SequencedActionsTest {
         }
         try {
             fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
-            assertEquals(fConfig.getFetchDirection(), ResultSet.FETCH_FORWARD);
+            assertEquals(ResultSet.FETCH_FORWARD, fConfig.getFetchDirection());
         } catch (Exception e) {
             fail("Unexpected " + e.getClass().getName());
         }
@@ -609,7 +608,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.Isolation" hint
      */
     @Test
-    public void testFetchPlanIsolationHint() {
+    void fetchPlanIsolationHint() {
         String hintName = "openjpa.FetchPlan.Isolation";
 
         EntityManager em = emf.createEntityManager();
@@ -711,7 +710,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.TransactionIsolation" hint
      */
     @Test
-    public void testJdbcTransactionIsolationHint() {
+    void jdbcTransactionIsolationHint() {
         String hintName = "openjpa.jdbc.TransactionIsolation";
 
         EntityManager em = emf.createEntityManager();
@@ -822,7 +821,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.LRSSizeAlgorithm" hint
      */
     @Test
-    public void testFetchPlanLRSSizeAlgorithmHint() {
+    void fetchPlanLRSSizeAlgorithmHint() {
         String hintName = "openjpa.FetchPlan.LRSSizeAlgorithm";
 
         EntityManager em = emf.createEntityManager();
@@ -884,7 +883,7 @@ public class TestFetchHints extends SequencedActionsTest {
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testFetchPlanLRSSizeHint() {
+    void fetchPlanLRSSizeHint() {
         String hintName = "openjpa.FetchPlan.LRSSize";
 
         EntityManager em = emf.createEntityManager();
@@ -952,7 +951,7 @@ public class TestFetchHints extends SequencedActionsTest {
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testJdbcLRSSizeHint() {
+    void jdbcLRSSizeHint() {
         String hintName = "openjpa.jdbc.LRSSize";
 
         EntityManager em = emf.createEntityManager();
@@ -1032,7 +1031,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.MaxFetchDepth" hint
      */
     @Test
-    public void testFetchPlanMaxFetchDepthHint() {
+    void fetchPlanMaxFetchDepthHint() {
         String hintName = "openjpa.FetchPlan.MaxFetchDepth";
 
         EntityManager em = emf.createEntityManager();
@@ -1054,13 +1053,11 @@ public class TestFetchHints extends SequencedActionsTest {
             assertTrue(IllegalArgumentException.class.isAssignableFrom(e.getClass()),
                 "Caught expected exception");
         }
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             fPlan.setHint(hintName, FetchConfiguration.DEFAULT);
             assertEquals(-1, fPlan.getMaxFetchDepth());
             assertEquals(-1, fConfig.getMaxFetchDepth());
-        } catch (IllegalArgumentException e) {
-            fail("Unexpected IllegalArgumentException.");
-        }
+        }, "Unexpected IllegalArgumentException.");
         em.close();
     }
 
@@ -1068,7 +1065,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.MaxFetchDepth" hint
      */
     @Test
-    public void testMaxFetchDepthHint() {
+    void maxFetchDepthHint() {
         String hintName = "openjpa.MaxFetchDepth";
 
         EntityManager em = emf.createEntityManager();
@@ -1115,7 +1112,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.LockTimeout" hint
      */
     @Test
-    public void testLockTimeoutHint() {
+    void lockTimeoutHint() {
         String hintName = "openjpa.LockTimeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1163,7 +1160,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.LockTimeout" hint
      */
     @Test
-    public void testFetchPlanLockTimeoutHint() {
+    void fetchPlanLockTimeoutHint() {
         String hintName = "openjpa.FetchPlan.LockTimeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1211,7 +1208,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "jakarta.persistence.lock.timeout" hint
      */
     @Test
-    public void testJavaxLockTimeoutHint() {
+    void javaxLockTimeoutHint() {
         String hintName = "jakarta.persistence.lock.timeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1270,7 +1267,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.QueryTimeout" hint
      */
     @Test
-    public void testQueryTimeoutHint() {
+    void queryTimeoutHint() {
         String hintName = "openjpa.QueryTimeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1318,7 +1315,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.QueryTimeout" hint
      */
     @Test
-    public void testFetchPlanQueryTimeoutHint() {
+    void fetchPlanQueryTimeoutHint() {
         String hintName = "openjpa.FetchPlan.QueryTimeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1366,7 +1363,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "jakarta.persistence.query.timeout" hint
      */
     @Test
-    public void testJavaxQueryTimeoutHint() {
+    void javaxQueryTimeoutHint() {
         String hintName = "jakarta.persistence.query.timeout";
 
         EntityManager em = emf.createEntityManager();
@@ -1425,7 +1422,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.ResultSetType" hint
      */
     @Test
-    public void testFetchPlanResultSetTypeHint() {
+    void fetchPlanResultSetTypeHint() {
         String hintName = "openjpa.FetchPlan.ResultSetType";
 
         EntityManager em = emf.createEntityManager();
@@ -1487,7 +1484,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.ResultSetType" hint
      */
     @Test
-    public void testJdbcResultSetTypeHint() {
+    void jdbcResultSetTypeHint() {
         String hintName = "openjpa.jdbc.ResultSetType";
 
         EntityManager em = emf.createEntityManager();
@@ -1567,7 +1564,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.SubclassFetchMode" hint
      */
     @Test
-    public void testFetchPlanSubclassFetchModeHint() {
+    void fetchPlanSubclassFetchModeHint() {
         String hintName = "openjpa.FetchPlan.SubclassFetchMode";
 
         EntityManager em = emf.createEntityManager();
@@ -1628,7 +1625,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.jdbc.SubclassFetchMode" hint
      */
     @Test
-    public void testJdbcSubclassFetchModeHint() {
+    void jdbcSubclassFetchModeHint() {
         String hintName = "openjpa.jdbc.SubclassFetchMode";
 
         EntityManager em = emf.createEntityManager();
@@ -1707,7 +1704,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FlushBeforeQueries" hint
      */
     @Test
-    public void testFlushBeforeQueriesHint() {
+    void flushBeforeQueriesHint() {
         String hintName = "openjpa.FlushBeforeQueries";
 
         EntityManager em = emf.createEntityManager();
@@ -1782,7 +1779,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.ReadLockLevel" hint
      */
     @Test
-    public void testReadLockLevelHint() {
+    void readLockLevelHint() {
         String hintName = "openjpa.ReadLockLevel";
 
         EntityManager em = emf.createEntityManager();
@@ -1905,7 +1902,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.WriteLockLevel" hint
      */
     @Test
-    public void testWriteLockLevelHint() {
+    void writeLockLevelHint() {
         String hintName = "openjpa.WriteLockLevel";
 
         EntityManager em = emf.createEntityManager();
@@ -2029,12 +2026,12 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.ReadLockMode" hint
      */
     @Test
-    public void testFetchPlanReadLockModeHintInTx() {
+    void fetchPlanReadLockModeHintInTx() {
         fetchPlanReadLockModeHint(true);
     }
 
     @Test
-    public void testFetchPlanReadLockModeHintNotInTx() {
+    void fetchPlanReadLockModeHintNotInTx() {
         fetchPlanReadLockModeHint(false);
     }
 
@@ -2171,12 +2168,12 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test "openjpa.FetchPlan.WriteLockMode" hint
      */
     @Test
-    public void testFetchPlanWriteLockModeHintInTx() {
+    void fetchPlanWriteLockModeHintInTx() {
         fetchPlanWriteLockModeHint(true);
     }
 
     @Test
-    public void testFetchPlanWriteLockModeHintNotInTx() {
+    void fetchPlanWriteLockModeHintNotInTx() {
         fetchPlanWriteLockModeHint(false);
     }
 
@@ -2313,7 +2310,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test precendence order of similiar/equivalent LockTimeout hints.
      */
     @Test
-    public void testSimiliarLockTimeoutHints() {
+    void similiarLockTimeoutHints() {
         String JavaxLockTimeout = "jakarta.persistence.lock.timeout";
         String OpenJPALockTimeout = "openjpa.LockTimeout";
         String FetchPlanLockTimeout = "openjpa.FetchPlan.LockTimeout";
@@ -2378,7 +2375,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test precendence order of similiar/equivalent QueryTimeout hints.
      */
     @Test
-    public void testSimiliarQueryTimeoutHints() {
+    void similiarQueryTimeoutHints() {
         String JavaxQueryTimeout = "jakarta.persistence.query.timeout";
         String OpenJPAQueryTimeout = "openjpa.QueryTimeout";
         String FetchPlanQueryTimeout = "openjpa.FetchPlan.QueryTimeout";
@@ -2444,13 +2441,13 @@ public class TestFetchHints extends SequencedActionsTest {
      */
     @SuppressWarnings("deprecation")
     @Test
-    public void testSetHintAddHintsArgument() {
+    void setHintAddHintsArgument() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
         JDBCFetchPlan fPlan = (JDBCFetchPlan) oem.getFetchPlan();
 
         fPlan.setHint("unrecognized.prop.name", "unrecognized.prop.value");
-        assertEquals(null, fPlan.getHint("unrecognized.prop.name"));
+        assertNull(fPlan.getHint("unrecognized.prop.name"));
 
 
         OpenJPAConfiguration conf = oem.getConfiguration();
@@ -2481,7 +2478,7 @@ public class TestFetchHints extends SequencedActionsTest {
      * Test invalid hint via Query interface.
      */
     @Test
-    public void testInvalidQuerySetHint() {
+    void invalidQuerySetHint() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = (OpenJPAEntityManager)em.getDelegate();
             ((EntityManagerImpl) oem).getBroker().getFetchConfiguration();

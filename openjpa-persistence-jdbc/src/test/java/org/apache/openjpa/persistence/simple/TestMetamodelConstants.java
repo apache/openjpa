@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * Tests JPA 3.2 StaticMetamodel constants: EntityType class_
  * and QUERY_ string constants for named queries.
  */
-public class TestMetamodelConstants extends SingleEMFTestCase {
+class TestMetamodelConstants extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestMetamodelConstants extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryConstantsExist() {
+    void queryConstantsExist() {
         assertEquals("MetamodelConstantsEntity.findAll",
             MetamodelConstantsEntity_.QUERY_METAMODELCONSTANTSENTITY_FINDALL);
         assertEquals("MetamodelConstantsEntity.findByName",
@@ -54,13 +54,13 @@ public class TestMetamodelConstants extends SingleEMFTestCase {
     }
 
     @Test
-    public void testResultSetMappingConstantExists() {
+    void resultSetMappingConstantExists() {
         assertEquals("MetamodelConstantsEntity.resultMapping",
             MetamodelConstantsEntity_.MAPPING_METAMODELCONSTANTSENTITY_RESULTMAPPING);
     }
 
     @Test
-    public void testQueryConstantsArePublicStaticFinal() throws Exception {
+    void queryConstantsArePublicStaticFinal() throws Exception {
         Field f = MetamodelConstantsEntity_.class
             .getDeclaredField("QUERY_METAMODELCONSTANTSENTITY_FINDALL");
         int mod = f.getModifiers();
@@ -71,7 +71,7 @@ public class TestMetamodelConstants extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityTypeFieldExists() throws Exception {
+    void entityTypeFieldExists() throws Exception {
         Field f = MetamodelConstantsEntity_.class.getDeclaredField("class_");
         int mod = f.getModifiers();
         assertTrue(Modifier.isPublic(mod), "Should be public");
@@ -81,7 +81,7 @@ public class TestMetamodelConstants extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryConstantsUsableWithCreateNamedQuery() {
+    void queryConstantsUsableWithCreateNamedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         MetamodelConstantsEntity e = new MetamodelConstantsEntity();

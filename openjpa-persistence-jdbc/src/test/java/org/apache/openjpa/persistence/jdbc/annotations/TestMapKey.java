@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import jakarta.persistence.MapKey;
 
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestMapKey
+class TestMapKey
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -50,37 +50,36 @@ public class TestMapKey
     }
 
     @Test
-    public void testDefaultMapKeyMapping() {
+    void defaultMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
                 null, true);
         FieldMapping fm = mapping.getFieldMapping("defaultMapKey");
-        assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+        assertInstanceOf(RelationMapTableFieldStrategy.class, fm.getStrategy());
         assertEquals("pk", fm.getKey().getValueMappedBy());
         assertEquals(mapping.getRepository().getMetaData(Flat1.class, null,
             true).getField("pk"), fm.getKey().getValueMappedByMetaData());
     }
 
     @Test
-    public void testNamedMapKeyMapping() {
+    void namedMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
                 null, true);
         FieldMapping fm = mapping.getFieldMapping("namedMapKey");
-        assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+        assertInstanceOf(RelationMapTableFieldStrategy.class, fm.getStrategy());
         assertEquals("basic", fm.getKey().getValueMappedBy());
         assertEquals(mapping.getRepository().getMetaData(Flat1.class, null,
             true).getField("basic"), fm.getKey().getValueMappedByMetaData());
     }
 
     @Test
-    public void testInverseOwnerMapKeyMapping() {
+    void inverseOwnerMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
                 null, true);
         FieldMapping fm = mapping.getFieldMapping("inverseOwnerMapKey");
-        assertTrue(fm.getStrategy() instanceof
-            RelationMapInverseKeyFieldStrategy);
+        assertInstanceOf(RelationMapInverseKeyFieldStrategy.class, fm.getStrategy());
         assertEquals("basic", fm.getKey().getValueMappedBy());
         assertEquals(mapping.getRepository().getMetaData(AnnoTest2.class,
             null, true).getField("basic"), fm.getKey().
@@ -88,7 +87,7 @@ public class TestMapKey
     }
 
     @Test
-    public void testInsertAndRetrieve() {
+    void insertAndRetrieve() {
         Flat1 f1 = new Flat1(1);
         f1.setBasic(100);
         Flat1 f2 = new Flat1(2);

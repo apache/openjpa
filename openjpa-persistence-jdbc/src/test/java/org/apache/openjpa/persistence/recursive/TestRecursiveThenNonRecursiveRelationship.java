@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test accessing a non-recursive relation of an instance that has been loaded via a recursive relation.
  */
-public class TestRecursiveThenNonRecursiveRelationship extends SingleEMFTestCase {
+class TestRecursiveThenNonRecursiveRelationship extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Cat.class, Human.class,
@@ -38,7 +38,7 @@ public class TestRecursiveThenNonRecursiveRelationship extends SingleEMFTestCase
     }
 
     @Test
-    public void testRelationAccessedViaRecursiveRelationship() {
+    void relationAccessedViaRecursiveRelationship() {
         final String ALICE = "Alice";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

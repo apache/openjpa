@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * proxy nor copies it bean by bean, and finds a change made to it in place
  * by converting it again at flush.
  */
-public class TestConvertedBean extends SQLListenerTestCase {
+class TestConvertedBean extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -67,7 +67,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * converter returned.
      */
     @Test
-    public void testGetterOnlyStateSurvivesLoad() {
+    void getterOnlyStateSurvivesLoad() {
         try (EntityManager em = emf.createEntityManager()) {
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);
             assertSettings(e.getSettings(), "crit", "user1");
@@ -78,7 +78,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
     }
 
     @Test
-    public void testValueChangedInPlace() {
+    void valueChangedInPlace() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);
@@ -96,7 +96,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
     }
 
     @Test
-    public void testEmbeddedValueChangedInPlace() {
+    void embeddedValueChangedInPlace() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);
@@ -113,7 +113,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * A change made after a flush is written by the next flush.
      */
     @Test
-    public void testValueChangedInPlaceAfterFlush() {
+    void valueChangedInPlaceAfterFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);
@@ -137,7 +137,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
     }
 
     @Test
-    public void testUnchangedValueIsNotWritten() {
+    void unchangedValueIsNotWritten() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals("crit", em.find(ConvertedBeanEntity.class, 1L).getSettings().getCriteria());
@@ -152,7 +152,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * while an unchanged detached instance is merged without an update.
      */
     @Test
-    public void testDetachedValueChangedInPlace() {
+    void detachedValueChangedInPlace() {
         ConvertedBeanEntity d;
         try (EntityManager em = emf.createEntityManager()) {
             d = em.find(ConvertedBeanEntity.class, 1L);
@@ -189,7 +189,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * by merge, and the merged instance gets its own copy of it.
      */
     @Test
-    public void testSerializedValueChangedInPlace() throws Exception {
+    void serializedValueChangedInPlace() throws Exception {
         ConvertedBeanEntity d;
         try (EntityManager em = emf.createEntityManager()) {
             d = em.find(ConvertedBeanEntity.class, 1L);
@@ -214,7 +214,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * keeps all its state and is not shared with the managed instance.
      */
     @Test
-    public void testDetachCopy() {
+    void detachCopy() {
         try (EntityManager em = emf.createEntityManager()) {
             OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
             ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);
@@ -231,7 +231,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * when the field was first changed in the transaction.
      */
     @Test
-    public void testValueRestoredOnRollback() {
+    void valueRestoredOnRollback() {
         try (EntityManager em = emf.createEntityManager()) {
             OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
             oem.setRestoreState(RestoreStateType.ALL);
@@ -250,7 +250,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * when it was loaded, whether or not a flush found the change.
      */
     @Test
-    public void testValueChangedInPlaceRestoredOnRollback() {
+    void valueChangedInPlaceRestoredOnRollback() {
         for (boolean flush : new boolean[] { false, true }) {
             ConvertedBeanEntity e = changeInPlaceAndRollback(RestoreStateType.ALL, flush);
             assertSettings(e.getSettings(), "crit", "user1");
@@ -266,7 +266,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * other mutable field that was changed.
      */
     @Test
-    public void testValueChangedInPlaceUndoneOnRollback() {
+    void valueChangedInPlaceUndoneOnRollback() {
         ConvertedBeanEntity e = changeInPlaceAndRollback(RestoreStateType.IMMUTABLE, false);
         assertSettings(e.getSettings(), "crit", "user1");
         assertEquals(1, e.getPoint().getX());
@@ -304,7 +304,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * savepoint, and keeps a change made before it.
      */
     @Test
-    public void testValueChangedInPlaceRestoredOnSavepointRollback() {
+    void valueChangedInPlaceRestoredOnSavepointRollback() {
         try (EntityManager em = emf.createEntityManager()) {
             OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
             ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);
@@ -331,7 +331,7 @@ public class TestConvertedBean extends SQLListenerTestCase {
      * instance that was not yet part of the transaction.
      */
     @Test
-    public void testValueChangedInPlaceRestoredOnSavepointRollbackOfCleanInstance() {
+    void valueChangedInPlaceRestoredOnSavepointRollbackOfCleanInstance() {
         try (EntityManager em = emf.createEntityManager()) {
             OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
             ConvertedBeanEntity e = oem.find(ConvertedBeanEntity.class, 1L);

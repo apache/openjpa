@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -45,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * Tests JPA schema generation script output via
  * {@code jakarta.persistence.schema-generation.scripts.action}.
  */
-public class TestSchemaGenerationScripts extends SingleEMFTestCase {
+class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
     private File tempDir;
 
@@ -75,7 +74,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * generates DDL script files without touching the database.
      */
     @Test
-    public void testScriptsActionDropAndCreate() throws IOException {
+    void scriptsActionDropAndCreate() throws Exception {
         File createFile = new File(tempDir, "create.sql");
         File dropFile = new File(tempDir, "drop.sql");
 
@@ -109,7 +108,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that scripts.action=create generates only the create script.
      */
     @Test
-    public void testScriptsActionCreateOnly() throws IOException {
+    void scriptsActionCreateOnly() throws Exception {
         File createFile = new File(tempDir, "create_only.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -134,7 +133,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that file: URIs are properly resolved to file paths.
      */
     @Test
-    public void testFileUriScriptTarget() throws IOException {
+    void fileUriScriptTarget() throws Exception {
         File createFile = new File(tempDir, "uri_create.sql");
         File dropFile = new File(tempDir, "uri_drop.sql");
 
@@ -164,7 +163,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * (JPA spec allows Writer objects, not just string URLs).
      */
     @Test
-    public void testPrintWriterScriptTargets() {
+    void printWriterScriptTargets() {
         StringWriter createWriter = new StringWriter();
         StringWriter dropWriter = new StringWriter();
         PrintWriter pw1 = new PrintWriter(createWriter);
@@ -197,7 +196,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that Writer objects (not just PrintWriter) work as script targets.
      */
     @Test
-    public void testWriterScriptTargets() {
+    void writerScriptTargets() {
         StringWriter createWriter = new StringWriter();
         StringWriter dropWriter = new StringWriter();
 
@@ -226,7 +225,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that PrintWriter wrapping a File works (mirrors TCK pattern).
      */
     @Test
-    public void testPrintWriterToFile() throws IOException {
+    void printWriterToFile() throws Exception {
         File createFile = new File(tempDir, "pw_file_create.sql");
         File dropFile = new File(tempDir, "pw_file_drop.sql");
         PrintWriter pw1 = new PrintWriter(createFile);
@@ -263,7 +262,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test PrintWriter with scripts.action=create (create-only).
      */
     @Test
-    public void testPrintWriterCreateOnly() {
+    void printWriterCreateOnly() {
         StringWriter createWriter = new StringWriter();
         PrintWriter pw = new PrintWriter(createWriter);
 
@@ -290,7 +289,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * This mirrors the TCK annotation test pattern.
      */
     @Test
-    public void testFileUriScriptSource() throws IOException {
+    void fileUriScriptSource() throws Exception {
         // Step 1: Generate create and drop scripts to files
         File createFile = new File(tempDir, "source_create.sql");
         File dropFile = new File(tempDir, "source_drop.sql");
@@ -351,7 +350,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * which mirrors the TCK's global provider-specific property setting.
      */
     @Test
-    public void testTckAnnotationPattern() throws Exception {
+    void tckAnnotationPattern() throws Exception {
         File createFile = new File(tempDir, "tck_create.sql");
         File dropFile = new File(tempDir, "tck_drop.sql");
 
@@ -468,7 +467,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * actually drops the table. Mirrors the TCK annotation test pattern.
      */
     @Test
-    public void testGenerateSchemaDropScriptExecution() throws Exception {
+    void generateSchemaDropScriptExecution() throws Exception {
         // Step 1: Generate drop script (table already exists from setUp)
         File dropFile = new File(tempDir, "tck_drop.sql");
         EntityManagerFactory emf2 = createEMF(
@@ -530,7 +529,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * @JoinTable with @ForeignKey annotations.
      */
     @Test
-    public void testJoinTableForeignKeyInScripts() throws Exception {
+    void joinTableForeignKeyInScripts() throws Exception {
         File createFile = new File(tempDir, "jt_create.sql");
         File dropFile = new File(tempDir, "jt_drop.sql");
 
@@ -582,7 +581,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * for entities with @Index annotations.
      */
     @Test
-    public void testIndexAnnotationInScripts() throws Exception {
+    void indexAnnotationInScripts() throws Exception {
         File createFile = new File(tempDir, "index_create.sql");
         File dropFile = new File(tempDir, "index_drop.sql");
 
@@ -627,7 +626,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * This mirrors the TCK executeDropScriptReaderTest pattern.
      */
     @Test
-    public void testScriptsActionDropOnlyWithWriter() throws Exception {
+    void scriptsActionDropOnlyWithWriter() throws Exception {
         StringWriter dropWriter = new StringWriter();
         PrintWriter pw = new PrintWriter(dropWriter);
 
@@ -670,7 +669,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK orderColumnTest drop script expectations.
      */
     @Test
-    public void testDropScriptContainsForeignKeyDrop() throws Exception {
+    void dropScriptContainsForeignKeyDrop() throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -718,7 +717,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK orderColumnTest create script expectations.
      */
     @Test
-    public void testOrderColumnInCreateScript() throws Exception {
+    void orderColumnInCreateScript() throws Exception {
         File createFile = new File(tempDir, "oc_create.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -751,7 +750,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK secondaryTableTest expectations.
      */
     @Test
-    public void testSecondaryTableInScripts() throws Exception {
+    void secondaryTableInScripts() throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 

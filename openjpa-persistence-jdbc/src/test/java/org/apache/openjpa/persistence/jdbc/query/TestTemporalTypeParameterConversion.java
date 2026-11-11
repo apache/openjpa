@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  * - setParameterParameterDateTemporalTypeTest
  * - setParameter8Test
  */
-public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
+class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
 
     private static final String JPQL_POSITIONAL =
         "SELECT e FROM HireDateEmployee e WHERE e.hireDate = ?1";
@@ -85,7 +85,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Mirrors TCK setParameterIntCalendarTemporalTypeTest.
      */
     @Test
-    public void testSetParameterIntCalendarTemporalTypeDate() {
+    void setParameterIntCalendarTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -116,7 +116,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Mirrors TCK setParameterStringCalendarTemporalTypeTest.
      */
     @Test
-    public void testSetParameterStringCalendarTemporalTypeDate() {
+    void setParameterStringCalendarTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -147,7 +147,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Mirrors TCK setParameter8Test.
      */
     @Test
-    public void testSetParameterIntDateTemporalTypeDate() {
+    void setParameterIntDateTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -178,7 +178,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Mirrors TCK setParameterParameterDateTemporalTypeTest.
      */
     @Test
-    public void testSetParameterParameterDateTemporalTypeDate() {
+    void setParameterParameterDateTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

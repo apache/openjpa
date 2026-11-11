@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestCQL extends CriteriaTest {
+class TestCQL extends CriteriaTest {
     @Test
-    public void testLogicalPrecedence() {
+    void logicalPrecedence() {
         OpenJPACriteriaQuery<Person> q = cb.createQuery(Person.class);
         Root<Person> p = q.from(Person.class);
         q.select(p);

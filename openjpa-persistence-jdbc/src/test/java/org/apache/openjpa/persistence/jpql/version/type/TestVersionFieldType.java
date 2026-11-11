@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.jpql.version.type;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -47,7 +47,7 @@ public class TestVersionFieldType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testProjectionVersionReturnType() {
+    void projectionVersionReturnType() {
         verifyType(LongVersionEntity.class, Long.class);
         verifyType(ShortVersionEntity.class, Short.class);
         verifyType(PrimativeShortVersionEntity.class, Short.class);
@@ -65,7 +65,7 @@ public class TestVersionFieldType extends SingleEMFTestCase {
 
         for (Object[] objects : objectList) {
             assertNotNull(objects[1], "Version should not be null.");
-            assertTrue(objects[1].getClass() == expectedClsType,
+            assertSame(objects[1].getClass(), expectedClsType,
                 "Type should be " + expectedClsType.getName() +
                 ".  But it is " + objects[1].getClass());
         }

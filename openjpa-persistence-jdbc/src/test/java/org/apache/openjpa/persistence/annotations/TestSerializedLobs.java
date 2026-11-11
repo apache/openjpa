@@ -48,13 +48,13 @@ public class TestSerializedLobs extends AnnotationTestCase
     private static final Date DATE = new Date();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(AnnoTest1.class);
     }
 
     // Serialized fields not being read properly
     @Test
-    public void testSerialized() {
+    void serialized() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc1 = new AnnoTest1(1);
@@ -75,7 +75,7 @@ public class TestSerializedLobs extends AnnotationTestCase
     }
 
     @Test
-    public void testBlob()
+    void blob()
         throws Exception {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -123,7 +123,7 @@ public class TestSerializedLobs extends AnnotationTestCase
     }
 
     @Test
-    public void testClob()
+    void clob()
         throws Exception {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

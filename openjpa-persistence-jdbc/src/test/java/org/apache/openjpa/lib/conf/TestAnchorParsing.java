@@ -36,10 +36,10 @@ import java.util.MissingResourceException;
 import org.apache.openjpa.lib.util.Options;
 import org.junit.jupiter.api.Test;
 
-public class TestAnchorParsing {
+class TestAnchorParsing {
 
     @Test
-    public void testFQAnchor() {
+    void fQAnchor() {
         String fqLoc = "META-INF/persistence.xml#test";
         Options opts = new Options();
         opts.setProperty("p", fqLoc);
@@ -51,12 +51,12 @@ public class TestAnchorParsing {
     }
 
     @Test
-    public void testNoResource() {
+    void noResource() {
         allHelper(null);
     }
 
     @Test
-    public void testNoAnchor() {
+    void noAnchor() {
         allHelper("META-INF/persistence.xml");
     }
 
@@ -78,7 +78,7 @@ public class TestAnchorParsing {
     }
 
     @Test
-    public void testProductDerivationsLoadResource() {
+    void productDerivationsLoadResource() {
         ProductDerivations.load(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml",
             "foo", null);
@@ -107,7 +107,7 @@ public class TestAnchorParsing {
     }
 
     @Test
-    public void testNonexistantResourceLoad() {
+    void nonexistantResourceLoad() {
         try {
             ProductDerivations.load("nonexistant-resource", null, null);
             fail("resource 'nonexistant-resource' should not exist");
@@ -117,7 +117,7 @@ public class TestAnchorParsing {
     }
 
     @Test
-    public void testProductDerivationsLoadFile() throws IOException {
+    void productDerivationsLoadFile() throws Exception {
         File validFile = resourceToTemporaryFile(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml");
 
@@ -142,7 +142,7 @@ public class TestAnchorParsing {
     }
 
     @Test
-    public void testNonexistantFileLoad() {
+    void nonexistantFileLoad() {
         File f = new File("this-should-not-exist");
         assertFalse(f.exists());
         try {

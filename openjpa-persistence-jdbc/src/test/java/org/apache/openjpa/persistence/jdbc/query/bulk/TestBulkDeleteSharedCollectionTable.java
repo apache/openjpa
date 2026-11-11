@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
+class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -60,12 +60,12 @@ public class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
      * the rows of the other mapping share the table and must survive.
      */
     @Test
-    public void testDeleteWithoutCriteriaKeepsRowsOfTheOtherMapping() {
+    void deleteWithoutCriteriaKeepsRowsOfTheOtherMapping() {
         assertSharedTableIsCleanedUp("delete from BulkDeleteSharedA a");
     }
 
     @Test
-    public void testDeleteWithCriteriaKeepsRowsOfTheOtherMapping() {
+    void deleteWithCriteriaKeepsRowsOfTheOtherMapping() {
         assertSharedTableIsCleanedUp(
             "delete from BulkDeleteSharedA a where a.name='a'");
     }

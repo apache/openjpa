@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -37,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestGenerators extends SingleEMFTestCase {
+class TestGenerators extends SingleEMFTestCase {
     Log _log;
 
     @BeforeEach
@@ -48,7 +49,7 @@ public class TestGenerators extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGet() {
+    void get() {
         if (!PersistenceCapable.class.isAssignableFrom(Generator.class)
             && !ClassRedefiner.canRedefineClasses(_log))
             fail("This test requires a higher level of enhancement than"
@@ -66,7 +67,7 @@ public class TestGenerators extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFlush() {
+    void flush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Generator g = new Generator();
@@ -80,7 +81,7 @@ public class TestGenerators extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCommit() {
+    void commit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Generator g = new Generator();

@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDependentFields2 extends BaseKernelTest {
+class TestDependentFields2 extends BaseKernelTest {
 
     private static final int COMMIT = 0;
     private static final int ROLLBACK = 1;
@@ -53,7 +53,7 @@ public class TestDependentFields2 extends BaseKernelTest {
     private Object _repeat = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         deleteAll(DependentFieldsPC.class);
 
         DependentFieldsPC root = new DependentFieldsPC();
@@ -93,37 +93,37 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testDependentFieldsLoaded() {
+    void dependentFieldsLoaded() {
         delete(true, COMMIT);
         checkFields();
     }
 
     @Test
-    public void testDependentFieldsLoadedWithRollback() {
+    void dependentFieldsLoadedWithRollback() {
         delete(true, ROLLBACK);
         checkFields();
     }
 
     @Test
-    public void testDependentFieldsLoadedWithPreStore() {
+    void dependentFieldsLoadedWithPreStore() {
         delete(true, PRESTORE);
         checkFields();
     }
 
     @Test
-    public void testDependentFieldsUnloaded() {
+    void dependentFieldsUnloaded() {
         delete(false, COMMIT);
         checkFields();
     }
 
     @Test
-    public void testDependentFieldsUnloadedWithRollback() {
+    void dependentFieldsUnloadedWithRollback() {
         delete(false, ROLLBACK);
         checkFields();
     }
 
     @Test
-    public void testDependentFieldsUnloadedWithPreStore() {
+    void dependentFieldsUnloadedWithPreStore() {
         delete(false, PRESTORE);
         checkFields();
     }
@@ -222,17 +222,17 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testNullDeletesDependent() {
+    void testNullDeletesDependent() {
         nullDeletesDependent(COMMIT);
     }
 
     @Test
-    public void testNullDeletesDependentWithRollback() {
+    void nullDeletesDependentWithRollback() {
         nullDeletesDependent(ROLLBACK);
     }
 
     @Test
-    public void testNullDeletesDependentWithPreStore() {
+    void nullDeletesDependentWithPreStore() {
         nullDeletesDependent(PRESTORE);
     }
 
@@ -264,23 +264,23 @@ public class TestDependentFields2 extends BaseKernelTest {
             endTx(pm);
         }
 
-        assertTrue(!pm.isPersistent(depRel));
+        assertFalse(pm.isPersistent(depRel));
         assertNull(pm.find(DependentFieldsPC.class, _depRel));
         endEm(pm);
     }
 
     @Test
-    public void testRemoveDeletesDependent() {
+    void testRemoveDeletesDependent() {
         removeDeletesDependent(COMMIT);
     }
 
     @Test
-    public void testRemoveDeletesDependentWithRollback() {
+    void removeDeletesDependentWithRollback() {
         removeDeletesDependent(ROLLBACK);
     }
 
     @Test
-    public void testRemoveDeletesDependentWithPreStore() {
+    void removeDeletesDependentWithPreStore() {
         removeDeletesDependent(PRESTORE);
     }
 
@@ -337,17 +337,17 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testMoveDependentInContainer() {
+    void testMoveDependentInContainer() {
         moveDependentInContainer(COMMIT);
     }
 
     @Test
-    public void testMoveDependentInContainerWithRollback() {
+    void moveDependentInContainerWithRollback() {
         moveDependentInContainer(ROLLBACK);
     }
 
     @Test
-    public void testMoveDependentInContainerWithPreStore() {
+    void moveDependentInContainerWithPreStore() {
         moveDependentInContainer(PRESTORE);
     }
 
@@ -403,17 +403,17 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testRefedDependentNotDeleted() {
+    void testRefedDependentNotDeleted() {
         refedDependentNotDeleted(COMMIT);
     }
 
     @Test
-    public void testRefedDependentNotDeletedWithRollback() {
+    void refedDependentNotDeletedWithRollback() {
         refedDependentNotDeleted(ROLLBACK);
     }
 
     @Test
-    public void testRefedDependentNotDeletedWithPreStore() {
+    void refedDependentNotDeletedWithPreStore() {
         refedDependentNotDeleted(PRESTORE);
     }
 
@@ -456,17 +456,17 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testNullSharedDependent() {
+    void testNullSharedDependent() {
         nullSharedDependent(COMMIT);
     }
 
     @Test
-    public void testNullSharedDependentWithRollback() {
+    void nullSharedDependentWithRollback() {
         nullSharedDependent(ROLLBACK);
     }
 
     @Test
-    public void testNullSharedDependentWithPreStore() {
+    void nullSharedDependentWithPreStore() {
         nullSharedDependent(PRESTORE);
     }
 
@@ -520,12 +520,12 @@ public class TestDependentFields2 extends BaseKernelTest {
     }
 
     @Test
-    public void testClearMappedDependentOfDetached() {
+    void clearMappedDependentOfDetached() {
         clearDependentOfDetachedTest(true);
     }
 
     @Test
-    public void testClearInverseKeyDependentOfDetached() {
+    void clearInverseKeyDependentOfDetached() {
         clearDependentOfDetachedTest(false);
     }
 

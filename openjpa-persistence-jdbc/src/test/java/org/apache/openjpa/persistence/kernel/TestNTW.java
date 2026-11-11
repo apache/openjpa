@@ -41,12 +41,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestNTW extends BaseKernelTest {
+class TestNTW extends BaseKernelTest {
 
     private OpenJPAEntityManagerFactory factory;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager em = getPM();
@@ -64,7 +64,7 @@ public class TestNTW extends BaseKernelTest {
     }
 
     @Test
-    public void testNonTransactionalWrite() throws Exception {
+    void nonTransactionalWrite() throws Exception {
         OpenJPAEntityManagerFactory factory = broker();
         OpenJPAEntityManager em = factory.createEntityManager();
         OpenJPAQuery q = em.createQuery(

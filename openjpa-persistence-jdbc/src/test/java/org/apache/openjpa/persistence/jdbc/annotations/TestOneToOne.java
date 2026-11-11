@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestOneToOne
+class TestOneToOne
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -41,7 +41,7 @@ public class TestOneToOne
     }
 
     @Test
-    public void testOneToOne() {
+    void oneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -62,7 +62,7 @@ public class TestOneToOne
     }
 
     @Test
-    public void testSelfOneToOne() {
+    void selfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -82,7 +82,7 @@ public class TestOneToOne
     }
 
     @Test
-    public void testPKJoinSelfOneToOne() {
+    void pKJoinSelfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -102,7 +102,7 @@ public class TestOneToOne
     }
 
     @Test
-    public void testOtherTableOneToOne() {
+    void otherTableOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -123,7 +123,7 @@ public class TestOneToOne
     }
 
     @Test
-    public void testInverseOneToOne() {
+    void inverseOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);

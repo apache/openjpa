@@ -40,12 +40,12 @@ public class TestEJBLocales extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
     @Test
-    public void testLocales() {
+    void locales() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         RuntimeTest1 t1 = new RuntimeTest1(1);

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestAbstractSchemaName
+class TestAbstractSchemaName
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -52,7 +52,7 @@ public class TestAbstractSchemaName
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from named e");
         NamedEntity e = (NamedEntity) q.getSingleResult();

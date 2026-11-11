@@ -68,7 +68,7 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
     }
 
     @Test
-    public void testGettersAndSetters() throws Exception {
+    void gettersAndSetters() throws Exception {
 
         JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactory) emf).getConfiguration();
 

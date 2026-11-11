@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDelimIdResultSetAnnotations extends SQLListenerTestCase {
+class TestDelimIdResultSetAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Car car;
@@ -96,7 +94,7 @@ public class TestDelimIdResultSetAnnotations extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreate() {
+    void create() {
         id++;
         createPontiac(id);
         id++;
@@ -126,8 +124,8 @@ public class TestDelimIdResultSetAnnotations extends SQLListenerTestCase {
 
         for (Object[] result : results) {
             assertEquals(2, result.length);
-            assertTrue(result[0] instanceof Car2);
-            assertTrue(result[1] instanceof String);
+            assertInstanceOf(Car2.class, result[0]);
+            assertInstanceOf(String.class, result[1]);
             Car2 car2 = (Car2)result[0];
             String modelYear = (String)result[1];
             if (car2.getModel().equals("G6")) {

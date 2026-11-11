@@ -101,7 +101,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 1, case(b)
      */
     @Test
-    public void testMapsId1() {
+    void mapsId1() {
         createObj1();
         findObj1();
         queryObj1();
@@ -111,7 +111,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 3, case(b)
      */
     @Test
-    public void testMapsId2() {
+    void mapsId2() {
         createObj2();
         findObj2();
         queryObj2();
@@ -121,7 +121,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 5, case(b)
      */
     @Test
-    public void testMapsId3() {
+    void mapsId3() {
         createObj3();
         findObj3();
         queryObj3();
@@ -131,7 +131,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
     @Test
-    public void testMapsId4() {
+    void mapsId4() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -147,7 +147,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * classes use generated key
      */
     @Test
-    public void testMapsId5() {
+    void mapsId5() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -162,7 +162,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 5, case(a)
      */
     @Test
-    public void testMapsId6() {
+    void mapsId6() {
         createObj6();
         findObj6();
         queryObj6();
@@ -172,14 +172,14 @@ public class TestMappedById extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 6, case(a)
      */
     @Test
-    public void testMapsId7() {
+    void mapsId7() {
         createObj7();
         findObj7();
         queryObj7();
     }
 
     @Test
-    public void testEnumIdClass() {
+    void enumIdClass() {
         EntityManager em = emf.createEntityManager();
         Employee e = new Employee();
         e.setEmpId(1);
@@ -202,7 +202,7 @@ public class TestMappedById extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEmbeddedIdNestedInIdClass() {
+    void embeddedIdNestedInIdClass() {
         EntityManager em = emf.createEntityManager();
         EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
         Employee5 employee1 = new Employee5(eId1);
@@ -228,7 +228,7 @@ public class TestMappedById extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCountDistinctMultiCols() {
+    void countDistinctMultiCols() {
         EntityManager em = emf.createEntityManager();
 
         Employee2 emp1 = new Employee2();
@@ -806,7 +806,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * Derived Identity with IdClass and generatedKey
      */
     @Test
-    public void testPersistDerivedIdentityUsingIdClassAndGeneratedKey() {
+    void persistDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -826,7 +826,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * Derived Identity with IdClass and generatedKey
      */
     @Test
-    public void testMergeDerivedIdentityUsingIdClassAndGeneratedKey() {
+    void mergeDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -877,7 +877,7 @@ public class TestMappedById extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEnumInEmbeddedId() {
+    void enumInEmbeddedId() {
         EntityManager em = emf.createEntityManager();
         Beneficiary b = new Beneficiary();
         b.setId("b8");

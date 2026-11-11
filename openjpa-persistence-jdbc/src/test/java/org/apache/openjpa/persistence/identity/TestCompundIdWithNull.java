@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
  */
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-public class TestCompundIdWithNull extends SingleEMFTestCase {
+class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
 
     @Override
@@ -73,7 +73,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleCompoundIdTestEntity() throws Exception  {
+    void simpleCompoundIdTestEntity() throws Exception  {
             EntityManager em = emf.createEntityManager();
             String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
             List<SimpleCompoundIdTestEntity> list = em.createQuery(jpql,SimpleCompoundIdTestEntity.class)
@@ -89,7 +89,7 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
 
 
     @Test
-    public void testComplexCompoundIdTestEntity() throws Exception  {
+    void complexCompoundIdTestEntity() throws Exception  {
         EntityManager em = emf.createEntityManager();
         String jpql = "SELECT o FROM ComplexCompoundIdTestEntity o ORDER BY o.type";
         List<ComplexCompoundIdTestEntity> list = em.createQuery(jpql,ComplexCompoundIdTestEntity.class)

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Stored procedures on Oracle, written like the Jakarta Persistence TCK procedures.
  */
-public class TestOracleStoredProcedure extends SingleEMFTestCase {
+class TestOracleStoredProcedure extends SingleEMFTestCase {
 
     private static final String PROC = "OPENJPA_REFCURSOR_PROC";
     private static final String NUMBER_PROC = "OPENJPA_NUMBER_OUT_PROC";
@@ -49,7 +49,7 @@ public class TestOracleStoredProcedure extends SingleEMFTestCase {
      * A procedure returning its result in a SYS_REFCURSOR OUT parameter.
      */
     @Test
-    public void testRefCursorOutParameter() {
+    void refCursorOutParameter() {
         EntityManager em = emf.createEntityManager();
         boolean created = false;
         try {
@@ -78,7 +78,7 @@ public class TestOracleStoredProcedure extends SingleEMFTestCase {
      * registered type if the conversion is exact, and unchanged otherwise.
      */
     @Test
-    public void testNumberOutParameterHasRegisteredType() {
+    void numberOutParameterHasRegisteredType() {
         EntityManager em = emf.createEntityManager();
         boolean created = false;
         try {

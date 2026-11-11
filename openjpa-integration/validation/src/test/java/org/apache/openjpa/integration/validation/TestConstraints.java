@@ -83,12 +83,12 @@ import org.junit.jupiter.api.Test;
  *
  * @version $Rev$ $Date$
  */
-public class TestConstraints extends AbstractPersistenceTestCase {
+class TestConstraints extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
@@ -108,7 +108,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Tests that a constraint violation will occur on invalid update.
      */
     @Test
-    public void testNullUpdateConstraint() {
+    void nullUpdateConstraint() {
         getLog().trace("testNullUpdateConstraint() started");
 
         long id = 0;
@@ -165,7 +165,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Tests that a violation will not occur when deleting invalid entity.
      */
     @Test
-    public void testNullDeleteIgnored() {
+    void nullDeleteIgnored() {
         getLog().trace("testNullDeleteIgnored() started");
 
         // Part 1 - Create an invalid entity
@@ -237,7 +237,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Tests that no Validation Providers are used when disabled.
      */
     @Test
-    public void testNullConstraintIgnored() {
+    void nullConstraintIgnored() {
         getLog().trace("testNullConstraintIgnored() started");
         // create our EMF w/ props
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -276,7 +276,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for a violation exception.
      */
     @Test
-    public void testNullConstraint() {
+    void nullConstraint() {
         getLog().trace("testNullConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -309,7 +309,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for a violation exception.
      */
     @Test
-    public void testNotNullConstraint() {
+    void notNullConstraint() {
         getLog().trace("testNotNullConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -342,7 +342,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for no violations.
      */
     @Test
-    public void testNullNotNullConstraint() {
+    void nullNotNullConstraint() {
         getLog().trace("testNullNotNullConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -374,7 +374,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for a violation exception.
      */
     @Test
-    public void testAssertTrueConstraint() {
+    void assertTrueConstraint() {
         getLog().trace("testAssertTrueConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -407,7 +407,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for a violation exception.
      */
     @Test
-    public void testAssertFalseConstraint() {
+    void assertFalseConstraint() {
         getLog().trace("testAssertFalseConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -440,7 +440,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *      Basic constraint test for no violations.
      */
     @Test
-    public void testAssertTrueFalseConstraint() {
+    void assertTrueFalseConstraint() {
         getLog().trace("testAssertTrueFalseConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -472,7 +472,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDecimalMinConstraint() {
+    void decimalMinConstraint() {
         getLog().trace("testDecimalMinConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -505,7 +505,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDecimalMaxConstraint() {
+    void decimalMaxConstraint() {
         getLog().trace("testDecimalMaxConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -538,7 +538,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testDecimalMinMaxConstraint() {
+    void decimalMinMaxConstraint() {
         getLog().trace("testDecimalMinMaxConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -570,7 +570,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testMinConstraint() {
+    void minConstraint() {
         getLog().trace("testMinConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -603,7 +603,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testMaxConstraint() {
+    void maxConstraint() {
         getLog().trace("testMaxConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -636,7 +636,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testMinMaxConstraint() {
+    void minMaxConstraint() {
         getLog().trace("testMinMaxConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -668,7 +668,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDigitsTwoConstraint() {
+    void digitsTwoConstraint() {
         getLog().trace("testDigitsTwoConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -701,7 +701,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDigitsFiveConstraint() {
+    void digitsFiveConstraint() {
         getLog().trace("testDigitsFiveConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -734,7 +734,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testDigitsConstraint() {
+    void digitsConstraint() {
         getLog().trace("testDigitsConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -766,7 +766,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testSizeStringConstraint() {
+    void sizeStringConstraint() {
         getLog().trace("testSizeStringConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -799,7 +799,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testSizeMapConstraint() {
+    void sizeMapConstraint() {
         getLog().trace("testSizeMapConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -832,7 +832,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testSizeConstraint() {
+    void sizeConstraint() {
         getLog().trace("testSizeConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -864,7 +864,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDatesFutureConstraint() {
+    void datesFutureConstraint() {
         getLog().trace("testDatesFutureConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -897,7 +897,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testDatesPastConstraint() {
+    void datesPastConstraint() {
         getLog().trace("testDatesPastConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -930,7 +930,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testDatesConstraint() {
+    void datesConstraint() {
         getLog().trace("testDatesConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -962,7 +962,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testPatternAlphaConstraint() {
+    void patternAlphaConstraint() {
         getLog().trace("testPatternAlphaConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -995,7 +995,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for a violation exception.
      */
     @Test
-    public void testPatternNumericConstraint() {
+    void patternNumericConstraint() {
         getLog().trace("testPatternNumericConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -1028,7 +1028,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testPatternConstraint() {
+    void patternConstraint() {
         getLog().trace("testPatternConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -1060,7 +1060,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for violation exceptions.
      */
     @Test
-    public void testValidFailuresConstraint() {
+    void validFailuresConstraint() {
         Address a = new Address();
         getLog().trace("testValidFailuresConstraint() started");
 
@@ -1150,7 +1150,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *       Basic constraint test for no violations.
      */
     @Test
-    public void testValidPassConstraint() {
+    void validPassConstraint() {
         getLog().trace("testValidPassConstraint() started");
         // create EM from default EMF
         OpenJPAEntityManager em = emf.createEntityManager();

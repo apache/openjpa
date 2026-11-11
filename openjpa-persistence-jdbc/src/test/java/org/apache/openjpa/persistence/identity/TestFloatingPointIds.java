@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestFloatingPointIds
+class TestFloatingPointIds
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -40,7 +40,7 @@ public class TestFloatingPointIds
     }
 
     @Test
-    public void testPersistFloat() {
+    void persistFloat() {
         FloatIdEntity e = new FloatIdEntity();
         e.setId(3F);
         e.setData(33);
@@ -59,7 +59,7 @@ public class TestFloatingPointIds
     }
 
     @Test
-    public void testPersistDoubleObj() {
+    void persistDoubleObj() {
         DoubleObjIdEntity e = new DoubleObjIdEntity();
         e.setId(4D);
         e.setData(44);

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.meta;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.persistence.EntityManagerFactory;
-
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -37,6 +36,8 @@ import org.apache.openjpa.persistence.meta.common.apps.ValueStrategyPC;
 import org.apache.openjpa.util.OpenJPAException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManagerFactory;
 
 /**
  * <p>Test value and update strategies.  Also tests version fields, which
@@ -51,12 +52,12 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(ValueStrategyPC.class);
     }
 
     @Test
-    public void testIgnoreUpdate() {
+    void ignoreUpdate() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");
         pc.setIgnoreUpdate(10);
@@ -91,7 +92,7 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testRestrictUpdate() {
+    void restrictUpdate() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");
         pc.setRestrictUpdate(10);
@@ -122,7 +123,7 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testUUID() {
+    void uuid() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
         pc.setName("pc");
@@ -140,7 +141,7 @@ public class TestValueStrategies extends AbstractTestCase {
         pm.persist(pc2);
         String str = pc.getUUID();
         String hex = pc.getUUIDHex();
-        assertTrue(!pm.isStoreActive());    // no flush needed
+        assertFalse(pm.isStoreActive());    // no flush needed
         endTx(pm);
         String str2 = pc2.getUUID();
         String hex2 = pc2.getUUIDHex();
@@ -150,10 +151,10 @@ public class TestValueStrategies extends AbstractTestCase {
 
         assertNotNull(str);
         assertNotNull(str2);
-        assertTrue(!str.equals(str2));
+        assertNotEquals(str, str2);
         assertNotNull(hex);
         assertNotNull(hex2);
-        assertTrue(!hex.equals(hex2));
+        assertNotEquals(hex, hex2);
 
         pm = (OpenJPAEntityManager) currentEntityManager();
         pc = (ValueStrategyPC) pm.find(ValueStrategyPC.class, oid);
@@ -177,7 +178,7 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testSequence() {
+    void sequence() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
         pc.setName("pc");
@@ -192,7 +193,7 @@ public class TestValueStrategies extends AbstractTestCase {
         pm.persist(pc);
         pm.persist(pc2);
         int seq = pc.getSequence();
-        assertTrue(!pm.isStoreActive());    // no flush needed
+        assertFalse(pm.isStoreActive());    // no flush needed
         endTx(pm);
         int seq2 = pc2.getSequence();
         Object oid = pm.getObjectId(pc);
@@ -223,12 +224,12 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testVersion() {
+    void version() {
         versionTest(getEmf());
     }
 
     @Test
-    public void testVersionDataCache() {
+    void versionDataCache() {
 
         Map map = new HashMap();
         map.put("openjpa.DataCache", "true");
@@ -299,7 +300,7 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionDetach() {
+    void versionDetach() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
         pc.setName("pc");
@@ -373,7 +374,7 @@ public class TestValueStrategies extends AbstractTestCase {
     }
 
     @Test
-    public void testVersionRefresh() {
+    void versionRefresh() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");
 

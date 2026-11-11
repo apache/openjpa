@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * its fields. DID2cEmployeeId declares lastName before firstName, the reverse
  * of the @JoinColumns order of DID2cDependent.
  */
-public class TestDerivedIdEx2c extends SingleEMFTestCase {
+class TestDerivedIdEx2c extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -58,7 +58,7 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindDoesNotDependOnIdClassFieldOrder() {
+    void findDoesNotDependOnIdClassFieldOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);
@@ -76,7 +76,7 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryViaEmbeddedIdPath() {
+    void queryViaEmbeddedIdPath() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);
@@ -94,7 +94,7 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryViaRelation() {
+    void queryViaRelation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);

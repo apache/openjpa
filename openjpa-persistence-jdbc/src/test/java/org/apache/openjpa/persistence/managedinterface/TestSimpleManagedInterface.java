@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSimpleManagedInterface
+class TestSimpleManagedInterface
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -43,7 +43,7 @@ public class TestSimpleManagedInterface
     }
 
     @Test
-    public void testMetaDataRepository() {
+    void metaDataRepository() {
         AbstractBrokerFactory bf =
             (AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf);
         bf.makeReadOnly();
@@ -57,7 +57,7 @@ public class TestSimpleManagedInterface
     }
 
     @Test
-    public void testInterfaceImplGeneration() {
+    void interfaceImplGeneration() {
         ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf))
             .makeReadOnly();
         // load metadata to trigger instance creation
@@ -67,7 +67,7 @@ public class TestSimpleManagedInterface
     }
 
     @Test
-    public void testBasicOperations() {
+    void basicOperations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         SimpleManagedInterface pc =
             em.createInstance(SimpleManagedInterface.class);
@@ -94,7 +94,7 @@ public class TestSimpleManagedInterface
     }
 
     @Test
-    public void testJPQL() {
+    void jpql() {
         EntityManager em = emf.createEntityManager();
         assertEquals(0, em.createQuery("select o from SimpleManagedInterface o")
             .getResultList().size());

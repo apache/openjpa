@@ -36,7 +36,7 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-public class TestSubclassValidator extends SingleEMFTestCase {
+class TestSubclassValidator extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
@@ -48,7 +48,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBcSubclassValidator() throws Exception {
+    void bcSubclassValidator() throws Exception {
         EnhancementProject project = new EnhancementProject();
         TemporaryClassLoader tempCl = new TemporaryClassLoader(this.getClass().getClassLoader());
         final OpenJPAConfiguration conf = emf.getConfiguration();

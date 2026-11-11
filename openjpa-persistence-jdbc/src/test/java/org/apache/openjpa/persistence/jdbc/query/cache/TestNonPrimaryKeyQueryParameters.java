@@ -51,7 +51,7 @@ import org.junit.jupiter.api.Test;
  * @author Vikram Bhatia
  * @author David Blevins
  */
-public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
+class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	private static final int FULLTIME_EMPLOYEE_COUNT = 3;
 	private static final int PARTTIME_EMPLOYEE_COUNT = 2;
     private static final int LINEITEM_PER_INVOICE = 1;
@@ -69,7 +69,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testSelectQueryWithPrimaryKeyParameter() {
+    void selectQueryWithPrimaryKeyParameter() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em
@@ -86,7 +86,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testSelectQueryWithNoParameter() {
+    void selectQueryWithNoParameter() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT d from Department d");
@@ -103,7 +103,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testFind() {
+    void find() {
 		EntityManager em = emf.createEntityManager();
 
 		Department dept = em.find(Department.class, DEPT_NAME);
@@ -122,7 +122,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testSelectSubClass() {
+    void selectSubClass() {
 		EntityManager em = emf.createEntityManager();
 
         Query query = em.createQuery("SELECT e from FullTimeEmployee e");
@@ -137,7 +137,7 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testSelectBaseClass() {
+    void selectBaseClass() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT e from Employee e");

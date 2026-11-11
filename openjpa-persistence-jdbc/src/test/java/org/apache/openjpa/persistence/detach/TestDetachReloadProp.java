@@ -24,7 +24,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDetachReloadProp extends SQLListenerTestCase {
+class TestDetachReloadProp extends SQLListenerTestCase {
     IntVersionEntity intVer;
     TimestampVersionEntity tsVer;
     NoVersionEntity noVer;
@@ -63,13 +63,13 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
     }
 
     @Test
-    public void testReloadTrue() {
+    void reloadTrue() {
         compat.setReloadOnDetach(true);
         detachProcessing();
     }
 
     @Test
-    public void testReloadFalse() {
+    void reloadFalse() {
         compat.setReloadOnDetach(false);
         detachProcessing();
     }

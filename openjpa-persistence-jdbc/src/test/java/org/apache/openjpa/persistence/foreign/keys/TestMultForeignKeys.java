@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Test multiple keys that have the same Entity as
  * the type.
  */
-public class TestMultForeignKeys extends SQLListenerTestCase {
+class TestMultForeignKeys extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class,
@@ -47,7 +47,7 @@ public class TestMultForeignKeys extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreated() {
+    void created() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -57,25 +57,25 @@ public class TestMultForeignKeys extends SQLListenerTestCase {
         ArrayList<ContainsMultSimpleEntity> contMultSEColl =
                 (ArrayList<ContainsMultSimpleEntity>)tl.getContMultSEColl();
         assertNotNull(contMultSEColl);
-        assertEquals(contMultSEColl.size(), 1);
+        assertEquals(1, contMultSEColl.size());
 
         ContainsMultSimpleEntity contMultSE = contMultSEColl.get(0);
         assertNotNull(contMultSE);
 
         SimpleEntity se1 = contMultSE.getSimpleEntity1();
         assertNotNull(se1);
-        assertEquals(se1.getId(), 1);
-        assertEquals(se1.getName(), "name1");
+        assertEquals(1, se1.getId());
+        assertEquals("name1", se1.getName());
 
         SimpleEntity se2 = contMultSE.getSimpleEntity2();
         assertNotNull(se2);
-        assertEquals(se2.getId(), 2);
-        assertEquals(se2.getName(), "name2");
+        assertEquals(2, se2.getId());
+        assertEquals("name2", se2.getName());
 
         SimpleEntity se3 = contMultSE.getSimpleEntity3();
         assertNotNull(se3);
-        assertEquals(se3.getId(), 3);
-        assertEquals(se3.getName(), "name3");
+        assertEquals(3, se3.getId());
+        assertEquals("name3", se3.getName());
 
         em.close();
     }

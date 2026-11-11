@@ -57,7 +57,7 @@ public class TestMapsIdXml extends SingleEMFTestCase {
      * This is spec 2.4.1.2 Example 1, case(b)
      */
     @Test
-    public void testMapsId1Xml() {
+    void mapsId1Xml() {
         createObj1Xml();
         findObj1Xml();
         queryObj1Xml();

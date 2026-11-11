@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.kernel;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,7 +45,7 @@ public class TestTransition2 extends BaseKernelTest {
     private int _id = 0;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, PersistenceAware.class);
         try {
             OpenJPAEntityManager pm = getPM(false, false);
@@ -69,7 +72,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional and back to transient after rollback.
      */
     @Test
-    public void testFlagTransitions1()
+    void flagTransitions1()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -96,7 +99,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional to persistent-nontransactional after commit.
      */
     @Test
-    public void testFlagTransitions2()
+    void flagTransitions2()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -123,7 +126,7 @@ public class TestTransition2 extends BaseKernelTest {
      * id, then committing.
      */
     @Test
-    public void testFlagTransitions3() throws Exception {
+    void flagTransitions3() throws Exception {
         if (!supportsPessimistic)
             return;
 
@@ -146,7 +149,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testFlagTransitions4()
+    void flagTransitions4()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -171,7 +174,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id.
      */
     @Test
-    public void testFlagTransitions5()
+    void flagTransitions5()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -190,7 +193,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to transient after delete and commit.
      */
     @Test
-    public void testFlagTransitions6()
+    void flagTransitions6()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -216,7 +219,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to persistent-nontransactional after delete and rollback.
      */
     @Test
-    public void testFlagTransitions7()
+    void flagTransitions7()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -242,7 +245,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional and back to transient after rollback.
      */
     @Test
-    public void testStateTransitions1()
+    void stateTransitions1()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -268,7 +271,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional to persistent-nontransactional after commit.
      */
     @Test
-    public void testStateTransitions2()
+    void stateTransitions2()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -293,7 +296,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then committing.
      */
     @Test
-    public void testStateTransitions3()
+    void stateTransitions3()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -315,7 +318,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then committing.
      */
     @Test
-    public void testStateTransitions3a()
+    void stateTransitions3a()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -337,7 +340,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testStateTransitions4()
+    void stateTransitions4()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -360,7 +363,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testStateTransitions4a()
+    void stateTransitions4a()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -383,7 +386,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to transient after delete and commit.
      */
     @Test
-    public void testStateTransitions5()
+    void stateTransitions5()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -412,7 +415,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to persistent-nontransactional after delete and rollback.
      */
     @Test
-    public void testStateTransitions6()
+    void stateTransitions6()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -435,7 +438,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional and back to transient after rollback.
      */
     @Test
-    public void testOptStateTransitions1()
+    void optStateTransitions1()
         throws Exception {
         ModRuntimeTest2 b = createTest2();
 
@@ -458,7 +461,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional to persistent-nontransactional after commit.
      */
     @Test
-    public void testOptStateTransitions2()
+    void optStateTransitions2()
         throws Exception {
         ModRuntimeTest2 b = createTest2();
 
@@ -480,7 +483,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then committing.
      */
     @Test
-    public void testOptStateTransitions3()
+    void optStateTransitions3()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
@@ -500,7 +503,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testOptStateTransitions4()
+    void optStateTransitions4()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
@@ -520,7 +523,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to transient after delete and commit.
      */
     @Test
-    public void testOptStateTransitions5()
+    void optStateTransitions5()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
@@ -546,7 +549,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to persistent-nontransactional after delete and rollback.
      */
     @Test
-    public void testOptStateTransitions6()
+    void optStateTransitions6()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
@@ -565,7 +568,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional and back to transient after rollback.
      */
     @Test
-    public void testOptRetainStateTransitions1()
+    void optRetainStateTransitions1()
         throws Exception {
         ModRuntimeTest2 b = createTest2();
 
@@ -588,7 +591,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional to persistent-nontransactional after commit.
      */
     @Test
-    public void testOptRetainStateTransitions2()
+    void optRetainStateTransitions2()
         throws Exception {
         ModRuntimeTest2 b = createTest2();
 
@@ -610,7 +613,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then committing.
      */
     @Test
-    public void testOptRetainStateTransitions3()
+    void optRetainStateTransitions3()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -630,7 +633,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testOptRetainStateTransitions4()
+    void optRetainStateTransitions4()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -650,7 +653,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to transient after delete and commit.
      */
     @Test
-    public void testOptRetainStateTransitions5()
+    void optRetainStateTransitions5()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -677,7 +680,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to persistent-nontransactional after delete and rollback.
      */
     @Test
-    public void testOptRetainStateTransitions6()
+    void optRetainStateTransitions6()
         throws Exception {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -699,7 +702,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional and back to transient after rollback.
      */
     @Test
-    public void testRetainStateTransitions1()
+    void retainStateTransitions1()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -725,7 +728,7 @@ public class TestTransition2 extends BaseKernelTest {
      * persistent-transactional to persistent-nontransactional after commit.
      */
     @Test
-    public void testRetainStateTransitions2()
+    void retainStateTransitions2()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -750,7 +753,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then committing.
      */
     @Test
-    public void testRetainStateTransitions3()
+    void retainStateTransitions3()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -773,7 +776,7 @@ public class TestTransition2 extends BaseKernelTest {
      * instance by id, then rolling back.
      */
     @Test
-    public void testRetainStateTransitions4()
+    void retainStateTransitions4()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -796,7 +799,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to transient after delete and commit.
      */
     @Test
-    public void testRetainStateTransitions5() throws Exception {
+    void retainStateTransitions5() throws Exception {
         if (!supportsPessimistic)
             return;
 
@@ -824,7 +827,7 @@ public class TestTransition2 extends BaseKernelTest {
      * to persistent-nontransactional after delete and rollback.
      */
     @Test
-    public void testRetainStateTransitions6()
+    void retainStateTransitions6()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -846,7 +849,7 @@ public class TestTransition2 extends BaseKernelTest {
      * transient-dirty and back to transient after rollback.
      */
     @Test
-    public void testTransientStateTransitions1()
+    void transientStateTransitions1()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -871,7 +874,7 @@ public class TestTransition2 extends BaseKernelTest {
      * transient-transactional and stick on commit.
      */
     @Test
-    public void testTransientStateTransitions2()
+    void transientStateTransitions2()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -895,7 +898,7 @@ public class TestTransition2 extends BaseKernelTest {
      * Tests state transitions from PClean to transient.
      */
     @Test
-    public void testTransientStateTransitions3()
+    void transientStateTransitions3()
         throws Exception {
         if (!supportsPessimistic)
             return;
@@ -956,8 +959,7 @@ public class TestTransition2 extends BaseKernelTest {
         assertNotNull(b.getSelfOneOne());
         assertEquals("PARENT", b.getSelfOneOne().getStringField());
 
-        assertEquals(
-            null, PersistenceAware.getModTransString(b),
+        assertNull(PersistenceAware.getModTransString(b),
             "transactional field 'transString' was not the "
                 + "same as it was originally. Ensure that "
                 + "openjpa.kernel.PersistenceAware is enhanced. "
@@ -971,11 +973,11 @@ public class TestTransition2 extends BaseKernelTest {
      */
     public void assertTransient(Object a) {
         OpenJPAEntityManager pm = currentEntityManager();
-        assertTrue(!pm.isPersistent(a));
-        assertTrue(!pm.isTransactional(a));
-        assertTrue(!pm.isNewlyPersistent(a));
-        assertTrue(!pm.isDirty(a));
-        assertTrue(!pm.isRemoved(a));
+        assertFalse(pm.isPersistent(a));
+        assertFalse(pm.isTransactional(a));
+        assertFalse(pm.isNewlyPersistent(a));
+        assertFalse(pm.isDirty(a));
+        assertFalse(pm.isRemoved(a));
         assertNull(pm.getObjectId(a));
         assertNull(OpenJPAPersistence.getEntityManager(a));
         endEm(pm);
@@ -989,7 +991,7 @@ public class TestTransition2 extends BaseKernelTest {
         OpenJPAEntityManager pm = currentEntityManager();
         assertTrue(pm.isPersistent(a));
 
-        assertTrue(a instanceof PersistenceCapable);
+        assertInstanceOf(PersistenceCapable.class, a);
 
         assertEquals(isTrans, pm.isTransactional(a));
 		assertEquals(isNew, pm.isNewlyPersistent(a));

@@ -57,7 +57,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSchemaInPUDefault() {
+    void schemaInPUDefault() {
         persist(new PUDefaultSchemaEntity());
 
         // The Sequence and Table SQL should use the PU default schema
@@ -66,7 +66,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSchemaInSequenceAnnotation() {
+    void schemaInSequenceAnnotation() {
         persist(new PUSchemaInSequenceAnnotationEntity());
 
         // The Sequence SQL should use the schema defined in the annotation
@@ -76,7 +76,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSchemaInTableAnnotation() {
+    void schemaInTableAnnotation() {
         persist(new PUSchemaInTableAnnotationEntity());
 
         // The Sequence SQL should use the schema defined in the PU default schema
@@ -86,7 +86,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSchemaInTableMapping() {
+    void schemaInTableMapping() {
         persist(new PUSchemaInTableMappingEntity());
 
         // The Sequence SQL should use the schema defined in the PU default schema
@@ -96,7 +96,7 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testSchemaInSequenceMapping() {
+    void schemaInSequenceMapping() {
         persist(new PUSchemaInSequenceMappingEntity());
 
         // The Sequence SQL should use the schema defined in the mapping file

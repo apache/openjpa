@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestResultSetMapping
+class TestResultSetMapping
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -45,13 +45,13 @@ public class TestResultSetMapping
     }
 
     @Test
-    public void testSimpleQuery() {
+    void simpleQuery() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createNamedQuery("findSimpleEntitites");
         List res = q.getResultList();
         assertNotNull(res);
         for (Object re : res) {
-            assertSame(re.getClass(), SimpleEntity.class);
+            assertSame(SimpleEntity.class, re.getClass());
         }
         em.close();
     }

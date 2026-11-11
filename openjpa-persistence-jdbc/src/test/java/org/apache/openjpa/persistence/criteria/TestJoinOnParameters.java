@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * Tests that a parameter used only in the ON condition of a join of a criteria
  * query is registered with the query and can be bound.
  */
-public class TestJoinOnParameters extends CriteriaTest {
+class TestJoinOnParameters extends CriteriaTest {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -100,7 +100,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfSingularJoin() {
+    void parameterInOnOfSingularJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Join<Customer, Address> a = c.join("address");
@@ -114,7 +114,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfCollectionJoin() {
+    void parameterInOnOfCollectionJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -128,7 +128,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testPositionalParameterInOn() {
+    void positionalParameterInOn() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Join<Customer, Address> a = c.join("address");
@@ -140,7 +140,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfNestedJoin() {
+    void parameterInOnOfNestedJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -155,7 +155,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnThatReferencesTheRoot() {
+    void parameterInOnThatReferencesTheRoot() {
         CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
         Root<Customer> c = cq.from(Customer.class);
         SetJoin<Customer, Order> o = c.joinSet("orders");
@@ -169,7 +169,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnAndWhereIsRegisteredOnce() {
+    void parameterInOnAndWhereIsRegisteredOnce() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Join<Customer, Address> a = c.join("address");
@@ -183,7 +183,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfSubqueryJoin() {
+    void parameterInOnOfSubqueryJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Subquery<Long> sq = cq.subquery(Long.class);
@@ -199,7 +199,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfJoinOfCorrelatedRoot() {
+    void parameterInOnOfJoinOfCorrelatedRoot() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Subquery<Integer> sq = cq.subquery(Integer.class);
@@ -217,7 +217,7 @@ public class TestJoinOnParameters extends CriteriaTest {
     }
 
     @Test
-    public void testParameterInOnOfJoinOfCorrelatedJoin() {
+    void parameterInOnOfJoinOfCorrelatedJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
         Join<Customer, Order> o = c.join("orders");

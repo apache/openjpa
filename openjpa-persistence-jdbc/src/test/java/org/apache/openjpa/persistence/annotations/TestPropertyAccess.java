@@ -38,12 +38,12 @@ public class TestPropertyAccess extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(PropertyAccess1.class);
     }
 
     @Test
-    public void testPropertyAccessBasicCreation() {
+    void propertyAccessBasicCreation() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         PropertyAccess1 pa1_1 = new PropertyAccess1(10);
@@ -63,7 +63,7 @@ public class TestPropertyAccess extends AnnotationTestCase
     }
 
     @Test
-    public void testPropertyAccessBasicMutation() {
+    void propertyAccessBasicMutation() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         PropertyAccess1 pa1_1 = new PropertyAccess1(10);
@@ -87,7 +87,7 @@ public class TestPropertyAccess extends AnnotationTestCase
     }
 
     @Test
-    public void testJPQL() {
+    void jpql() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
             "o.name = 'foo'").getResultList();
@@ -97,7 +97,7 @@ public class TestPropertyAccess extends AnnotationTestCase
     }
 
     @Test
-    public void testJPQLWithFieldNameMismatch() {
+    void jpqlWithFieldNameMismatch() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
             "o.intValue = 0").getResultList();

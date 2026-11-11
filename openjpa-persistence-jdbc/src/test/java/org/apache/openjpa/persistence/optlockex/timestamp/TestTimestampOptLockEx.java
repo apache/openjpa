@@ -58,7 +58,7 @@ public class TestTimestampOptLockEx extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdate() {
+    void update() {
         poplulate();
         //This loop is necessary since we need a timestamp which has been rounded up
         //by the database, or by OpenJPA such that the in-memory version of the Timestamp

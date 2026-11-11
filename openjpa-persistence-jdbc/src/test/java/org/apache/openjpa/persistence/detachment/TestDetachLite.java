@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 
@@ -36,7 +34,7 @@ import org.apache.openjpa.util.Proxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDetachLite extends TestDetach {
+class TestDetachLite extends TestDetach {
     Object[] props =
         new Object[] { "openjpa.DetachState", "loaded(LiteAutoDetach=true)", DMCustomer.class,
             DMCustomerInventory.class, DMItem.class, CLEAR_TABLES };
@@ -53,7 +51,7 @@ public class TestDetachLite extends TestDetach {
     }
 
     @Test
-    public void testPendingClear() {
+    void pendingClear() {
         EntityManager em = emf.createEntityManager();
         DMCustomer dm = em.find(DMCustomer.class, root.getId());
         dm.setLastName(System.currentTimeMillis() + "--last");
@@ -64,7 +62,7 @@ public class TestDetachLite extends TestDetach {
     }
 
     @Test
-    public void testLeaveProxy() {
+    void leaveProxy() {
         Object[] p = props;
         p[1] = "loaded(LiteAutoDetach=true,DetachProxyFields=false)";
         EntityManagerFactory iemf = createEMF(p);
@@ -83,8 +81,8 @@ public class TestDetachLite extends TestDetach {
                 iem.clear();
                 Calendar afterDetachCal = dc.getCal();
 
-                assertTrue(beforeDetachCal instanceof Proxy);
-                assertTrue(afterDetachCal instanceof Proxy);
+                assertInstanceOf(Proxy.class, beforeDetachCal);
+                assertInstanceOf(Proxy.class, afterDetachCal);
 
                 // Make sure that we get rid of the StateManager.
                 assertNull(((Proxy)afterDetachCal).getOwner());
@@ -101,7 +99,7 @@ public class TestDetachLite extends TestDetach {
     }
 
     @Test
-    public void testProxyClear() {
+    void proxyClear() {
         DMCustomer dc = new DMCustomer();
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(System.currentTimeMillis());
@@ -116,7 +114,7 @@ public class TestDetachLite extends TestDetach {
             iem.clear();
             Calendar afterDetachCal = dc.getCal();
 
-            assertTrue(beforeDetachCal instanceof Proxy);
+            assertInstanceOf(Proxy.class, beforeDetachCal);
             assertFalse(afterDetachCal instanceof Proxy);
         } finally {
             if (iem.getTransaction().isActive()) {
@@ -127,7 +125,7 @@ public class TestDetachLite extends TestDetach {
     }
 
     @Test
-    public void testCloseDetach() {
+    void closeDetach() {
         root = em.merge(root);
         PersistenceCapable pc = (PersistenceCapable) root;
         assertFalse(pc.pcIsDetached());

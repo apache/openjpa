@@ -57,7 +57,7 @@ public class TestResultShapes extends AbstractTestCase {
     private Broker _broker;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CacheObjectAChild1.class);
 
         Map propsMap = new HashMap();
@@ -113,7 +113,7 @@ public class TestResultShapes extends AbstractTestCase {
 //	}
 
     @Test
-    public void testCollectionOfSingleValuedProjection() {
+    void collectionOfSingleValuedProjection() {
 
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
@@ -127,7 +127,7 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     @Test
-    public void testUniqueSingleValuedProjection() {
+    void uniqueSingleValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
 
@@ -140,7 +140,7 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     @Test
-    public void testCollectionOfMultiValuedProjection() {
+    void collectionOfMultiValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
@@ -161,7 +161,7 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     @Test
-    public void testUniqueMultiValuedProjection() {
+    void uniqueMultiValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
@@ -183,7 +183,7 @@ public class TestResultShapes extends AbstractTestCase {
     }
 
     @Test
-    public void testUncachedQueryHasCorrectShape() {
+    void uncachedQueryHasCorrectShape() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");

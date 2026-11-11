@@ -50,16 +50,17 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingParser;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingSerializer;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
+class TestOrderColumnXML extends AbstractCachedEMFTestCase {
 
     /*
      * Validates the use of the nullable attribute on OrderColumn through
      * an entity defined in orm.xml
      */
     @Test
-    public void testOrderColumnNullableFalse() {
+    void orderColumnNullableFalse() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -98,7 +99,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
      * Validates the use of the columnDefinition attribute on OrderColumn.
      */
     @Test
-    public void testOrderColumnColumnDefinition() {
+    void orderColumnColumnDefinition() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -163,7 +164,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
      * Validates the use of the table attribute defined in XML
      */
     @Test
-    public void testOrderColumnTableXML() {
+    void orderColumnTableXML() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -197,7 +198,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
      * the JPA 2.0 spec.
      */
     @Test
-    public void testOrderColumnOrderBy() {
+    void orderColumnOrderBy() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         OpenJPAEntityManagerSPI em = null;
@@ -237,7 +238,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
     }
 
     @Test
-    public void testOrderColumnMetaDataSerialization()
+    void orderColumnMetaDataSerialization()
         throws Exception {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -272,17 +273,17 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         FieldMapping fm = (FieldMapping)_entityMeta2.getField("one2Melems");
         Column oc = fm.getOrderColumn();
         assertNotNull(oc);
-        assertEquals(oc.getName(),"one2MOrder");
+        assertEquals("one2MOrder", oc.getName());
 
         fm = (FieldMapping)_entityMeta2.getField("m2melems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
-        assertEquals(oc.getName(),"m2morder");
+        assertEquals("m2morder", oc.getName());
 
         fm = (FieldMapping)_entityMeta2.getField("collelems");
         oc = fm.getOrderColumn();
         assertNotNull(oc);
-        assertEquals(oc.getName(),"collelems_ORDER");
+        assertEquals("collelems_ORDER", oc.getName());
 
         try {
             if (emf1 != null)

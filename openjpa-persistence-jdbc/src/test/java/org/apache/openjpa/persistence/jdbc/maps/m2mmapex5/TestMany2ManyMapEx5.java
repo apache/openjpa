@@ -33,7 +33,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -71,12 +70,12 @@ public class TestMany2ManyMapEx5 extends SQLListenerTestCase {
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -127,13 +126,13 @@ public class TestMany2ManyMapEx5 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
-        assertEquals(((PhoneNumber) rs.get(0)).getNumber(), 3);
+        assertEquals(3, ((PhoneNumber) rs.get(0)).getNumber());
 
         em.close();
     }
 
     @Test
-    public void testQueryObject() throws Exception {
+    void queryObject() throws Exception {
         queryObj();
         findObj();
     }
@@ -212,7 +211,7 @@ public class TestMany2ManyMapEx5 extends SQLListenerTestCase {
         Employee e0 = empMap.get(id);
         Map<String, PhoneNumber> phones = e.getPhoneNumbers();
         Map<String, PhoneNumber> phones0 = e0.getPhoneNumbers();
-        Assertions.assertEquals(phones0.size(), phones.size());
+        assertEquals(phones0.size(), phones.size());
         checkPhoneMap(phones0, phones);
     }
 
@@ -221,7 +220,7 @@ public class TestMany2ManyMapEx5 extends SQLListenerTestCase {
         PhoneNumber p0 = phoneMap.get(number);
         Map<String, Employee> es = p.getEmployees();
         Map<String, Employee> es0 = p0.getEmployees();
-        Assertions.assertEquals(1, es.size());
+        assertEquals(1, es.size());
         checkEmpMap(es0, es);
     }
 

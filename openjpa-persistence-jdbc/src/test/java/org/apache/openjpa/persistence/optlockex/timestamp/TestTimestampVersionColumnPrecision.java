@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.optlockex.timestamp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -44,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * versions are generated and bound at it. A precision declared in the
  * mapping is used without a lookup.
  */
-public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
+class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -69,12 +67,11 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionsAreKeptAtTheColumnPrecision() {
+    void versionsAreKeptAtTheColumnPrecision() {
         if (emf == null) {
             return;
         }
-        assertTrue(((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance()
-            instanceof DerbyDictionary);
+        assertInstanceOf(DerbyDictionary.class, ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance());
 
         CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.set(0);
         EntityManager em = emf.createEntityManager();
@@ -124,7 +121,7 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
      * is not consulted.
      */
     @Test
-    public void testDeclaredSecondPrecisionIsHonoured() {
+    void declaredSecondPrecisionIsHonoured() {
         if (emf == null) {
             return;
         }
@@ -165,7 +162,7 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
      * type, applies to both; it is read once.
      */
     @Test
-    public void testSharedVersionColumnIsResolvedOnce() {
+    void sharedVersionColumnIsResolvedOnce() {
         if (emf == null) {
             return;
         }

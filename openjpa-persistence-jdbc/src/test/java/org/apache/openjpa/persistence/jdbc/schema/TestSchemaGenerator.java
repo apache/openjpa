@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.junit.jupiter.api.Test;
 
-public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @Override
     protected String getPersistenceUnitName() {
@@ -37,7 +37,7 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     @Test
-    public void testSchemaGen() throws Exception {
+    void schemaGen() throws Exception {
         OpenJPAEntityManagerFactory pmf = getEmf();
         OpenJPAEntityManager pm = pmf.createEntityManager();
         JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pmf).getConfiguration();

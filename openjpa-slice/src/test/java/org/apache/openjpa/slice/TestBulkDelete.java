@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestBulkDelete extends SliceTestCase {
+class TestBulkDelete extends SliceTestCase {
 	private static int SLICES = 3;
 	private static List<String> SLICE_NAMES;
 
@@ -68,7 +68,7 @@ public class TestBulkDelete extends SliceTestCase {
      * Deletes all instances from only one slice.
      */
     @Test
-    public void testBulkDelete() {
+    void bulkDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();

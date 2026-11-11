@@ -27,7 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import jakarta.persistence.EntityTransaction;
 
@@ -39,11 +39,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMultiDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMultiDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object boid;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
        deleteAll(MultiB.class);
 
@@ -58,18 +58,18 @@ public class TestMultiDFG extends org.apache.openjpa.persistence.jdbc.kernel.Bas
     }
 
     @Test
-    public void testDFG() {
+    void dfg() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         MultiB b = (MultiB) pm.getObjectId(boid);
 
         // check the non-dfg fields
         OpenJPAStateManager sm = getStateManager(b, pm);
         FieldMetaData fmd = sm.getMetaData().getField("bString");
-        assertTrue(!sm.getLoaded().get(fmd.getIndex()),
+        assertFalse(sm.getLoaded().get(fmd.getIndex()),
                 "bString should not be loaded");
 
         fmd = sm.getMetaData().getField("bInt");
-        assertTrue(!sm.getLoaded().get(fmd.getIndex()),
+        assertFalse(sm.getLoaded().get(fmd.getIndex()),
                 "bInt should not be loaded");
 
         // Getting values

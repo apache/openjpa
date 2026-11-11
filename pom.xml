@@ -86,7 +86,7 @@
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
-        <kubernetes-client.version>6.13.3</kubernetes-client.version>
+        <kubernetes-client.version>8.0.0</kubernetes-client.version>
         <slf4j.version>2.0.20</slf4j.version>
 
         <javadoc.additionalparam />
@@ -1835,6 +1835,12 @@
             <dependency>
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>

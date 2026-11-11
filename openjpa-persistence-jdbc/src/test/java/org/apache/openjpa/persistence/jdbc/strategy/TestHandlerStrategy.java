@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestHandlerStrategy extends SingleEMFTestCase {
+class TestHandlerStrategy extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -40,7 +40,7 @@ public class TestHandlerStrategy extends SingleEMFTestCase {
      * @see JIRA ticket OPENJPA-2328 for more explanation
      */
     @Test
-    public void testIssue_OPENJPA2328() {
+    void issueOPENJPA2328() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
             return;

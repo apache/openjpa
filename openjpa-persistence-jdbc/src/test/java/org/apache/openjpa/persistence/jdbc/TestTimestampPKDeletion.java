@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestTimestampPKDeletion extends SQLListenerTestCase {
+class TestTimestampPKDeletion extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -37,7 +37,7 @@ public class TestTimestampPKDeletion extends SQLListenerTestCase {
     }
 
     @Test
-    public void testTimestampPKDeletion() {
+    void timestampPKDeletion() {
         EntityWithTimestampPK testEntity = new EntityWithTimestampPK("test");
 
         EntityManager em = emf.createEntityManager();

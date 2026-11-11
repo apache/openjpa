@@ -70,7 +70,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
@@ -117,7 +117,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * left two of the four combinations with the wrong order.
      */
     @Test
-    public void testNullPrecedenceInMemory() {
+    void nullPrecedenceInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -143,7 +143,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * say so rather than return a wrong result.
      */
     @Test
-    public void testSetOperationInMemoryIsRejected() {
+    void setOperationInMemoryIsRejected() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -173,7 +173,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * week instead of the ISO-8601 week of the year.
      */
     @Test
-    public void testExtractWeekInMemory() {
+    void extractWeekInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -199,7 +199,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * temporal type a persistent attribute or a parameter can hold.
      */
     @Test
-    public void testExtractFieldsInMemory() {
+    void extractFieldsInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -261,7 +261,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * each temporal type a persistent attribute or a parameter can hold.
      */
     @Test
-    public void testExtractDateAndTimeInMemory() {
+    void extractDateAndTimeInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -304,7 +304,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * not the ISO-8601 ones.
      */
     @Test
-    public void testExtractWeekInMemoryMatchesDatabase() {
+    void extractWeekInMemoryMatchesDatabase() {
         EntityManager em = currentEntityManager();
         DBDictionary dict = ((JDBCConfiguration) ((OpenJPAEntityManagerSPI) em)
             .getConfiguration()).getDBDictionaryInstance();
@@ -350,7 +350,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     @Test
-    public void testCoalesceExpressions() {
+    void coalesceExpressions() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -372,7 +372,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     @Test
-    public void testNullIfExpressions() {
+    void nullIfExpressions() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -396,7 +396,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     @Test
-    public void testSimpleCaseExpression() {
+    void simpleCaseExpression() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -422,7 +422,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
     }
 
     @Test
-    public void testGeneralCaseExpression() {
+    void generalCaseExpression() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();

@@ -34,7 +34,7 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
     public void setUp() {}
 
     @Test
-    public void testInvalidElement() {
+    void invalidElement() {
         boolean exceptionCaught = false;
         try {
             Map<String, Object> propertiesMap = getPropertiesMap(persistentTypes,

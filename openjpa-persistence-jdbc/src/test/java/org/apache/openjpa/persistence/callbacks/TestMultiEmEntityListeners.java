@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMultiEmEntityListeners extends SingleEMFTestCase {
+class TestMultiEmEntityListeners extends SingleEMFTestCase {
     private boolean skipped = false;
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testListenerInEntity1() {
+    void listenerInEntity1() {
         if (skipped) {
             return;
         }
@@ -152,7 +152,7 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAddListenerEntity1() {
+    void addListenerEntity1() {
         if (skipped) {
             return;
         }

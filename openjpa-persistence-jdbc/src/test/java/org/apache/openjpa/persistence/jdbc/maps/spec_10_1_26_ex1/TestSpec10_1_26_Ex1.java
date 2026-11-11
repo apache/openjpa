@@ -35,7 +35,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,12 +59,12 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -115,7 +114,7 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryObject() throws Exception {
+    void queryObject() throws Exception {
         queryObj();
         findObj();
     }
@@ -201,12 +200,12 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     public void assertDepartment(Department d) {
         int id = d.getDeptId();
         Map<Integer, Employee> es = d.getEmpMap();
-        Assertions.assertEquals(2, es.size());
+        assertEquals(2, es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             Integer empId = (Integer) obj;
             Employee e = es.get(empId);
-            Assertions.assertEquals(empId.intValue(), e.getEmpId());
+            assertEquals(empId.intValue(), e.getEmpId());
         }
     }
 

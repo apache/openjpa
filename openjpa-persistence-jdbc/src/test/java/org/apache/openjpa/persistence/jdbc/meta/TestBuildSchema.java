@@ -40,10 +40,10 @@ import org.apache.regexp.REUtil;
 import org.junit.jupiter.api.Test;
 
 
-public class TestBuildSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestBuildSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @Test
-    public void testSchema()
+    void schema()
         throws Exception {
         StringWriter out = new StringWriter();
 

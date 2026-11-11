@@ -36,7 +36,7 @@ public class TestDynamicStorageGenerator extends AbstractTestCase {
     }
 
     @Test
-    public void testStorage() throws Exception {
+    void storage() throws Exception {
 
         DynamicStorageGenerator gen = new DynamicStorageGenerator();
         int[] types = new int[]{

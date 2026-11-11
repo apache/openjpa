@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestClearableScheduler extends SingleEMFTestCase {
+class TestClearableScheduler extends SingleEMFTestCase {
 
     private static String getMinutesString() {
         StringBuilder buf = new StringBuilder();
@@ -53,7 +53,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBasic() throws Exception {
+    void basic() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
         ClearableScheduler scheduler = new ClearableScheduler(conf);

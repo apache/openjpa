@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBiDirectionalJoinTableBulkDeleteCompat
+class TestBiDirectionalJoinTableBulkDeleteCompat
     extends SQLListenerTestCase {
 
     private static final long SSN = 123456789;
@@ -49,7 +49,7 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
     }
 
     @Test
-    public void testBulkDeleteFallsBackToTheInMemoryPath() {
+    void bulkDeleteFallsBackToTheInMemoryPath() {
         try (EntityManager em = emf.createEntityManager()) {
 	        em.getTransaction().begin();
 	        assertEquals(1, em.createQuery("delete from Person p where p.ssn=:ssn")

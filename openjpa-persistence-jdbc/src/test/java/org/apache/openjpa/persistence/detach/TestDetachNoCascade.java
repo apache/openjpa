@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.detach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDetachNoCascade extends SingleEMFTestCase {
+class TestDetachNoCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Compatibility compat;
@@ -74,7 +75,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Make sure the default values are the same
     @Test
-    public void testDefaults() {
+    void defaults() {
         assertTrue(compat.getFlushBeforeDetach());
         assertFalse(compat.getCopyOnDetach());
         assertFalse(compat.getCascadeWithDetach());
@@ -82,7 +83,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Make sure all the fields in Entity1 are CASCADE_NONE
     @Test
-    public void testCascadeValues() {
+    void cascadeValues() {
         id++;
         em.getTransaction().begin();
         create(id);
@@ -103,7 +104,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Test clear() to clear all entities.
     @Test
-    public void testClearAll() {
+    void clearAll() {
         id++;
         em.getTransaction().begin();
         create(id);
@@ -119,7 +120,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
     // cascade and make sure contained entities and other entities
     // are still managed.
     @Test
-    public void testClearOne() {
+    void clearOne() {
         id++;
         boolean cwd = compat.getCascadeWithDetach();
         boolean cod = compat.getCopyOnDetach();
@@ -141,7 +142,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
     // Test clear on a new, unmanaged object. Nothing should happen. After
     // persist it should still become a managed entity.
     @Test
-    public void testClearNew() {
+    void clearNew() {
         id++;
         em.getTransaction().begin();
         create(id);
@@ -154,7 +155,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Test clear on dirty object. Make sure the change is not flushed.
     @Test
-    public void testClearDirty() {
+    void clearDirty() {
 
         boolean cod = compat.getCopyOnDetach();
         boolean fbd = compat.getFlushBeforeDetach();
@@ -188,7 +189,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
     // Remove an Entity before clearing it. Make sure it is still in the
     // DB after the commit.
     @Test
-    public void testClearRemove() {
+    void clearRemove() {
 
         boolean cwd = compat.getCascadeWithDetach();
         boolean cod = compat.getCopyOnDetach();
@@ -220,7 +221,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
     // Try to clear an entity that has already been cleared. There should be
     // no exception and the entity should still not be there.
     @Test
-    public void testClearOnClearedEntity() {
+    void clearOnClearedEntity() {
         boolean cwd = compat.getCascadeWithDetach();
         boolean cod = compat.getCopyOnDetach();
         compat.setCascadeWithDetach(false);
@@ -241,7 +242,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Test that no copy is done by default
     @Test
-    public void testNoCopy() {
+    void noCopy() {
         boolean cwd = compat.getCascadeWithDetach();
         boolean cod = compat.getCopyOnDetach();
         compat.setCascadeWithDetach(false);
@@ -271,7 +272,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Change copy option and validate
     @Test
-    public void testCopy() {
+    void copy() {
         id++;
         em.getTransaction().begin();
         create(id);
@@ -287,7 +288,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Change flush option and validate
     @Test
-    public void testFlush() {
+    void flush() {
         id++;
         em.getTransaction().begin();
         create(id);
@@ -314,7 +315,7 @@ public class TestDetachNoCascade extends SingleEMFTestCase {
 
     // Clear an entity, then recreate it in the same transaction.
     @Test
-    public void testClearRecreate() {
+    void clearRecreate() {
         id++;
         em.getTransaction().begin();
         create(id);

@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQuerySubclass extends SingleEMFTestCase {
+class TestQuerySubclass extends SingleEMFTestCase {
 	
 	private static final Logger logger = Logger.getLogger(TestQuerySubclass.class.getCanonicalName());
 
@@ -54,7 +54,7 @@ public class TestQuerySubclass extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         Collection<Book> books = null;
         Collection<Movie> movies = null;
         em = emf.createEntityManager();

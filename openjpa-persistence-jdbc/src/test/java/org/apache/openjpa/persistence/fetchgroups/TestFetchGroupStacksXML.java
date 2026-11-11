@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.fetchgroups;
 
 import org.junit.jupiter.api.BeforeEach;
 
-public class TestFetchGroupStacksXML extends TestFetchGroupStacks {
+class TestFetchGroupStacksXML extends TestFetchGroupStacks {
     @BeforeEach
     public void setUp() {
         super.setUp();

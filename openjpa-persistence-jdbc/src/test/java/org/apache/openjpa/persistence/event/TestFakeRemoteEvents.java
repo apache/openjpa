@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
@@ -55,12 +56,12 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
     @Test
-    public void testListener() {
+    void listener() {
 
         Map propsMap = new HashMap();
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -99,8 +100,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.updated.size() == 0);
-        assertTrue(transactionListener.deleted.size() == 0);
+        assertEquals(0, transactionListener.updated.size());
+        assertEquals(0, transactionListener.deleted.size());
 
         // simulate modifications
         ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration()
@@ -116,8 +117,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.added.size() == 0);
-        assertTrue(transactionListener.deleted.size() == 0);
+        assertEquals(0, transactionListener.added.size());
+        assertEquals(0, transactionListener.deleted.size());
 
         // simulate a delete
         ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration()
@@ -133,12 +134,12 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.added.size() == 0);
-        assertTrue(transactionListener.updated.size() == 0);
+        assertEquals(0, transactionListener.added.size());
+        assertEquals(0, transactionListener.updated.size());
     }
 
     @Test
-    public void testProvider() {
+    void provider() {
         RemoteCommitProviderTestImpl provider;
         OpenJPAEntityManager pm;
         synchronized (currentProviderLock) {
@@ -168,8 +169,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(provider.updated.size() == 0);
-        assertTrue(provider.deleted.size() == 0);
+        assertEquals(0, provider.updated.size());
+        assertEquals(0, provider.deleted.size());
     }
 
     boolean equals(Object added, Object oid) {

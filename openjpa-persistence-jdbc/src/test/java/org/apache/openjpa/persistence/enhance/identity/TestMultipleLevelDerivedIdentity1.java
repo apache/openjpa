@@ -67,13 +67,13 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
 	    sql.clear();
 		create();
 	}
 
     @Test
-    public void testQueryRootLevel() {
+    void queryRootLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Library1> list = em.createQuery("SELECT p FROM Library1 p")
@@ -90,7 +90,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testQueryIntermediateLevel() {
+    void queryIntermediateLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Book1> list = em.createQuery("SELECT p FROM Book1 p")
@@ -111,7 +111,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testQueryLeafLevel() {
+    void queryLeafLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Page1> list = em.createQuery("SELECT p FROM Page1 p")
@@ -129,7 +129,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testFindRootNode() {
+    void findRootNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		Library1 lib = em.find(Library1.class, LIBRARY_NAME);
@@ -143,7 +143,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testFindIntermediateNode() {
+    void findIntermediateNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 
@@ -156,7 +156,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testFindLeafNode() {
+    void findLeafNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 
@@ -172,7 +172,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testUpdate() {
+    void update() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -187,7 +187,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testDeleteRoot() {
+    void deleteRoot() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -202,7 +202,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testDeleteLeafObtainedByQuery() {
+    void deleteLeafObtainedByQuery() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -220,7 +220,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testDeleteLeafObtainedByFind() {
+    void deleteLeafObtainedByFind() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -242,7 +242,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	}
 
     @Test
-    public void testOrderBy() {
+    void orderBy() {
         sql.clear();
         EntityManager em = emf.createEntityManager();
         Library1 lib = em.find(Library1.class, LIBRARY_NAME);

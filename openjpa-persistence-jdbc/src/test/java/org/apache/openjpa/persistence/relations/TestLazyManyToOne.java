@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLazyManyToOne extends SQLListenerTestCase {
+class TestLazyManyToOne extends SQLListenerTestCase {
 
     private int id;
 
@@ -51,7 +51,7 @@ public class TestLazyManyToOne extends SQLListenerTestCase {
     }
 
     @Test
-    public void testLazyManyToOne() {
+    void lazyManyToOne() {
         EntityManager em = emf.createEntityManager();
         UnidirectionalManyToOne pc = em.find(UnidirectionalManyToOne.class, id);
         if (pc instanceof PersistenceCapable // unenhanced has inefficiencies

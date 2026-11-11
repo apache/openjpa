@@ -20,6 +20,7 @@
 package org.apache.openjpa.persistence.embed;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEmbeddedWithQuery extends SingleEMFTestCase {
+class TestEmbeddedWithQuery extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(EParent.class, EChild.class, EGeneric.class,
@@ -44,7 +45,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFullEmbeddableLoadByJPQLQuery() {
+    void fullEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -77,7 +78,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPartialEmbeddableLoadByJPQLQuery() {
+    void partialEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 
         try {

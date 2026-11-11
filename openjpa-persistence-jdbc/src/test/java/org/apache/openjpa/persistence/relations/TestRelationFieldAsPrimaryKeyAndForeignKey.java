@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
+class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -92,7 +92,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCas
 
 
     @Test
-    public void testUnboundEntities() {
+    void unboundEntities() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         VCS vcSet = new VCS();
@@ -155,7 +155,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCas
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         List<E> es = (List<E>) em.createQuery(
                 "Select e from E e where e.name='E1'").getResultList();
@@ -177,7 +177,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCas
     }
 
     @Test
-    public void testDeletes() {
+    void deletes() {
         // Remove VC set and check that all VCs belonging to that set are
         // deleted but not the ensemble itself
         EntityManager em = emf.createEntityManager();

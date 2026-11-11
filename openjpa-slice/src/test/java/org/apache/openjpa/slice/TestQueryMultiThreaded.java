@@ -51,7 +51,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestQueryMultiThreaded extends SliceTestCase {
+class TestQueryMultiThreaded extends SliceTestCase {
 
     private int POBJECT_COUNT = 25;
     private int VALUE_MIN = 100;
@@ -122,7 +122,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testQueryResultIsOrderedAcrossSlice() {
+    void queryResultIsOrderedAcrossSlice() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query query = em.createQuery(
@@ -151,7 +151,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testAggregateQuery() {
+    void aggregateQuery() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query countQ = em.createQuery("SELECT COUNT(p) FROM PObject p");
@@ -190,7 +190,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testAggregateQueryWithMissingValueFromSlice() {
+    void aggregateQueryWithMissingValueFromSlice() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query maxQ = em.createQuery(
@@ -210,7 +210,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testSetMaxResult() {
+    void setMaxResult() {
         final EntityManager em = emf.createEntityManager();
         final int limit = 3;
         em.getTransaction().begin();
@@ -238,7 +238,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testHeavyLoad() {
+    void heavyLoad() {
         Thread[] threads = new Thread[800];
         for (int i = 0; i < 800; i++) {
             Runnable r = new Runnable() {
@@ -268,7 +268,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testHint() {
+    void hint() {
         final List<String> targets = new ArrayList<>();
         targets.add("Even");
         final EntityManager em = emf.createEntityManager();
@@ -295,7 +295,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testInMemoryOrderBy() {
+    void inMemoryOrderBy() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query query =
@@ -314,7 +314,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testQueryParameter() {
+    void queryParameter() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query query =
@@ -335,7 +335,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
 
     @Test
-    public void testQueryParameterEntity() {
+    void queryParameterEntity() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final TypedQuery<Address> addressQ = em.createQuery(

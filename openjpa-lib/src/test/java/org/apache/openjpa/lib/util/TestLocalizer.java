@@ -40,7 +40,7 @@ public class TestLocalizer {
     private Localizer _locals = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _locals = Localizer.forPackage(LocalizerTestHelper.class);
     }
 
@@ -48,7 +48,7 @@ public class TestLocalizer {
      * Test getting a string for a class.
      */
     @Test
-    public void testForClass() {
+    void forClass() {
         assertEqualsMSg(Locale.getDefault().equals(Locale.GERMANY)
             ? "value1_de" : "value1", _locals.get("test.local1"));
     }
@@ -57,7 +57,7 @@ public class TestLocalizer {
      * Test getting a string for a non-default locale.
      */
     @Test
-    public void testForLocale() {
+    void forLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.GERMANY);
         assertEqualsMSg("value1_de", locl.get("test.local1"));
@@ -67,7 +67,7 @@ public class TestLocalizer {
      * Tests that if a locale is missing the system falls back to the default.
      */
     @Test
-    public void testFallbackLocale() {
+    void fallbackLocale() {
         Localizer locl = Localizer.forPackage(LocalizerTestHelper.class,
             Locale.FRANCE);
         assertEqualsMSg(Locale.getDefault().equals(Locale.GERMANY)
@@ -79,7 +79,7 @@ public class TestLocalizer {
      * for the top-level(no package).
      */
     @Test
-    public void testTopLevel() {
+    void topLevel() {
         Localizer system = Localizer.forPackage(null);
         assertEqualsMSg("systemvalue1", system.get("test.systemlocal"));
     }
@@ -88,7 +88,7 @@ public class TestLocalizer {
      * Test that the message formatting works correctly.
      */
     @Test
-    public void testMessageFormat() {
+    void messageFormat() {
         String suffix = Locale.getDefault().equals(Locale.GERMANY) ? "_de" : "";
 
         assertEqualsMSg("value2" + suffix + " x sep y", _locals.get("test.local2",
@@ -104,7 +104,7 @@ public class TestLocalizer {
      * resource bundles.
      */
     @Test
-    public void testMissingBundle() {
+    void missingBundle() {
         Localizer missing = Localizer.forPackage(String.class);
         assertEqualsMSg("localized message key: foo.bar", missing.get("foo.bar"));
         assertEqualsMSg("localized message key: foo.bar; substitutions: [baz, 1]", missing.get("foo.bar", "baz", 1));
@@ -119,7 +119,7 @@ public class TestLocalizer {
      * Test that a {@link MissingResourceException} is thrown for missing keys.
      */
     @Test
-    public void testMissingKey() {
+    void missingKey() {
         assertEqualsMSg("localized message key: foo.bar", _locals.get("foo.bar"));
         assertEqualsMSg("localized message key: foo.bar; substitutions: [baz, 1]", _locals.get("foo.bar", "baz", 1));
         try {

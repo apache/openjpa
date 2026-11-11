@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * or replaying it a second time would rebuild it by parsing that rendering as
  * JPQL.
  */
-public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
+class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -76,7 +76,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * A quoted string literal is rendered unescaped by the CQL toString().
      */
     @Test
-    public void testReplayWithQuotedLiteralIsNotCachedByItsRendering() {
+    void replayWithQuotedLiteralIsNotCachedByItsRendering() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -105,7 +105,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * carry - recreates the query by parsing that rendering as JPQL.
      */
     @Test
-    public void testReplayWithQuotedLiteralUnderLockMode() {
+    void replayWithQuotedLiteralUnderLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -143,7 +143,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * identifier as JPQL.
      */
     @Test
-    public void testJpqlCachedUnderTheSameTextDoesNotHijackReplayUnderLockMode() {
+    void jpqlCachedUnderTheSameTextDoesNotHijackReplayUnderLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -187,7 +187,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * identifier.
      */
     @Test
-    public void testJpqlCachedUnderTheSameTextDoesNotHijackReplayWithNullParameter() {
+    void jpqlCachedUnderTheSameTextDoesNotHijackReplayWithNullParameter() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -223,7 +223,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * toString().
      */
     @Test
-    public void testReplayWithSubqueryIsNotCachedByItsRendering() {
+    void replayWithSubqueryIsNotCachedByItsRendering() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();

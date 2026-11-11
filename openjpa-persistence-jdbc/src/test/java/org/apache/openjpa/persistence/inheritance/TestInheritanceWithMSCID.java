@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInheritanceWithMSCID extends SingleEMFTestCase {
+class TestInheritanceWithMSCID extends SingleEMFTestCase {
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void setUp() {
@@ -73,7 +73,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testPersistableWithEntitiesInL1Cache() {
+    void persistableWithEntitiesInL1Cache() {
         EntityManager em = emf.createEntityManager();
 
         for (InheritanceEntityMapping[] tEntities : allEntityGroups ) {
@@ -124,7 +124,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testPersistableWithEntitiesClearedFromL1Cache() {
+    void persistableWithEntitiesClearedFromL1Cache() {
         EntityManager em = emf.createEntityManager();
 
         for (InheritanceEntityMapping[] tEntities : allEntityGroups ) {
@@ -276,7 +276,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * and will not clear the L1 cache in between Query executions.
      */
     @Test
-    public void testQuery001WithL1() {
+    void query001WithL1() {
         query001TestLogic(false);
     }
 
@@ -287,7 +287,7 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * and will  clear the L1 cache in between Query executions.
      */
     @Test
-    public void testQuery001NoL1() {
+    void query001NoL1() {
         query001TestLogic(true);
     }
 }

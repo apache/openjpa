@@ -33,11 +33,11 @@ import org.junit.jupiter.api.Test;
 // This test case extends TestCase directly instead of SingleEMTestCase with the
 // corresponding setup() method because that scheme goes down a different code
 // path and doesn't test the intended code change.
-public class TestMissingMetaData {
+class TestMissingMetaData {
     private OpenJPAEntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         // This test case uses a different persistence xml file because
@@ -59,7 +59,7 @@ public class TestMissingMetaData {
      * MetamodelImpl and JDBCBrokerFactory.
      */
     @Test
-    public void testMissingMetaData() {
+    void missingMetaData() {
         emf.createEntityManager().close();
     }
 
@@ -68,12 +68,12 @@ public class TestMissingMetaData {
      * unmanaged class rather than fail.
      */
     @Test
-    public void testMissingMetaDataInMetamodel() {
+    void missingMetaDataInMetamodel() {
         assertNotNull(emf.getMetamodel());
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         emf.close();
         emf = null;
     }

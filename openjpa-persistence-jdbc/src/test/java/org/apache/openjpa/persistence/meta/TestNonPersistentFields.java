@@ -45,14 +45,14 @@ public class TestNonPersistentFields
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MetaDataRepository repos = new OpenJPAConfigurationImpl().
             newMetaDataRepositoryInstance();
         _meta = repos.getMetaData(NonPersistentFieldsPC.class, null, true);
     }
 
     @Test
-    public void testNonPersistentFields() {
+    void nonPersistentFields() {
         FieldMetaData[] fmds = _meta.getFields();
         assertEquals(5, fmds.length);
         assertEquals("persistentField", fmds[0].getName());

@@ -30,11 +30,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestStringId extends AbstractPersistenceTestCase {
+class TestStringId extends AbstractPersistenceTestCase {
     private static EntityManagerFactory _emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         _emf = createEMF(StringIdEntity.class);
 
         cleanup();
@@ -56,7 +56,7 @@ public class TestStringId extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testTrailingWhitespace() {
+    void trailingWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId("ABC ");
 
@@ -78,7 +78,7 @@ public class TestStringId extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testLeadingWhitespace() {
+    void leadingWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId(" ABC");
 
@@ -101,7 +101,7 @@ public class TestStringId extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testInnerWhitespace() {
+    void innerWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId("A B C");
 

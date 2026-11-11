@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * when Employee has @Id on both field and getter + @ManyToOne on getter.
  * This is the pattern used by TCK EntityGraph Employee/Department.
  */
-public class TestUnenhancedMappedBy extends SingleEMFTestCase {
+class TestUnenhancedMappedBy extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestUnenhancedMappedBy extends SingleEMFTestCase {
      * Verifies mappedBy="department" resolves to the @ManyToOne getter.
      */
     @Test
-    public void testMappedByWithDualAnnotatedId() {
+    void mappedByWithDualAnnotatedId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

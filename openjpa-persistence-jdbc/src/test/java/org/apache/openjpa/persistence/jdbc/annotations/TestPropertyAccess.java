@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPropertyAccess
+class TestPropertyAccess
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -38,7 +38,7 @@ public class TestPropertyAccess
     }
 
     @Test
-    public void testPropertyAccessBasicCreation() {
+    void propertyAccessBasicCreation() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         PropertyAccess1 pa1_1 = new PropertyAccess1(10);
@@ -59,7 +59,7 @@ public class TestPropertyAccess
     }
 
     @Test
-    public void testPropertyAccessBasicMutation() {
+    void propertyAccessBasicMutation() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         PropertyAccess1 pa1_1 = new PropertyAccess1(10);
@@ -84,7 +84,7 @@ public class TestPropertyAccess
     }
 
     @Test
-    public void testJPQL() {
+    void jpql() {
         EntityManager em = emf.createEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
             "o.name = 'foo'").getResultList();
@@ -94,7 +94,7 @@ public class TestPropertyAccess
     }
 
     @Test
-    public void testJPQLWithFieldNameMismatch() {
+    void jpqlWithFieldNameMismatch() {
         EntityManager em = emf.createEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
             "o.intValue = 0").getResultList();

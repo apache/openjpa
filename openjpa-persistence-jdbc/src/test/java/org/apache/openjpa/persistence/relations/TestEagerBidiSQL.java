@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestEagerBidiSQL
+class TestEagerBidiSQL
     extends SQLListenerTestCase {
 
     private long id1;
@@ -95,7 +95,7 @@ public class TestEagerBidiSQL
     }
 
     @Test
-    public void testEagerOwnerOneToManyFind() {
+    void eagerOwnerOneToManyFind() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -117,7 +117,7 @@ public class TestEagerBidiSQL
     }
 
     @Test
-    public void testEagerOwnerOneToOneFind() {
+    void eagerOwnerOneToOneFind() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -135,7 +135,7 @@ public class TestEagerBidiSQL
     }
 
     @Test
-    public void testEagerOwnerOneToManyQuery() {
+    void eagerOwnerOneToManyQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -164,7 +164,7 @@ public class TestEagerBidiSQL
     }
 
     @Test
-    public void testEagerOwnerOneToOneQuery() {
+    void eagerOwnerOneToOneQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -191,7 +191,7 @@ public class TestEagerBidiSQL
     }
 
     @Test
-    public void testEagerNonOwnerOneToOneQuery() {
+    void eagerNonOwnerOneToOneQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();

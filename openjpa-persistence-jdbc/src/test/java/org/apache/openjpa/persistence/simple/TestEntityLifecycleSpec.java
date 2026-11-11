@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * <li>persist() on a removed entity makes it managed again</li>
  * </ul>
  */
-public class TestEntityLifecycleSpec extends SingleEMFTestCase {
+class TestEntityLifecycleSpec extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +52,7 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * Coffee has Integer PK; passing Long should throw IAE.
      */
     @Test
-    public void testFindWithWrongPKTypeThrowsIAE() {
+    void findWithWrongPKTypeThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.find(CoffeeBean.class, 55L);
@@ -71,7 +71,7 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * Create entity, persist in one tx, then in a new tx try remove.
      */
     @Test
-    public void testRemoveDetachedEntityThrowsIAE() {
+    void removeDetachedEntityThrowsIAE() {
         MxOneParent a = new MxOneParent("1", "parent1", 1);
 
         // persist in first transaction
@@ -122,7 +122,7 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * re-persist B, flush - should succeed with B managed.
      */
     @Test
-    public void testPersistAfterRemoveWithCascade() {
+    void persistAfterRemoveWithCascade() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -161,7 +161,7 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * reference - tests simpler persist-remove-persist cycle.
      */
     @Test
-    public void testPersistAfterRemoveSimple() {
+    void persistAfterRemoveSimple() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

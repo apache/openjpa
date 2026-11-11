@@ -50,7 +50,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
     }
 
     @Test
-    public void testValueCapturedInPostPersistAfterCommit() {
+    void valueCapturedInPostPersistAfterCommit() {
 
         // get EM and start tx
         EntityManager em = getEM();
@@ -73,7 +73,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
     }
 
     @Test
-    public void testValueCapturedInPostPersistAfterFlush() {
+    void valueCapturedInPostPersistAfterFlush() {
 
         // get EM and start tx
         EntityManager em = getEM();

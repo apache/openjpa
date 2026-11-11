@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(Employee.class);
 		deleteAll(ContractEmployee.class);
@@ -50,7 +48,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPrePersist()
+    void prePersist()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 
@@ -69,7 +67,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPostPersist()
+    void postPersist()
 	{
 		OpenJPAEntityManager em = null;
 	  try{
@@ -99,7 +97,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPre_PostRemove()
+    void prePostRemove()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -120,7 +118,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 		em.remove(emp);
 
-		assertTrue(!CallbackStorage.isEmpty());
+		assertFalse(CallbackStorage.isEmpty());
         assertEquals(2, CallbackStorage.size(),
                 "callback is under/over-firing...");
         assertEquals("namevalidatorprr",
@@ -133,7 +131,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPreUpdate()
+    void preUpdate()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -165,7 +163,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPreUpdate2()
+    void preUpdate2()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -199,7 +197,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testPostLoad()
+    void postLoad()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -233,7 +231,7 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 	}
 
     @Test
-    public void testGenPriKeyAvailInPostPersist()
+    void genPriKeyAvailInPostPersist()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);

@@ -70,7 +70,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAggregateJPQL() {
+    void aggregateJPQL() {
         EntityManager em = emf.createEntityManager();
 
         // Verify all numeric types for all aggregate functions return null
@@ -111,7 +111,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
      * if a SUM(CASE statement is used, then the effective type might be different
      */
     @Test
-    public void testAggregateWithCase() {
+    void aggregateWithCase() {
         EntityManager em = emf.createEntityManager();
 
         // Add a row to the table and re-test
@@ -141,7 +141,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAggregateCriteria() {
+    void aggregateCriteria() {
         EntityManager em = emf.createEntityManager();
         Metamodel mm = emf.getMetamodel();
         mm.getEntities();

@@ -18,12 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Date;
@@ -62,7 +57,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     private BrokerFactory _factory;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CacheObjectA.class);
         deleteAll(CacheObjectWithExternalizedFields.class);
 
@@ -123,7 +118,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testAggregateResultIsCached() {
+    void aggregateResultIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select max(a.age) FROM " +
@@ -138,7 +133,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testAggregateNonUniqueResultIsCached() {
+    void aggregateNonUniqueResultIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select max(a.age) FROM " +
@@ -157,7 +152,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testProjectionResultIsCached() {
+    void projectionResultIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.age FROM " +
             CacheObjectAChild1.class.getSimpleName() + " a");
@@ -171,7 +166,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testProjectionOfThisIsCached() {
+    void projectionOfThisIsCached() {
         // ##### need to test single projection
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +
@@ -188,7 +183,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testProjectionResultWithThisIsCached() {
+    void projectionResultWithThisIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.name,a FROM " +
@@ -206,7 +201,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testNullProjectionValues() {
+    void nullProjectionValues() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.locale FROM " +
@@ -220,7 +215,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testNullAndNotNullProjectionValues() {
+    void nullAndNotNullProjectionValues() {
         Broker broker = _factory.newBroker();
         Query q =
             broker
@@ -243,7 +238,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testMultipleAggregateResultIsCached() {
+    void multipleAggregateResultIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL,
@@ -264,7 +259,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testFieldUsedTwice() {
+    void fieldUsedTwice() {
         // Postgres bug
         Broker broker = _factory.newBroker();
         // group avoids postgres bug
@@ -278,7 +273,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testAggregateAndProjection() {
+    void aggregateAndProjection() {
         // Postgres bug
         Broker broker = _factory.newBroker();
         // group avoids postgres bug
@@ -313,7 +308,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }*/
 
     @Test
-    public void testResultClassIsCached() {
+    void resultClassIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "Select a FROM " +
             CacheObjectAChild1.class.getSimpleName() + " a");
@@ -324,7 +319,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testGroupingIsCached() {
+    void groupingIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select max(a.age) FROM " +
@@ -341,7 +336,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testAggregateProjectionGroupingIsCached() {
+    void aggregateProjectionGroupingIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL,
@@ -361,7 +356,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testUniqueResultsAreCachedAndConsistent() {
+    void uniqueResultsAreCachedAndConsistent() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +
@@ -373,11 +368,11 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
         CacheTestHelper.assertInCache(this, q, Boolean.TRUE);
 
         CacheObjectAChild1 a2 = (CacheObjectAChild1) q.execute();
-        assertTrue(a == a2);
+        assertSame(a, a2);
     }
 
     @Test
-    public void testMutableProjectionFieldsAreCopied() {
+    void mutableProjectionFieldsAreCopied() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.date FROM " +
             CacheObjectAChild1.class.getSimpleName() + " a  where a.age=1");
@@ -392,7 +387,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testArrayProjectionFieldsAreNotCached() {
+    void arrayProjectionFieldsAreNotCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.dateArray FROM " +
@@ -406,7 +401,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testCollectionProjectionFieldsAreNotCached() {
+    void collectionProjectionFieldsAreNotCached() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.stringColl FROM " +
@@ -420,7 +415,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testExternalizedSingleValueFieldIsNotCached() {
+    void externalizedSingleValueFieldIsNotCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.cls FROM " +
             CacheObjectWithExternalizedFields.class.getSimpleName() + " a");
@@ -432,7 +427,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     @Test
-    public void testMutatedQueryReturnsNewResults() {
+    void mutatedQueryReturnsNewResults() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL,

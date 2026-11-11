@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.kernel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * calling loadNameFromDB method of ForeignKey class.
  *
  */
-public class TestForeignKeyCountViolation extends SingleEMFTestCase {
+class TestForeignKeyCountViolation extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
@@ -55,7 +54,7 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFKCount() throws SQLException {
+    void fKCount() throws Exception {
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();
         tableG.addForeignKey();
@@ -110,7 +109,7 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFKNamefromDB() throws SQLException {
+    void fKNamefromDB() throws Exception {
 
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();

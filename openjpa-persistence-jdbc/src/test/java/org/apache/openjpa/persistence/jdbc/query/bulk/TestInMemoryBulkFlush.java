@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
  */
-public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
+class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -50,7 +50,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * deleted instance even when the context has been cleared in between.
      */
     @Test
-    public void testInMemoryDeleteIsVisibleAfterClear() {
+    void inMemoryDeleteIsVisibleAfterClear() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, deleteInMemory(em));
@@ -70,7 +70,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * transaction commits.
      */
     @Test
-    public void testInMemoryUpdateIsVisibleAfterClear() {
+    void inMemoryUpdateIsVisibleAfterClear() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, updateInMemory(em));
@@ -97,7 +97,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * before the bulk operation even starts.
      */
     @Test
-    public void testUnrelatedPendingChangeIsFlushedAsWell() {
+    void unrelatedPendingChangeIsFlushedAsWell() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.COMMIT);
             em.getTransaction().begin();
@@ -121,7 +121,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * the flush and carry no meaning for this test.
      */
     @Test
-    public void testUnrelatedPendingChangeIsFlushedByTrailingFlush() {
+    void unrelatedPendingChangeIsFlushedByTrailingFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.AUTO);
             em.getTransaction().begin();
@@ -145,7 +145,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * from a pre-flush.
      */
     @Test
-    public void testCandidateCollectionUnderAutoFlushesUnrelatedChange() {
+    void candidateCollectionUnderAutoFlushesUnrelatedChange() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.AUTO);
             em.getTransaction().begin();
@@ -165,7 +165,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * so the operation still reports its row count and is written at commit.
      */
     @Test
-    public void testSavepointSuppressesTheFlushInsteadOfFailing() {
+    void savepointSuppressesTheFlushInsteadOfFailing() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             OpenJPAPersistence.cast(em).setSavepoint("sp");

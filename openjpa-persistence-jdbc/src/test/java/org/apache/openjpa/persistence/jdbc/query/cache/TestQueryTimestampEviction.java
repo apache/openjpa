@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +35,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
+class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     private List<String> _sql = new ArrayList<>();
 
     @BeforeEach
@@ -50,7 +48,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     }
 
     @Test
-    public void testEmptyResultTimeout() {
+    void emptyResultTimeout() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
             return;
@@ -87,14 +85,14 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
      * the TIMESTAMP Eviction Policy.
      */
     @Test
-    public void testTimestampEvictionEnablement() {
+    void timestampEvictionEnablement() {
         ConcurrentQueryCache qc = getQueryCache();
         EvictPolicy ep = qc.getEvictPolicy();
-        assertTrue(ep == EvictPolicy.TIMESTAMP);
+        assertSame(ep, EvictPolicy.TIMESTAMP);
     }
 
     @Test
-    public void testLoadQueries() {
+    void loadQueries() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -123,7 +121,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
      * @throws Exception
      */
     @Test
-    public void testWriteLock() throws Exception {
+    void writeLock() throws Exception {
         final QueryCache qc = emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
         Thread t2 = new Thread() {
             @Override

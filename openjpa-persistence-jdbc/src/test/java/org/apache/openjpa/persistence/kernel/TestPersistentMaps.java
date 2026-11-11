@@ -45,12 +45,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.PersistentMapHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPersistentMaps extends BaseKernelTest {
+class TestPersistentMaps extends BaseKernelTest {
 
     private static final String JDOQL = "javax.jdo.query.JDOQL";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(PersistentMapHolder.class);
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -75,7 +75,7 @@ public class TestPersistentMaps extends BaseKernelTest {
     }
 
     @Test
-    private void testMap(int num, String name, Class keyClass, Class valueClass)
+    private void map(int num, String name, Class keyClass, Class valueClass)
         throws Exception {
         OpenJPAEntityManager srcpm = getPM(true, true);
         startTx(srcpm);
@@ -185,79 +185,79 @@ public class TestPersistentMaps extends BaseKernelTest {
     }
 
     @Test
-    public void testPCKeyStringValue()
+    void pCKeyStringValue()
         throws Exception {
-        testMap(5, "testPCKeyStringValue",
+        map(5, "testPCKeyStringValue",
             MapElementPC.class, String.class);
     }
 
     @Test
-    public void testStringKeyPCValue()
+    void stringKeyPCValue()
         throws Exception {
-        testMap(6, "testStringKeyPCValue",
+        map(6, "testStringKeyPCValue",
             String.class, MapElementPC.class);
     }
 
     @Test
-    public void testPCKeyPCValue()
+    void pCKeyPCValue()
         throws Exception {
-        testMap(7, "testPCKeyPCValue",
+        map(7, "testPCKeyPCValue",
             MapElementPC.class, MapElementPC.class);
     }
 
     @Test
-    public void testPCSubKeyStringValue()
+    void pCSubKeyStringValue()
         throws Exception {
-        testMap(8, "testPCSubKeyStringValue",
+        map(8, "testPCSubKeyStringValue",
             MapElementPCChild.class, String.class);
     }
 
     @Test
-    public void testStringKeyPCSubValue()
+    void stringKeyPCSubValue()
         throws Exception {
-        testMap(9, "testStringKeyPCSubValue",
+        map(9, "testStringKeyPCSubValue",
             String.class, MapElementPCChild.class);
     }
 
     @Test
-    public void testPCSubKeyPCValue()
+    void pCSubKeyPCValue()
         throws Exception {
-        testMap(10, "testPCSubKeyPCValue",
+        map(10, "testPCSubKeyPCValue",
             MapElementPCChild.class, MapElementPC.class);
     }
 
     @Test
-    public void testPCSubKeyPCSubValue()
+    void pCSubKeyPCSubValue()
         throws Exception {
-        testMap(11, "testPCSubKeyPCSubValue",
+        map(11, "testPCSubKeyPCSubValue",
             MapElementPCChild.class, MapElementPCChild.class);
     }
 
     @Test
-    public void testPCKeyPCSubValue()
+    void pCKeyPCSubValue()
         throws Exception {
-        testMap(12, "testPCKeyPCSubValue",
+        map(12, "testPCKeyPCSubValue",
             MapElementPC.class, MapElementPCChild.class);
     }
 
     @Test
-    public void testPCIntfKeyStringValue()
+    void pCIntfKeyStringValue()
         throws Exception {
-        testMap(13, "testPCIntfKeyStringValue",
+        map(13, "testPCIntfKeyStringValue",
             MapElementPC.class, String.class);
     }
 
     @Test
-    public void testStringKeyPCIntfValue()
+    void stringKeyPCIntfValue()
         throws Exception {
-        testMap(14, "testStringKeyPCIntfValue",
+        map(14, "testStringKeyPCIntfValue",
             String.class, MapElementPC.class);
     }
 
     @Test
-    public void testPCIntfKeyPCValue()
+    void pCIntfKeyPCValue()
         throws Exception {
-        testMap(15, "testPCIntfKeyPCValue",
+        map(15, "testPCIntfKeyPCValue",
             MapElementPC.class, MapElementPC.class);
     }
 
@@ -266,7 +266,7 @@ public class TestPersistentMaps extends BaseKernelTest {
      * have maps with the same key.
      */
     @Test
-    public void testQueryMultipleMaps() throws Exception {
+    void queryMultipleMaps() throws Exception {
         deleteAll(PersistentMapHolder.class);
 
         String mapName = "testStringKeyPCValue";

@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
  * <code>NUMERIC</code> column, as a <code>BIGINT</code> column cannot hold a
  * value with more than 19 digits (OPENJPA-3058).
  */
-public class TestH2BigIntegerType {
+class TestH2BigIntegerType {
 
     @Test
-    public void testBigIntegerIsNumeric() {
+    void bigIntegerIsNumeric() {
         H2Dictionary dict = new H2Dictionary();
         assertEquals(Types.NUMERIC, dict.getJDBCType(JavaTypes.BIGINTEGER, false));
         // the overloads used by the column mapping
@@ -47,7 +47,7 @@ public class TestH2BigIntegerType {
     }
 
     @Test
-    public void testBigIntegerTypeName() {
+    void bigIntegerTypeName() {
         for (int version = 1; version <= 2; version++) {
             H2Dictionary dict = new H2Dictionary();
             dict.setMajorVersion(version);
@@ -59,7 +59,7 @@ public class TestH2BigIntegerType {
     }
 
     @Test
-    public void testOtherIntegralTypesAreUnchanged() {
+    void otherIntegralTypesAreUnchanged() {
         H2Dictionary dict = new H2Dictionary();
         assertEquals(Types.BIGINT, dict.getJDBCType(JavaTypes.LONG, false, 0, 0));
         assertEquals(Types.BIGINT, dict.getJDBCType(JavaTypes.LONG_OBJ, false, 0, 0));
@@ -68,7 +68,7 @@ public class TestH2BigIntegerType {
     }
 
     @Test
-    public void testStoreLargeNumbersAsStrings() {
+    void storeLargeNumbersAsStrings() {
         H2Dictionary dict = new H2Dictionary();
         Configurations.configureInstance(dict, new JDBCConfigurationImpl(),
             "StoreLargeNumbersAsStrings=true", "DBDictionary");
@@ -76,7 +76,7 @@ public class TestH2BigIntegerType {
     }
 
     @Test
-    public void testOtherDictionariesAreUnchanged() {
+    void otherDictionariesAreUnchanged() {
         assertEquals(Types.BIGINT, new DerbyDictionary().getJDBCType(JavaTypes.BIGINTEGER, false, 0, 0));
         assertEquals(Types.BIGINT, new HSQLDictionary().getJDBCType(JavaTypes.BIGINTEGER, false, 0, 0));
     }

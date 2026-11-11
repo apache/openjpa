@@ -42,12 +42,12 @@ import org.junit.jupiter.api.Test;
  * and causes MetaDataException in MetamodelImpl when getCriteriaBuilder()
  * or getMetamodel() is called.
  */
-public class TestNonEntityInPersistenceUnit {
+class TestNonEntityInPersistenceUnit {
 
     private EntityManagerFactory emf;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
@@ -62,7 +62,7 @@ public class TestNonEntityInPersistenceUnit {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
@@ -73,7 +73,7 @@ public class TestNonEntityInPersistenceUnit {
      * is listed in the persistence unit types.
      */
     @Test
-    public void testGetMetamodelWithNonEntityClass() {
+    void getMetamodelWithNonEntityClass() {
         try {
             Metamodel metamodel = emf.getMetamodel();
             assertNotNull(metamodel, "Metamodel should not be null");
@@ -88,7 +88,7 @@ public class TestNonEntityInPersistenceUnit {
      * class is listed in the persistence unit types.
      */
     @Test
-    public void testGetCriteriaBuilderWithNonEntityClass() {
+    void getCriteriaBuilderWithNonEntityClass() {
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
             assertNotNull(cb, "CriteriaBuilder should not be null");
@@ -103,7 +103,7 @@ public class TestNonEntityInPersistenceUnit {
      * works fine even when a non-entity class is in the persistence unit.
      */
     @Test
-    public void testPersistRealEntityWithNonEntityInUnit() {
+    void persistRealEntityWithNonEntityInUnit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {

@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestDefaultQueryStatistics extends SingleEMFTestCase {
+class TestDefaultQueryStatistics extends SingleEMFTestCase {
     QueryStatistics<String> statistics;
 
     @BeforeEach
@@ -48,7 +48,7 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testThreadSafety() throws Exception{
+    void threadSafety() throws Exception{
         final QueryStatistics<String> finalStats = statistics;
 
         Runnable runner = new Runnable() {
@@ -74,7 +74,7 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testStatsSize() throws Exception{
+    void statsSize() throws Exception{
         for (int i = 0; i < 10000; i++) {
             statistics.recordExecution("query " + Thread.currentThread().getId() + " " + i);
         }
@@ -82,7 +82,7 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryStatisticsIsDisabledByDefault() {
+    void queryStatisticsIsDisabledByDefault() {
         PreparedQueryCache cache = emf.getConfiguration().getQuerySQLCacheInstance();
         assertNotNull(cache);
         QueryStatistics<String> stats = cache.getStatistics();

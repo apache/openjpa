@@ -53,7 +53,7 @@ public class TestUnionPlaceholderTypes extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testUnion()
+    void union()
         throws Exception {
        deleteAll(PlaceholderTypesA.class);
 

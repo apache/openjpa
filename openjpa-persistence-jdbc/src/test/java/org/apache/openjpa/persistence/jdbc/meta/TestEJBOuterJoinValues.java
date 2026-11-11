@@ -30,7 +30,7 @@ public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.
 	public int oid = 0;
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(OuterJoinValuePC.class);
 
@@ -49,7 +49,7 @@ public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.
 	}
 
     @Test
-    public void testNull ()
+    void testNull()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -68,7 +68,7 @@ public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.
 	}
 
     @Test
-    public void testUpdate ()
+    void update()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -86,7 +86,7 @@ public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.
 	}
 
     @Test
-    public void testInsert ()
+    void insert()
 	{
 		// just tests the values inserted in the setup method
 		EntityManager pm = currentEntityManager();

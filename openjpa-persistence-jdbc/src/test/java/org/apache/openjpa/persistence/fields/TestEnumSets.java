@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEnumSets
+class TestEnumSets
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -35,7 +35,7 @@ public class TestEnumSets
     }
 
     @Test
-    public void testExternalizedEnumSet() {
+    void externalizedEnumSet() {
         // test that inserting works
         EnumSetOwner o = new EnumSetOwner();
         o.setEnumSet(EnumSet.allOf(SampleEnum.class));

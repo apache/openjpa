@@ -33,7 +33,7 @@ public class TestXMLCaseConversions {
 	private static final Logger logger = Logger.getLogger(TestXMLCaseConversions.class.getCanonicalName());
 
     @Test
-    public void testToXMLName() {
+    void toXMLName() {
         assertEquals("easy-xml-conversion",
             ConfigurationImpl.toXMLName("easyXmlConversion"));
         assertEquals("initial-caps",

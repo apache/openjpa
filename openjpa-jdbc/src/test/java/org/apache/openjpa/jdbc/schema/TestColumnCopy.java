@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
  * template, as it does its size and scale. A <code>@Version</code> field
  * reaches its version column through such a copy (OPENJPA-3034).
  */
-public class TestColumnCopy {
+class TestColumnCopy {
 
     @Test
-    public void testSecondPrecisionIsCopied() {
+    void secondPrecisionIsCopied() {
         Column from = new Column();
         from.setSecondPrecision(0);
         Column to = new Column();
@@ -39,7 +39,7 @@ public class TestColumnCopy {
     }
 
     @Test
-    public void testSecondPrecisionOfTargetIsKept() {
+    void secondPrecisionOfTargetIsKept() {
         Column from = new Column();
         from.setSecondPrecision(3);
         Column to = new Column();

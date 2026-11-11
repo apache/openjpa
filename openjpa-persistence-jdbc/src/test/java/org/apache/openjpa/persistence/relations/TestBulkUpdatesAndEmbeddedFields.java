@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests OPENJPA-199
  */
-public class TestBulkUpdatesAndEmbeddedFields
+class TestBulkUpdatesAndEmbeddedFields
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class TestBulkUpdatesAndEmbeddedFields
     }
 
     @Test
-    public void testBulkUpdateOfEmbeddedField() {
+    void bulkUpdateOfEmbeddedField() {
         em.getTransaction().begin();
         assertEquals(1, em.createQuery(
             "UPDATE MultipleSameTypedEmbedded o SET o.embed1.name = 'bar'")

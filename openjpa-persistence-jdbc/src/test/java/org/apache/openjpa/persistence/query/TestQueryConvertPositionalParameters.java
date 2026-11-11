@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * This test was added for OPENJPA-1999. 'Add' support for allowing positional parameters to start at something other
  * than 1 and allow for missing parameters.
  */
-public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
+class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     EntityManager _em;
     long _id1;
     String _name1;
@@ -84,7 +84,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNamedPositionalStartAtNonOne() {
+    void namedPositionalStartAtNonOne() {
         SimpleEntity se =
             _em.createNamedQuery("SelectWithPositionalParameterNonOneStart", SimpleEntity.class)
                 .setParameter(900, _id1).setParameter(2, _name1).setParameter(54, _val1).getSingleResult();
@@ -92,7 +92,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testJPQLPositionalStartAtNonOne() {
+    void jpqlPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;
         int valPos = 578;
@@ -105,7 +105,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testJPQLWithSubQueryPositionalStartAtNonOne() {
+    void jpqlWithSubQueryPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;
         int valPos = 578;
@@ -119,7 +119,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreparedQueryPositionalStartAtNonOne() {
+    void preparedQueryPositionalStartAtNonOne() {
         int idPos = 54;
         int namePos = 23;
         int valPos = 42;
@@ -140,7 +140,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPreparedQueryWithSubQueryPositionalStartAtNonOne() {
+    void preparedQueryWithSubQueryPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;
         int valPos = 352;

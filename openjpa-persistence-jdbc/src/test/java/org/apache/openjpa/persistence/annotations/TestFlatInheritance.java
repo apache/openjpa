@@ -41,13 +41,13 @@ public class TestFlatInheritance extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp()
+    void setUp()
     {
         deleteAll(Flat1.class);
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Flat1 pc = new Flat1(1);

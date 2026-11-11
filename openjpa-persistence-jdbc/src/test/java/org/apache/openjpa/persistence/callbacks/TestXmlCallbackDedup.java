@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * Regression test for OPENJPA-2940: XML callback listeners should not
  * duplicate annotation-declared callbacks.
  */
-public class TestXmlCallbackDedup extends SingleEMFTestCase {
+class TestXmlCallbackDedup extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +55,7 @@ public class TestXmlCallbackDedup extends SingleEMFTestCase {
      * listener method is declared in both annotations and XML.
      */
     @Test
-    public void testPostLoadCallbackNotDuplicated() {
+    void postLoadCallbackNotDuplicated() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

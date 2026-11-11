@@ -18,9 +18,7 @@
  */
  package org.apache.openjpa.persistence.jdbc.version;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -34,14 +32,14 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
- public class TestVersionColumn extends SQLListenerTestCase {
+ class TestVersionColumn extends SQLListenerTestCase {
      @BeforeEach
      public void setUp() {
         super.setUp(IntVersion.class, TimestampVersion.class, ShortVersion.class);
     }
 
      @Test
-     public void testNullIntegerVersion() {
+     void nullIntegerVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -70,7 +68,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNullTimestampVersion() {
+     void nullTimestampVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -89,7 +87,7 @@ import org.junit.jupiter.api.Test;
         assertNotNull(results, "No results found");
         assertFalse(results.isEmpty(), "No results found");
         for (TimestampVersion iv : results) {
-            assertEquals(null, iv.getVersion(), "Version should be initialized to null, was: " + iv.getVersion());
+            assertNull(iv.getVersion(), "Version should be initialized to null, was: " + iv.getVersion());
             em.find(TimestampVersion.class, iv.getId());
         }
 
@@ -99,7 +97,7 @@ import org.junit.jupiter.api.Test;
     }
 
      @Test
-     public void testNullShortVersion() {
+     void nullShortVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();

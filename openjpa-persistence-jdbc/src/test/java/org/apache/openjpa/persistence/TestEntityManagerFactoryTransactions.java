@@ -33,9 +33,9 @@ import jakarta.persistence.PersistenceConfiguration;
 public class TestEntityManagerFactoryTransactions {
 	
 	private EntityManagerFactory emf;
-	
-	@BeforeEach
-	public void before() {
+
+    @BeforeEach
+    void before() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("test");
 		conf.provider(PersistenceProviderImpl.class.getCanonicalName());
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -50,8 +50,8 @@ public class TestEntityManagerFactoryTransactions {
 		}
 	}
 
-	@Test
-	public void testCallInTransaction() {
+    @Test
+    void callInTransaction() {
 		Country country = emf.callInTransaction(em -> {
 			Country c = new Country(250l, "France");
 			em.persist(c);
@@ -64,18 +64,18 @@ public class TestEntityManagerFactoryTransactions {
 		assertEquals("France", c1.getName());
 		em.close();
 	}
-	
-	@Test
-	public void testRunInTransaction() {
+
+    @Test
+    void runInTransaction() {
 		Country a = new Country(36, "Australia");
 		emf.runInTransaction(em -> em.persist(a));
 		EntityManager em = emf.createEntityManager();
 		assertNotNull(em.find(Country.class, 36));
 		em.close();
 	}
-	
-	@Test
-	public void testCallInTransactionException() {
+
+    @Test
+    void callInTransactionException() {
 		try {
 			Country b = new Country(44, "Bahamas");
 			emf.runInTransaction(em -> {

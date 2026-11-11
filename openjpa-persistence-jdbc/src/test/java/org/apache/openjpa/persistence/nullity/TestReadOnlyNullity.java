@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * An example use case is a Date field that is set by the database (although in
  * that case the field would be updateable=false and insertable=false).
  */
-public class TestReadOnlyNullity extends AbstractNullityTestCase {
+class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     private boolean skip = false;
 
@@ -53,7 +53,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * for non-db2 databases.
      */
     @Test
-    public void testNonInsertableBlobDoesNotFail() {
+    void nonInsertableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();
             pc.setNonInsertableNonNullableDate(null);
@@ -67,7 +67,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * for non-db2 databases.
      */
     @Test
-    public void testNonUpdatableBlobDoesNotFail() {
+    void nonUpdatableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();
             EntityManager em = emf.createEntityManager();

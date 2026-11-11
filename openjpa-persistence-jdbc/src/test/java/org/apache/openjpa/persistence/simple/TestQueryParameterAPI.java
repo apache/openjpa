@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for Query parameter API compliance (JPA spec).
  */
-public class TestQueryParameterAPI extends SingleEMFTestCase {
+class TestQueryParameterAPI extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +47,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameter(name, type) should return the parameter when the type matches.
      */
     @Test
-    public void testGetParameterStringClassMatch() {
+    void getParameterStringClassMatch() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = :name",
@@ -63,7 +63,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * when the type does not match.
      */
     @Test
-    public void testGetParameterStringClassMismatch() {
+    void getParameterStringClassMismatch() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = :name",
@@ -81,7 +81,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameter(pos, type) should return the parameter when the type matches.
      */
     @Test
-    public void testGetParameterIntClassMatch() {
+    void getParameterIntClassMatch() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = ?1");
@@ -96,7 +96,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * when the type does not match.
      */
     @Test
-    public void testGetParameterIntClassMismatch() {
+    void getParameterIntClassMismatch() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = ?1");
@@ -115,7 +115,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * when the parameter has not been bound.
      */
     @Test
-    public void testGetParameterValueParameterUnbound() {
+    void getParameterValueParameterUnbound() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = :name",
@@ -135,7 +135,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * when the parameter has not been bound.
      */
     @Test
-    public void testGetParameterValueStringUnbound() {
+    void getParameterValueStringUnbound() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = :name",
@@ -154,7 +154,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * when the parameter does not belong to the query.
      */
     @Test
-    public void testSetParameterFromDifferentQuery() {
+    void setParameterFromDifferentQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q1 = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.stringField = :name1",

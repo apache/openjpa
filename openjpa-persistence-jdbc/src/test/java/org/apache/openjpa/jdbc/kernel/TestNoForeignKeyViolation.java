@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Reece Garrett
  */
-public class TestNoForeignKeyViolation
+class TestNoForeignKeyViolation
     extends SingleEMFTestCase {
 
     private EntityA entityA;
@@ -71,7 +71,7 @@ public class TestNoForeignKeyViolation
     }
 
     @Test
-    public void testSqlOrder() {
+    void sqlOrder() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -110,7 +110,7 @@ public class TestNoForeignKeyViolation
     }
 
     @Test
-    public void testSimpleCycle() {
+    void simpleCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -131,7 +131,7 @@ public class TestNoForeignKeyViolation
     }
 
     @Test
-    public void testComplexCycle() {
+    void complexCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -162,7 +162,7 @@ public class TestNoForeignKeyViolation
     }
 
     @Test
-    public void testComplexTwoCycles() {
+    void complexTwoCycles() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -194,7 +194,7 @@ public class TestNoForeignKeyViolation
     }
 
     @Test
-    public void testForeignKeyCascade() {
+    void foreignKeyCascade() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {

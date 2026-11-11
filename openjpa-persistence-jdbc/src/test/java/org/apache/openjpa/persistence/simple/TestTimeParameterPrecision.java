@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * A time parameter with a fraction of a second finds the entity stored with the same time, also where
  * the time column cannot hold the fraction, such as the DATE column a time is mapped to on Oracle.
  */
-public class TestTimeParameterPrecision extends SingleEMFTestCase {
+class TestTimeParameterPrecision extends SingleEMFTestCase {
 
     private static final LocalTime TIME = LocalTime.of(10, 11, 12, 345_678_000);
     private static final OffsetTime OFFSET_TIME = OffsetTime.of(TIME, ZoneOffset.UTC);
@@ -55,7 +55,7 @@ public class TestTimeParameterPrecision extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindByLocalTime() {
+    void findByLocalTime() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e WHERE e.localTimeField = :t",
                 Integer.class).setParameter("t", TIME).getResultList();
@@ -64,7 +64,7 @@ public class TestTimeParameterPrecision extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindByOffsetTime() {
+    void findByOffsetTime() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e WHERE e.offsetTimeField = :t",
                 Integer.class).setParameter("t", OFFSET_TIME).getResultList();

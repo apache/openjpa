@@ -28,8 +28,7 @@
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -94,7 +93,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testBaseExtentNoSubs()
+    void baseExtentNoSubs()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBase.class, false);
@@ -103,7 +102,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
         JoinSubclassBase pc = (JoinSubclassBase) itr.next();
         assertEquals(1, pc.getBaseField());
         assertEquals(JoinSubclassBase.class, pc.getClass());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -112,7 +111,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testBaseExtentWithSubs()
+    void baseExtentWithSubs()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBase.class, true);
@@ -147,7 +146,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testLeafExtent()
+    void leafExtent()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBaseSubFlat.class, false);
@@ -157,7 +156,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
         assertEquals(3, pc.getBaseField());
         assertEquals(4, pc.getBaseSubVertField());
         assertEquals(5, pc.getBaseSubFlatField());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -166,7 +165,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testBaseGetById()
+    void baseGetById()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         JoinSubclassBase pc = (JoinSubclassBase) pm.getObjectId(_base);
@@ -190,7 +189,7 @@ public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kern
     }
 
     @Test
-    public void testLeafGetById()
+    void leafGetById()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         JoinSubclassBaseSubFlat pc = (JoinSubclassBaseSubFlat)

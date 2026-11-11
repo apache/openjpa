@@ -45,7 +45,7 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOutOfBounds() throws Exception {
+    void outOfBounds() throws Exception {
         Calendar cal = Calendar.getInstance();
         final Date date = cal.getTime();
         ScheduleDay sd = insertScheduleDay(date);

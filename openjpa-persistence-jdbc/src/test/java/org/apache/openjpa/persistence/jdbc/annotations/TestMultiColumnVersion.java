@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Array;
 
@@ -46,7 +43,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionStrategyIsSet() {
+    void versionStrategyIsSet() {
     	assertStrategy(MultiColumnVersionPC.class);
     	assertStrategy(MultiColumnSecondaryVersionPC.class);
     }
@@ -54,16 +51,15 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     public void assertStrategy(Class cls) {
     	ClassMapping mapping = getMapping(cls);
     	assertNotNull(mapping.getVersion());
-    	assertTrue(mapping.getVersion().getStrategy()
-    		instanceof MultiColumnVersionStrategy);
+        assertInstanceOf(MultiColumnVersionStrategy.class, mapping.getVersion().getStrategy());
     }
 
     @Test
-    public void testVersionOnPersistAndUpdateForSingleTable() {
+    void versionOnPersistAndUpdateForSingleTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
         MultiColumnVersionPC pc = new MultiColumnVersionPC();
-        assertEquals(null, em.getVersion(pc));
+        assertNull(em.getVersion(pc));
         em.persist(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{1,1, 1.0f}, em.getVersion(pc));
@@ -77,7 +73,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConcurrentOptimisticUpdateFailsForSingleTable() {
+    void concurrentOptimisticUpdateFailsForSingleTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         OpenJPAEntityManager em2 = emf.createEntityManager();
@@ -108,7 +104,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConcurrentOptimisticReadSucceedsForSingleTable() {
+    void concurrentOptimisticReadSucceedsForSingleTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         OpenJPAEntityManager em2 = emf.createEntityManager();
@@ -131,11 +127,11 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionOnPersistAndUpdateForMultiTable() {
+    void versionOnPersistAndUpdateForMultiTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
     	MultiColumnSecondaryVersionPC pc = new MultiColumnSecondaryVersionPC();
-        assertEquals(null, em.getVersion(pc));
+        assertNull(em.getVersion(pc));
         em.persist(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{1,1,1,1}, em.getVersion(pc));
@@ -149,7 +145,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConcurrentOptimisticUpdateFailsForMultiTable() {
+    void concurrentOptimisticUpdateFailsForMultiTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         OpenJPAEntityManager em2 = emf.createEntityManager();
@@ -181,7 +177,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testConcurrentOptimisticReadSucceedsForMultiTable() {
+    void concurrentOptimisticReadSucceedsForMultiTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         OpenJPAEntityManager em2 = emf.createEntityManager();

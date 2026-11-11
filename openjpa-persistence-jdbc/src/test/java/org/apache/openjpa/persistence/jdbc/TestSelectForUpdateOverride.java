@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestSelectForUpdateOverride
+class TestSelectForUpdateOverride
     extends SQLListenerTestCase {
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class TestSelectForUpdateOverride
     }
 
     @Test
-    public void testSelectForUpdateOverride() {
+    void selectForUpdateOverride() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI)
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())

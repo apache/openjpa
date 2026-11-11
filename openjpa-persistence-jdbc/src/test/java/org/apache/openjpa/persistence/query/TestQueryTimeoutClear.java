@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests that Query.setTimeout(null) clears a timeout set through that method.
  */
-public class TestQueryTimeoutClear extends SingleEMFTestCase {
+class TestQueryTimeoutClear extends SingleEMFTestCase {
 
     private static final String JPQL = "SELECT o FROM QTimeout o";
 
@@ -43,7 +43,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUnsetTimeoutIsNull() {
+    void unsetTimeoutIsNull() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             em.getFetchPlan().setQueryTimeout(9000);
@@ -55,7 +55,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExplicitZeroIsReported() {
+    void explicitZeroIsReported() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             Query q = em.createQuery(JPQL);
@@ -67,7 +67,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSetTimeoutIsReported() {
+    void setTimeoutIsReported() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             Query q = em.createQuery(JPQL);
@@ -80,7 +80,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullTimeoutClearsPreviousValue() {
+    void nullTimeoutClearsPreviousValue() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             Query q = em.createQuery(JPQL);
@@ -99,7 +99,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullTimeoutRestoresInheritedValue() {
+    void nullTimeoutRestoresInheritedValue() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             em.getFetchPlan().setQueryTimeout(9000);
@@ -119,7 +119,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullTimeoutOnAFreshQueryIsHarmless() {
+    void nullTimeoutOnAFreshQueryIsHarmless() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             Query q = em.createQuery(JPQL);

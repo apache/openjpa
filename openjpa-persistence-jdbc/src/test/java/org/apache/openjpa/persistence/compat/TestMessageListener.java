@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcases to succeed
  * </ul>
  */
-public class TestMessageListener extends SingleEMFTestCase {
+class TestMessageListener extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +56,7 @@ public class TestMessageListener extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateInPreUpdate() {
+    void updateInPreUpdate() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access
@@ -140,7 +140,7 @@ public class TestMessageListener extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateInPreUpdate2() {
+    void updateInPreUpdate2() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access

@@ -50,7 +50,7 @@ public class TestJPQL2Queries
     private BrokerFactory _factory;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(CacheObjectA.class);
 
         Map propsMap = new HashMap();
@@ -83,17 +83,17 @@ public class TestJPQL2Queries
     }
 
     @Test
-    public void testUpperRange() {
+    void upperRange() {
         rangeTestHelper(0, 10);
     }
 
     @Test
-    public void testLowerRange() {
+    void lowerRange() {
         rangeTestHelper(5, 50);
     }
 
     @Test
-    public void testBothRanges() {
+    void bothRanges() {
         rangeTestHelper(20, 28);
     }
 
@@ -134,7 +134,7 @@ public class TestJPQL2Queries
     }
 
     @Test
-    public void testResultClassIsCached() {
+    void resultClassIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "Select a FROM " +
             CacheObjectAChild1.class.getSimpleName() + " a");

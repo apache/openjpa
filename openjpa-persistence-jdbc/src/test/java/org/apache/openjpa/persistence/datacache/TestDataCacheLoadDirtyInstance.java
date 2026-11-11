@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * changes in the data cache, since they are lost when the transaction rolls
  * back.
  */
-public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
+class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
 
     private static final long ID = 1L;
 
@@ -64,7 +64,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testLoadFieldDoesNotCacheDirtyBasicField() {
+    void loadFieldDoesNotCacheDirtyBasicField() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
@@ -84,7 +84,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testLoadFieldDoesNotCacheDirtyCollection() {
+    void loadFieldDoesNotCacheDirtyCollection() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
@@ -97,7 +97,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testFindAllDoesNotCacheDirtyField() {
+    void findAllDoesNotCacheDirtyField() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
@@ -114,7 +114,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testLoadFieldOfFlushedInstanceDoesNotCacheIt() {
+    void loadFieldOfFlushedInstanceDoesNotCacheIt() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity e = em.find(CachedLazyEntity.class, ID);
@@ -130,7 +130,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
     }
 
     @Test
-    public void testRefreshOfFlushedInstanceDoesNotCacheIt() {
+    void refreshOfFlushedInstanceDoesNotCacheIt() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             CachedLazyEntity other = new CachedLazyEntity();

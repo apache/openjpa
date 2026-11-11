@@ -33,13 +33,13 @@ import org.junit.jupiter.api.Test;
  * This unit test checks the enhancement of a superclass/subclass
  * constellation.
  */
-public class TestClassHierarchyEnhancement extends SingleEMFTestCase {
+class TestClassHierarchyEnhancement extends SingleEMFTestCase {
 
     /**
      * This tests OPENJPA-1912.
      */
     @Test
-    public void testSerialize() throws Exception {
+    void serialize() throws Exception {
         // we don't even need an EntityManager for that ;)
 
         EnhancedSubClass entity = new EnhancedSubClass();

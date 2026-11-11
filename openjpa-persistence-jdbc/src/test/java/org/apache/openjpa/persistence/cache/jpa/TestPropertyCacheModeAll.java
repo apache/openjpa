@@ -68,17 +68,17 @@ public class TestPropertyCacheModeAll extends AbstractCacheModeTestCase {
     }
 
     @Test
-    public void testCacheables() {
+    void cacheables() {
         assertCacheables(cache, true);
     }
 
     @Test
-    public void testUncacheables() {
+    void uncacheables() {
         assertUncacheables(cache, true);
     }
 
     @Test
-    public void testUnspecified() {
+    void unspecified() {
         assertUnspecified(cache, true);
     }
 

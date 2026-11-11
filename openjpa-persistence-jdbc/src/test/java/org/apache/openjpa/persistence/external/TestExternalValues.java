@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestExternalValues extends SingleEMFTestCase {
+class TestExternalValues extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestExternalValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExternalValues() {
+    void externalValues() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -62,7 +62,7 @@ public class TestExternalValues extends SingleEMFTestCase {
         EntityA aPrime = (EntityA) q.getSingleResult();
         assertEquals("SMALL", aPrime.getS1());
         assertEquals("MEDIUM", aPrime.getS2());
-        assertEquals(true, aPrime.getUseStreaming());
+        assertTrue(aPrime.getUseStreaming());
 
         em.getTransaction().begin();
 
@@ -92,7 +92,7 @@ public class TestExternalValues extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUnrecognizedExternalValue() {
+    void unrecognizedExternalValue() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();

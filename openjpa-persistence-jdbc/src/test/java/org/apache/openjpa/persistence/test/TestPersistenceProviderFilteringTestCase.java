@@ -37,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 
 /*
- * This tests that OpenJPA should not be doing anything if another provider is specified.
- */
-public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCase {
+* This tests that OpenJPA should not be doing anything if another provider is specified.
+*/
+class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCase {
 
     private final String persistenceUnitName = "test";
 
@@ -50,14 +50,14 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
     }
 
     @Test
-    public void testGenerateSchemaNoProvider() {
+    void generateSchemaNoProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
     @Test
-    public void testGenerateSchemaOpenJPAProvider() {
+    void generateSchemaOpenJPAProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", PersistenceProviderImpl.class.getName());
@@ -65,7 +65,7 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
     }
 
     @Test
-    public void testGenerateSchemaEclipseProvider() {
+    void generateSchemaEclipseProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", "org.eclipse.persistence.jpa.PersistenceProvider");
@@ -73,7 +73,7 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
     }
 
     @Test
-    public void testGenerateSchemaFakeProviderClass() {
+    void generateSchemaFakeProviderClass() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", FakeProvider.class);

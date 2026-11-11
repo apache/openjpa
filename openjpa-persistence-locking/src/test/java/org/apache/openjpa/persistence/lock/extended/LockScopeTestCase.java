@@ -250,7 +250,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             q = q.setParameter("firstName", "firstName%" + id0);
             List<T> es = q.getResultList();
             getLog().info(" *Found " + es.size() + " entity");
-            assertEquals(es.size(), 1, " *Should find 1 entity");
+            assertEquals(1, es.size(), " *Should find 1 entity");
             verify.queryPessimisticReadDbSQL(em);
             e0 = es.get(0);
             getLog().info(" *Found entity:" + e0);
@@ -297,7 +297,7 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             q = q.setParameter("firstName", "firstName%" + id0);
             List<T> es = q.getResultList();
             getLog().info(" *Found " + es.size() + " entity");
-            assertEquals(es.size(), 1, " *Found 1 entity");
+            assertEquals(1, es.size(), " *Found 1 entity");
             verify.namedQueryPessimisticWriteDbSql(em);
             e0 = es.get(0);
             getLog().info(" *Found entity:" + e0);

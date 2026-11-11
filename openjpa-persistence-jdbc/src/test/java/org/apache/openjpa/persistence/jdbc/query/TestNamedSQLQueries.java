@@ -38,10 +38,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(NamedSQL.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -59,7 +59,7 @@ public class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     @Test
-    public void testNamedQuery() {
+    void namedQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("cls",NamedSQL.class);
 
@@ -72,7 +72,7 @@ public class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     @Test
-    public void testSystem() {
+    void system() {
         // test top-level package.jdoquery
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         //FIXME jthomas

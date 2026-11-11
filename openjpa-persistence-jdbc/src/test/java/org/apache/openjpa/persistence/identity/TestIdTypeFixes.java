@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -49,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * - OffsetDateTime column compatibility (TIMESTAMP_WITH_TIMEZONE)
  * - UUID @Id persist and find
  */
-public class TestIdTypeFixes extends SingleEMFTestCase {
+class TestIdTypeFixes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -64,7 +62,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * "operator does not exist: character varying = uuid"
      */
     @Test
-    public void testUUIDIdPersistAndFind() {
+    void uuidIdPersistAndFind() {
         UUID id = UUID.randomUUID();
         String name = "Test UUID Entity";
 
@@ -90,7 +88,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * "column is not compatible with the expected type unknown(2014)"
      */
     @Test
-    public void testDateTimeTypes() {
+    void dateTimeTypes() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -124,7 +122,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * and TIME_WITH_TIMEZONE types as self-compatible.
      */
     @Test
-    public void testTimestampWithTimezoneCompatibility() {
+    void timestampWithTimezoneCompatibility() {
         Column col = new Column();
         col.setType(Types.TIMESTAMP_WITH_TIMEZONE);
 
@@ -147,7 +145,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Test that TIME_WITH_TIMEZONE is self-compatible.
      */
     @Test
-    public void testTimeWithTimezoneCompatibility() {
+    void timeWithTimezoneCompatibility() {
         Column col = new Column();
         col.setType(Types.TIME_WITH_TIMEZONE);
 
@@ -162,7 +160,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * TIMESTAMP_WITH_TIMEZONE and TIME_WITH_TIMEZONE.
      */
     @Test
-    public void testSchemasGetJDBCName() {
+    void schemasGetJDBCName() {
         assertEquals("timestamp_with_timezone",
             Schemas.getJDBCName(Types.TIMESTAMP_WITH_TIMEZONE));
         assertEquals("time_with_timezone",
@@ -174,7 +172,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * TIMESTAMP_WITH_TIMEZONE and TIME_WITH_TIMEZONE.
      */
     @Test
-    public void testSchemasGetJavaType() {
+    void schemasGetJavaType() {
         assertEquals(OffsetDateTime.class,
             Schemas.getJavaType(Types.TIMESTAMP_WITH_TIMEZONE, 0, 0));
         assertEquals(OffsetTime.class,
@@ -185,19 +183,17 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Test that JavaTypes.convert handles BigDecimal/BigInteger conversions.
      */
     @Test
-    public void testJavaTypesConvert() {
+    void javaTypesConvert() {
         BigDecimal bd = new BigDecimal("123");
         BigInteger bi = new BigInteger("456");
 
         // BigDecimal -> BigInteger conversion
         Object result = JavaTypes.convert(bd, JavaTypes.BIGINTEGER);
-        assertTrue(result instanceof BigInteger,
-            "Should convert BigDecimal to BigInteger");
+        assertInstanceOf(BigInteger.class, result, "Should convert BigDecimal to BigInteger");
         assertEquals(new BigInteger("123"), result);
 
         // BigInteger -> BigDecimal conversion
         result = JavaTypes.convert(bi, JavaTypes.BIGDECIMAL);
-        assertTrue(result instanceof BigDecimal,
-            "Should convert BigInteger to BigDecimal");
+        assertInstanceOf(BigDecimal.class, result, "Should convert BigInteger to BigDecimal");
     }
 }

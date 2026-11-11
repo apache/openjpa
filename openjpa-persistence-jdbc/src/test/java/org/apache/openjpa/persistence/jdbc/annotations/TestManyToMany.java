@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestManyToMany
+class TestManyToMany
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class TestManyToMany
     }
 
     @Test
-    public void testManyToMany() {
+    void manyToMany() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(4);
@@ -81,7 +81,7 @@ public class TestManyToMany
     }
 
     @Test
-    public void testInverseOwnerManyToMany() {
+    void inverseOwnerManyToMany() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(4);

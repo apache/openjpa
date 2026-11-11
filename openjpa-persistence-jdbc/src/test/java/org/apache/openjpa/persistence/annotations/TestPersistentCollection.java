@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Albert Lee
  */
-public class TestPersistentCollection extends SingleEMFTestCase {
+class TestPersistentCollection extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +47,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testPersistentCollectionOfEmbeddables() {
+    void persistentCollectionOfEmbeddables() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -91,7 +91,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testPersistentCollectionOfEntities() {
+    void persistentCollectionOfEntities() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -135,7 +135,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistentCollectionStringsLazy() {
+    void persistentCollectionStringsLazy() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -166,7 +166,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistentCollectionStringsEager() {
+    void persistentCollectionStringsEager() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

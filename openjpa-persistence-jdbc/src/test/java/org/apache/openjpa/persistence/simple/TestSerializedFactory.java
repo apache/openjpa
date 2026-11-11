@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author David Ezzio
  */
-public class TestSerializedFactory extends SingleEMFTestCase {
+class TestSerializedFactory extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -57,11 +56,10 @@ public class TestSerializedFactory extends SingleEMFTestCase {
      * be removed.
      */
     @Test
-    public void testSerializedEntityManagerFactory() throws Exception {
+    void serializedEntityManagerFactory() throws Exception {
         // correct the logic if and when EMFs do not implement
         // the serializable interface
-        assertTrue(emf instanceof Serializable,
-                "EntityManagerFactory object is not serializable");
+        assertInstanceOf(Serializable.class, emf, "EntityManagerFactory object is not serializable");
 
         // serialize and deserialize the entity manager factory
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

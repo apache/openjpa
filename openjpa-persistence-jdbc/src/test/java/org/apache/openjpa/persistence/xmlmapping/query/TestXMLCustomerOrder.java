@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
  * @author Milosz Tylenda
  * @since 1.0.0
  */
-public class TestXMLCustomerOrder
+class TestXMLCustomerOrder
     extends SingleEMFTestCase {
 
     private static final int ORDER_1_OID = 10;
@@ -92,7 +92,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLFieldProjection() {
+    void xmlFieldProjection() {
         EntityManager em = emf.createEntityManager();
         List<Address> addrs = em.createQuery(
             "select o.shipAddress from Order o order by o.oid")
@@ -113,7 +113,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLFieldInEntity() {
+    void xmlFieldInEntity() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o order by o.oid")
@@ -136,7 +136,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLStringToXMLStringComparison() {
+    void xmlStringToXMLStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Object[]> orders = em.createQuery(
             "select o, o2 from Order o, Order o2 where o.shipAddress.city " +
@@ -162,7 +162,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLStringToEmbeddedStringComparison() {
+    void xmlStringToEmbeddedStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o, Customer c where o.shipAddress.city " +
@@ -178,7 +178,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLStringToConstantStringComparison() {
+    void xmlStringToConstantStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o where o.shipAddress.city = 'San Jose'")
@@ -193,7 +193,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testXMLStringToParameterStringComparison() {
+    void xmlStringToParameterStringComparison() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where o.shipAddress.city = :city");
@@ -209,7 +209,7 @@ public class TestXMLCustomerOrder
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testParameterStringToXMLStringComparison() {
+    void parameterStringToXMLStringComparison() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where :city = o.shipAddress.city");
@@ -224,7 +224,7 @@ public class TestXMLCustomerOrder
     }
 
     @Test
-    public void testUpdate() {
+    void update() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -249,7 +249,7 @@ public class TestXMLCustomerOrder
     }
 
     @Test
-    public void testNullify() {
+    void nullify() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -271,7 +271,7 @@ public class TestXMLCustomerOrder
     }
 
     @Test
-    public void testXMLStringToConstantIntComparison() {
+    void xmlStringToConstantIntComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -286,7 +286,7 @@ public class TestXMLCustomerOrder
     }
 
     @Test
-    public void testXMLListToConstantStringComparison() {
+    void xmlListToConstantStringComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -301,7 +301,7 @@ public class TestXMLCustomerOrder
     }
 
     @Test
-    public void testSubclassPropertyInXMLFieldComparison() {
+    void subclassPropertyInXMLFieldComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(

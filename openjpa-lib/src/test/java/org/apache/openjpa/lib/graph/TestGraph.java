@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestGraph
+class TestGraph
     extends AbstractTestCase {
 
     private Graph _graph = new Graph();
@@ -47,7 +47,7 @@ public class TestGraph
     private Edge _edge4 = new Edge(_node2, _node2, false);
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         _graph.addNode(_node1);
         _graph.addNode(_node2);
         _graph.addNode(_node3);
@@ -61,7 +61,7 @@ public class TestGraph
      * Tests adding and retrieving nodes and edges.
      */
     @Test
-    public void testAddRetrieve() {
+    void addRetrieve() {
         assertEquals(3, _graph.getNodes().size());
         assertEquals(4, _graph.getEdges().size());
 
@@ -113,7 +113,7 @@ public class TestGraph
      * Test removing edges.
      */
     @Test
-    public void testRemoveEdges() {
+    void removeEdges() {
         assertTrue(_graph.removeEdge(_edge2));
         Collection edges = _graph.getEdgesFrom(_node2);
         assertEquals(1, edges.size());
@@ -135,7 +135,7 @@ public class TestGraph
      * Test removing nodes.
      */
     @Test
-    public void testRemoveNodes() {
+    void removeNodes() {
         assertTrue(_graph.removeNode(_node3));
         Collection edges = _graph.getEdges();
         assertEquals(2, edges.size());

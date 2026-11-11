@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestAnnoExceptionEntity extends SingleEMFTestCase {
+class TestAnnoExceptionEntity extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +38,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionArrayAsLob() {
+    void exceptionArrayAsLob() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -66,7 +66,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionPersistentCollection() {
+    void exceptionPersistentCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -94,7 +94,7 @@ public class TestAnnoExceptionEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExceptionElementCollection() {
+    void exceptionElementCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestIsolationFecthHint extends SQLListenerTestCase{
+class TestIsolationFecthHint extends SQLListenerTestCase{
 
     @BeforeEach
     public void setUp(){
@@ -40,7 +40,7 @@ public class TestIsolationFecthHint extends SQLListenerTestCase{
     }
 
     @Test
-    public void testFetchPlanIsolationURHint(){
+    void fetchPlanIsolationURHint(){
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {
             DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())

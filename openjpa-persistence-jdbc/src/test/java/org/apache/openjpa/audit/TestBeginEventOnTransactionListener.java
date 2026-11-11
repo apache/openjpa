@@ -34,7 +34,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
+class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
 
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         doTest(emf);
         assertTrue(MockAuditor.called);
     }

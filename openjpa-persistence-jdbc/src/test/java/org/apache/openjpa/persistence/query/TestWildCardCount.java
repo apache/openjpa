@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestWildCardCount extends SQLListenerTestCase {
+class TestWildCardCount extends SQLListenerTestCase {
     private EntityManager em;
 
     @BeforeEach
@@ -57,19 +57,19 @@ public class TestWildCardCount extends SQLListenerTestCase {
     }
 
     @Test
-    public void testWildCardForCountInSingleProjectTerm() {
+    void wildCardForCountInSingleProjectTerm() {
         String jpql = "select COUNT(p) from RuntimeTest1 p";
         executeAndAssert(jpql);
     }
 
     @Test
-    public void testWildCardForCountInMultipleProjectTerms() {
+    void wildCardForCountInMultipleProjectTerms() {
         String jpql = "select COUNT(p.intField),SUM(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);
     }
 
     @Test
-    public void testWildCardForCountInMultipleProjectTermsButCountIsNotFirstTerm() {
+    void wildCardForCountInMultipleProjectTermsButCountIsNotFirstTerm() {
         String jpql = "select SUM(p.intField),COUNT(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);
     }

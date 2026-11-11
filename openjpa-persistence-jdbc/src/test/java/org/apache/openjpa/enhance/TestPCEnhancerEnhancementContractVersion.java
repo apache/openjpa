@@ -30,28 +30,28 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestPCEnhancerEnhancementContractVersion extends AbstractPersistenceTestCase {
+class TestPCEnhancerEnhancementContractVersion extends AbstractPersistenceTestCase {
     Log log = NoneLog.getInstance();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         // Create to trigger static initializer to run.
         new Country();
         new DummyPersistenceCapeable();
     }
 
     @Test
-    public void testCurrentLevel() {
+    void currentLevel() {
         assertFalse(PCEnhancer.checkEnhancementLevel(Country.class, log));
     }
 
     @Test
-    public void testDownLevel(){
+    void downLevel(){
         assertTrue(PCEnhancer.checkEnhancementLevel(DummyPersistenceCapeable.class, log));
     }
 
     @Test
-    public void testContact() {
+    void contact() {
         assertFalse(PCEnhancer.checkEnhancementLevel(null, log));
         assertFalse(PCEnhancer.checkEnhancementLevel(Country.class, null));
         try {

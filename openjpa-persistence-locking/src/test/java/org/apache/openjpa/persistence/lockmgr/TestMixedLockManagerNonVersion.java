@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test find, lock and refresh em methods against non-versioned entity.
  */
-public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
+class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
 
     private String empTableName;
 
@@ -57,7 +57,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
      * Test em.find(lockMode) on non-versioned entity.
      */
     @Test
-    public void testFindNonVersionWithLock() {
+    void findNonVersionWithLock() {
         commonFindNonVerWithLock(LockModeType.NONE);
         commonFindNonVerWithLock(LockModeType.READ);
         commonFindNonVerWithLock(LockModeType.WRITE);
@@ -100,7 +100,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
      * Test em.lock(lockMode) on non-versioned entity.
      */
     @Test
-    public void testLockNonVersionWithLock() {
+    void lockNonVersionWithLock() {
         commonLockNonVerWithLock(LockModeType.NONE);
         commonLockNonVerWithLock(LockModeType.READ);
         commonLockNonVerWithLock(LockModeType.WRITE);
@@ -144,7 +144,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
      * Test em.refresh(lockMode) on non-versioned entity.
      */
     @Test
-    public void testRefreshNonVersionWithLock() {
+    void refreshNonVersionWithLock() {
         commonRefreshNonVerWithLock(LockModeType.NONE);
         commonRefreshNonVerWithLock(LockModeType.READ);
         commonRefreshNonVerWithLock(LockModeType.WRITE);

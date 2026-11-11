@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class EntityListenerPostLoadTest extends SingleEMFTestCase {
+class EntityListenerPostLoadTest extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -45,7 +45,7 @@ public class EntityListenerPostLoadTest extends SingleEMFTestCase {
      * return exactly the value stored to the database. Even if the value got changed locally in the meantime.
      */
     @Test
-    public void testPostLoadValues() {
+    void postLoadValues() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

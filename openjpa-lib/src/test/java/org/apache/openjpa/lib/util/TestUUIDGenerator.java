@@ -32,38 +32,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Abe White
  */
-public class TestUUIDGenerator {
+class TestUUIDGenerator {
 
     @Test
-    public void testUniqueString() {
+    void uniqueString() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
     }
 
     @Test
-    public void testUniqueHex() {
+    void uniqueHex() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
     }
 
     @Test
-    public void testUniqueType4String() {
+    void uniqueType4String() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
     }
 
     @Test
-    public void testUniqueType4Hex() {
+    void uniqueType4Hex() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++)
             assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
     }
 
     @Test
-    public void testUniqueMixedTypesHex() {
+    void uniqueMixedTypesHex() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++) {
             int type = (i % 2 == 0) ?
@@ -73,7 +73,7 @@ public class TestUUIDGenerator {
     }
 
     @Test
-    public void testGetTime() {
+    void getTime() {
         long time = 0;
         for (int i = 0; i < 10000; i++) {
             long newTime = UUIDGenerator.getTime();
@@ -83,7 +83,7 @@ public class TestUUIDGenerator {
     }
 
     @Test
-    public void testInitType1MultiThreaded() throws Exception {
+    void initType1MultiThreaded() throws Exception {
         // This test method depends IP and RANDOM in UUIDGenerator to be null
         // and type1Initialized to be false. Using reflection to ensure that
         // those fields are null.

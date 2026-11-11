@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
  *
  * All entities use Unenhanced* prefix to skip build-time enhancement.
  */
-public class TestUnenhancedDerivedId extends SingleEMFTestCase {
+class TestUnenhancedDerivedId extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -77,7 +77,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * Mirrors TCK core/derivedid/ex1a/Client.DIDTest.
      */
     @Test
-    public void testEx1a_IdClassWithIdManyToOne() {
+    void ex1aIdClassWithIdManyToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -127,7 +127,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * Mirrors TCK core/derivedid/ex1b/Client.DIDTest.
      */
     @Test
-    public void testEx1b_EmbeddedIdWithMapsId() {
+    void ex1bEmbeddedIdWithMapsId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -180,7 +180,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * Mirrors TCK core/derivedid/ex3a/Client.DIDTest.
      */
     @Test
-    public void testEx3a_IdClassWithCompositeParentPK() {
+    void ex3aIdClassWithCompositeParentPK() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -236,7 +236,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * Mirrors TCK core/derivedid/ex2a/Client.DIDTest.
      */
     @Test
-    public void testEx2a_IdClassWithCompositeParentIdClass() {
+    void ex2aIdClassWithCompositeParentIdClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -294,7 +294,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * Mirrors TCK core/annotations/mapsid/Client.persistMX1Test1.
      */
     @Test
-    public void testMapsId_PersistMX1() {
+    void mapsIdPersistMX1() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -355,7 +355,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * not "empPK" (the embedded ID field name).
      */
     @Test
-    public void testMapsIdFKColumnNaming() {
+    void mapsIdFKColumnNaming() {
         ClassMapping mapping = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, UnenhancedDID1bDependent.class);
         assertNotNull(mapping,

@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
  * unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062), SQL Server as
  * DECIMAL(18,0) (OPENJPA-3064).
  */
-public class TestDecimalScale extends SingleEMFTestCase {
+class TestDecimalScale extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -69,7 +69,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFractionIsKeptOnFind() {
+    void fractionIsKeptOnFind() {
         try (EntityManager em = emf.createEntityManager()) {
             DecimalScaleEntity e = em.find(DecimalScaleEntity.class, 1L);
             assertDecimal("2.5", e.getAmount());
@@ -81,7 +81,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFractionIsKeptOnUpdate() {
+    void fractionIsKeptOnUpdate() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(DecimalScaleEntity.class, 1L).setAmount(new BigDecimal("0.75"));
@@ -93,7 +93,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFractionIsComparedInQuery() {
+    void fractionIsComparedInQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Long> ids = em.createQuery("SELECT e.id FROM DecimalScaleEntity e "
                 + "WHERE e.amount = :amount AND e.unsized > 1234.5", Long.class)
@@ -108,7 +108,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testWholeNumberKeepsPlainScale() {
+    void wholeNumberKeepsPlainScale() {
         if (!isH2()) {
             return;
         }
@@ -120,7 +120,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQuotientHasLimitedDigits() {
+    void quotientHasLimitedDigits() {
         try (EntityManager em = emf.createEntityManager()) {
             BigDecimal quot = em.createQuery("SELECT e.unsized / 3 FROM DecimalScaleEntity e "
                 + "WHERE e.id = 2", BigDecimal.class).getSingleResult();
@@ -130,7 +130,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
     }
 
     @Test
-    public void testColumnTypesOnH2() throws SQLException {
+    void columnTypesOnH2() throws Exception {
         if (!isH2()) {
             return;
         }
@@ -146,7 +146,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
      * MySQL and MariaDB read an unsized DECIMAL as DECIMAL(10,0) (OPENJPA-3062).
      */
     @Test
-    public void testColumnTypesOnMySQLAndMariaDB() throws SQLException {
+    void columnTypesOnMySQLAndMariaDB() throws Exception {
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
         if (!(dict instanceof MySQLDictionary) && !(dict instanceof MariaDBDictionary)) {
             return;
@@ -162,7 +162,7 @@ public class TestDecimalScale extends SingleEMFTestCase {
      * SQL Server reads an unsized DECIMAL as DECIMAL(18,0) (OPENJPA-3064).
      */
     @Test
-    public void testColumnTypesOnSQLServer() throws SQLException {
+    void columnTypesOnSQLServer() throws Exception {
         if (!(((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance()
             instanceof SQLServerDictionary)) {
             return;

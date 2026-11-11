@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * - getReferenceForNonExistingEntityTest: getReference(entity) for non-existing entity
  * - runWithConnectionTest / callWithConnectionTest: JPA 3.2 connection methods
  */
-public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
+class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +53,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * TCK: cascadeAllMX1Test2
      */
     @Test
-    public void testCascadeAllMX1RePersistRemoved() {
+    void cascadeAllMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -97,7 +94,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * TCK: persistMX1Test2
      */
     @Test
-    public void testPersistMX1RePersistRemoved() {
+    void persistMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -138,7 +135,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * TCK: getReferenceForNonExistingEntityTest
      */
     @Test
-    public void testGetReferenceForNonExistingEntity() {
+    void getReferenceForNonExistingEntity() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             UnenhancedSimpleOrderEntity order = new UnenhancedSimpleOrderEntity(99999, 0, "nonexistent");
@@ -163,7 +160,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * insert via JDBC, commit, find via JPA, check equals
      */
     @Test
-    public void testRunWithConnection() {
+    void runWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             UnenhancedSimpleOrderEntity order =
@@ -187,8 +184,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
                 em.find(UnenhancedSimpleOrderEntity.class, order.getId());
             assertNotNull(found,
                 "Order should be found after runWithConnection insert");
-            assertTrue(found.equals(order),
-                "Found entity should equal original order"
+            assertEquals(found, order, "Found entity should equal original order"
                 + " (found.id=" + found.getId()
                 + ", found.total=" + found.getTotal()
                 + ", found.desc=" + found.getDescription()
@@ -211,7 +207,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * insert + read via JDBC, commit, find via JPA, check equals
      */
     @Test
-    public void testCallWithConnection() {
+    void callWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             UnenhancedSimpleOrderEntity order =
@@ -253,8 +249,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
                 em.find(UnenhancedSimpleOrderEntity.class, order.getId());
             assertNotNull(found,
                 "Order should be found after callWithConnection");
-            assertTrue(found.equals(selectedOrder),
-                "Found entity should equal selected order"
+            assertEquals(found, selectedOrder, "Found entity should equal selected order"
                 + " (found.id=" + found.getId()
                 + ", found.total=" + found.getTotal()
                 + ", found.desc=" + found.getDescription()

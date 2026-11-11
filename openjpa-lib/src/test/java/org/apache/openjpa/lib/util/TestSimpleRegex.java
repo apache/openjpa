@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  *
  * @author Greg Campbell
  */
-public class TestSimpleRegex  {
+class TestSimpleRegex  {
 
     private boolean matchExpr(String target, String expr, boolean caseInsens) {
         SimpleRegex re = new SimpleRegex(expr, caseInsens);
@@ -36,7 +36,7 @@ public class TestSimpleRegex  {
     }
 
     @Test
-    public void testWildcards() {
+    void wildcards() {
         assertTrue(matchExpr("Hello", "Hello", false));
         assertFalse(matchExpr("Hello", "Bye", false));
         assertFalse(matchExpr("Hello", "ByeBye", false));

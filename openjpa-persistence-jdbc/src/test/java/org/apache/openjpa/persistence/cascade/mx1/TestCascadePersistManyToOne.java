@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * - cascadeAllMX1Test2 (CascadeType.ALL)
  * - persistMX1Test2 (CascadeType.PERSIST)
  */
-public class TestCascadePersistManyToOne extends SingleEMFTestCase {
+class TestCascadePersistManyToOne extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +56,7 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
      * 5. Verify B is managed and b.getA1() != null
      */
     @Test
-    public void testCascadeAllRePersistedRemovedEntity() {
+    void cascadeAllRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -100,7 +100,7 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
      * 5. Verify B is managed and b.getA1() != null
      */
     @Test
-    public void testPersistCascadeRePersistedRemovedEntity() {
+    void persistCascadeRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

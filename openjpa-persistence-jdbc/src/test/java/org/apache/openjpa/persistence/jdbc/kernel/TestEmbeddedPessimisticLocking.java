@@ -117,7 +117,7 @@ public class TestEmbeddedPessimisticLocking extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testEmbeddedFieldsWithLockedParent() {
+    void embeddedFieldsWithLockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         prepareEMF(em.getEntityManagerFactory());
         ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
@@ -142,7 +142,7 @@ public class TestEmbeddedPessimisticLocking extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testEmbeddedFieldsWithUnlockedParent() {
+    void embeddedFieldsWithUnlockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
         ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
@@ -191,7 +191,7 @@ public class TestEmbeddedPessimisticLocking extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testComplexEmbeddedFieldsWithLockedParent() {
+    void complexEmbeddedFieldsWithLockedParent() {
 
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
@@ -221,7 +221,7 @@ public class TestEmbeddedPessimisticLocking extends TestSQLListenerTestCase {
     }
 
     @Test
-    public void testComplexEmbeddedFieldsWithUnlockedParent() {
+    void complexEmbeddedFieldsWithUnlockedParent() {
         // doing this because setting the read lock level
         // does not seem to be disabling FOR UPDATE.
 

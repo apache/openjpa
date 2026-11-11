@@ -36,12 +36,12 @@ public class TestEJBNoPersistentFields extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         deleteAll(TestEJBNoPersistentFieldsNholderEntity.class);
     }
 
     @Test
-    public void testNoPersistentFields() {
+    void noPersistentFields() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

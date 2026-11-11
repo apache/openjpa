@@ -33,7 +33,7 @@ public class TestEJBTransactionalClass extends AbstractTestCase {
     }
 
     @Test
-    public void testTransactional() {
+    void transactional() {
         TransactionalClassPC pc = new TransactionalClassPC();
         pc.setIntField(1);
 

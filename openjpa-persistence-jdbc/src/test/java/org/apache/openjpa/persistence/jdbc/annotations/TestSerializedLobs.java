@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestSerializedLobs extends SingleEMFTestCase {
+class TestSerializedLobs extends SingleEMFTestCase {
 
     private static final Date DATE = new Date();
 
@@ -54,7 +54,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
 
     // Serialized fields not being read properly
     @Test
-    public void testSerialized() {
+    void serialized() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc1 = new AnnoTest1(1);
@@ -75,7 +75,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBlob()
+    void blob()
         throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -123,7 +123,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
     }
 
     @Test
-    public void testClob()
+    void clob()
         throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -147,7 +147,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullableClob() throws Exception {
+    void nullableClob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -164,7 +164,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullableBlob() throws Exception {
+    void nullableBlob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

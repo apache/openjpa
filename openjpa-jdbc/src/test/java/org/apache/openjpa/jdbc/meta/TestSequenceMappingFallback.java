@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
@@ -55,7 +52,7 @@ import org.junit.jupiter.api.Test;
  * sequence objects and would therefore only ever take the native path in an
  * end to end test.
  */
-public class TestSequenceMappingFallback {
+class TestSequenceMappingFallback {
 
     private static final String SEQUENCE_QUERY = "SELECT NEXT VALUE FOR {0}";
 
@@ -98,7 +95,7 @@ public class TestSequenceMappingFallback {
      * guess a backing store.
      */
     @Test
-    public void testConnectFailureIsNotAnswerWithTheTableFallback() {
+    void connectFailureIsNotAnswerWithTheTableFallback() {
         JDBCConfigurationImpl conf = newConfiguration(SequencesOnceConnected.class,
             UnreachableDataSource.class);
         try {
@@ -116,7 +113,7 @@ public class TestSequenceMappingFallback {
      * sequences, so the generator has to end up on the native path.
      */
     @Test
-    public void testSequenceSupportLearnedOnConnectKeepsTheNativePath() {
+    void sequenceSupportLearnedOnConnectKeepsTheNativePath() {
         JDBCConfigurationImpl conf = newConfiguration(SequencesOnceConnected.class,
             StubDataSource.class);
         Seq seq = generator(conf).getInstance(null);
@@ -130,7 +127,7 @@ public class TestSequenceMappingFallback {
      * generator is backed by a counter row keyed by the sequence name.
      */
     @Test
-    public void testNoSequenceSupportTakesTheTableFallback() {
+    void noSequenceSupportTakesTheTableFallback() {
         JDBCConfigurationImpl conf = newConfiguration(NoSequences.class, StubDataSource.class);
         Seq seq = generator(conf).getInstance(null);
         assertEquals(ValueTableJDBCSeq.class, seq.getClass());
@@ -143,7 +140,7 @@ public class TestSequenceMappingFallback {
      * The decision is cached on the metadata, so it is taken once.
      */
     @Test
-    public void testTheSubstituteIsInstantiatedOnce() {
+    void theSubstituteIsInstantiatedOnce() {
         JDBCConfigurationImpl conf = newConfiguration(NoSequences.class, StubDataSource.class);
         SequenceMapping seq = generator(conf);
         assertSame(seq.getInstance(null), seq.getInstance(null));
@@ -155,12 +152,12 @@ public class TestSequenceMappingFallback {
      * stall on a connect attempt: the data source here would fail if asked.
      */
     @Test
-    public void testDeclaredSequenceSupportIsResolvedWithoutConnecting() {
+    void declaredSequenceSupportIsResolvedWithoutConnecting() {
         JDBCConfigurationImpl conf = newConfiguration(SequencesDeclared.class,
             UnreachableDataSource.class);
         Seq seq = generator(conf).getInstance(null);
         assertEquals(NativeJDBCSeq.class, seq.getClass());
-        assertTrue(!conf.getDBDictionaryInstance().isConnected(),
+        assertFalse(conf.getDBDictionaryInstance().isConnected(),
             "no connection may have been attempted");
     }
 
@@ -168,7 +165,7 @@ public class TestSequenceMappingFallback {
      * EmulateNativeSequences=false restores the pre-4.2.0 failure.
      */
     @Test
-    public void testEmulationCanBeTurnedOff() {
+    void emulationCanBeTurnedOff() {
         JDBCConfigurationImpl conf = newConfiguration(NoSequences.class, StubDataSource.class);
         conf.setCompatibility("EmulateNativeSequences=false");
         try {
@@ -184,7 +181,7 @@ public class TestSequenceMappingFallback {
      * left alone, connected or not.
      */
     @Test
-    public void testAPluginStringGeneratorIsLeftAlone() {
+    void aPluginStringGeneratorIsLeftAlone() {
         JDBCConfigurationImpl conf = newConfiguration(NoSequences.class, UnreachableDataSource.class);
         SequenceMapping seq = generator(conf);
         seq.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);

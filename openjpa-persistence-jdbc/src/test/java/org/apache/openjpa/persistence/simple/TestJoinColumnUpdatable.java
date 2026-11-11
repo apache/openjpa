@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * Uses runtime enhancement (unenhanced entities) to mirror TCK behavior.
  */
-public class TestJoinColumnUpdatable extends SingleEMFTestCase {
+class TestJoinColumnUpdatable extends SingleEMFTestCase {
 
     private UnenhancedJCDepartment dept1;
     private UnenhancedJCDepartment dept2;
@@ -77,7 +77,7 @@ public class TestJoinColumnUpdatable extends SingleEMFTestCase {
      * and flush should NOT fail with "unmanaged object" error.
      */
     @Test
-    public void testJoinColumnUpdatableFalse() {
+    void joinColumnUpdatableFalse() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

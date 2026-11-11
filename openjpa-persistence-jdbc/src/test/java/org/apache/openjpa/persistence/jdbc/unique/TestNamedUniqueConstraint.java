@@ -42,7 +42,7 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
     }
 
     @Test
-    public void testMapping() {
+    void mapping() {
 
         // If the database does not support unique constraints, exit
         if (!supportsUniqueConstraints())

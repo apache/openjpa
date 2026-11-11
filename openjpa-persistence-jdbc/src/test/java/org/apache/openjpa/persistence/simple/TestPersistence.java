@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -36,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Marc Prud'hommeaux
  */
-public class TestPersistence
+class TestPersistence
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -45,7 +42,7 @@ public class TestPersistence
     }
 
     @Test
-    public void testCreateEntityManager() {
+    void createEntityManager() {
         EntityManager em = emf.createEntityManager();
 
         EntityTransaction t = em.getTransaction();
@@ -55,7 +52,7 @@ public class TestPersistence
         t.rollback();
 
         // openjpa-facade test
-        assertTrue(em instanceof OpenJPAEntityManager);
+        assertInstanceOf(OpenJPAEntityManager.class, em);
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
         ojem.getFetchPlan().setMaxFetchDepth(1);
         assertEquals(1, ojem.getFetchPlan().getMaxFetchDepth());
@@ -63,7 +60,7 @@ public class TestPersistence
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new AllFieldTypes());
@@ -72,7 +69,7 @@ public class TestPersistence
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes aft = new AllFieldTypes();
@@ -98,7 +95,7 @@ public class TestPersistence
     }
 
     @Test
-    public void testNewDeleteNew() {
+    void newDeleteNew() {
         EntityManager em = emf.createEntityManager();
 
         // create new

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.generationtype;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -29,15 +30,15 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestTableGeneratorMultithreadedInitialization extends AbstractPersistenceTestCase {
+class TestTableGeneratorMultithreadedInitialization extends AbstractPersistenceTestCase {
     Object[] props = new Object[] { Dog.class, CLEAR_TABLES };
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
     }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
 
         EntityManagerFactory emf1 = createNamedEMF(getPersistenceUnitName(), props);
         EntityManagerFactory emf2 = createNamedEMF(getPersistenceUnitName(), props);

@@ -42,7 +42,7 @@ public class TestMultiCascadePersist extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSingleTransaction() {
+    void singleTransaction() {
         OpenJPAEntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 

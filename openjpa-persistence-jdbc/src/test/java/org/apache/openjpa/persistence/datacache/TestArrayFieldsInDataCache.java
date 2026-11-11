@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestArrayFieldsInDataCache
+class TestArrayFieldsInDataCache
     extends SingleEMFTestCase {
 
     private static final String[] STRINGS = new String[]{ "a", "b", "c" };
@@ -69,7 +69,7 @@ public class TestArrayFieldsInDataCache
     }
 
     @Test
-    public void testArrayOfStrings() {
+    void arrayOfStrings() {
         // check that the data cache contains an efficient representation
         StoreCacheImpl storeCache = (StoreCacheImpl)
             OpenJPAPersistence.cast(emf).getStoreCache();
@@ -92,7 +92,7 @@ public class TestArrayFieldsInDataCache
     }
 
     @Test
-    public void testArrayOfInts() {
+    void arrayOfInts() {
         // check that the data cache contains an efficient representation
         StoreCacheImpl storeCache = (StoreCacheImpl)
             OpenJPAPersistence.cast(emf).getStoreCache();

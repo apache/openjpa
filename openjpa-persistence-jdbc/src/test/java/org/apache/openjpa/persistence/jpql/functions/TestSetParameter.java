@@ -66,7 +66,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSetPositionalParameter() {
+    void setPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= ?1, e.age = ?2 "
@@ -85,7 +85,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSetPositionalParameterInNonIntutiveOrder() {
+    void setPositionalParameterInNonIntutiveOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= ?2, e.age = ?1 "
@@ -105,7 +105,7 @@ public class TestSetParameter extends SingleEMFTestCase {
 
 
     @Test
-    public void testSetNamedParameter() {
+    void setNamedParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String query = "UPDATE CompUser e set e.name= :name, e.age = :age "
@@ -125,7 +125,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNativeSQL() {
+    void nativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -148,7 +148,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMissingFirstPositionalParameter() {
+    void missingFirstPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= ?2, e.age = ?4 " + "WHERE e.userid = ?3";
         try {
@@ -161,7 +161,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMixedParameterTypesParameter() {
+    void mixedParameterTypesParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= :name, e.age = ?1 " + "WHERE e.userid = ?3";
         try {

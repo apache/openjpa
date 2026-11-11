@@ -43,14 +43,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager pm;
 
     private ClassMapping eMapping;
     private ClassMapping fMapping;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // ### I hate that we have to do this
         Class c = MultiE.class;
         c = MultiF.class;
@@ -77,7 +77,7 @@ public class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.j
     }
 
     @Test
-    public void testMetaData() {
+    void metaData() {
         assertEquals(ValueMapDiscriminatorStrategy.class,
                 eMapping.getDiscriminator().getStrategy().getClass());
         assertEquals(SuperclassDiscriminatorStrategy.class,
@@ -85,7 +85,7 @@ public class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.j
     }
 
     @Test
-    public void testOperations() {
+    void operations() {
        deleteAll(MultiE.class);
 
         pm = (OpenJPAEntityManager)currentEntityManager();

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
  * set is empty.  In this variation, the compatibility flag
  * is set so 0 is expected.
  */
-public class TestCompatAggregateFunctions extends TestAggregateFunctions {
+class TestCompatAggregateFunctions extends TestAggregateFunctions {
 
     @BeforeEach
     public void setUp() {

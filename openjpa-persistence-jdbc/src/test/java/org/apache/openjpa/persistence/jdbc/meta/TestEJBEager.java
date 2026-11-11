@@ -33,12 +33,12 @@ import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(EagerPCSub.class);
 		deleteAll(EagerPC.class);
@@ -117,7 +117,7 @@ public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.Bas
 	}
 
     @Test
-    public void testOuterJoin ()
+    void outerJoin()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -136,7 +136,7 @@ public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.Bas
 	}
 
     @Test
-    public void testOuterJoinToSubclass ()
+    void outerJoinToSubclass()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);

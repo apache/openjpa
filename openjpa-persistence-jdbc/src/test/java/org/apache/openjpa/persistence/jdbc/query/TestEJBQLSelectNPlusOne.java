@@ -28,10 +28,10 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll (RuntimeTest1.class);
 		EntityManager pm = currentEntityManager();
@@ -42,7 +42,7 @@ public class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc
 	}
 
     @Test
-    public void testSimpleEJBQLQuery() throws Exception
+    void simpleEJBQLQuery() throws Exception
 	{
 		EntityManager pm = currentEntityManager();
         // run a JDOQL query first to take care of any class-loading issues

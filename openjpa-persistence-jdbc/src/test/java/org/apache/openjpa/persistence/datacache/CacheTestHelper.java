@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,7 +32,6 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.junit.jupiter.api.Assertions;
 
 class CacheTestHelper {
 
@@ -40,11 +39,11 @@ class CacheTestHelper {
         boolean[] stati) {
         for (int i = 0; i < ids.length; i++) {
             if (stati[i])
-                Assertions.assertTrue(cache.contains(ids[i]),
+                assertTrue(cache.contains(ids[i]),
                     "id " + i + " (" + ids[i]
                     + ") was not in cache; should have been");
             else
-                Assertions.assertFalse(cache.contains(ids[i]),
+                assertFalse(cache.contains(ids[i]),
                     "id " + i + " (" + ids[i]
                     + ") was in cache; should not have been");
         }

@@ -51,17 +51,17 @@ public class TestEntityListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityListeners() {
+    void entityListeners() {
         helper(ENTITY_LISTENER_ENTITY);
     }
 
     @Test
-    public void testGlobalListeners() {
+    void globalListeners() {
         helper(GLOBAL_LISTENER_ENTITY);
     }
 
     @Test
-    public void testDuplicateListeners() {
+    void duplicateListeners() {
         super.setUp(CLEAR_TABLES, DuplicateListenerEntity.class,
             "openjpa.Callbacks", "AllowsDuplicateListener=false");
         assertFalse(emf.getConfiguration().getCallbackOptionsInstance().getAllowsDuplicateListener());

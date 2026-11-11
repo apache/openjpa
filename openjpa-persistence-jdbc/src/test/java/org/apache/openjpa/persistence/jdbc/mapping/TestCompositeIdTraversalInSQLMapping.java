@@ -43,7 +43,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 
 
     @BeforeEach
-    public void setUp()
+    void setUp()
 	{
 		deleteAll(OwnerOfEntityWithCompositeId.class);
 		deleteAll(EntityWithCompositeId.class);
@@ -66,7 +66,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	}
 
     @Test
-    public void testTraversalWhenSQLSelectsBothEndOfTheRelation ()
+    void traversalWhenSQLSelectsBothEndOfTheRelation()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid  = (int) (System.currentTimeMillis() % 100000);
@@ -109,7 +109,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	}
 
     @Test
-    public void testTraversalWhenSQLSelectsOnlyOneEndOfTheRelation ()
+    void traversalWhenSQLSelectsOnlyOneEndOfTheRelation()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid  = (int) (System.currentTimeMillis() % 100000);
@@ -144,7 +144,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	}
 
     @Test
-    public void testTraversalWhenSQLSelectsUnrelatedInstances ()
+    void traversalWhenSQLSelectsUnrelatedInstances()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid1  = (int) (System.currentTimeMillis() % 100000);
@@ -192,7 +192,7 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 	}
 
     @Test
-    public void testRecursiveTraversal ()
+    void recursiveTraversal()
 	{
         Integer rootId  = (int) (System.currentTimeMillis() % 100000);
 

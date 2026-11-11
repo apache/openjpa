@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * Mirrors TCK callback tests (callback.listener, callback.xml).
  */
-public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
+class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * the entity (not a PC wrapper) is passed to the listener.
      */
     @Test
-    public void testPrePersistAndPostPersistCallbacks() {
+    void prePersistAndPostPersistCallbacks() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -76,7 +76,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * using getManagedInstance() instead of getPersistenceCapable().
      */
     @Test
-    public void testPreRemoveAndPostRemoveCallbacks() {
+    void preRemoveAndPostRemoveCallbacks() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -105,7 +105,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * is passed, it will throw ClassCastException.
      */
     @Test
-    public void testListenerReceivesEntityNotWrapper() {
+    void listenerReceivesEntityNotWrapper() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

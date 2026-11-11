@@ -50,7 +50,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestMetaDataComplete extends SingleEMFTestCase {
+class TestMetaDataComplete extends SingleEMFTestCase {
 	private static OpenJPAEntityManagerFactorySPI oemf;
 	private static ClassMetaData entityA, entityB, derivedA, derivedB;
 	private static int currentTest = 0;
@@ -93,7 +93,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testIgnoresClassAnnotationIfMetaDataComplete() {
+    void ignoresClassAnnotationIfMetaDataComplete() {
 		// inheritance strategy of EntityA by annotation is SINGLE_TABLE
         // inheritance strategy of EntityA in xml descriptor is JOINED
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityA)
@@ -103,7 +103,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testProcessesClassAnnotationIfMetaDataIsNotComplete() {
+    void processesClassAnnotationIfMetaDataIsNotComplete() {
 		// inheritance strategy of EntityB by annotation is SINGLE_TABLE
         // inheritance strategy of EntityB in xml descriptor is not specified
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityB)
@@ -113,7 +113,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testIgnoresFieldAnnotationIfMetaDataComplete() {
+    void ignoresFieldAnnotationIfMetaDataComplete() {
 		// generation strategy of EntityA.id by annotation is IDENTITY
 		// inheritance strategy of EntityA in xml descriptor is SEQUENCE
 		int valueStrategyA = entityA.getField("id").getValueStrategy();
@@ -121,7 +121,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testProcessesFieldAnnotationIfMetaDataIsNotComplete() {
+    void processesFieldAnnotationIfMetaDataIsNotComplete() {
 		// generation strategy of EntityB.id by annotation is IDENTITY
         // inheritance strategy of EntityA in xml descriptor is not specified
 		int valueStrategyB = entityB.getField("id").getValueStrategy();
@@ -129,7 +129,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testIgnoresNamedQueryIfMetaDataComplete() {
+    void ignoresNamedQueryIfMetaDataComplete() {
 		// DerivedA has annotated NamedQuery
 		String namedQuery = "DerivedA.SelectAll";
 		try {
@@ -141,7 +141,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testProcessesNamedQueryIfMetaDataIsNotComplete() {
+    void processesNamedQueryIfMetaDataIsNotComplete() {
 		// EntityB has annotated NamedQuery
 		// EntityB has a Named Query in xml descriptor
         oemf.createEntityManager().createNamedQuery("EntityB.SelectOne");

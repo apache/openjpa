@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDoubleQuotedStringLiteralInJPQL
+class TestDoubleQuotedStringLiteralInJPQL
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -51,7 +51,7 @@ public class TestDoubleQuotedStringLiteralInJPQL
     }
 
     @Test
-    public void testdDoubleQuotedStringLiteralInJPQL() {
+    void testdDoubleQuotedStringLiteralInJPQL() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select count(o) " +
             "from AllFieldTypes o where o.stringField = \"foo'bar\"");

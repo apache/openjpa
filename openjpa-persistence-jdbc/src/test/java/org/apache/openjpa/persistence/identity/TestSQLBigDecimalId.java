@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
  */
-public class TestSQLBigDecimalId
+class TestSQLBigDecimalId
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -41,7 +41,7 @@ public class TestSQLBigDecimalId
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
         BigDecimal decimal = new BigDecimal(time);
 
@@ -63,10 +63,10 @@ public class TestSQLBigDecimalId
 
     }
 
+    // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet.
     @AllowFailure
     @Test
-    // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet.
-    public void testQuery() {
+    void query() {
         int data = 156;
         BigDecimal decimal = new BigDecimal(1234);
         SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();

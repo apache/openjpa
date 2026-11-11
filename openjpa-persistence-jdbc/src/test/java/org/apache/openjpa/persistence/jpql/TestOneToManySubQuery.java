@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.util.EagerEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestOneToManySubQuery extends SingleEMFTestCase {
+class TestOneToManySubQuery extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -37,7 +37,7 @@ public class TestOneToManySubQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         EntityManager em = emf.createEntityManager();
         try {
             assertEquals(0, em.createQuery(

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.persistence.querycache;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
      * Test for OPENJPA-2586
      */
     @Test
-    public void testWithFetchPlan() {
+    void withFetchPlan() {
         populate();
 
         EntityManager em = emf.createEntityManager();
@@ -70,7 +70,7 @@ public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
 
         em.clear();
 
-        assertTrue(!results.isEmpty(), "No results returned!");
+        assertFalse(results.isEmpty(), "No results returned!");
         for (QCEntityM2O e1 : results) {
             assertNotNull(e1.getQc(), "A 'QCEntity' should have been returned!");
         }

@@ -59,7 +59,7 @@ public class TestSavepointEmbedded extends BaseKernelTest {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(EmbeddedOwnerPC.class);
     }
 
@@ -68,7 +68,7 @@ public class TestSavepointEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testClearNew()
+    void clearNew()
         throws Exception {
         doClearNewTest(true, 0, 0);
         doClearNewTest(true, 2, 0);
@@ -123,7 +123,7 @@ public class TestSavepointEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testEmbeddedReassign() {
+    void embeddedReassign() {
         doEmbeddedReassignTest(true, 0, 0);
         doEmbeddedReassignTest(true, 2, 0);
         doEmbeddedReassignTest(true, 0, 2);
@@ -178,7 +178,7 @@ public class TestSavepointEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testEmbeddedChange()
+    void embeddedChange()
         throws Exception {
         try {
             doEmbeddedChangeTest(true, 0, 0);
@@ -237,7 +237,7 @@ public class TestSavepointEmbedded extends BaseKernelTest {
     }
 
     @Test
-    public void testEmbeddedChange2()
+    void embeddedChange2()
         throws Exception {
         try {
             doEmbeddedChangeTest2(true, 0, 0);

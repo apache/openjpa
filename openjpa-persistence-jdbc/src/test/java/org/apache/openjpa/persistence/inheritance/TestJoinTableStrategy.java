@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @author Fay Wang
  *
  */
-public class TestJoinTableStrategy extends SingleEMFTestCase {
+class TestJoinTableStrategy extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -79,7 +79,7 @@ public class TestJoinTableStrategy extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testFindEntity() {
+    void findEntity() {
 		EntityManager em1 = emf.createEntityManager();
         Manager m = em1.find(Manager.class, 1);
         assertNotNull(m);

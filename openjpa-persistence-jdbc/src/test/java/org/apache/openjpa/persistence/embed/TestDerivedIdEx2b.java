@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * Uses BUILD-TIME enhanced entities.
  */
-public class TestDerivedIdEx2b extends SingleEMFTestCase {
+class TestDerivedIdEx2b extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -46,7 +46,7 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -69,7 +69,7 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryViaRelation() {
+    void queryViaRelation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -93,7 +93,7 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryViaEmbeddedIdPath() {
+    void queryViaEmbeddedIdPath() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

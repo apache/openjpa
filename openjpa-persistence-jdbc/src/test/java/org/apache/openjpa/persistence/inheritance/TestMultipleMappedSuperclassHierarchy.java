@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestMultipleMappedSuperclassHierarchy
+class TestMultipleMappedSuperclassHierarchy
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -44,7 +44,7 @@ public class TestMultipleMappedSuperclassHierarchy
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         EntityL3 ent = new EntityL3();
         ent.setL2Data(99);
         ent.setL3Data(100);

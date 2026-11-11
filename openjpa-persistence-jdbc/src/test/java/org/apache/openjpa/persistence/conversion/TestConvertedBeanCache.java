@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * The data cache keeps the value of a converted attribute apart from the
  * values held by the instances it loads.
  */
-public class TestConvertedBeanCache extends SingleEMFTestCase {
+class TestConvertedBeanCache extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetterOnlyStateSurvivesLoadFromCache() {
+    void getterOnlyStateSurvivesLoadFromCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
         }
@@ -68,7 +68,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
      * and each persistence context gets its own value.
      */
     @Test
-    public void testValueChangedInPlaceIsNotShared() {
+    void valueChangedInPlaceIsNotShared() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
         }
@@ -92,7 +92,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testValueChangedInPlaceIsCached() {
+    void valueChangedInPlaceIsCached() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);

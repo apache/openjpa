@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Added for OPENJPA-1896
  */
-public class TestMergeNoStateManager extends SingleEMFTestCase {
+class TestMergeNoStateManager extends SingleEMFTestCase {
     Object[] args =
         new Object[] { TimestampVersionEntity.class, IntVersionEntity.class, NoVersionEntity.class,
             IntegerVersionEntity.class, CLEAR_TABLES
@@ -95,7 +95,7 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
 //    }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {
             String updatedName = "updatedName_" + System.currentTimeMillis();

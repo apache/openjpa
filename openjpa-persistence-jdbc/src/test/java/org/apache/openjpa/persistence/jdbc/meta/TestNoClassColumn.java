@@ -36,10 +36,10 @@ import org.apache.openjpa.persistence.jdbc.common.apps.NoClassColumn;
 import org.junit.jupiter.api.Test;
 
 
-public class TestNoClassColumn extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestNoClassColumn extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @Test
-    public void testQuery() {
+    void query() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",NoClassColumn.class);
         //FIXME jthomas

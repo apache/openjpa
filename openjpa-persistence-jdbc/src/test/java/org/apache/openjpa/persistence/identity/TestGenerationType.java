@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -44,7 +42,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-public class TestGenerationType
+class TestGenerationType
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -67,7 +65,7 @@ public class TestGenerationType
     }
 
     @Test
-    public void testCreateEntityManager() {
+    void createEntityManager() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -80,7 +78,7 @@ public class TestGenerationType
         t.rollback();
 
         // openjpa-facade test
-        assertTrue(em instanceof OpenJPAEntityManager);
+        assertInstanceOf(OpenJPAEntityManager.class, em);
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
         ojem.getFetchPlan().setMaxFetchDepth(-1);
         assertEquals(-1, ojem.getFetchPlan().getMaxFetchDepth());
@@ -88,7 +86,7 @@ public class TestGenerationType
     }
 
     @Test
-    public void testPersist() {
+    void persist() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -100,7 +98,7 @@ public class TestGenerationType
     }
 
     @Test
-    public void testQuery() {
+    void query() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -121,16 +119,16 @@ public class TestGenerationType
     }
 
     @Test
-    public void testPersistWithoutGetGeneratedKeys() {
-        testPersist();
+    void persistWithoutGetGeneratedKeys() {
+        persist();
     }
 
     @Test
-    public void testQueryWithoutGetGeneratedKeys() {
+    void queryWithoutGetGeneratedKeys() {
         if (getDBDictionary() instanceof OracleDictionary) {
             // Oracle now always has JDBC4 driver.
             return;
         }
-        testQuery();
+        query();
     }
 }

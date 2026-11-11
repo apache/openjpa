@@ -63,13 +63,13 @@ import org.junit.jupiter.api.Test;
 
 
 /*
- * Test the complicated interaction between Detached entities, Proxy classes
- * and Merging changes made in ProxyCollections back into entities.
- *
- * This code is based on AcmeTest2, which was originally written by
- * Mohammad at IBM and contributed under ASL 2.0.
- */
-public class TestDetachMerge extends SingleEMFTestCase {
+* Test the complicated interaction between Detached entities, Proxy classes
+* and Merging changes made in ProxyCollections back into entities.
+*
+* This code is based on AcmeTest2, which was originally written by
+* Mohammad at IBM and contributed under ASL 2.0.
+*/
+class TestDetachMerge extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -82,7 +82,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
      * Test default 1.0 compatibility behavior, which should pass AS-IS
      */
     @Test
-    public void testAnnuity1Compat() throws Exception {
+    void annuity1Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity1Compat", "org/apache/openjpa/persistence/proxy/persistence1.xml");
@@ -114,7 +114,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
      * Test default 2.0 compatibility behavior, which should PASS
      */
     @Test
-    public void testAnnuity2Compat() throws Exception {
+    void annuity2Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity2Compat", "org/apache/openjpa/persistence/proxy/persistence2.xml");

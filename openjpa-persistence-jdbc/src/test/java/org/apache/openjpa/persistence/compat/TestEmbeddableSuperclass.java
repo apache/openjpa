@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.compat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
  * </ul>
  *
  */
-public class TestEmbeddableSuperclass
+class TestEmbeddableSuperclass
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -56,12 +56,12 @@ public class TestEmbeddableSuperclass
     }
 
     @Test
-    public void testRelationMappings() {
+    void relationMappings() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
         FieldMapping fm = cls.getFieldMapping("sub");
-        assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
+        assertInstanceOf(RelationFieldStrategy.class, fm.getStrategy());
 
         fm = cls.getFieldMapping("sup");
         assertEquals(RelationFieldStrategy.class, fm.getStrategy().getClass());

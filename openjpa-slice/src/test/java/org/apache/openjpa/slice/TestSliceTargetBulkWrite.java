@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * The target hint confines bulk statements to the slices it names, the way
  * it confines a query.
  */
-public class TestSliceTargetBulkWrite extends SliceTestCase {
+class TestSliceTargetBulkWrite extends SliceTestCase {
 
     private List<String> sliceNames;
 
@@ -86,7 +86,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testJpqlBulkUpdateRunsOnTheTargetSlice() {
+    void jpqlBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -99,7 +99,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testJpqlBulkUpdateRunsOnAllHintedSlices() {
+    void jpqlBulkUpdateRunsOnAllHintedSlices() {
         seed();
 
         int updated = run("update PObject p set p.value = 42", false,
@@ -112,7 +112,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testJpqlBulkDeleteRunsOnTheTargetSlice() {
+    void jpqlBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -124,7 +124,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testNativeBulkUpdateRunsOnTheTargetSlice() {
+    void nativeBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -137,7 +137,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testNativeBulkDeleteRunsOnTheTargetSlice() {
+    void nativeBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -150,7 +150,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testBulkUpdateWithoutTargetRunsOnAllSlices() {
+    void bulkUpdateWithoutTargetRunsOnAllSlices() {
         seed();
 
         int updated;
@@ -167,7 +167,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testUnknownTargetFails() {
+    void unknownTargetFails() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -190,7 +190,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
     }
 
     @Test
-    public void testUnknownTargetFailsForAQuery() {
+    void unknownTargetFailsForAQuery() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.createQuery("select p from PObject p")

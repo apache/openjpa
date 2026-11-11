@@ -98,7 +98,7 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testRemoveMemberFromEmbeddedCollection() {
+    void removeMemberFromEmbeddedCollection() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		List<EmbeddingOwnerEntity> result = em.createQuery(

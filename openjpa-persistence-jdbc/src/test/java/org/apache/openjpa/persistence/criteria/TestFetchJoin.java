@@ -24,9 +24,9 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import org.junit.jupiter.api.Test;
 
-public class TestFetchJoin extends CriteriaTest {
+class TestFetchJoin extends CriteriaTest {
     @Test
-    public void testFetchJoin() {
+    void fetchJoin() {
         String jpql = "SELECT e FROM Employee e INNER JOIN FETCH e.department";
         OpenJPACriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);
@@ -38,7 +38,7 @@ public class TestFetchJoin extends CriteriaTest {
     }
 
     @Test
-    public void testLeftFetchJoin() {
+    void leftFetchJoin() {
         String jpql = "SELECT e FROM Employee e LEFT JOIN FETCH e.department";
         OpenJPACriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);

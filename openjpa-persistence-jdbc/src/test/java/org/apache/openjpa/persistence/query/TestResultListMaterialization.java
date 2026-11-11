@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * <code>MaterializeQueryResultList</code> compatibility option that restores
  * the lazy, streaming result list of earlier releases.
  */
-public class TestResultListMaterialization extends SingleEMFTestCase {
+class TestResultListMaterialization extends SingleEMFTestCase {
 
     private static final String JPQL = "SELECT o FROM AllFieldTypes o";
 
@@ -74,10 +72,10 @@ public class TestResultListMaterialization extends SingleEMFTestCase {
     }
 
     @Test
-    public void testResultListIsMaterializedByDefault() {
+    void resultListIsMaterializedByDefault() {
         EntityManager em = emf.createEntityManager();
         List<?> result = batchedQuery(em).getResultList();
-        assertTrue(result instanceof ArrayList, "expected an ArrayList, got " + result.getClass());
+        assertInstanceOf(ArrayList.class, result, "expected an ArrayList, got " + result.getClass());
         assertFalse(result instanceof ResultList);
         em.close();
         // the snapshot is detached from the EntityManager lifecycle
@@ -85,13 +83,13 @@ public class TestResultListMaterialization extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCompatibilityOptionRestoresLazyResultList() {
+    void compatibilityOptionRestoresLazyResultList() {
         OpenJPAEntityManagerFactorySPI factory = createEMF(AllFieldTypes.class,
             "openjpa.Compatibility", "MaterializeQueryResultList=false");
         try {
             EntityManager em = factory.createEntityManager();
             List<?> result = batchedQuery(em).getResultList();
-            assertTrue(result instanceof ResultList, "expected a lazy ResultList, got " + result.getClass());
+            assertInstanceOf(ResultList.class, result, "expected a lazy ResultList, got " + result.getClass());
             // rows are still streamed from the open result object provider
             assertTrue(((ResultList<?>) result).isProviderOpen(), "result list should not be materialized");
             assertEquals(10, result.size());

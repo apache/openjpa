@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -51,7 +49,7 @@ import org.junit.jupiter.api.Test;
  * <code>@SequenceGenerator</code> is backed by a real sequence there rather
  * than by a row of the OpenJPA sequence table (OPENJPA-3034).
  */
-public class TestDerbyNativeSequence extends SQLListenerTestCase {
+class TestDerbyNativeSequence extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -76,7 +74,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
     }
 
     @Test
-    public void testDerbyDeclaresSequences() {
+    void derbyDeclaresSequences() {
         if (!isDerby()) {
             return;
         }
@@ -98,14 +96,14 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
      * NEXT VALUE FOR, and no ALTER SEQUENCE is attempted.
      */
     @Test
-    public void testGeneratorUsesTheSequence() {
+    void generatorUsesTheSequence() {
         if (!isDerby()) {
             return;
         }
         MetaDataRepository repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         repos.getMetaData(NamedSeqGenEntity.class, null, true);
         Seq seq = repos.getSequenceMetaData(NamedSeqGenEntity.GENERATOR, null, true).getInstance(null);
-        assertTrue(seq instanceof NativeJDBCSeq, seq.getClass().getName());
+        assertInstanceOf(NativeJDBCSeq.class, seq, seq.getClass().getName());
 
         int count = 2 * NamedSeqGenEntity.ALLOCATE + 1;
         List<Long> ids = new ArrayList<>();
@@ -148,7 +146,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
      * Derby requires (with RESTRICT) removes it.
      */
     @Test
-    public void testSequenceIsReflectedAndDropped() throws Exception {
+    void sequenceIsReflectedAndDropped() throws Exception {
         if (!isDerby()) {
             return;
         }
@@ -164,7 +162,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
         try (Connection conn = ((JDBCConfiguration) emf.getConfiguration()).getDataSource2(null).getConnection()) {
             Sequence[] seqs = dict.getSequences(conn.getMetaData(), DBIdentifier.NULL, DBIdentifier.NULL, name, conn);
             assertEquals(1, seqs.length);
-            assertEquals(seqs[0].getIdentifier().getName(), NamedSeqGenEntity.SEQUENCE);
+            assertEquals(NamedSeqGenEntity.SEQUENCE, seqs[0].getIdentifier().getName());
             assertEquals(0, dict.getSequences(conn.getMetaData(), DBIdentifier.NULL, DBIdentifier.NULL,
                 DBIdentifier.newSequence("OJPA3034_NO_SUCH_SEQ"), conn).length);
 
@@ -187,7 +185,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
      * identifier from the sequence instead.
      */
     @Test
-    public void testPreExistingSequenceWithSmallerIncrement() throws Exception {
+    void preExistingSequenceWithSmallerIncrement() throws Exception {
         if (!isDerby()) {
             return;
         }

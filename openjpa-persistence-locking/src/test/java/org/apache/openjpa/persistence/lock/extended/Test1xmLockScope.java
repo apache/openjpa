@@ -37,7 +37,7 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
  * - Uni-1xm use join table - lazy fetch (default)
  * - Uni-1xm use join table - eager fetch
  */
-public class Test1xmLockScope extends LockScopeTestCase {
+class Test1xmLockScope extends LockScopeTestCase {
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
@@ -64,12 +64,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1xmLock() {
+    void normalUni1xmLock() {
         common1xmLock("testNormalUni1xmLock", 2111101, false);
     }
 
     @Test
-    public void testExtendedUni1xmLock() {
+    void extendedUni1xmLock() {
         common1xmLock("testExtendedUni1xmLock", 2111111, true);
     }
 
@@ -259,12 +259,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1xmEagerLock() {
+    void normalUni1xmEagerLock() {
         common1xmEagerLock("testNormalUni1xmEagerLock", 2111201, false);
     }
 
     @Test
-    public void testExtendedUni1xmEagerLock() {
+    void extendedUni1xmEagerLock() {
         common1xmEagerLock("testExtendedUni1xmEagerLock", 2111211, true);
     }
 
@@ -618,12 +618,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1xmJTLock() {
+    void normalUni1xmJTLock() {
         common1xmJTLock("testNormalUni1xmJTLock", 2112101, false);
     }
 
     @Test
-    public void testExtendedUni1xmJTLock() {
+    void extendedUni1xmJTLock() {
         common1xmJTLock("testExtendedUni1xmJTLock", 2112111, true);
     }
 
@@ -813,12 +813,12 @@ public class Test1xmLockScope extends LockScopeTestCase {
     }
 
     @Test
-    public void testNormalUni1xmJTEagerLock() {
+    void normalUni1xmJTEagerLock() {
         common1xmJTEagerLock("testNormalUni1xmJTEagerLock", 2112201, false);
     }
 
     @Test
-    public void testExtendedUni1xmJTEagerLock() {
+    void extendedUni1xmJTEagerLock() {
         common1xmJTEagerLock("testExtendedUni1xmJTEagerLock", 2112211, true);
     }
 

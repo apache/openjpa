@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
-public class TestJoinedInheritance extends SingleEMFTestCase {
+class TestJoinedInheritance extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -40,7 +40,7 @@ public class TestJoinedInheritance extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInheritance() {
+    void inheritance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest3 pc = new AnnoTest3();

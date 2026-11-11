@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * general_identification_variable.{single_valued_object_field.}*collection_valued_field
  * </pre>
  */
-public class TestQualifiedPath extends SQLListenerTestCase {
+class TestQualifiedPath extends SQLListenerTestCase {
     private int numDivisions = 2;
     private int numEmployeesPerDivision = 3;
     private int numMobilePhonesPerEmployee = 2;
@@ -65,7 +64,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueries() {
+    void queries() {
         em.clear();
         String query = "select p " +
             " from Division d, in(d.employees) e, in(KEY(e).personalInfo.phones) p";
@@ -91,9 +90,9 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         rs = q.getResultList();
         assertEquals(numDivisions * numEmployeesPerDivision, rs.size());
         employee = (Employee)rs.get(0);
-        assertTrue(employee.getPersonalInfo().getLastName().equals("lName1"));
+        assertEquals("lName1", employee.getPersonalInfo().getLastName());
         employee = (Employee)rs.get(1);
-        assertTrue(employee.getPersonalInfo().getLastName().equals("lName2"));
+        assertEquals("lName2", employee.getPersonalInfo().getLastName());
 
         em.clear();
         query = "select KEY(e).personalInfo.lastName " +

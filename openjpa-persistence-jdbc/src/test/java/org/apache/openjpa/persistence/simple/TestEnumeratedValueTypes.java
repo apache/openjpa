@@ -18,11 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -45,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * error cases: a database value that maps to no constant, and an enum whose
  * constants share a code.
  */
-public class TestEnumeratedValueTypes extends SingleEMFTestCase {
+class TestEnumeratedValueTypes extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -61,7 +57,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * ordinal and not the constant name.
      */
     @Test
-    public void testIntCodeRoundTrip() {
+    void intCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueIntStatus.values().length; i++) {
@@ -88,15 +84,14 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * (1) and not the name.
      */
     @Test
-    public void testIntCodeStoredAsCode() {
+    void intCodeStoredAsCode() {
         persistInt(100, EnumeratedValueIntStatus.INACTIVE);
 
         EntityManager em = emf.createEntityManager();
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueIntEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue(result instanceof Number,
-            "expected a numeric column value but got " + result);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueIntStatus.INACTIVE.getCode(),
             ((Number) result).intValue());
         em.close();
@@ -109,7 +104,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * reverse lookup misses and the load fails.
      */
     @Test
-    public void testShortCodeRoundTrip() {
+    void shortCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueShortStatus.values().length; i++) {
@@ -136,7 +131,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * (1) and not the name.
      */
     @Test
-    public void testShortCodeStoredAsCode() {
+    void shortCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueShortEntity e = new EnumeratedValueShortEntity();
@@ -150,8 +145,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueShortEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue(result instanceof Number,
-            "expected a numeric column value but got " + result);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueShortStatus.INACTIVE.getCode(),
             ((Number) result).shortValue());
         em.close();
@@ -162,7 +156,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * narrowed to an int nor stored as a string.
      */
     @Test
-    public void testLongCodeRoundTrip() {
+    void longCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueLongStatus.values().length; i++) {
@@ -188,7 +182,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * The stored column value is the declared long code, in a numeric column.
      */
     @Test
-    public void testLongCodeStoredAsCode() {
+    void longCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueLongEntity e = new EnumeratedValueLongEntity();
@@ -202,8 +196,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueLongEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue(result instanceof Number,
-            "expected a numeric column value but got " + result);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueLongStatus.INACTIVE.getCode(),
             ((Number) result).longValue());
         em.close();
@@ -216,7 +209,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * reverse lookup misses and the load fails.
      */
     @Test
-    public void testCharCodeRoundTrip() {
+    void charCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueCharStatus.values().length; i++) {
@@ -243,7 +236,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * and not the name.
      */
     @Test
-    public void testCharCodeStoredAsCode() {
+    void charCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueCharEntity e = new EnumeratedValueCharEntity();
@@ -267,7 +260,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * side and the read side of the handler have to agree.
      */
     @Test
-    public void testIntCodeInJPQLPredicate() {
+    void intCodeInJPQLPredicate() {
         persistInt(200, EnumeratedValueIntStatus.ACTIVE);
         persistInt(201, EnumeratedValueIntStatus.PENDING);
 
@@ -287,7 +280,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * A JPQL predicate on a char coded enum must use the code.
      */
     @Test
-    public void testCharCodeInJPQLPredicate() {
+    void charCodeInJPQLPredicate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueCharEntity a = new EnumeratedValueCharEntity();
@@ -318,7 +311,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * silently producing an entity with a null enum field.
      */
     @Test
-    public void testUnknownDatabaseValueFails() {
+    void unknownDatabaseValueFails() {
         persistInt(300, EnumeratedValueIntStatus.ACTIVE);
 
         EntityManager em = emf.createEntityManager();
@@ -360,7 +353,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * when the mapping is built.
      */
     @Test
-    public void testDuplicateCodesRejected() {
+    void duplicateCodesRejected() {
         EntityManagerFactory dupEMF = null;
         try {
             dupEMF = createEMF(CLEAR_TABLES, EnumeratedValueDupEntity.class);
@@ -391,7 +384,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * instead of being silently stored as the result of toString().
      */
     @Test
-    public void testUnsupportedCodeTypeRejected() {
+    void unsupportedCodeTypeRejected() {
         EntityManagerFactory badEMF = null;
         try {
             badEMF = createEMF(CLEAR_TABLES, EnumeratedValueBadTypeEntity.class);

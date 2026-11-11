@@ -41,7 +41,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestUnknownSubclass  extends JDBCTestCase {
+class TestUnknownSubclass  extends JDBCTestCase {
 
     private String parentName =
         "openjpa.jdbc.kernel.UnknownSubclassParent";
@@ -49,7 +49,7 @@ public class TestUnknownSubclass  extends JDBCTestCase {
         "openjpa.jdbc.kernel.UnknownSubclassChild";
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         // pcl: in the new (registration-less) system, this should not
         // matter.
@@ -97,7 +97,7 @@ public class TestUnknownSubclass  extends JDBCTestCase {
     }
 
     @Test
-    public void testUnknownSubclass()
+    void unknownSubclass()
         throws Exception {
         // assertNotRegistered (parentName);
         // assertNotRegistered (childName);

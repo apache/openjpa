@@ -81,7 +81,7 @@ public class TestManualDelimId extends SQLListenerTestCase {
     }
 
     @Test
-    public void testCreateF() {
+    void createF() {
         createEntityF();
 
         em.getTransaction().begin();
@@ -95,7 +95,7 @@ public class TestManualDelimId extends SQLListenerTestCase {
     // Run a second time to re-create a situation that initially caused a problem when running this
     // test consecutive times.
     @Test
-    public void testCreateF2() {
+    void createF2() {
         createEntityF();
 
         em.getTransaction().begin();

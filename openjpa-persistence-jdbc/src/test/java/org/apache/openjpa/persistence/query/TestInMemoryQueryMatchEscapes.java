@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInMemoryQueryMatchEscapes
+class TestInMemoryQueryMatchEscapes
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -39,7 +39,7 @@ public class TestInMemoryQueryMatchEscapes
     }
 
     @Test
-    public void testDatabaseEscape() {
+    void databaseEscape() {
         OpenJPAQuery q = escapeHelper(false);
         q.setFlushMode(FlushModeType.AUTO);
         q.getEntityManager().flush();
@@ -49,7 +49,7 @@ public class TestInMemoryQueryMatchEscapes
     }
 
     @Test
-    public void testInMemoryEscape() {
+    void inMemoryEscape() {
         OpenJPAQuery q = escapeHelper(true);
         q.setFlushMode(FlushModeType.COMMIT);
         try {

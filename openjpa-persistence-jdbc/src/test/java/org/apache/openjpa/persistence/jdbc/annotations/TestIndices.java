@@ -39,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestIndices extends SingleEMFTestCase {
+class TestIndices extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         setUp(EntityWithIndices.class, CLEAR_TABLES
@@ -48,7 +48,7 @@ public class TestIndices extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIndicesCreated() {
+    void indicesCreated() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().getMapping(EntityWithIndices.class, null, true);
         Table table = cls.getTable();

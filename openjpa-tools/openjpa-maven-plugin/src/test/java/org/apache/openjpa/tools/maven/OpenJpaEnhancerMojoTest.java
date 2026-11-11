@@ -30,20 +30,19 @@ import org.junit.jupiter.api.Test;
  * @version $Id: OpenJpaEnhancerMojoTest.java 9348 2009-04-03 22:59:47Z struberg $
  * @since 1.0.0
  */
-public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
+class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
 
     @Test
-    public void testExecution() throws Exception {
-      File testPom = new File( getBasedir(), "target/test-classes/projects/project-01/plugin-config.xml" );
+    void execution() throws Exception {
+        File testPom = new File( getBasedir(), "target/test-classes/projects/project-01/plugin-config.xml" );
 
-      OpenJpaEnhancerMojo mojo = (OpenJpaEnhancerMojo) lookupMojo( "enhance", testPom );
-      assertNotNull( mojo );
+        OpenJpaEnhancerMojo mojo = (OpenJpaEnhancerMojo) lookupMojo( "enhance", testPom );
+        assertNotNull( mojo );
 
-      mojo.classes = new File( getBasedir(), "target/test-classes/" );
-      mojo.compileClasspathElements = new ArrayList<>();
-      mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
+        mojo.classes = new File( getBasedir(), "target/test-classes/" );
+        mojo.compileClasspathElements = new ArrayList<>();
+        mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
 
-      mojo.execute();
+        mojo.execute();
     }
-
 }

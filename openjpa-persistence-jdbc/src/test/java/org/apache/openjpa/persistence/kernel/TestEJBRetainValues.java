@@ -37,7 +37,7 @@ public class TestEJBRetainValues extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
@@ -46,7 +46,7 @@ public class TestEJBRetainValues extends AbstractTestCase {
      * different PersistenceManagers with RetainValues set to true
      */
     @Test
-    public void testRetainValues() {
+    void retainValues() {
         // persist the object with field == "x"
         RuntimeTest1 test = new RuntimeTest1();
         test.setStringField("x");

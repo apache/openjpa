@@ -41,13 +41,13 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestPreparedQueryCacheExclusion {
+class TestPreparedQueryCacheExclusion {
 	private PreparedQueryCache cache;
 	private String[] keys   = {"jpql1", "jpql2", "jpql3"};
 	private String[] values = {"sql1", "sql2", "sql3"};
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
 		cache = new PreparedQueryCacheImpl();
 		for (int i = 0; i < keys.length; i++) {
             PreparedQuery p = new PreparedQueryImpl(keys[i], values[i], null);
@@ -56,11 +56,11 @@ public class TestPreparedQueryCacheExclusion {
 	}
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
 	}
 
     @Test
-    public void testExclusionPatternsAreSet() {
+    void exclusionPatternsAreSet() {
 		String excludes = "a;b;c";
 		cache.setExcludes(excludes);
 		assertEquals(3, cache.getExcludes().size());
@@ -75,12 +75,12 @@ public class TestPreparedQueryCacheExclusion {
 	}
 
     @Test
-    public void testCachePopulationSetUp() {
+    void cachePopulationSetUp() {
 		assertContent(keys, values);
 	}
 
     @Test
-    public void testAddExclusionPatternDisallowsCacheing() {
+    void addExclusionPatternDisallowsCacheing() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 
@@ -91,7 +91,7 @@ public class TestPreparedQueryCacheExclusion {
 	}
 
     @Test
-    public void testAddExclusionPatternMakesExistingEntryInvalid() {
+    void addExclusionPatternMakesExistingEntryInvalid() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 		Map<String, String> view = cache.getMapView();
@@ -107,7 +107,7 @@ public class TestPreparedQueryCacheExclusion {
 	}
 
     @Test
-    public void testRemoveExclusionPatternAllowsCacheing() {
+    void removeExclusionPatternAllowsCacheing() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 
@@ -122,7 +122,7 @@ public class TestPreparedQueryCacheExclusion {
 	}
 
     @Test
-    public void testRemoveExclusionPatternDoesNotRemoveUserProhbitedKeys() {
+    void removeExclusionPatternDoesNotRemoveUserProhbitedKeys() {
 		String USER_MARKED_UNCACHABLE = "[user prohibited]";
 		cache.markUncachable(USER_MARKED_UNCACHABLE,
 		        new PreparedQueryCacheImpl.StrongExclusion(USER_MARKED_UNCACHABLE,"for testing"));

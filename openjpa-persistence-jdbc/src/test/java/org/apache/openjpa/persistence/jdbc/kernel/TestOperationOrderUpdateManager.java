@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.jdbc.common.apps.OpOrderPCSub;
 import org.junit.jupiter.api.Test;
 
 
-public class TestOperationOrderUpdateManager extends AbstractTestCase {
+class TestOperationOrderUpdateManager extends AbstractTestCase {
     private static boolean _mapped = false;
 
     private EntityManagerFactory emf;
@@ -237,44 +237,44 @@ public class TestOperationOrderUpdateManager extends AbstractTestCase {
 
 
     @Test
-    public void testInsert() {
+    void testInsert() {
         insertTest(false);
     }
 
     @Test
-    public void testAutoAssignInsert() {
+    void autoAssignInsert() {
         insertTest(true);
     }
 
 
     @Test
-    public void testDeleteCircular() {
+    void deleteCircular() {
         deleteCircularTest(false);
     }
 
     @Test
-    public void testAutoAssignDeleteCircular() {
+    void autoAssignDeleteCircular() {
         deleteCircularTest(true);
     }
 
     @Test
-    public void testDelete() {
+    void delete() {
         deleteTest(false);
     }
 
     @Test
-    public void testAutoAssignDelete() {
+    void autoAssignDelete() {
         deleteTest(true);
     }
 
 
     @Test
-    public void testInsertCircularConstraint() {
+    void insertCircularConstraint() {
         insertCircularConstraintTest(false);
     }
 
     @Test
-    public void testAutoAssignInsertCircularConstraint() {
+    void autoAssignInsertCircularConstraint() {
         insertCircularConstraintTest(true);
     }
 

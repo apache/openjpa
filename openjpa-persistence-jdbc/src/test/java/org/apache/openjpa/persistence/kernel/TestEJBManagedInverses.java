@@ -35,17 +35,17 @@ public class TestEJBManagedInverses extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(InverseA.class, InverseB.class);
     }
 
     @Test
-    public void testOneOne() {
+    void oneOne() {
         oneOneTest(true);
     }
 
     @Test
-    public void testOneOneWithPreStore() {
+    void oneOneWithPreStore() {
         oneOneTest(false);
     }
 

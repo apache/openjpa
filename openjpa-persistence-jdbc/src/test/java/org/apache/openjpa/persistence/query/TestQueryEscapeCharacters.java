@@ -33,7 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQueryEscapeCharacters
+class TestQueryEscapeCharacters
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -78,33 +78,33 @@ public class TestQueryEscapeCharacters
     }
 
     @Test
-    public void testNormalQuery() {
+    void normalQuery() {
         performFind ("Employee.findByName", "%Dick", 1);
     }
 
     @Test
-    public void testMultiResultQuery() {
+    void multiResultQuery() {
         performFind ("Employee.findByName", "Mike%", 3);
     }
 
     @Test
-    public void testEscapedQuery() {
+    void escapedQuery() {
         performFind ("Employee.findByNameEscaped",
                 "M\\%%", 1);
     }
 
     @Test
-    public void testDoubleEscapedQuery() {
+    void doubleEscapedQuery() {
         performFind ("Employee.findByName", "\\\\", 0);
     }
 
     @Test
-    public void testWrongEscape() {
+    void wrongEscape() {
         performFind ("Employee.findByName", "M|%%", 0);
     }
 
     @Test
-    public void testDoubleSlashQuery() {
+    void doubleSlashQuery() {
         // a LIKE without an ESCAPE clause has no escape character on any
         // database, so this is a pattern of one ordinary backslash
         performFind ("Employee.findByName", "\\", 0);
@@ -119,7 +119,7 @@ public class TestQueryEscapeCharacters
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testDifferentEscapeCharacter () {
+    void differentEscapeCharacter() {
         OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -170,7 +170,7 @@ public class TestQueryEscapeCharacters
      * pattern from the prepared query cache stays correct (OPENJPA-3009).
      */
     @Test
-    public void testCachedSqlDoesNotDependOnThePattern() {
+    void cachedSqlDoesNotDependOnThePattern() {
         String jpql = "Select e from Employee e where e.name LIKE :name";
 
         EntityManager em = emf.createEntityManager();

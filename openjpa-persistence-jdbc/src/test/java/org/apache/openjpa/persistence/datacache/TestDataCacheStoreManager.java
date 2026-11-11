@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * doesn't result in a NPE.
  *
  */
-public class TestDataCacheStoreManager extends SingleEMFTestCase {
+class TestDataCacheStoreManager extends SingleEMFTestCase {
     Object[] p =
         new Object[] { CLEAR_TABLES, CachedEntityStatistics.class,
                 "openjpa.DataCache", "true(EnableStatistics=true)",
@@ -80,12 +80,12 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
     }
 
     @Test
-    public void testExists() {
+    void exists() {
         dsm.exists(sm, null);
     }
 
     @Test
-    public void testsyncVersion() {
+    void testsyncVersion() {
         dsm.syncVersion(sm, null);
     }
 }

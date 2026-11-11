@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  *   <li>Various methods on a closed EMF must throw IllegalStateException</li>
  * </ul>
  */
-public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
+class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * UNSYNCHRONIZED on a RESOURCE_LOCAL EMF must throw IllegalStateException.
      */
     @Test
-    public void testCreateEMSyncTypeUnsynchronizedThrowsIllegalState() {
+    void createEMSyncTypeUnsynchronizedThrowsIllegalState() {
         try {
             emf.createEntityManager(SynchronizationType.UNSYNCHRONIZED);
             fail("createEntityManager(UNSYNCHRONIZED) on RESOURCE_LOCAL EMF "
@@ -68,7 +68,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * UNSYNCHRONIZED on a RESOURCE_LOCAL EMF must throw IllegalStateException.
      */
     @Test
-    public void testCreateEMSyncTypeMapUnsynchronizedThrowsIllegalState() {
+    void createEMSyncTypeMapUnsynchronizedThrowsIllegalState() {
         Map<String, Object> props = new HashMap<>();
         try {
             emf.createEntityManager(SynchronizationType.UNSYNCHRONIZED, props);
@@ -83,7 +83,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * getProperties() on a closed EMF must throw IllegalStateException.
      */
     @Test
-    public void testGetPropertiesAfterCloseThrowsIllegalState() {
+    void getPropertiesAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());
@@ -105,7 +105,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * IllegalStateException.
      */
     @Test
-    public void testGetPersistenceUnitUtilAfterCloseThrowsIllegalState() {
+    void getPersistenceUnitUtilAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());
@@ -126,7 +126,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * close() on an already-closed EMF must throw IllegalStateException.
      */
     @Test
-    public void testCloseAfterCloseThrowsIllegalState() {
+    void closeAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());
@@ -147,7 +147,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * getCriteriaBuilder() on a closed EMF must throw IllegalStateException.
      */
     @Test
-    public void testGetCriteriaBuilderAfterCloseThrowsIllegalState() {
+    void getCriteriaBuilderAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());
@@ -168,7 +168,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * createEntityManager() on a closed EMF must throw IllegalStateException.
      */
     @Test
-    public void testCreateEMAfterCloseThrowsIllegalState() {
+    void createEMAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());
@@ -190,7 +190,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * IllegalStateException (regardless of sync type).
      */
     @Test
-    public void testCreateEMSyncTypeAfterCloseThrowsIllegalState() {
+    void createEMSyncTypeAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
         assertTrue(separateEmf.isOpen());

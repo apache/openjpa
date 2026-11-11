@@ -149,7 +149,7 @@ public class TestTckMapKeyFixes extends SingleEMFTestCase {
      * the FK is non-writable.
      */
     @Test
-    public void testJoinColumnUpdatableWithDetachedRef() {
+    void joinColumnUpdatableWithDetachedRef() {
         // First transaction: create departments and employees
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

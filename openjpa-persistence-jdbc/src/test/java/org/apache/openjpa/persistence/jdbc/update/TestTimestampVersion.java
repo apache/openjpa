@@ -40,14 +40,14 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestTimestampVersion extends SingleEMFTestCase {
+class TestTimestampVersion extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, TimestampedEntity.class, NumericVersionedEntity.class, BaseTimestampedEntity.class);
     }
 
     @Test
-    public void testQueryOnVersion() {
+    void queryOnVersion() {
 	    EntityManager em = emf.createEntityManager();
 	    String pql = "SELECT s FROM TimestampedEntity s WHERE s.version < :endDate";
         Query queryObj = em.createQuery(pql);
@@ -57,7 +57,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testBulkUpdateOnTimestampedVersion() {
+    void bulkUpdateOnTimestampedVersion() {
         TimestampedEntity pc = new TimestampedEntity();
         pc.setName("Original");
         EntityManager em = emf.createEntityManager();
@@ -88,7 +88,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBulkUpdateOnNumericVersion() {
+    void bulkUpdateOnNumericVersion() {
         NumericVersionedEntity pc = new NumericVersionedEntity();
         pc.setName("Original");
         EntityManager em = emf.createEntityManager();

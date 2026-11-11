@@ -33,7 +33,6 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,18 +59,18 @@ public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
     }
 
     @Test
-    public void testQueryObj() throws Exception {
+    void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
     @AllowFailure
     @Test
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
     @Test
-    public void testQueryQualifiedId() throws Exception {
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -243,7 +242,7 @@ public class TestSpec10_1_27_Ex3 extends SQLListenerTestCase {
     public void assertCompany(Company c) {
         int id = c.getId();
         Map organization = c.getOrganization();
-        Assertions.assertEquals(2,organization.size());
+        assertEquals(2,organization.size());
     }
 
     public void assertDivision(Division d) {

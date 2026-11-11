@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCollectionTracking extends SingleEMFTestCase {
+class TestCollectionTracking extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
@@ -40,7 +40,7 @@ public class TestCollectionTracking extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCollectTracking() {
+    void collectTracking() {
         int initialValue = 10, changedAge = 40;
         String changedName = "changed Name";
 

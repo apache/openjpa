@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-3049">OPENJPA-3049</A>
  */
-public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
+class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     private CriteriaBuilder cb;
     private EntityManager em;
 
@@ -77,7 +77,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBigDecimalAndDouble() {
+    void bigDecimalAndDouble() {
         assertArithmetic(Double.valueOf(3.5), "n.decA + n.doubleA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Double> get("doubleA")));
         assertArithmetic(Double.valueOf(3.0), "n.doubleA * n.decA",
@@ -89,7 +89,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBigDecimalAndFloat() {
+    void bigDecimalAndFloat() {
         assertArithmetic(Float.valueOf(2.5f), "n.decA + n.floatA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Float> get("floatA")));
         assertArithmetic(Float.valueOf(1.0f), "n.floatA * n.decA",
@@ -97,7 +97,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBigIntegerAndFloatingPoint() {
+    void bigIntegerAndFloatingPoint() {
         assertArithmetic(Double.valueOf(4.5), "n.bigIntA * n.doubleA",
             r -> cb.prod(r.<BigInteger> get("bigIntA"), r.<Double> get("doubleA")));
         assertArithmetic(Float.valueOf(3.5f), "n.floatA + n.bigIntA",
@@ -105,7 +105,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBigDecimalAndIntegralOperands() {
+    void bigDecimalAndIntegralOperands() {
         assertArithmetic(new BigDecimal("9"), "n.decA + n.intA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Integer> get("intA")));
         assertArithmetic(new BigDecimal("20"), "n.longA * n.decA",
@@ -120,7 +120,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
      * Criteria API.
      */
     @Test
-    public void testDecimalLiteral() {
+    void decimalLiteral() {
         assertArithmetic(new BigDecimal("3.0"), "n.decA * 1.5",
             r -> cb.prod(r.<BigDecimal> get("decA"), new BigDecimal("1.5")));
         assertArithmetic(new BigDecimal("10.5"), "n.intA * 1.5",
@@ -135,7 +135,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
      * Compares a BigDecimal and a Double operand as before, as exact values.
      */
     @Test
-    public void testComparison() {
+    void comparison() {
         String jpql = "SELECT n.id FROM NumericOperands n WHERE n.decA > n.doubleA "
             + "AND n.decA + n.doubleA = 3.5 AND n.floatA * 1.5 < n.decA";
         assertEquals(List.of(1L), em.createQuery(jpql).getResultList());

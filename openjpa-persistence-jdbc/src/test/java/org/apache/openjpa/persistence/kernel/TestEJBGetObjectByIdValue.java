@@ -37,7 +37,7 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class, AImplB.class);
 
         EntityManager em = currentEntityManager();
@@ -48,7 +48,7 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
     }
 
     @Test
-    public void testDatastore() {
+    void datastore() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -71,7 +71,7 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
     }
 
     @Test
-    public void testAppId() {
+    void appId() {
         EntityManager em = currentEntityManager();
         startTx(em);
         AImplB pc = new AImplB("foo", 1, "pk");

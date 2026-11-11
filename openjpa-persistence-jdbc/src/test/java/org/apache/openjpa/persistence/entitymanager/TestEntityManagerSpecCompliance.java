@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
  * - find with invalid PK type throws IllegalArgumentException
  * - merge of new entity
  */
-public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
+class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -76,7 +76,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * should throw RuntimeException and mark tx for rollback.
      */
     @Test
-    public void testCriteriaDeleteRollback() {
+    void criteriaDeleteRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -107,7 +107,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * should throw RuntimeException and mark tx for rollback.
      */
     @Test
-    public void testCriteriaUpdateRollback() {
+    void criteriaUpdateRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -140,7 +140,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * and mark tx for rollback.
      */
     @Test
-    public void testGetReferenceNonEntityRollback() {
+    void getReferenceNonEntityRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -165,7 +165,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * IllegalArgumentException for wrong PK type.
      */
     @Test
-    public void testFindInvalidPKType() {
+    void findInvalidPKType() {
         EntityManager em = emf.createEntityManager();
         try {
             long longId = 55L;
@@ -184,7 +184,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * exception handling with invalid args.
      */
     @Test
-    public void testFindExceptions() {
+    void findExceptions() {
         EntityManager em = emf.createEntityManager();
         int pass = 0;
         Map<String, Object> myMap = new HashMap<>();
@@ -366,7 +366,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * merge(new Order) should persist the new entity.
      */
     @Test
-    public void testMergeNewEntity() {
+    void mergeNewEntity() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

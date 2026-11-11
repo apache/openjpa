@@ -41,7 +41,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         EntityManager em = currentEntityManager();
@@ -90,7 +90,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
     // }
     // }
     @Test
-    public void testMultipleCloseThreaded() throws Throwable {
+    void multipleCloseThreaded() throws Throwable {
         final EntityManager em = currentEntityManager();
         final List result = new ArrayList();
         // EntityTransaction t = em.getTransaction();
@@ -128,7 +128,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
      * states, such as persisting instances outside of transactions, etc.
      */
     @Test
-    public void testIllegalState() {
+    void illegalState() {
         EntityManager em = currentEntityManager();
 
         RuntimeTest1 a = new RuntimeTest1("foo", 10);

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-public class TestInstanceCallbacks extends BaseKernelTest {
+class TestInstanceCallbacks extends BaseKernelTest {
 
     private static final int COMMIT = 0;
     private static final int FLUSH = 1;
@@ -52,7 +52,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     private InstanceCallbacksTest _callbacks = null;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         deleteAll(InstanceCallbacksTest.class);
         deleteAll(RuntimeTest1.class);
         _pm = getPM(true, true);
@@ -78,23 +78,23 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     }
 
     @Test
-    public void testPostLoad() {
+    void postLoad() {
         _callbacks.getStringField();
         assertTrue(_callbacks.postLoadCalled);
     }
 
     @Test
-    public void testPreStore() {
+    void preStore() {
         preStoreTest(COMMIT);
     }
 
     @Test
-    public void testPreStoreWithFlush() {
+    void preStoreWithFlush() {
         preStoreTest(FLUSH);
     }
 
     @Test
-    public void testPreStoreWithPreStore() {
+    void preStoreWithPreStore() {
         preStoreTest(PRESTORE);
     }
 
@@ -130,7 +130,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     }
 
     @Test
-    public void testPreDelete() {
+    void preDelete() {
         assertNoCallbacksInvoked(_callbacks);
         startTx(_pm);
         _pm.remove(_callbacks);
@@ -139,7 +139,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     }
 
     @Test
-    public void testPreDeleteRecursion() {
+    void preDeleteRecursion() {
         assertNoCallbacksInvoked(_callbacks);
         startTx(_pm);
         _callbacks.preDeleteCycle = 0;
@@ -149,7 +149,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     }
 
     @Test
-    public void testSetRelatedReferenceInPreStore() {
+    void setRelatedReferenceInPreStore() {
         assertNull(_callbacks.getRelId());
         InstanceCallbacksTest callbacks2 = new InstanceCallbacksTest();
         callbacks2.setRelId(_pm.getObjectId(_callbacks));
@@ -167,14 +167,14 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     }
 
     @Test
-    public void testFlushCausesFlush() {
+    void flushCausesFlush() {
         //### JDO2MIG : this is failing because we're consuming exceptions
         // throws from callbacks; need to decide what to do with them
         causeFlushTest(FLUSH);
     }
 
     @Test
-    public void testPreStoreCausesFlush() {
+    void preStoreCausesFlush() {
         //### JDO2MIG : this is failing because we're consuming exceptions
         // throws from callbacks; need to decide what to do with them
         causeFlushTest(PRESTORE);

@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMerge extends SQLListenerTestCase {
+class TestMerge extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
@@ -37,7 +37,7 @@ public class TestMerge extends SQLListenerTestCase {
     }
 
     @Test
-    public void testMergeManagedParent() {
+    void mergeManagedParent() {
         EntityManager em = emf.createEntityManager();
         ParentPK pk = new ParentPK(1);
         pk.setKey1("K1");

@@ -64,7 +64,7 @@ public class TestBadJdbcUrl {
      * Test specifying URL with bad protocol but a valid Driver.
      */
     @Test
-    public void testBadUrlProtocolValueWithValidDriverClass() {
+    void badUrlProtocolValueWithValidDriverClass() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
@@ -76,7 +76,7 @@ public class TestBadJdbcUrl {
      * Test specifying URL with bad protocol but a valid DataSource.
      */
     @Test
-    public void testBadUrlProtocolValueWithValidDataSource() {
+    void badUrlProtocolValueWithValidDataSource() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DATASOURCE);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
@@ -89,7 +89,7 @@ public class TestBadJdbcUrl {
      * Test specifying URL with bad sub-protocol but a valid Driver.
      */
     @Test
-    public void testBadUrlSubprotocolValueWithValidDriverClass() {
+    void badUrlSubprotocolValueWithValidDriverClass() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
@@ -101,7 +101,7 @@ public class TestBadJdbcUrl {
      * Test specifying URL with bad sub-protocol but a valid Driver.
      */
     @Test
-    public void testBadUrlSubprotocolValueWithValidDataSource() {
+    void badUrlSubprotocolValueWithValidDataSource() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
@@ -113,7 +113,7 @@ public class TestBadJdbcUrl {
      * Test specifying Valid URL with an invalid Driver.
      */
     @Test
-    public void testValidUrlWithInvalidDriver() {
+    void validUrlWithInvalidDriver() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", BAD_DRIVER);
 		p.put("openjpa.ConnectionURL", GOOD_URL);

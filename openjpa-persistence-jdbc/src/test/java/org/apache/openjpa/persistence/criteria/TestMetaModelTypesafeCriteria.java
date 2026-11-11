@@ -53,7 +53,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMetaModelTypesafeCriteria extends CriteriaTest {
+class TestMetaModelTypesafeCriteria extends CriteriaTest {
     protected EntityType<Account> account_ = null;
     protected EmbeddableType<Address> address_ = null;
     protected EmbeddableType<Contact> contact_ = null;
@@ -108,11 +108,11 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testEntityEmbeddableTest() {
+    void entityEmbeddableTest() {
         Metamodel mm = em.getMetamodel();
 
-        assertEquals(mm.managedType(Account.class).getPersistenceType(), ENTITY);
-        assertEquals(mm.managedType(Address.class).getPersistenceType(), EMBEDDABLE);
+        assertEquals(ENTITY, mm.managedType(Account.class).getPersistenceType());
+        assertEquals(EMBEDDABLE, mm.managedType(Address.class).getPersistenceType());
 
         assertNotNull(mm.entity(Account.class));
         assertNotNull(mm.embeddable(Address.class));
@@ -146,7 +146,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testStringEqualExpression() {
+    void stringEqualExpression() {
         String jpql = "select c from Customer c "
                     + "where c.name='Autowest Toyota'";
 
@@ -161,7 +161,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSetAndListJoins() {
+    void setAndListJoins() {
         String jpql = "SELECT c.name FROM Customer c "
                     + "JOIN c.orders o JOIN o.lineItems i "
                     + "WHERE i.product.productType = 'printer'";
@@ -181,7 +181,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testLeftSetJoin() {
+    void leftSetJoin() {
         String jpql = "SELECT c FROM Customer c "
                     + "LEFT JOIN c.orders o "
                     + "WHERE c.status = 1";
@@ -198,7 +198,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFetchJoins() {
+    void fetchJoins() {
         String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.employees "
                 + "WHERE d.deptNo = 1";
         CriteriaQuery q = cb.createQuery();
@@ -213,7 +213,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
 
     @AllowFailure(message = "This is regression.")
     @Test
-    public void testPathNavigation() {
+    void pathNavigation() {
         String jpql = "SELECT p.vendor FROM Employee e "
                     + "JOIN e.contactInfo.phones p  "
                     + "WHERE e.contactInfo.address.zipCode = '95054'";
@@ -233,7 +233,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeyPathNavigation() {
+    void keyPathNavigation() {
         String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) LIKE '%egret%'";
 
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -246,7 +246,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testIndexExpression() {
+    void indexExpression() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t "
                 + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 "
                 + "AND 9";
@@ -265,7 +265,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testIsEmptyExpressionOnJoin() {
+    void isEmptyExpressionOnJoin() {
         String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
         CriteriaQuery<Order> q = cb.createQuery(Order.class);
         Root<Order> o = q.from(Order.class);
@@ -276,7 +276,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testFunctionalExpressionInProjection() {
+    void functionalExpressionInProjection() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "
                 + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara'";
@@ -297,7 +297,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testTypeExpression() {
+    void typeExpression() {
         String jpql = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt";
         CriteriaQuery q = cb.createQuery();
         Root<Employee> emp = q.from(Employee.class);
@@ -307,7 +307,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testJoinAndIndexExpression() {
+    void joinAndIndexExpression() {
        String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
                 + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
 
@@ -322,7 +322,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testAggregateExpressionInProjection() {
+    void aggregateExpressionInProjection() {
         String jpql = "SELECT SUM(i.price) "
              + "FROM Order o JOIN o.lineItems i JOIN o.customer c "
              + "WHERE c.lastName = 'Smith' AND c.firstName = 'John'";
@@ -340,7 +340,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSizeExpressionInProjection() {
+    void sizeExpressionInProjection() {
         String jpql = "SELECT SIZE(d.employees) FROM Department d "
          + "WHERE d.name = 'Sales'";
 
@@ -358,7 +358,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCaseExpression() {
+    void caseExpression() {
         String jpql = "SELECT e.name, "
              + "CASE WHEN e.rating = 1 THEN e.salary * 1.1 "
              + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
@@ -382,7 +382,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testMemberOfExpression() {
+    void memberOfExpression() {
       String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF p.nickNames";
 
       CriteriaQuery<?> q = cb.createQuery();
@@ -394,7 +394,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
      }
 
     @Test
-    public void testParameters() {
+    void parameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery<?> q = cb.createQuery();
         Root<Customer> c = q.from(Customer.class);
@@ -411,7 +411,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testKeyExpressionInSelectList() {
+    void keyExpressionInSelectList() {
         String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) "
                 + "FROM VideoStore v JOIN v.videoInventory i "
                 + "WHERE v.location.zipCode = '94301' AND VALUE(i) > 0";
@@ -431,7 +431,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testConstructorInSelectList() {
+    void constructorInSelectList() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) "
                     + "FROM Customer c JOIN c.orders o WHERE o.quantity > 100";
 
@@ -450,7 +450,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testUncorrelatedSubqueryWithAggregateProjection() {
+    void uncorrelatedSubqueryWithAggregateProjection() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE "
                 + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) FROM "
                 + "Customer c)";
@@ -467,7 +467,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueryWithExistsClause() {
+    void subqueryWithExistsClause() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
                 + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp = "
                 + "emp.spouse)";
@@ -484,7 +484,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueryWithAllClause() {
+    void subqueryWithAllClause() {
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
                 + "SELECT m.salary FROM Manager m WHERE m.department ="
                 + " emp.department)";
@@ -505,7 +505,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCorrelatedSubqueryWithCount() {
+    void correlatedSubqueryWithCount() {
         String jpql = "SELECT c FROM Customer c WHERE "
                 + "(SELECT COUNT(o) FROM c.orders o) > 10";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -520,7 +520,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCorrelatedSubqueryWithJoin() {
+    void correlatedSubqueryWithJoin() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
                 + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
 
@@ -540,7 +540,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testCorrelatedSubqueryWithAllClause() {
+    void correlatedSubqueryWithAllClause() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c "
                     + "WHERE 10000 < ALL (SELECT a.balance FROM c.accounts a)";
 
@@ -559,7 +559,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testGroupByAndHaving() {
+    void groupByAndHaving() {
         String jpql = "SELECT c.status, AVG(c.filledOrderCount), COUNT(c) FROM "
                 + "Customer c GROUP BY c.status HAVING c.status IN (1, 2)";
 
@@ -576,7 +576,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrderingByExpressionNotIncludedInSelection() {
+    void orderingByExpressionNotIncludedInSelection() {
         String jpql = "SELECT o FROM Customer c "
                     + "JOIN c.orders o JOIN c.address a "
                     + "WHERE a.state = 'CA' "
@@ -600,7 +600,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrderingByExpressionIncludedInSelection() {
+    void orderingByExpressionIncludedInSelection() {
         String jpql = "SELECT o.quantity, a.zipCode FROM Customer c "
                     + "JOIN c.orders o JOIN c.address a "
                     + "WHERE a.state = 'CA' "
@@ -625,7 +625,7 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     }
 
     @Test
-    public void testOrderingWithNumericalExpressionInSelection() {
+    void orderingWithNumericalExpressionInSelection() {
         String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, a.zipCode "
                 + "FROM Customer c JOIN c.orders o JOIN c.address a "
                 + "WHERE a.state = 'CA' AND a.county = 'Santa Clara' "

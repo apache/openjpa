@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
-import java.io.IOException;
-
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -42,12 +40,12 @@ public class TestEmbeddedEnumSqlGeneration
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
     }
 
     @Test
-    public void testEnumEnhancement()
-        throws IOException {
+    void enumEnhancement()
+        throws Exception {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 

@@ -41,6 +41,7 @@ import org.apache.openjpa.persistence.relations.TblParent;
 import org.apache.openjpa.persistence.simple.Person;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,8 +49,8 @@ import org.junit.jupiter.api.Test;
  * <b>TestQuerySQLCache</b> is used to verify multiple permutations of openjpa.jdbc.QuerySQLCache settings that were
  * valid in JPA 1.2 but may not be valid in JPA 2.0
  */
-public class TestQuerySQLCache extends SingleEMFTestCase {
-	
+class TestQuerySQLCache extends SingleEMFTestCase {
+
 	private static final Logger logger = Logger.getLogger(TestQuerySQLCache.class.getCanonicalName());
 
     final int nThreads = 5;
@@ -66,7 +67,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
      * Verify an exception is thrown if a bad cache implementation class is specified
      */
     @Test
-    public void testBadCustomCacheSetting() {
+    void badCustomCacheSetting() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + Person.class.getName() + ")");
         props.put("openjpa.jdbc.QuerySQLCache",
@@ -82,7 +83,6 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             fail("EMF creation must throw an exception because the cache implementation class will not be found");
         }
         catch (Exception e) {
-            assertTrue(true);
         } finally {
             closeEMF(emf1);
         }
@@ -94,7 +94,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
      */
     @AllowFailure(message = "OPENJPA-1179 2.0 doesn't allow 'all' as in previous releases")
     @Test
-    public void testMultiEMCachingAll() {
+    void multiEMCachingAll() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + Person.class.getName() + ")");
         props.put("openjpa.jdbc.QuerySQLCache", "all");
@@ -106,7 +106,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
      * Verify multi-threaded multi-entity manager finder works with the QuerySQLCache set to "true"
      */
     @Test
-    public void testMultiEMCachingTrue() {
+    void multiEMCachingTrue() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + Person.class.getName() + ")");
         props.put("openjpa.jdbc.QuerySQLCache", "true");
@@ -119,7 +119,7 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
      */
     @AllowFailure(message = "Fails after first run with duplicate key value in a unique PK constraint or index")
     @Test
-    public void testEagerFetch() {
+    void eagerFetch() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types=" + TblChild.class.getName() + ";"
                                                           + TblGrandChild.class.getName() + ";"
@@ -213,13 +213,11 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
             //
             // Wait for the worker threads to complete
             //
-            for (int i = 0; i < nThreads; i++) {
-                try {
-                    newThreads[i].join();
-                }
-                catch (InterruptedException e) {
-                    fail("Caught Interrupted Exception: " + e);
-                }
+            for (int i = 0; i < nThreads; ++i) {
+                final int threadNum = i;
+                Assertions.assertDoesNotThrow(() -> {
+                    newThreads[threadNum].join();
+                }, "Caught Interrupted Exception: ");
             }
 
             //

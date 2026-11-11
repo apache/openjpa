@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jpql.treatjoinon;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,12 +44,12 @@ import org.junit.jupiter.api.Test;
  * - Scientific notation with TREAT
  * - Embeddable objects from query projections are not managed
  */
-public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
+class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
-        setUp(TProduct.class, TSoftwareProduct.class, 
-                TCustomSoftwareProduct.class, TLineItem.class, 
+        setUp(TProduct.class, TSoftwareProduct.class,
+                TCustomSoftwareProduct.class, TLineItem.class,
                 TOrder.class, TCustomer.class, TCountry.class,
                 DROP_TABLES);
         createTestData();
@@ -73,7 +74,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         sp3.setName("Software C");
         sp3.setRevisionNumber(1.0);
         em.persist(sp3);
-        
+
         TCustomSoftwareProduct cs1 = new TCustomSoftwareProduct();
         cs1.setName("Custom Software A");
         cs1.setRevisionNumber(1.0);
@@ -109,10 +110,10 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         li3.setProduct(hw);
         li3.setOrder(order2);
         em.persist(li3);
-        
+
         TOrder order3 = new TOrder();
         em.persist(order3);
-        
+
         TLineItem li4 = new TLineItem();
         li4.setQuantity(1);
         li4.setProduct(cs1);
@@ -137,7 +138,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK treatInWhereClauseTest
      */
     @Test
-    public void testTreatInWhereClause() {
+    void treatInWhereClause() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -155,7 +156,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTreatLeafInWhereClause() {
+    void treatLeafInWhereClause() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -175,7 +176,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK appropriateSuffixesTest
      */
     @Test
-    public void testTreatWithDoubleSuffix() {
+    void treatWithDoubleSuffix() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -197,7 +198,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK sqlApproximateNumericLiteralTest
      */
     @Test
-    public void testTreatWithScientificNotation() {
+    void treatWithScientificNotation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -219,7 +220,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK treatJoinClassTest
      */
     @Test
-    public void testTreatJoinClass() {
+    void treatJoinClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -246,7 +247,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK joinOnExpressionTest
      */
     @Test
-    public void testJoinOnExpression() {
+    void joinOnExpression() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -266,7 +267,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Corresponds to TCK embeddableNotManagedTest
      */
     @Test
-    public void testEmbeddableNotManagedInQueryResult() {
+    void embeddableNotManagedInQueryResult() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

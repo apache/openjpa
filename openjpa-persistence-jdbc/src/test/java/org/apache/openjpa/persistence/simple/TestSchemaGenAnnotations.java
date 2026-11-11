@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * - @SecondaryTable with @PrimaryKeyJoinColumn (secondaryTable TCK test)
  * - @SequenceGenerator name used as database sequence name (sequenceGenerator TCK test)
  */
-public class TestSchemaGenAnnotations extends SingleEMFTestCase {
+class TestSchemaGenAnnotations extends SingleEMFTestCase {
 
     private File tempDir;
 
@@ -74,7 +74,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * in the create script.
      */
     @Test
-    public void testJoinColumnForeignKeyConstraint() throws Exception {
+    void joinColumnForeignKeyConstraint() throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -122,7 +122,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * column and FK constraint in the create script.
      */
     @Test
-    public void testSecondaryTableGeneration() throws Exception {
+    void secondaryTableGeneration() throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 
@@ -184,7 +184,7 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * native sequences.
      */
     @Test
-    public void testSequenceGeneratorNameUsedAsSequenceName() throws Exception {
+    void sequenceGeneratorNameUsedAsSequenceName() throws Exception {
         // Use a separate EMF that includes the sequence entity
         // Disable SynchronizeMappings to avoid Derby sequence errors
         EntityManagerFactory emf2 = createEMF(

@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.inheritance.entity.XMLSuperCallback;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.Test;
 
-public class TestCallbackEntity
+class TestCallbackEntity
     extends SingleEMFTestCase {
 
     @Override
@@ -46,7 +46,7 @@ public class TestCallbackEntity
      * be queried to determine the access type.
      */
     @Test
-    public void testCallbackEntity() {
+    void callbackEntity() {
 
         EntityManager em = emf.createEntityManager();
         BaseCallback bc = new BaseCallback();

@@ -44,10 +44,10 @@ import org.apache.openjpa.persistence.jdbc.common.apps.AttachE;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachF;
 import org.junit.jupiter.api.Test;
 
-public class TestEfficientAttach extends TestSQLListenerTestCase {
+class TestEfficientAttach extends TestSQLListenerTestCase {
 
     @Test
-    public void testAttachWithDetachedStateManager() {
+    void attachWithDetachedStateManager() {
         Class[] clss = new Class[]{
             AttachA.class, AttachB.class, AttachC.class, AttachD.class,
             AttachE.class, AttachF.class,

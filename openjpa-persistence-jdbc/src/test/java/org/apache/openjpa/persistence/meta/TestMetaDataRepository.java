@@ -38,11 +38,11 @@ import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMetaDataRepository extends AbstractPersistenceTestCase {
+class TestMetaDataRepository extends AbstractPersistenceTestCase {
 	private final String PU_NAME = "mdr-pu";
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
 	}
 
     /**
@@ -50,7 +50,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
      * registered after creating an EMF.
      */
     @Test
-    public void testPreloadBasic() {
+    void preloadBasic() {
 		OpenJPAEntityManagerFactorySPI emf = null;
 		try {
 			emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository",
@@ -79,7 +79,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 	}
 
     @Test
-    public void testPreloadCleanUp() {
+    void preloadCleanUp() {
         OpenJPAEntityManagerFactorySPI emf = null;
         emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
         MetaDataRepository repo = emf.getConfiguration().getMetaDataRepositoryInstance();
@@ -90,7 +90,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testXmlMappingPreload() {
+    void xmlMappingPreload() {
         OpenJPAEntityManagerFactorySPI emf = null;
         try {
             emf =
@@ -108,7 +108,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testPreloadConfiguration() {
+    void preloadConfiguration() {
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "preload=true");
         assertTrue(MetaDataRepository.needsPreload(emf.getConfiguration()));
         emf.close();

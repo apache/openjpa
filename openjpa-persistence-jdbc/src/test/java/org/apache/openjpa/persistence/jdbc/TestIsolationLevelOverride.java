@@ -45,17 +45,17 @@ public class TestIsolationLevelOverride extends SQLListenerTestCase {
     }
 
     @Test
-    public void testIsolationOverrideViaFetchPlan() {
+    void isolationOverrideViaFetchPlan() {
         testIsolationLevelOverride(false, false);
     }
 
     @Test
-    public void testIsolationOverrideViaHint() {
+    void isolationOverrideViaHint() {
         testIsolationLevelOverride(true, false);
     }
 
     @Test
-    public void testIsolationOverrideViaStringHint() {
+    void isolationOverrideViaStringHint() {
         testIsolationLevelOverride(true, true);
     }
 

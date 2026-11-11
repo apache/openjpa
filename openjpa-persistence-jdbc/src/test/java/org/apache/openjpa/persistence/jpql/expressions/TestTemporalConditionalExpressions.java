@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * when the driver returns another type for the column, such as the Timestamp the Oracle driver returns for the
  * DATE column of such a field.
  */
-public class TestTemporalConditionalExpressions extends SingleEMFTestCase {
+class TestTemporalConditionalExpressions extends SingleEMFTestCase {
 
     private static final Date DATE = Date.valueOf("2021-01-03");
     private static final Time TIME = Time.valueOf("10:20:30");
@@ -55,14 +55,14 @@ public class TestTemporalConditionalExpressions extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDate() {
+    void date() {
         assertResult(DATE, "SELECT COALESCE(e.sqlDateField, e.sqlDateField) FROM AllFieldTypes e");
         assertResult(DATE, "SELECT CASE WHEN e.intField = 0 THEN e.sqlDateField ELSE e.sqlDateField END "
             + "FROM AllFieldTypes e");
     }
 
     @Test
-    public void testTime() {
+    void time() {
         assertResult(TIME, "SELECT COALESCE(e.sqlTimeField, e.sqlTimeField) FROM AllFieldTypes e");
         assertResult(TIME, "SELECT CASE WHEN e.intField = 0 THEN e.sqlTimeField ELSE e.sqlTimeField END "
             + "FROM AllFieldTypes e");

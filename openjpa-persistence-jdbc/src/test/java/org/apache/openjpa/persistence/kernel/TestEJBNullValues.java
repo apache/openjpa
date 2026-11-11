@@ -34,12 +34,12 @@ public class TestEJBNullValues extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(Inner.class);
     }
 
     @Test
-    public void testException() {
+    void exception() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         pm.persist(new Inner());

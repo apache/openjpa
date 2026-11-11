@@ -47,7 +47,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestRawSQL extends BaseJDBCTest {
+class TestRawSQL extends BaseJDBCTest {
 
     /** Creates a new instance of TestRawSQL */
     private Object[] _oids = new Object[3];
@@ -55,7 +55,7 @@ public class TestRawSQL extends BaseJDBCTest {
     private int[] _ints = new int[]{ 1, 2, 3 };
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(RawSQL.class);
         EntityManager em = currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
@@ -73,7 +73,7 @@ public class TestRawSQL extends BaseJDBCTest {
     }
 
     @Test
-    public void testLoadWithResult()
+    void loadWithResult()
         throws Exception {
 
         EntityManager em = currentEntityManager();
@@ -97,7 +97,7 @@ public class TestRawSQL extends BaseJDBCTest {
     }
 
     @Test
-    public void testLoadWithPCROP()
+    void loadWithPCROP()
         throws Exception {
 
         EntityManager em = currentEntityManager();

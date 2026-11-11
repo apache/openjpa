@@ -25,9 +25,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /*
- * Test for JIRA OPENJPA-2650.
- */
-public class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
+* Test for JIRA OPENJPA-2650.
+*/
+class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
      * set, the schema name is not added to the table sequence queries.
      */
     @Test
-    public void testNoSchemaAndSchemaFactory() {
+    void noSchemaAndSchemaFactory() {
 
         EntityManager em = emf.createEntityManager();
 

@@ -21,7 +21,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
+class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -30,7 +30,7 @@ public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
     }
 
     @Test
-    public void testCompoundPKFieldAccessUserDefined() {
+    void compoundPKFieldAccessUserDefined() {
         UnenhancedCompoundPKFieldAccessSuperclass un =
             new UnenhancedCompoundPKFieldAccessSubclass(17, 31);
         UnenhancedCompoundPKFieldAccessSuperclass.PK oid =
@@ -39,7 +39,7 @@ public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
     }
 
     @Test
-    public void testCompoundPKFieldAccessOpenJPADefined() {
+    void compoundPKFieldAccessOpenJPADefined() {
         UnenhancedCompoundPKFieldAccessSuperclass un =
             new UnenhancedCompoundPKFieldAccessSubclass(17, 31);
         UnenhancedCompoundPKFieldAccessSuperclass.PK oid =

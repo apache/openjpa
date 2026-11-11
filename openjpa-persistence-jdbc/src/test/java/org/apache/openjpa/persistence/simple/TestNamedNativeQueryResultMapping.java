@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Tests JPA 3.2 inline result set mapping on @NamedNativeQuery
  * via entities(), classes(), and columns() members.
  */
-public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
+class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +55,7 @@ public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityResultMapping() {
+    void entityResultMapping() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")
         List<NativeQueryResultEntity> results = em.createNamedQuery(
@@ -71,7 +71,7 @@ public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
     }
 
     @Test
-    public void testColumnResultMapping() {
+    void columnResultMapping() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")
         List<Object> results = em.createNamedQuery(

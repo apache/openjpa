@@ -47,8 +47,9 @@ import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.util.UserException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout.ThreadMode;
 
-public class TestTCPRemoteCommitProvider {
+class TestTCPRemoteCommitProvider {
     /**
      * An address that is guaranteed not to belong to this host:
      * 192.0.2.0/24 is TEST-NET-1 (RFC 5737) and can never be a
@@ -88,7 +89,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetBindAddressValidLocalAddress() throws Exception {
+    void setBindAddressValidLocalAddress() throws Exception {
         TCPRemoteCommitProvider provider = new TCPRemoteCommitProvider();
         InetAddress localAddress = findLocalAddress();
 
@@ -99,7 +100,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetBindAddressLocalHostname() throws Exception {
+    void setBindAddressLocalHostname() throws Exception {
         TCPRemoteCommitProvider provider = new TCPRemoteCommitProvider();
 
         // "localhost" always resolves to a loopback address, which is one
@@ -116,7 +117,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetBindAddressNonLocalAddressThrows() throws Exception {
+    void setBindAddressNonLocalAddressThrows() throws Exception {
         TCPRemoteCommitProvider provider = new TCPRemoteCommitProvider();
 
         try {
@@ -130,7 +131,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetBindAddressUnresolvableHostThrows() throws Exception {
+    void setBindAddressUnresolvableHostThrows() throws Exception {
         TCPRemoteCommitProvider provider = null;
         try {
             provider = new TCPRemoteCommitProvider();
@@ -168,7 +169,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesMultiplePeers() throws Exception {
+    void setAddressesMultiplePeers() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         provider.setAddresses("192.0.2.1:5671;198.51.100.2:5672");
@@ -177,7 +178,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesWithoutPortUsesDefaultPort() throws Exception {
+    void setAddressesWithoutPortUsesDefaultPort() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         provider.setAddresses(NON_LOCAL_ADDRESS);
@@ -186,7 +187,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesExcludesSelf() throws Exception {
+    void setAddressesExcludesSelf() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         // 127.0.0.1 is a loopback address of this host and the port matches
@@ -197,7 +198,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesLocalAddressOtherPortIsIncluded() throws Exception {
+    void setAddressesLocalAddressOtherPortIsIncluded() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         // Same host as above, but a different port, so it must be kept.
@@ -207,7 +208,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesReplacesPreviousAddresses() throws Exception {
+    void setAddressesReplacesPreviousAddresses() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
@@ -217,7 +218,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testSetAddressesUnresolvableHostThrows() throws Exception {
+    void setAddressesUnresolvableHostThrows() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         try {
@@ -229,7 +230,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testAcceptsConnectionFromThisHost() throws Exception {
+    void acceptsConnectionFromThisHost() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
         assertTrue(provider.acceptsConnectionFrom(InetAddress.getLoopbackAddress()));
@@ -237,7 +238,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testAcceptsConnectionOnlyFromPeers() throws Exception {
+    void acceptsConnectionOnlyFromPeers() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
 
@@ -247,7 +248,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testAcceptsConnectionFromAnyHostWhenNotRestricted() throws Exception {
+    void acceptsConnectionFromAnyHostWhenNotRestricted() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setRestrictToPeers(false);
 
@@ -255,7 +256,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testAcceptsConnectionFollowsAddressUpdates() throws Exception {
+    void acceptsConnectionFollowsAddressUpdates() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         InetAddress first = InetAddress.getByName(NON_LOCAL_ADDRESS);
         InetAddress second = InetAddress.getByName("198.51.100.2");
@@ -270,8 +271,8 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    @Timeout(value = 10)
-    public void testAcceptsConnectionDoesNotWaitForSending() throws Exception {
+    @Timeout(value = 10, threadMode = ThreadMode.SEPARATE_THREAD)
+    void acceptsConnectionDoesNotWaitForSending() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
 
@@ -378,7 +379,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testConnectionFromNonPeerIsRejected() throws Exception {
+    void connectionFromNonPeerIsRejected() throws Exception {
         TCPRemoteCommitProvider provider = startProvider(new NonPeerProvider());
         try (Socket s = connect(provider)) {
             assertTrue(isClosedByRemote(s));
@@ -389,7 +390,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testConnectionFromNonPeerIsAcceptedWhenNotRestricted() throws Exception {
+    void connectionFromNonPeerIsAcceptedWhenNotRestricted() throws Exception {
         TCPRemoteCommitProvider provider = new NonPeerProvider();
         provider.setRestrictToPeers(false);
         startProvider(provider);
@@ -402,7 +403,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testMaxReceiveConnectionsIsEnforcedAndFinishedReceiversAreRemoved() throws Exception {
+    void maxReceiveConnectionsIsEnforcedAndFinishedReceiversAreRemoved() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setMaxReceiveConnections(2);
         startProvider(provider);
@@ -483,7 +484,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testDynamicProviderRefreshesAddressesBeforeRejectingUnknownHost() throws Exception {
+    void dynamicProviderRefreshesAddressesBeforeRejectingUnknownHost() throws Exception {
         DynamicNonPeerProvider provider = startDynamicProvider();
         try (Socket s = connect(provider)) {
             assertTrue(isClosedByRemote(s));
@@ -496,7 +497,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testDynamicProviderAcceptsPeerFoundByRefresh() throws Exception {
+    void dynamicProviderAcceptsPeerFoundByRefresh() throws Exception {
         DynamicNonPeerProvider provider = startDynamicProvider();
         provider._peerAppears = true;
         try (Socket s = connect(provider)) {
@@ -510,7 +511,7 @@ public class TestTCPRemoteCommitProvider {
     }
 
     @Test
-    public void testDynamicProviderDoesNotRefreshWhenNotRestricted() throws Exception {
+    void dynamicProviderDoesNotRefreshWhenNotRestricted() throws Exception {
         DynamicNonPeerProvider provider = new DynamicNonPeerProvider();
         provider.setRestrictToPeers(false);
         assertFalse(provider.refreshesAddressesOnDemand());

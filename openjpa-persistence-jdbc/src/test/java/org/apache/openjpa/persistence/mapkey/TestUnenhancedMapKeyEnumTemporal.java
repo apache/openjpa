@@ -44,14 +44,14 @@ import org.junit.jupiter.api.Test;
  * enhancement (Unenhanced prefix skips build-time enhancer).
  * Reproduces TCK mapkeyenumerated and mapkeytemporal failures.
  */
-public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
+class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
 
     /**
      * Tests @MapKeyEnumerated(STRING) on @OneToMany(mappedBy) Map
      * with runtime enhancement. Mirrors TCK mapKeyEnumeratedTest.
      */
     @Test
-    public void testMapKeyEnumeratedOneToMany() {
+    void mapKeyEnumeratedOneToMany() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             DROP_TABLES,
             UnenhancedMKEDept.class, UnenhancedMKEEmp.class);
@@ -133,7 +133,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * Mirrors TCK elementCollectionTest for mapkeyenumerated.
      */
     @Test
-    public void testMapKeyEnumeratedElementCollection() {
+    void mapKeyEnumeratedElementCollection() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             CLEAR_TABLES,
             UnenhancedMKEDept4.class, UnenhancedMKEmbedEmp.class);
@@ -195,7 +195,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * with runtime enhancement. Mirrors TCK mapKeyTemporalTest.
      */
     @Test
-    public void testMapKeyTemporalOneToMany() throws Exception {
+    void mapKeyTemporalOneToMany() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             DROP_TABLES,
             UnenhancedMKTDept.class, UnenhancedMKTEmp.class);
@@ -265,7 +265,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * Mirrors TCK elementCollectionTest for mapkeytemporal.
      */
     @Test
-    public void testMapKeyTemporalElementCollection() throws Exception {
+    void mapKeyTemporalElementCollection() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             CLEAR_TABLES,
             UnenhancedMKTDept4.class, UnenhancedMKEmbedEmp.class);

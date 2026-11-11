@@ -35,10 +35,10 @@ import org.apache.openjpa.persistence.simple.NamedEntity;
 import org.junit.jupiter.api.Test;
 
 
-public class TestQueryCompilationCache {
+class TestQueryCompilationCache {
 
     @Test
-    public void testDynamicJPQLWithNamedEntity() {
+    void dynamicJPQLWithNamedEntity() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types="
             + NamedEntity.class.getName() + ")");

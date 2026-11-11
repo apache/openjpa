@@ -57,7 +57,7 @@ public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
     }
 
     @Test
-    public void testOpenJPASchemaOverridesORM() {
+    void openJPASchemaOverridesORM() {
         persist(new PUDefaultSchemaEntity());
 
         // The Sequence and Table SQL should use the PU default schema

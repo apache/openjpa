@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * The graph is interpreted as a <em>load graph</em>: attributes named by the graph are fetched eagerly,
  * attributes outside the graph keep their declared fetch behaviour.
  */
-public class TestEntityGraphFind extends SingleEMFTestCase {
+class TestEntityGraphFind extends SingleEMFTestCase {
 
     private static final int DEPT_ID = 1;
     private static final int EMP_ID = 10;
@@ -101,7 +101,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * assertion below would be vacuous.
      */
     @Test
-    public void testFindWithoutGraphLeavesLazyAttributeUnloaded() {
+    void findWithoutGraphLeavesLazyAttributeUnloaded() {
         EntityManager em = emf.createEntityManager();
         try {
             EGDepartment dept = em.find(EGDepartment.class, DEPT_ID);
@@ -116,7 +116,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * The load bearing test: the very same lookup with a graph naming the lazy collection loads it eagerly.
      */
     @Test
-    public void testFindWithEntityGraphLoadsGraphAttribute() {
+    void findWithEntityGraphLoadsGraphAttribute() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> graph = em.createEntityGraph(EGDepartment.class);
@@ -135,7 +135,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * Load graph, not fetch graph: attributes outside the graph keep their declared (eager) behaviour.
      */
     @Test
-    public void testFindWithEntityGraphKeepsNonGraphAttributesDefault() {
+    void findWithEntityGraphKeepsNonGraphAttributesDefault() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGEmployee> graph = em.createEntityGraph(EGEmployee.class);
@@ -155,7 +155,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * loaded. The control below proves the plain find() does not.
      */
     @Test
-    public void testFindWithSubgraph() {
+    void findWithSubgraph() {
         EntityManager control = emf.createEntityManager();
         try {
             EGEmployee emp = control.find(EGEmployee.class, EMP_ID);
@@ -183,7 +183,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * A graph that references itself must not send the graph traversal into an endless recursion.
      */
     @Test
-    public void testFindWithCyclicGraph() {
+    void findWithCyclicGraph() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> graph = em.createEntityGraph(EGDepartment.class);
@@ -202,7 +202,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
      * {@code find(Class, Object, FindOption...)}.
      */
     @Test
-    public void testFindWithGraphAndFindOptions() {
+    void findWithGraphAndFindOptions() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> graph = em.createEntityGraph(EGDepartment.class);
@@ -216,7 +216,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindWithGraphReturnsNullWhenMissing() {
+    void findWithGraphReturnsNullWhenMissing() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> graph = em.createEntityGraph(EGDepartment.class);
@@ -228,7 +228,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindWithNullGraphThrowsIAE() {
+    void findWithNullGraphThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.find((EntityGraph<EGDepartment>) null, DEPT_ID);
@@ -241,7 +241,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindWithNullPrimaryKeyThrowsIAE() {
+    void findWithNullPrimaryKeyThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> graph = em.createEntityGraph(EGDepartment.class);
@@ -256,7 +256,7 @@ public class TestEntityGraphFind extends SingleEMFTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFindWithForeignEntityGraphThrowsIAE() {
+    void findWithForeignEntityGraphThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGDepartment> foreign = (EntityGraph<EGDepartment>) Proxy.newProxyInstance(

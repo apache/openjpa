@@ -24,28 +24,28 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestXA extends SliceTestCase {
+class TestXA extends SliceTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
     }
 
     @Test
-    public void testEmptyCommit() {
+    void emptyCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.getTransaction().commit();
     }
 
     @Test
-    public void testEmptyRollback() {
+    void emptyRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.getTransaction().rollback();
     }
 
     @Test
-    public void testPersistIndependentObjects() {
+    void persistIndependentObjects() {
 		EntityManager em = emf.createEntityManager();
         int before = count(PObject.class);
 		int N = 2;

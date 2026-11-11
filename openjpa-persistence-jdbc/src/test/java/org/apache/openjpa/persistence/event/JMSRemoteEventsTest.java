@@ -53,7 +53,7 @@ public class JMSRemoteEventsTest extends RemoteEventBase {
     }
 
     @Test
-    public void testJMSEvents() {
+    void jmsEvents() {
         doTest(JMSRemoteCommitProvider.class,
             "Topic=topic/KodoCommitProviderTopic",
             "Topic=topic/KodoCommitProviderTopic");

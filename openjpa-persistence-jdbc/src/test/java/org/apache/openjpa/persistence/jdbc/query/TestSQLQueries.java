@@ -68,7 +68,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     private String _relColName = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
        deleteAll(RuntimeTest1.class);
 
         RuntimeTest1 pc1 = new RuntimeTest1("1", 1);
@@ -103,7 +103,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testStarQuery() {
+    void starQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -119,7 +119,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testCompiledQuery()
+    void compiledQuery()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -139,7 +139,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testCompiledLanguageQuery()
+    void compiledLanguageQuery()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -159,7 +159,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testTableStarQuery() {
+    void tableStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _tableName + ".* from " + _fullTableName
@@ -176,7 +176,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testColumnQuery() {
+    void columnQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _pkColName + ", " + _intColName + ", "
@@ -194,7 +194,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testJoinQuery() {
+    void joinQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select t0.* from " + _fullTableName + " t0, "
@@ -210,7 +210,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testParameters() {
+    void parameters() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " where 'foo' = ? and "
@@ -239,7 +239,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testOnlySelectedFieldsLoaded() {
+    void onlySelectedFieldsLoaded() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _pkColName + ", " + _intColName + ", "
@@ -264,7 +264,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testSingleColumnClasslessQuery() {
+    void singleColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _stringColName + " from " + _fullTableName
@@ -294,7 +294,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testMultiColumnClasslessQuery() {
+    void multiColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _intColName + ", " + _stringColName + " from "
@@ -316,7 +316,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testResultClass() {
+    void resultClass() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -341,7 +341,7 @@ public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.B
     }
 
     @Test
-    public void testClasslessProjection() {
+    void classlessProjection() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _intColName + " as I, " + _stringColName

@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test JPA 2.0 em.find(LockMode) behaviors with "mixed" lock manager.
  */
-public class TestMixedLockManagerFindBasic extends SequencedActionsTest {
+class TestMixedLockManagerFindBasic extends SequencedActionsTest {
     @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
@@ -35,49 +35,49 @@ public class TestMixedLockManagerFindBasic extends SequencedActionsTest {
     }
 
     @Test
-    public void testFindRead() {
-        testCommon("testFindRead",
+    void findRead() {
+        common("testFindRead",
             LockModeType.READ, 0, 1);
     }
 
     @Test
-    public void testFindWrite() {
-        testCommon("testFindWrite",
+    void findWrite() {
+        common("testFindWrite",
             LockModeType.WRITE, 1, 1);
     }
 
     @Test
-    public void testFindOptimistic() {
-        testCommon("testFindOptimistic",
+    void findOptimistic() {
+        common("testFindOptimistic",
             LockModeType.OPTIMISTIC, 0, 1);
     }
 
     @Test
-    public void testFindOptimisticForceInc() {
-        testCommon("testFindOptimisticForceInc",
+    void findOptimisticForceInc() {
+        common("testFindOptimisticForceInc",
             LockModeType.OPTIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
     @Test
-    public void testFindPessimisticRead() {
-        testCommon("testFindPessimisticRead",
+    void findPessimisticRead() {
+        common("testFindPessimisticRead",
             LockModeType.PESSIMISTIC_READ, 0, 1);
     }
 
     @Test
-    public void testFindPessimisticWrite() {
-        testCommon("testFindPessimisticWrite",
+    void findPessimisticWrite() {
+        common("testFindPessimisticWrite",
             LockModeType.PESSIMISTIC_WRITE, 0, 1);
     }
 
     @Test
-    public void testFindPessimisticForceInc() {
-        testCommon("testFindPessimisticForceInc",
+    void findPessimisticForceInc() {
+        common("testFindPessimisticForceInc",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
     @Test
-    public void testCommon(String testName, LockModeType lockMode,
+    void common(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
         Object[][] threadMain = {
             // Find entity, no transaction, no update.

@@ -32,7 +32,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestQuerySQLCache extends SQLListenerTestCase {
+class TestQuerySQLCache extends SQLListenerTestCase {
     EntityManager em;
 
     @BeforeEach
@@ -60,7 +60,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testNullParamsWithNumericPosition01() {
+    void nullParamsWithNumericPosition01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -100,7 +100,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testNullParamsWithNumericPosition02() {
+    void nullParamsWithNumericPosition02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -142,7 +142,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testNullParamsWithNamedQuery01() {
+    void nullParamsWithNamedQuery01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -186,7 +186,7 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
     }
 
     @Test
-    public void testNullParamsWithNamedQuery02() {
+    void nullParamsWithNamedQuery02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());

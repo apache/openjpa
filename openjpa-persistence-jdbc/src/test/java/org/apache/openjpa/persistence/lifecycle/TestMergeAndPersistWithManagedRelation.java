@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestMergeAndPersistWithManagedRelation
+class TestMergeAndPersistWithManagedRelation
     extends SingleEMTestCase {
 
     private long childId;
@@ -49,7 +49,7 @@ public class TestMergeAndPersistWithManagedRelation
     }
 
     @Test
-    public void testPersistWithManagedRelation() {
+    void persistWithManagedRelation() {
         BidiParent parent = new BidiParent();
         BidiChild child = em.find(BidiChild.class, childId);
         parent.setOneToOneChild(child);
@@ -65,7 +65,7 @@ public class TestMergeAndPersistWithManagedRelation
     }
 
     @Test
-    public void testMergeWithManagedRelation() {
+    void mergeWithManagedRelation() {
         BidiParent parent = new BidiParent();
         BidiChild child = em.find(BidiChild.class, childId);
         parent.setOneToOneChild(child);

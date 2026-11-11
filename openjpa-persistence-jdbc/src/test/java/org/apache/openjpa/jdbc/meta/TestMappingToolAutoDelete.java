@@ -20,8 +20,6 @@ package org.apache.openjpa.jdbc.meta;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,13 +36,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMappingToolAutoDelete {
+class TestMappingToolAutoDelete {
 
     private JDBCConfiguration _conf;
     private OpenJPAEntityManagerFactorySPI emf;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + AllFieldTypes.class.getName() + ")");
@@ -60,13 +58,13 @@ public class TestMappingToolAutoDelete {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         emf.close();
     }
 
     @Test
-    public void testMappingToolAutoDelete()
-        throws IOException, SQLException {
+    void mappingToolAutoDelete()
+        throws Exception {
         MappingTool.Flags flags = new MappingTool.Flags();
 
         // indirect validation that comma-separated schema actions work

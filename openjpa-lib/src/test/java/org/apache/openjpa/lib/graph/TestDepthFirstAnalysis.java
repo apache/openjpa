@@ -17,9 +17,7 @@
  * under the License.
  */
 package org.apache.openjpa.lib.graph;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,7 +39,7 @@ public class TestDepthFirstAnalysis
     private DepthFirstAnalysis _dfa = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         setUpGraph1();
     }
 
@@ -86,7 +84,7 @@ public class TestDepthFirstAnalysis
     }
 
     @Test
-    public void testNodeSorting() {
+    void nodeSorting() {
         Collection nodes = _dfa.getSortedNodes();
         assertEquals(4, nodes.size());
 
@@ -100,7 +98,7 @@ public class TestDepthFirstAnalysis
     }
 
     @Test
-    public void testEdgeTyping() {
+    void edgeTyping() {
         Collection edges = _dfa.getEdges(Edge.TYPE_BACK);
         assertEquals(2, edges.size());
         Iterator itr = edges.iterator();
@@ -111,7 +109,7 @@ public class TestDepthFirstAnalysis
     }
 
     @Test
-    public void testBackEdges() {
+    void backEdges() {
         setUpGraph2();
         Collection edges = _dfa.getEdges(Edge.TYPE_BACK);
         assertEquals(2, edges.size());
@@ -123,24 +121,22 @@ public class TestDepthFirstAnalysis
                     edge0.getCycle().size() == 1);
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
-                    ((Edge)cycle.get(3)).getTo()));
+            assertEquals(((Edge) cycle.get(0)).getFrom(), ((Edge) cycle.get(3)).getTo());
         } else if (edge1.getTo().equals(edge1.getFrom())) {
             assertTrue(edge1.getCycle() != null &&
                     edge1.getCycle().size() == 1);
-            assertTrue(edge1 == edge1.getCycle());
+            assertSame(edge1, edge1.getCycle());
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 4);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
-                    ((Edge)cycle.get(3)).getTo()));
+            assertEquals(((Edge) cycle.get(0)).getFrom(), ((Edge) cycle.get(3)).getTo());
         } else {
             // should not happen
-            assertFalse(true);
+            fail();
         }
     }
 
     @Test
-    public void testForwardEdges() {
+    void forwardEdges() {
         setUpGraph2();
         Collection edges = _dfa.getEdges(Edge.TYPE_FORWARD);
         assertEquals(2, edges.size());
@@ -150,16 +146,14 @@ public class TestDepthFirstAnalysis
         if (edge0.getCycle() == null) {
             List cycle = edge1.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
-                    ((Edge)cycle.get(2)).getTo()));
+            assertEquals(((Edge) cycle.get(0)).getFrom(), ((Edge) cycle.get(2)).getTo());
         } else if (edge1.getCycle() == null) {
             List cycle = edge0.getCycle();
             assertTrue(cycle != null && cycle.size() == 3);
-            assertTrue(((Edge)cycle.get(0)).getFrom().equals(
-                    ((Edge)cycle.get(2)).getTo()));
+            assertEquals(((Edge) cycle.get(0)).getFrom(), ((Edge) cycle.get(2)).getTo());
         } else {
             // should not happen
-            assertFalse(true);
+            fail();
         }
     }
 

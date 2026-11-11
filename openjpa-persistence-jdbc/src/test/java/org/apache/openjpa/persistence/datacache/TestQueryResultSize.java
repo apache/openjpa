@@ -48,7 +48,7 @@ public class TestQueryResultSize extends AbstractTestCase {
     private OpenJPAEntityManager pm;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         logger.fine("****Deleted Records " + deleteAll(CacheObjectE.class));
         deleteAll(CascadeParent.class);
         deleteAll(CascadeChild.class);
@@ -60,7 +60,7 @@ public class TestQueryResultSize extends AbstractTestCase {
     }
 
     @Test
-    public void test() {
+    void test() {
         CacheObjectE pc1 = new CacheObjectE();
         pc1.setStr("pc1");
 
@@ -88,7 +88,7 @@ public class TestQueryResultSize extends AbstractTestCase {
     }
 
     @Test
-    public void testCrossJoinQueryCache() {
+    void crossJoinQueryCache() {
         pm = (OpenJPAEntityManager) _pmf.createEntityManager();
         // create
         startTx(pm);

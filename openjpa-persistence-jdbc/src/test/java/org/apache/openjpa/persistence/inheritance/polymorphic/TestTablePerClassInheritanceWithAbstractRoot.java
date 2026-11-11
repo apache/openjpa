@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.inheritance.polymorphic;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,7 +112,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConsistency() {
+    void consistency() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         int nTranslatableBefore = count(UNJOINED_SUBCLASSES);
@@ -133,7 +132,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		em.getTransaction().begin();
         List<Translation> result = em.createQuery("SELECT p FROM Translation p")
 			.getResultList();
-		assertTrue(!result.isEmpty());
+		assertFalse(result.isEmpty());
 		for (Translation translation : result) {
 			assertTrue(translation.getTranslatable()
                     .getTranslations().contains(translation));
@@ -173,20 +172,20 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 	}
 
     @Test
-    public void testEntityTypeForTablePerClassInheritance() {
+    void entityTypeForTablePerClassInheritance() {
         populate();
         OpenJPAEntityManager em = emf.createEntityManager();
         String query = "select tr from Translatable tr join tr.translations t where " +
                 "TYPE(tr) = EnglishParagraph";
         List rs = em.createQuery(query).getResultList();
         assertEquals(2, rs.size());
-        for (Object o : rs) assertTrue(o instanceof EnglishParagraph);
+        for (Object o : rs) assertInstanceOf(EnglishParagraph.class, o);
 
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) = EnglishParagraph or TYPE(tr) = FrenchParagraph";
         rs = em.createQuery(query).getResultList();
         assertEquals(2, rs.size());
-        for (Object r : rs) assertTrue(!(r instanceof GermanParagraph));
+        for (Object r : rs) assertFalse((r instanceof GermanParagraph));
 
         query = "select distinct tr from Translatable tr join tr.translations t where " +
             "TYPE(tr) in (?1, ?2)";

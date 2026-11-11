@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * like the one of the Jakarta Persistence TCK, and with an explicit
  * <code>StoreCharsAsNumbers=true</code> (OPENJPA-3033).
  */
-public class TestCharStorage extends AbstractPersistenceTestCase {
+class TestCharStorage extends AbstractPersistenceTestCase {
 
     private static final String DICT_PROP = "openjpa.jdbc.DBDictionary";
 
@@ -53,7 +53,7 @@ public class TestCharStorage extends AbstractPersistenceTestCase {
      * dictionary default, which is a CHAR column on Derby.
      */
     @Test
-    public void testCharFieldsInGeneratedSchema() throws Exception {
+    void charFieldsInGeneratedSchema() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStorageEntity.class, DROP_TABLES);
         try {
             DBDictionary dict = dictionary(emf);
@@ -77,7 +77,7 @@ public class TestCharStorage extends AbstractPersistenceTestCase {
      * need StoreCharsAsNumbers=false for such a column.
      */
     @Test
-    public void testCharFieldsInPrecreatedCharColumn() throws Exception {
+    void charFieldsInPrecreatedCharColumn() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStoragePrecreatedEntity.class);
         DBDictionary dict = dictionary(emf);
         assertDefault(dict);
@@ -110,7 +110,7 @@ public class TestCharStorage extends AbstractPersistenceTestCase {
      * schemas created by earlier releases rely on.
      */
     @Test
-    public void testExplicitStoreCharsAsNumbers() throws Exception {
+    void explicitStoreCharsAsNumbers() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStorageNumericEntity.class, DROP_TABLES,
             DICT_PROP, withStoreCharsAsNumbers(System.getProperty(DICT_PROP), true));
         try {

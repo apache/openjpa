@@ -19,13 +19,7 @@
 
 package org.apache.openjpa.persistence.meta;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -64,7 +58,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestMetamodel extends SingleEMFTestCase {
+class TestMetamodel extends SingleEMFTestCase {
     private static MetamodelImpl model;
 
     @BeforeEach
@@ -93,14 +87,14 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMetaModelForDomainClassesExist() {
+    void metaModelForDomainClassesExist() {
         assertFalse(model.getEntities().isEmpty());
         assertFalse(model.getEmbeddables().isEmpty());
         assertFalse(model.getManagedTypes().isEmpty());
     }
 
     @Test
-    public void testMetaClassFieldsArePopulated() {
+    void metaClassFieldsArePopulated() {
         EntityType<ImplicitFieldAccessSubclass> m =  model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(m);
         Class<?> mCls = m.getJavaType();
@@ -121,7 +115,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDomainClassCategorizedInPersistentCategory() {
+    void domainClassCategorizedInPersistentCategory() {
         assertCategory(PersistenceType.MAPPED_SUPERCLASS, ImplicitFieldAccessMappedSuperclass.class);
         assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessBase.class);
         assertCategory(PersistenceType.ENTITY, ImplicitFieldAccessSubclass.class);
@@ -141,7 +135,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testGetAttributeByNameAndTypeFromMetaClass() {
+    void getAttributeByNameAndTypeFromMetaClass() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         assertNotNull(e0.getAttribute("f0"));
         assertNotNull(e0.getSingularAttribute("f0", String.class));
@@ -157,7 +151,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testAttributeByDeclaration() {
+    void attributeByDeclaration() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertNotNull(e0.getAttribute("f0"));
@@ -178,7 +172,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPCCollection() {
+    void pCCollection() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         CollectionAttribute<?,?> relColl = e0.getCollection("collectionRelation", ExplicitFieldAccess.class);
@@ -192,7 +186,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPCList() {
+    void pCList() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         ListAttribute<?, ?> relList = e0.getList("listRelation", ExplicitFieldAccess.class);
@@ -206,7 +200,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPCSet() {
+    void pCSet() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ExplicitFieldAccess> r1 = model.entity(ExplicitFieldAccess.class);
         SetAttribute<?, ?> relSet = e0.getSet("setRelation", ExplicitFieldAccess.class);
@@ -219,7 +213,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDeclaredFields() {
+    void declaredFields() {
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         java.util.Set<?> all = e1.getAttributes();
         java.util.Set<?> decl = e1.getDeclaredAttributes();
@@ -228,7 +222,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNonExistentField() {
+    void nonExistentField() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         ManagedType<ImplicitFieldAccessSubclass> e1 = model.entity(ImplicitFieldAccessSubclass.class);
         assertFails(e0, "xyz", false);
@@ -239,7 +233,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * Test all attribute getters of ManagedType for valid inputs.
      */
     @Test
-    public void testAttributeGettersForValidInput() {
+    void attributeGettersForValidInput() {
         IdentifiableType<ImplicitFieldAccessSubclass> subClass = model.entity(ImplicitFieldAccessSubclass.class);
         IdentifiableType<ImplicitFieldAccessBase> superClass = model.entity(ImplicitFieldAccessBase.class);
 
@@ -300,7 +294,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSimpleIdAttributes() {
+    void simpleIdAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
         assertNotNull(entity.getId(long.class));
         assertNotNull(entity.getDeclaredId(long.class));
@@ -309,7 +303,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testVersionAttributes() {
+    void versionAttributes() {
         IdentifiableType<OneOneParent> entity = model.entity(OneOneParent.class);
         assertNotNull(entity.getVersion(Integer.class));
         assertNotNull(entity.getDeclaredVersion(Integer.class));
@@ -317,7 +311,7 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIdClassAttributes() {
+    void idClassAttributes() {
         IdentifiableType<Book> entity = model.entity(Book.class);
 
         assertEquals(2, entity.getIdClassAttributes().size());
@@ -330,36 +324,36 @@ public class TestMetamodel extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBasicAttributeType() {
+    void basicAttributeType() {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         SingularAttribute<ImplicitFieldAccessBase,?> pInt = e0.getDeclaredSingularAttribute("primitiveInt");
         assertEquals(PersistentAttributeType.BASIC, pInt.getPersistentAttributeType());
     }
 
     @Test
-    public void testEmbeddedAttributeType() {
+    void embeddedAttributeType() {
         ManagedType<Address> type = model.entity(Address.class);
         Attribute.PersistentAttributeType attr = type.getAttribute("geocode").getPersistentAttributeType();
         assertEquals(PersistentAttributeType.EMBEDDED, attr);
     }
 
     @Test
-    public void testEntityByString() {
+    void entityByString() {
     	assertNotNull(model.entity("ImplicitFieldAccessBase"));
     }
 
     @Test
-    public void testEntityByStringException() {
+    void entityByStringException() {
     	try {
     		model.entity("InexistentEntityToSearch");
     		fail("Should have thrown an exception");
     	} catch (Exception ex) {
-    		assertTrue(ex instanceof IllegalArgumentException);
+            assertInstanceOf(IllegalArgumentException.class, ex);
     	}
     }
 
     @Test
-    public void testNotFoundErrorMessage() {
+    void notFoundErrorMessage() {
         IdentifiableType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         String name = "unknown";
         try {
@@ -457,7 +451,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * JPA spec: an association is a relationship to an entity, not an embeddable.
      */
     @Test
-    public void testIsAssociationFalseForEmbeddable() {
+    void isAssociationFalseForEmbeddable() {
         EntityType<Address> addrType = model.entity(Address.class);
         SingularAttribute<? super Address, ?> geocodeAttr =
             addrType.getSingularAttribute("geocode", Geocode.class);
@@ -469,7 +463,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * isAssociation() should return true for entity relationships.
      */
     @Test
-    public void testIsAssociationTrueForEntityRelation() {
+    void isAssociationTrueForEntityRelation() {
         EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
         SingularAttribute<? super OneOneParent, ?> childAttr =
             parentType.getSingularAttribute("child", OneOneChild.class);
@@ -481,7 +475,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * getBindableType() should return SINGULAR_ATTRIBUTE for embedded types.
      */
     @Test
-    public void testBindableTypeForEmbeddable() {
+    void bindableTypeForEmbeddable() {
         EntityType<Address> addrType = model.entity(Address.class);
         SingularAttribute<? super Address, Geocode> geocodeAttr =
             addrType.getSingularAttribute("geocode", Geocode.class);
@@ -492,7 +486,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * getBindableType() should return ENTITY_TYPE for entity relationships.
      */
     @Test
-    public void testBindableTypeForEntityRelation() {
+    void bindableTypeForEntityRelation() {
         EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
         SingularAttribute<? super OneOneParent, OneOneChild> childAttr =
             parentType.getSingularAttribute("child", OneOneChild.class);
@@ -503,7 +497,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * getId() with wrong type should throw IllegalArgumentException.
      */
     @Test
-    public void testGetIdWithWrongTypeThrowsIAE() {
+    void getIdWithWrongTypeThrowsIAE() {
         EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
         try {
             parentType.getId(java.util.Date.class);
@@ -517,7 +511,7 @@ public class TestMetamodel extends SingleEMFTestCase {
      * getDeclaredId() with wrong type should throw IllegalArgumentException.
      */
     @Test
-    public void testGetDeclaredIdWithWrongTypeThrowsIAE() {
+    void getDeclaredIdWithWrongTypeThrowsIAE() {
         EntityType<OneOneParent> parentType = model.entity(OneOneParent.class);
         try {
             parentType.getDeclaredId(java.util.Date.class);

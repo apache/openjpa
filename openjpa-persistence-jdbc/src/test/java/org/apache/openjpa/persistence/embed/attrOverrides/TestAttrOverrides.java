@@ -50,7 +50,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * Test AttributeOverride on embeddable fields
      */
     @Test
-    public void testAttrOverride1() {
+    void attrOverride1() {
         sql.clear();
         createObj1();
         findObj1();
@@ -63,7 +63,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * Test AttributeOverrides on embeddable Map field
      */
     @Test
-    public void testAttrOverride2() {
+    void attrOverride2() {
         sql.clear();
         createObj2();
         findObj2();
@@ -76,7 +76,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * Test OrderBy on embeddable field
      */
     @Test
-    public void testEmbeddableOrderBy() {
+    void embeddableOrderBy() {
         sql.clear();
         createObj3();
         findObj3();
@@ -110,10 +110,10 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         Customer p = em.find(Customer.class, 1);
         assertEquals(p.getId(), Integer.valueOf(1));
-        assertEquals(p.getAddress().getCity(), "city_1");
-        assertEquals(p.getAddress().getStreet(), "street_1");
-        assertEquals(p.getAddress().getState(), "state_1");
-        assertEquals(p.getName(), "name_1");
+        assertEquals("city_1", p.getAddress().getCity());
+        assertEquals("street_1", p.getAddress().getStreet());
+        assertEquals("state_1", p.getAddress().getState());
+        assertEquals("name_1", p.getName());
         em.close();
     }
 
@@ -187,13 +187,13 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         addr.setZipcode(zipcode);
         owner.setAddress(addr);
         PropertyRecord p = em.find(PropertyRecord.class, owner);
-        assertEquals(p.getOwner().getSsn(), "ssn_1");
-        assertEquals(p.getOwner().getAddress().getCity(), "city_1");
-        assertEquals(p.getOwner().getAddress().getStreet(), "street_1");
-        assertEquals(p.getOwner().getAddress().getState(), "state_1");
-        assertEquals(p.getOwner().getAddress().getZipcode().getZip(), "zip_1");
-        assertEquals(p.getOwner().getAddress().getZipcode().getPlusFour(),
-                "+4_1");
+        assertEquals("ssn_1", p.getOwner().getSsn());
+        assertEquals("city_1", p.getOwner().getAddress().getCity());
+        assertEquals("street_1", p.getOwner().getAddress().getStreet());
+        assertEquals("state_1", p.getOwner().getAddress().getState());
+        assertEquals("zip_1", p.getOwner().getAddress().getZipcode().getZip());
+        assertEquals(
+            "+4_1", p.getOwner().getAddress().getZipcode().getPlusFour());
 
         assertEquals(p.getParcels().size(), numPropertiesPerPersons);
         em.close();

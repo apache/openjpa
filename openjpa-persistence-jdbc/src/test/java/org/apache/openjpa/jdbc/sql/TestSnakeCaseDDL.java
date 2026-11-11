@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,12 +45,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestSnakeCaseDDL {
+class TestSnakeCaseDDL {
 
 	private static final Logger logger = Logger.getLogger(TestSnakeCaseDDL.class.getCanonicalName());
 
     @Test
-    public void ddlInSnakeCase() throws SQLException {
+    void ddlInSnakeCase() throws Exception {
 
         Driver derbyDriver;
         try {

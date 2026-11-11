@@ -101,7 +101,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 
-public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
+class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     /**
      * Number of test methods in this class, i.e. how often {@link #tearDown()} runs before
@@ -149,7 +149,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery1() {
+    void embeddableQuery1() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by a.id";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
@@ -161,7 +161,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery3() {
+    void embeddableQuery3() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by e";
         CriteriaQuery<String> q = cb.createQuery(String.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
@@ -173,7 +173,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery4() {
+    void embeddableQuery4() {
         String jpql = "select a from EntityA_Coll_String a WHERE a.nickNames IS EMPTY order by a";
         CriteriaQuery<EntityA_Coll_String> q = cb.createQuery(EntityA_Coll_String.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
@@ -185,7 +185,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery5() {
+    void embeddableQuery5() {
         String jpql = "select a from EntityA_Coll_String a WHERE exists (select n from EntityA_Coll_String a, " +
                 " in (a.nickNames) n where n like '%1') order by a";
         CriteriaQuery<EntityA_Coll_String> q = cb.createQuery(EntityA_Coll_String.class);
@@ -204,7 +204,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery6() {
+    void embeddableQuery6() {
         String jpql = "select a from EntityA_Coll_String a";
         CriteriaQuery<EntityA_Coll_String> q = cb.createQuery(EntityA_Coll_String.class);
         Root<EntityA_Coll_String> a = q.from(EntityA_Coll_String.class);
@@ -214,7 +214,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery7() {
+    void embeddableQuery7() {
         String jpql = "select a.embed from EntityA_Embed_ToOne a ";
         CriteriaQuery<Embed_ToOne> q = cb.createQuery(Embed_ToOne.class);
         Root<EntityA_Embed_ToOne> a = q.from(EntityA_Embed_ToOne.class);
@@ -224,7 +224,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery9() {
+    void embeddableQuery9() {
         String jpql = "select e from EntityA_Embed_ToOne a " +
                 " join a.embed e join e.b b where e.b.id > 0 order by a.id";
         CriteriaQuery<Embed_ToOne> q = cb.createQuery(Embed_ToOne.class);
@@ -239,7 +239,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery11() {
+    void embeddableQuery11() {
         String jpql = "select a.embed from EntityA_Embed_ToOne a ORDER BY a.embed";
         CriteriaQuery<Embed_ToOne> q = cb.createQuery(Embed_ToOne.class);
         Root<EntityA_Embed_ToOne> a = q.from(EntityA_Embed_ToOne.class);
@@ -250,7 +250,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery12() {
+    void embeddableQuery12() {
         String jpql = "select a.embed from EntityA_Embed_ToOne a WHERE a.embed.b IS NOT NULL " +
                 " ORDER BY a.embed";
         CriteriaQuery<Embed_ToOne> q = cb.createQuery(Embed_ToOne.class);
@@ -263,7 +263,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery13() {
+    void embeddableQuery13() {
         String jpql = "select a.embed from EntityA_Embed_ToOne a WHERE exists " +
                 " (select a from EntityA_Embed_ToOne a where a.embed.b IS NOT NULL) " +
                 " ORDER BY a.embed";
@@ -282,7 +282,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery14() {
+    void embeddableQuery14() {
         String jpql = "select a.embed from EntityA_Embed_MappedToOne a ";
         CriteriaQuery<Embed_MappedToOne> q = cb.createQuery(Embed_MappedToOne.class);
         Root<EntityA_Embed_MappedToOne> a = q.from(EntityA_Embed_MappedToOne.class);
@@ -292,7 +292,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery15() {
+    void embeddableQuery15() {
         String jpql = "select e from EntityA_Embed_MappedToOne a " +
                 " join a.embed e join e.bm bm where e.bm.id > 0 order by a.id";
         CriteriaQuery<Embed_MappedToOne> q = cb.createQuery(Embed_MappedToOne.class);
@@ -307,7 +307,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery16() {
+    void embeddableQuery16() {
         String jpql = "select a.embed as e from EntityA_Embed_MappedToOne a ORDER BY e";
         CriteriaQuery<Embed_MappedToOne> q = cb.createQuery(Embed_MappedToOne.class);
         Root<EntityA_Embed_MappedToOne> a = q.from(EntityA_Embed_MappedToOne.class);
@@ -320,7 +320,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery17() {
+    void embeddableQuery17() {
         String jpql = "select a.embed from EntityA_Embed_MappedToOne a WHERE a.embed.bm IS NOT NULL";
         CriteriaQuery<Embed_MappedToOne> q = cb.createQuery(Embed_MappedToOne.class);
         Root<EntityA_Embed_MappedToOne> a = q.from(EntityA_Embed_MappedToOne.class);
@@ -331,7 +331,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery18() {
+    void embeddableQuery18() {
         String jpql = "select a.embed from EntityA_Embed_MappedToOne a " +
                 " WHERE exists (select a from EntityA_Embed_MappedToOne a " +
                 " where a.embed.bm IS NOT NULL)";
@@ -349,7 +349,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     //jpql does not support comparison of embeddable
     @Test
-    public void testEmbeddableQuery19() {
+    void embeddableQuery19() {
         String jpql = "select a.embed from EntityA_Embed_MappedToOne a " +
                 " WHERE exists (select e from EntityA_Embed_MappedToOne a" +
                 " join a.embed e where e.bm IS NOT NULL)";
@@ -369,7 +369,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     //no support for comparison of embeddable
     @Test
-    public void testEmbeddableQuery20() {
+    void embeddableQuery20() {
         String jpql = "select a.embed from EntityA_Embed_MappedToOne a " +
                 " WHERE exists (select a.embed from EntityA_Embed_MappedToOne a " +
                 " where a.embed.bm IS NOT NULL)";
@@ -387,7 +387,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery21() {
+    void embeddableQuery21() {
         String jpql = "select a from EntityA_Embed_MappedToOne a";
         CriteriaQuery<EntityA_Embed_MappedToOne> q = cb.createQuery(EntityA_Embed_MappedToOne.class);
         Root<EntityA_Embed_MappedToOne> a = q.from(EntityA_Embed_MappedToOne.class);
@@ -397,7 +397,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery22() {
+    void embeddableQuery22() {
         String jpql = "select e, e.b from EntityA_Coll_Embed_ToOne a, in (a.embed1s) e order by e.name1";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_ToOne> a = q.from(EntityA_Coll_Embed_ToOne.class);
@@ -409,7 +409,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery23() {
+    void embeddableQuery23() {
         String jpql = "select e, a.id from EntityA_Coll_Embed_ToOne a, in (a.embed1s) e where e.b.id > 0 " +
             "order by a.id";
         CriteriaQuery<?> q = cb.createQuery();
@@ -423,7 +423,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery24() {
+    void embeddableQuery24() {
         String jpql = "select e, e.b.id from EntityA_Coll_Embed_ToOne a " +
                 " , in (a.embed1s) e where e.name1 like '%1' order by e.name3";
         CriteriaQuery<?> q = cb.createQuery();
@@ -437,7 +437,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery25() {
+    void embeddableQuery25() {
         String jpql = "select e, e.b.id  from EntityA_Coll_Embed_ToOne a " +
                 " , in (a.embed1s) e where e.name1 like '%1' order by e";
         CriteriaQuery<?> q = cb.createQuery();
@@ -451,7 +451,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery26() {
+    void embeddableQuery26() {
         String jpql = "select e, e.b.id  from EntityA_Coll_Embed_ToOne a, " +
                 "in (a.embed1s) e where e.name1 like '%1' and a.embed1s IS NOT EMPTY and " +
                 " e.b IS NOT NULL order by e";
@@ -470,7 +470,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     // can not compare embeddable. Expect to fail
     @Test
-    public void testEmbeddableQuery27() {
+    void embeddableQuery27() {
         String jpql = "select e, e.b.id from EntityA_Coll_Embed_ToOne a " +
                 " , in (a.embed1s) e where exists (select a.embed1s from " +
                 " EntityA_Coll_Embed_ToOne a) and exists (select e.b from a.embed1s e) " +
@@ -499,7 +499,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery28() {
+    void embeddableQuery28() {
         String jpql = "select a.embed from EntityA_Embed_ToMany a";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -508,7 +508,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery29() {
+    void embeddableQuery29() {
         String jpql = "select e from EntityA_Embed_ToMany a join a.embed e";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -518,7 +518,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery30() {
+    void embeddableQuery30() {
         String jpql = "select b from EntityA_Embed_ToMany a join a.embed.bs b";
         CriteriaQuery<EntityB1> q = cb.createQuery(EntityB1.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -528,7 +528,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery31() {
+    void embeddableQuery31() {
         String jpql = "select e from EntityA_Embed_ToMany a join a.embed e where e.name1 like '%1'";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -539,7 +539,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery32() {
+    void embeddableQuery32() {
         String jpql = "select a.embed from EntityA_Embed_ToMany a ORDER BY a.embed";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -549,7 +549,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery33() {
+    void embeddableQuery33() {
         String jpql = "select e from EntityA_Embed_ToMany a join a.embed e ORDER BY e";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -561,7 +561,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery34() {
+    void embeddableQuery34() {
         String jpql = "select b from EntityA_Embed_ToMany a join a.embed.bs b ORDER BY b";
         CriteriaQuery<EntityB1> q = cb.createQuery(EntityB1.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -573,7 +573,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery35() {
+    void embeddableQuery35() {
         String jpql = "select e from EntityA_Embed_ToMany a join a.embed e WHERE e.bs IS NOT EMPTY ORDER BY e";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -586,7 +586,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery36() {
+    void embeddableQuery36() {
         String jpql = "select a from EntityA_Embed_ToMany a WHERE exists (select a from EntityA_Embed_ToMany a" +
                 " where a.embed.bs IS NOT EMPTY) ORDER BY a";
         CriteriaQuery<EntityA_Embed_ToMany> q = cb.createQuery(EntityA_Embed_ToMany.class);
@@ -603,7 +603,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery38() {
+    void embeddableQuery38() {
         String jpql = "select a from EntityA_Embed_ToMany a";
         CriteriaQuery<EntityA_Embed_ToMany> q = cb.createQuery(EntityA_Embed_ToMany.class);
         Root<EntityA_Embed_ToMany> a = q.from(EntityA_Embed_ToMany.class);
@@ -612,7 +612,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery39() {
+    void embeddableQuery39() {
         String jpql = "select a.embed from EntityA_Embed_Embed_ToMany a";
         CriteriaQuery<Embed_Embed_ToMany> q = cb.createQuery(Embed_Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -621,7 +621,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery40() {
+    void embeddableQuery40() {
         String jpql = "select a.embed from EntityA_Embed_Embed_ToMany a where a.embed.embed.name1 like '%1' ";
         CriteriaQuery<Embed_Embed_ToMany> q = cb.createQuery(Embed_Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -632,7 +632,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery41() {
+    void embeddableQuery41() {
         String jpql = "select a.embed.embed from EntityA_Embed_Embed_ToMany a";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -641,7 +641,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery42() {
+    void embeddableQuery42() {
         String jpql = "select b from EntityA_Embed_Embed_ToMany a join a.embed.embed.bs b";
         CriteriaQuery<EntityB1> q = cb.createQuery(EntityB1.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -653,7 +653,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery43() {
+    void embeddableQuery43() {
         String jpql = "select a.embed.embed from EntityA_Embed_Embed_ToMany a where a.embed.embed.name1 like '%1'";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -664,7 +664,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery44() {
+    void embeddableQuery44() {
         String jpql = "select e2 from EntityA_Embed_Embed_ToMany a left join a.embed e1 left join e1.embed e2";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -676,7 +676,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery45() {
+    void embeddableQuery45() {
         String jpql = "select e2 from EntityA_Embed_Embed_ToMany a join a.embed e1 join e1.embed e2";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -687,7 +687,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery46() {
+    void embeddableQuery46() {
         String jpql = "select a.embed as e from EntityA_Embed_Embed_ToMany a ORDER BY e";
         CriteriaQuery<Embed_Embed_ToMany> q = cb.createQuery(Embed_Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -699,7 +699,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery47() {
+    void embeddableQuery47() {
         String jpql = "select a.embed.embed as e from EntityA_Embed_Embed_ToMany a " +
             "where a.embed.embed.name1 like '%1' ORDER BY e";
         CriteriaQuery<Embed_ToMany> q = cb.createQuery(Embed_ToMany.class);
@@ -714,7 +714,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery48() {
+    void embeddableQuery48() {
         String jpql = "select a.embed from EntityA_Embed_Embed_ToMany a " +
                 " where a.embed.embed.bs IS NOT EMPTY";
         CriteriaQuery<Embed_Embed_ToMany> q = cb.createQuery(Embed_Embed_ToMany.class);
@@ -728,7 +728,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery49() {
+    void embeddableQuery49() {
         String jpql = "select a.embed from EntityA_Embed_Embed_ToMany a " +
                 " where exists (select a.embed.embed.bs from EntityA_Embed_Embed_ToMany a)";
         CriteriaQuery<Embed_Embed_ToMany> q = cb.createQuery(Embed_Embed_ToMany.class);
@@ -745,7 +745,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery50() {
+    void embeddableQuery50() {
         String jpql = "select b from EntityA_Embed_Embed_ToMany a join a.embed.embed.bs b";
         CriteriaQuery<EntityB1> q = cb.createQuery(EntityB1.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -757,7 +757,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery51() {
+    void embeddableQuery51() {
         String jpql = "select a from EntityA_Embed_Embed_ToMany a";
         CriteriaQuery<EntityA_Embed_Embed_ToMany> q = cb.createQuery(EntityA_Embed_Embed_ToMany.class);
         Root<EntityA_Embed_Embed_ToMany> a = q.from(EntityA_Embed_Embed_ToMany.class);
@@ -766,7 +766,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery52() {
+    void embeddableQuery52() {
         String jpql = "select e, a.id from EntityA_Embed_Coll_Integer a, in (a.embed.otherIntVals) e order by e";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Embed_Coll_Integer> a = q.from(EntityA_Embed_Coll_Integer.class);
@@ -779,7 +779,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery54() {
+    void embeddableQuery54() {
         String jpql = "select e, a.id from EntityA_Embed_Coll_Integer a, in (a.embed.otherIntVals) e order by a.id";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Embed_Coll_Integer> a = q.from(EntityA_Embed_Coll_Integer.class);
@@ -792,7 +792,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery55() {
+    void embeddableQuery55() {
         String jpql = "select e, a.embed.intVal1 from EntityA_Embed_Coll_Integer a " +
                 " , in (a.embed.otherIntVals) e order by a.id";
         CriteriaQuery<?> q = cb.createQuery();
@@ -806,7 +806,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery56() {
+    void embeddableQuery56() {
         String jpql = "select e, a.embed.intVal2 from EntityA_Embed_Coll_Integer a " +
                 " , in (a.embed.otherIntVals) e order by e";
         CriteriaQuery<?> q = cb.createQuery();
@@ -820,7 +820,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery57() {
+    void embeddableQuery57() {
         String jpql1 = "select e, a.embed.intVal2 from EntityA_Embed_Coll_Integer a " +
             " , in (a.embed.otherIntVals) e WHERE a.embed.otherIntVals IS NOT EMPTY order by e";
 
@@ -838,7 +838,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery58() {
+    void embeddableQuery58() {
         String jpql = "select e, a0.intVal2 from EntityA_Embed_Coll_Integer a " +
                 "JOIN a.embed a0 JOIN a0.otherIntVals e WHERE exists (select a from " +
                 " EntityA_Embed_Coll_Integer a JOIN a.embed a0 JOIN a0.otherIntVals e " +
@@ -860,7 +860,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery59() {
+    void embeddableQuery59() {
         String jpql = "select a from EntityA_Embed_Coll_Integer a";
         CriteriaQuery<EntityA_Embed_Coll_Integer> q = cb.createQuery(EntityA_Embed_Coll_Integer.class);
         Root<EntityA_Embed_Coll_Integer> a = q.from(EntityA_Embed_Coll_Integer.class);
@@ -869,7 +869,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery60() {
+    void embeddableQuery60() {
         String jpql = "select a.embed from EntityA_Embed_Embed a";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -878,7 +878,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery61() {
+    void embeddableQuery61() {
         String jpql = "select a.embed.embed from EntityA_Embed_Embed a";
         CriteriaQuery<Embed> q = cb.createQuery(Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -887,7 +887,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery62() {
+    void embeddableQuery62() {
         String jpql = "select a.embed as e from EntityA_Embed_Embed a ORDER BY e";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -901,7 +901,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     //comparison of embed is not support
     @AllowFailure(message = "")
     @Test
-    public void testEmbeddableQuery63() {
+    void embeddableQuery63() {
         String jpql = "select a.embed from EntityA_Embed_Embed a WHERE a.embed.embed IS NOT NULL";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -912,7 +912,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery64() {
+    void embeddableQuery64() {
         String jpql = "select a.embed from EntityA_Embed_Embed a WHERE exists " +
                 " (select a.embed.embed from EntityA_Embed_Embed a where a.embed IS NOT NULL) ";
         CriteriaQuery<Embed_Embed> q = cb.createQuery(Embed_Embed.class);
@@ -927,7 +927,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
         executeExpectFail(jpql);    }
 
     @Test
-    public void testEmbeddableQuery65() {
+    void embeddableQuery65() {
         String jpql = "select a from EntityA_Embed_Embed a";
         CriteriaQuery<EntityA_Embed_Embed> q = cb.createQuery(EntityA_Embed_Embed.class);
         Root<EntityA_Embed_Embed> a = q.from(EntityA_Embed_Embed.class);
@@ -936,7 +936,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery66() {
+    void embeddableQuery66() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
@@ -948,7 +948,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery68() {
+    void embeddableQuery68() {
         String jpql = "select e, a.id from EntityA_Coll_Embed_Embed a, in (a.embeds) e order by a.id";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
@@ -959,7 +959,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery69() {
+    void embeddableQuery69() {
         String jpql = "select e, a.id from EntityA_Coll_Embed_Embed a, in (a.embeds) e order by e desc";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
@@ -971,7 +971,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery70() {
+    void embeddableQuery70() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE a.embeds IS NOT EMPTY " +
                 " order by e.intVal3";
@@ -986,7 +986,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     // comparison of embeddable is not supported
     @Test
-    public void testEmbeddableQuery71() {
+    void embeddableQuery71() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE exists (select a.embeds " +
                 " from EntityA_Coll_Embed_Embed a) order by e.intVal3";
@@ -1006,7 +1006,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery72() {
+    void embeddableQuery72() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -1025,7 +1025,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery73() {
+    void embeddableQuery73() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -1044,7 +1044,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery74() {
+    void embeddableQuery74() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 <= SOME " +
                 " (select e2.intVal2 from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) " +
@@ -1063,7 +1063,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery75() {
+    void embeddableQuery75() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a1, in (a1.embeds) e2) order by e.intVal3";
@@ -1081,7 +1081,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery76() {
+    void embeddableQuery76() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1108,7 +1108,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery77() {
+    void embeddableQuery77() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1134,7 +1134,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery78() {
+    void embeddableQuery78() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from " +
                 " EntityA_Coll_Embed_Embed a, in (a.embeds) e WHERE e.intVal1 <= SOME " +
                 " (select e.intVal2 from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
@@ -1158,7 +1158,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery79() {
+    void embeddableQuery79() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
@@ -1181,7 +1181,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery80() {
+    void embeddableQuery80() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
@@ -1204,7 +1204,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery81() {
+    void embeddableQuery81() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
@@ -1228,7 +1228,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery82() {
+    void embeddableQuery82() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
@@ -1252,7 +1252,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery83() {
+    void embeddableQuery83() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
@@ -1277,7 +1277,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     @AllowFailure(message = "JPQL parse error")
     @Test
-    public void testEmbeddableQuery84() {
+    void embeddableQuery84() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a, " +
                 " in (a.embeds) e WHERE :embed2 MEMBER OF a.embeds order by e.intVal3";
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -1297,7 +1297,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     @AllowFailure(message = "JPQL parse error")
     @Test
-    public void testEmbeddableQuery85() {
+    void embeddableQuery85() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " left join a.embeds e WHERE :embed2 MEMBER OF a.embeds order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
@@ -1318,7 +1318,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     @AllowFailure(message = "JPQL parse error")
     @Test
-    public void testEmbeddableQuery86() {
+    void embeddableQuery86() {
         String jpql = "select e, e.intVal1, e.embed.intVal2 from EntityA_Coll_Embed_Embed a " +
                 " , in (a.embeds) e WHERE ?1 = e order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
@@ -1337,7 +1337,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery87() {
+    void embeddableQuery87() {
         String jpql = "select a from EntityA_Coll_Embed_Embed a";
         CriteriaQuery<EntityA_Coll_Embed_Embed> q = cb.createQuery(EntityA_Coll_Embed_Embed.class);
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
@@ -1346,7 +1346,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery88() {
+    void embeddableQuery88() {
         String jpql = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
                 " , in (a.embed.embeds) e order by e";
         CriteriaQuery<?> q = cb.createQuery();
@@ -1358,7 +1358,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery89() {
+    void embeddableQuery89() {
         String jpql = "select e, e.intVal1 from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Embed_Coll_Embed> a = q.from(EntityA_Embed_Coll_Embed.class);
@@ -1369,7 +1369,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery90() {
+    void embeddableQuery90() {
         String jpql = "select e, a.id from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e order by a.id";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Embed_Coll_Embed> a = q.from(EntityA_Embed_Coll_Embed.class);
@@ -1380,7 +1380,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery91() {
+    void embeddableQuery91() {
         String jpql = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
                 " , in (a.embed.embeds) e order by e.intVal3";
         CriteriaQuery<?> q = cb.createQuery();
@@ -1392,7 +1392,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery92() {
+    void embeddableQuery92() {
         String jpql1 = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
             " , in (a.embed.embeds) e where a.embed.embeds IS NOT EMPTY order by e";
         String jpql = "select e1, e1.intVal1, e1.intVal2 from EntityA_Embed_Coll_Embed a " +
@@ -1407,7 +1407,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery93() {
+    void embeddableQuery93() {
         String jpql1 = "select e, e.intVal1, e.intVal2 from EntityA_Embed_Coll_Embed a " +
             " , in (a.embed.embeds) e where exists (select e.intVal1 " +
             " from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
@@ -1433,7 +1433,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery94() {
+    void embeddableQuery94() {
         String jpql1 = "select e, a from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
             " where e.intVal1 = SOME (select e2.intVal1 from EntityA_Embed_Coll_Embed a2 " +
             " , in (a2.embed.embeds) e2) order by e";
@@ -1455,7 +1455,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery95() {
+    void embeddableQuery95() {
         String jpql = "select e, a from EntityA_Embed_Coll_Embed a, in (a.embed.embeds) e " +
                 " where e = :p order by e";
         CriteriaQuery<?> q = cb.createQuery();
@@ -1470,7 +1470,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery96() {
+    void embeddableQuery96() {
         String jpql = "select a from EntityA_Embed_Coll_Embed a where a.embed = :p order by a";
         CriteriaQuery<EntityA_Embed_Coll_Embed> q = cb.createQuery(EntityA_Embed_Coll_Embed.class);
         Root<EntityA_Embed_Coll_Embed> a = q.from(EntityA_Embed_Coll_Embed.class);
@@ -1483,7 +1483,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery97() {
+    void embeddableQuery97() {
         String jpql = "select a from EntityA_Embed_Coll_Embed a";
         CriteriaQuery<EntityA_Embed_Coll_Embed> q = cb.createQuery(EntityA_Embed_Coll_Embed.class);
         Root<EntityA_Embed_Coll_Embed> a = q.from(EntityA_Embed_Coll_Embed.class);
@@ -1492,7 +1492,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery98() {
+    void embeddableQuery98() {
         String jpql = "select d from Department1 d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
         Root<Department1> d = q.from(Department1.class);
@@ -1501,7 +1501,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery99() {
+    void embeddableQuery99() {
         String jpql = "select d from Department2 d";
         CriteriaQuery<Department2> q = cb.createQuery(Department2.class);
         Root<Department2> d = q.from(Department2.class);
@@ -1510,7 +1510,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery100() {
+    void embeddableQuery100() {
         String jpql = "select d from Department3 d";
         CriteriaQuery<Department3> q = cb.createQuery(Department3.class);
         Root<Department3> d = q.from(Department3.class);
@@ -1519,7 +1519,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery101() {
+    void embeddableQuery101() {
         String jpql = "select d from Department1 d join d.empMap e where KEY(e) > 1 order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
         Root<Department1> d = q.from(Department1.class);
@@ -1531,7 +1531,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery102() {
+    void embeddableQuery102() {
         String jpql = "select d from Department1 d join d.empMap e where d.deptId = KEY(e) order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
         Root<Department1> d = q.from(Department1.class);
@@ -1543,7 +1543,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery103() {
+    void embeddableQuery103() {
         String jpql = "select d from Department1 d where d.deptId < ANY " +
                 " (select KEY(e) from in(d.empMap) e) order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
@@ -1559,7 +1559,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery103a() {
+    void embeddableQuery103a() {
         String jpql = "select KEY(e) from Department1 d, in(d.empMap) e order by d";
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
         Root<Department1> d = q.from(Department1.class);
@@ -1570,7 +1570,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery103b() {
+    void embeddableQuery103b() {
         String jpql = "select ENTRY(e) from Department1 d, in(d.empMap) e order by d";
         CriteriaQuery<Map.Entry> q = cb.createQuery(Map.Entry.class);
         Root<Department1> d = q.from(Department1.class);
@@ -1581,7 +1581,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery104() {
+    void embeddableQuery104() {
         String jpql = "select d from Department1 d where d.deptId < SOME " +
                 " (select KEY(e) from Department1 d1, in(d1.empMap) e) order by d";
         CriteriaQuery<Department1> q = cb.createQuery(Department1.class);
@@ -1597,7 +1597,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery105() {
+    void embeddableQuery105() {
         String jpql = "select e from Employee1 e";
         CriteriaQuery<Employee1> q = cb.createQuery(Employee1.class);
         Root<Employee1> e = q.from(Employee1.class);
@@ -1606,7 +1606,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery106() {
+    void embeddableQuery106() {
         String jpql = "select e from Employee2 e";
         CriteriaQuery<Employee2> q = cb.createQuery(Employee2.class);
         Root<Employee2> e = q.from(Employee2.class);
@@ -1615,7 +1615,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery107() {
+    void embeddableQuery107() {
         String jpql = "select e from Employee3 e";
         CriteriaQuery<Employee3> q = cb.createQuery(Employee3.class);
         Root<Employee3> e = q.from(Employee3.class);
@@ -1624,7 +1624,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery108() {
+    void embeddableQuery108() {
         String jpql = "select i from Item1 i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
@@ -1633,7 +1633,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery109() {
+    void embeddableQuery109() {
         String jpql = "select i from Item2 i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
         Root<Item2> i = q.from(Item2.class);
@@ -1642,7 +1642,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery110() {
+    void embeddableQuery110() {
         String jpql = "select i from Item3 i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
         Root<Item3> i = q.from(Item3.class);
@@ -1651,7 +1651,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery111() {
+    void embeddableQuery111() {
         String jpql = "select i from Item1 i where :image = any(select KEY(e) from i.images e) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
         Root<Item1> i = q.from(Item1.class);
@@ -1672,7 +1672,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery112() {
+    void embeddableQuery112() {
         String jpql = "select i from Item1 i where :image = any (select KEY(e) from Item1 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
@@ -1694,7 +1694,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery113() {
+    void embeddableQuery113() {
         String jpql = "select i from Item1 i where exists (select e from Item1 i, in(i.images) e" +
                 " where :image = KEY(e)) order by i";
         CriteriaQuery<Item1> q = cb.createQuery(Item1.class);
@@ -1717,7 +1717,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery114() {
+    void embeddableQuery114() {
         String jpql = "select i from Item2 i where :image = any (select KEY(e) from Item2 i, in(i.images) e) " +
                 " order by i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
@@ -1739,7 +1739,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery115() {
+    void embeddableQuery115() {
         String jpql = "select i from Item2 i where exists (select e from Item2 i, in(i.images) e" +
                 "   where :image = KEY(e)) order by i";
         CriteriaQuery<Item2> q = cb.createQuery(Item2.class);
@@ -1762,7 +1762,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery116() {
+    void embeddableQuery116() {
         String jpql = "select i from Item3 i where :image = any (select KEY(e) from Item3 i, in(i.images) e) " +
                 "order by i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
@@ -1784,7 +1784,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery117() {
+    void embeddableQuery117() {
         String jpql = "select i from Item3 i where exists (select e from Item3 i, in(i.images) e" +
                 " where :image = KEY(e)) order by i";
         CriteriaQuery<Item3> q = cb.createQuery(Item3.class);
@@ -1807,7 +1807,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery118() {
+    void embeddableQuery118() {
         String jpql = "select c from Company1 c";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
         Root<Company1> c = q.from(Company1.class);
@@ -1816,7 +1816,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery119() {
+    void embeddableQuery119() {
         String jpql = "select c from Company2 c";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
         Root<Company2> c = q.from(Company2.class);
@@ -1825,7 +1825,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery121() {
+    void embeddableQuery121() {
         String jpql = "select c from Company1 c where :division = " +
                 " (select KEY(d) from Company1 c, in(c.organization) d where d.id = 1) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
@@ -1848,7 +1848,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery122() {
+    void embeddableQuery122() {
         String jpql = "select c from Company1 c where exists (select KEY(d) from in(c.organization) d" +
                 "  where KEY(d) = :division) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
@@ -1871,7 +1871,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery123() {
+    void embeddableQuery123() {
         String jpql = "select c from Company1 c where exists (select KEY(d) from c.organization d" +
                 "  where KEY(d) = :division) order by c ";
         CriteriaQuery<Company1> q = cb.createQuery(Company1.class);
@@ -1894,7 +1894,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery124() {
+    void embeddableQuery124() {
         String jpql = "select c from Company2 c where :division = (select KEY(d) from Company2 c, in(c.organization) d"
                     + " where d.id = 3) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
@@ -1917,7 +1917,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery125() {
+    void embeddableQuery125() {
         String jpql = "select c from Company2 c where exists (select KEY(d) from in(c.organization) d" +
                 "  where KEY(d) = :k) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
@@ -1940,7 +1940,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery126() {
+    void embeddableQuery126() {
         String jpql = "select c from Company2 c where exists (select VALUE(d) from c.organization d "
             + "where KEY(d) = :k) order by c ";
         CriteriaQuery<Company2> q = cb.createQuery(Company2.class);
@@ -1963,7 +1963,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery127() {
+    void embeddableQuery127() {
         String jpql = "select d from Division d";
         CriteriaQuery<Division> q = cb.createQuery(Division.class);
         Root<Division> d = q.from(Division.class);
@@ -1972,7 +1972,7 @@ public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
     }
 
     @Test
-    public void testEmbeddableQuery128() {
+    void embeddableQuery128() {
         String jpql = "select vp from VicePresident vp";
         CriteriaQuery<VicePresident> q = cb.createQuery(VicePresident.class);
         Root<VicePresident> vp = q.from(VicePresident.class);

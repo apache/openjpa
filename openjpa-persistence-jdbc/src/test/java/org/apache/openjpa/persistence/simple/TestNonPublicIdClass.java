@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * Tests that JPA 3.2 allows primary key classes that are not public
  * and not Serializable.
  */
-public class TestNonPublicIdClass extends SingleEMFTestCase {
+class TestNonPublicIdClass extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +39,7 @@ public class TestNonPublicIdClass extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         NonPublicIdEntity e = new NonPublicIdEntity();
@@ -59,7 +59,7 @@ public class TestNonPublicIdClass extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFindMultiple() {
+    void findMultiple() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         NonPublicIdEntity e1 = new NonPublicIdEntity();

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * Compares string parameters with each other, which databases such as Derby
  * only accept when both sides are cast to a sized VARCHAR.
  */
-public class TestStringParameterComparison extends SingleEMTestCase {
+class TestStringParameterComparison extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -49,7 +49,7 @@ public class TestStringParameterComparison extends SingleEMTestCase {
     }
 
     @Test
-    public void testEqualityOfTwoStringParameters() {
+    void equalityOfTwoStringParameters() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = q.from(SimpleEntity.class);
@@ -67,7 +67,7 @@ public class TestStringParameterComparison extends SingleEMTestCase {
     }
 
     @Test
-    public void testStringParameterInParameters() {
+    void stringParameterInParameters() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = q.from(SimpleEntity.class);

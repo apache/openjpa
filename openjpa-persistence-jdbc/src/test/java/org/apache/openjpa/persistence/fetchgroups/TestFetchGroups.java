@@ -36,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestFetchGroups extends SingleEMTestCase {
+class TestFetchGroups extends SingleEMTestCase {
     private static final int empPerMgr = 5;
     private static final int mgrCount = 3;
     private static final int empCount = mgrCount * empPerMgr;
@@ -54,7 +54,7 @@ public class TestFetchGroups extends SingleEMTestCase {
     }
 
     @Test
-    public void testNoDefaultGroupLazyLoad() {
+    void noDefaultGroupLazyLoad() {
         FGEmployee emp = employeeSet.iterator().next();
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -77,7 +77,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Verify the "default" fetch plan that models JPA's expected eager/lazy fetch load behaviors.
      */
     @Test
-    public void testDefaultFetchPlan001() {
+    void defaultFetchPlan001() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
         assertNotNull(fp);
@@ -106,7 +106,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * an eagerly loaded field.
      */
     @Test
-    public void testDefaultFetchPlan002() {
+    void defaultFetchPlan002() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
         assertNotNull(fp);
@@ -138,7 +138,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * eagerly loaded field.
      */
     @Test
-    public void testDefaultFetchPlan003() {
+    void defaultFetchPlan003() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
         assertNotNull(fp);
@@ -170,7 +170,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Note when overriding that "default" must be included in the list.
      */
     @Test
-    public void testPctxDefaultFetchPlan001() {
+    void pctxDefaultFetchPlan001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "default,DescFetchGroup");
@@ -208,7 +208,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Note that fetch groups are case sensitive, "default" != "Default".
      */
     @Test
-    public void testPctxDefaultFetchPlan002() {
+    void pctxDefaultFetchPlan002() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "Default,DescFetchGroup");
@@ -246,7 +246,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * note this behavior.
      */
     @Test
-    public void testClearFetchGroups001() {
+    void clearFetchGroups001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "Default,DescFetchGroup");
@@ -286,7 +286,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * The resetFetchGroups() method restores the fetch plan's active fetch plans to the PCtx's configured default.
      */
     @Test
-    public void testResetFetchGroups001() {
+    void resetFetchGroups001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "Default,DescFetchGroup");
@@ -339,7 +339,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Baseline test for Finder Cache
      */
     @Test
-    public void testFinderCache001() {
+    void finderCache001() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         FetchPlan fp = em.getFetchPlan();
@@ -389,7 +389,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * under a modified fetch plan should not utilize sql stored in the finder cache.
      */
     @Test
-    public void testFinderCache002() {
+    void finderCache002() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         FetchPlan fp = em.getFetchPlan();
@@ -550,7 +550,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * cache.
      */
     @Test
-    public void testFinderCache003() {
+    void finderCache003() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         FetchPlan fp = em.getFetchPlan();
@@ -719,7 +719,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * the "openjpa.FetchGroups" property.
      */
     @Test
-    public void testFinderCache004() {
+    void finderCache004() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "default,DescFetchGroup");
@@ -867,7 +867,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * cache.
      */
     @Test
-    public void testFinderCache005() {
+    void finderCache005() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "default,DescFetchGroup");
@@ -1007,7 +1007,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * operating under a modified fetch plan should not utilize sql stored in the finder cache.
      */
     @Test
-    public void testFinderCache006() {
+    void finderCache006() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         FetchPlan fp = em.getFetchPlan();
@@ -1168,7 +1168,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * to the finder cache.
      */
     @Test
-    public void testFinderCache007() {
+    void finderCache007() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         FetchPlan fp = em.getFetchPlan();

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * a MappedSuperclass has @Id/@Version on fields and @Column on getters,
  * and a subclass entity has only @Column on getters.
  */
-public class TestMixedAccess extends SingleEMFTestCase {
+class TestMixedAccess extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,14 +41,14 @@ public class TestMixedAccess extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMetadataResolution() {
+    void metadataResolution() {
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
     }
 
     @Test
-    public void testPersistAndFind() {
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

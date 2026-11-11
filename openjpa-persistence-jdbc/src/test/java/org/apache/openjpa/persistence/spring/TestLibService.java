@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.persistence.spring;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -36,6 +33,7 @@ import org.apache.openjpa.persistence.models.library.Subject;
 import org.apache.openjpa.persistence.models.library.Volunteer;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -84,41 +82,39 @@ public class TestLibService extends SingleEMFTestCase
      * verify the information returned.
      */
     @Test
-    public void testFindBookByTitle() {
+    void findBookByTitle() {
         String title = "Gone Sailing";
         String qTitle = "\"" + title + "\"";
         String bName = "Dick";
 
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             // find the book
             Book book = service.findBookByTitle(title);
             assertNotNull(book, "could not find the book " + qTitle);
             assertEquals(title, book.getTitle(),
-                    "the book found was not the book " + qTitle);
+                "the book found was not the book " + qTitle);
 
             // get the book's borrower
             Borrower borrower = book.getBorrower();
             assertNotNull(borrower, "could not find the borrower " + bName);
             assertEquals(bName, borrower.getName(),
-                    "the borrower found was not " + bName);
+                "the borrower found was not " + bName);
 
             // get the borrower's volunteer status
             Volunteer volunteer = borrower.getVolunteer();
             assertNotNull(volunteer,
-                    "could not find " + bName + "'s volunteer status");
-            assertTrue(volunteer.getBorrower() == borrower,
-                    "could not find the reference from " + bName
+                "could not find " + bName + "'s volunteer status");
+            assertSame(volunteer.getBorrower(), borrower,
+                "could not find the reference from " + bName
                     + "'s volunteer status back to " + bName);
 
             // get the book's subjects
             List<Subject> subjects = book.getSubjects();
             assertNotNull(subjects, "no subjects for the book " + qTitle);
             assertEquals(
-                    2, subjects.size(),
-                    "unexpected number of subjects for the book " + qTitle);
-        } catch (Exception e) {
-            fail("Unable to findBookByTitle");
-        }
+                2, subjects.size(),
+                "unexpected number of subjects for the book " + qTitle);
+        }, "Unable to findBookByTitle");
     }
 
     /**
@@ -126,16 +122,14 @@ public class TestLibService extends SingleEMFTestCase
      * verify the information returned.
      */
     @Test
-    public void testFindBorrowerByName() {
+    void findBorrowerByName() {
         String bName = "Harry";
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             Borrower harry = service.findBorrowerByName(bName);
             assertNotNull(harry, "Could not find " + bName);
             assertEquals(bName, harry.getName(),
-                    "the borrower found is not " + bName);
-        } catch (Exception e) {
-            fail("Unable to find borrower by name");
-        }
+                "the borrower found is not " + bName);
+        }, "Unable to find borrower by name");
     }
 
     /**
@@ -147,7 +141,7 @@ public class TestLibService extends SingleEMFTestCase
      * </ul>
      */
     @Test
-    public void testBorrowBook() {
+    void borrowBook() {
         String bName = "Tom";
         String title = "Gone Visiting";
 
@@ -185,7 +179,7 @@ public class TestLibService extends SingleEMFTestCase
      * Test the LibraryService.returnBook() operation, etc.
      */
     @Test
-    public void testReturnBook() {
+    void returnBook() {
         String bName = "Harry";
 
         try {

@@ -38,7 +38,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestProviderUtil extends SingleEMFTestCase{
+class TestProviderUtil extends SingleEMFTestCase{
 
     @BeforeEach
     public void setUp() {
@@ -52,7 +52,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * LOADED state.
      */
     @Test
-    public void testIsLoadedEager() {
+    void isLoadedEager() {
         verifyIsLoadedEagerState(LoadState.LOADED);
     }
 
@@ -61,7 +61,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * NOT_LOADED state.
      */
     @Test
-    public void testNotLoadedLazy() {
+    void notLoadedLazy() {
         verifyIsLoadedLazyState(LoadState.NOT_LOADED);
     }
 
@@ -70,7 +70,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * LOADED state.
      */
     @Test
-    public void testIsLoadedLazy() {
+    void isLoadedLazy() {
         verifyIsLoadedLazyState(LoadState.LOADED);
     }
 
@@ -79,7 +79,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * NOT_LOADED state.
      */
     @Test
-    public void testNotLoadedEager() {
+    void notLoadedEager() {
         verifyIsLoadedEagerState(LoadState.NOT_LOADED);
     }
 
@@ -186,7 +186,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * are assigned by the application.
      */
     @Test
-    public void testIsApplicationLoaded() {
+    void isApplicationLoaded() {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
         Eager ee = createEagerEntity(true);
@@ -216,7 +216,7 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies that an entity not managed by a PU
      */
     @Test
-    public void testIsLoadedUnknown() {
+    void isLoadedUnknown() {
         ProviderUtil pu = getProviderUtil();
 
         Eager ee = new EagerEntity();

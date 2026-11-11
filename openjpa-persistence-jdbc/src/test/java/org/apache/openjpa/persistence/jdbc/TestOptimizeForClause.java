@@ -45,7 +45,7 @@ public class TestOptimizeForClause
     }
 
     @Test
-    public void testOptimizeForClauseViaGetSingleResult() {
+    void optimizeForClauseViaGetSingleResult() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
@@ -70,17 +70,17 @@ public class TestOptimizeForClause
     }
 
     @Test
-    public void testOptimizeForClauseViaHint() {
+    void optimizeForClauseViaHint() {
         tstOptimizeForClause(true,false,false);
     }
 
     @Test
-    public void testOptimizeForClauseViaFind() {
+    void optimizeForClauseViaFind() {
         tstOptimizeForClause(false,true,false);
     }
 
     @Test
-    public void testOptimizeForClauseViaQueryHint() {
+    void optimizeForClauseViaQueryHint() {
         tstOptimizeForClause(false,true,true);
     }
     public void tstOptimizeForClause(boolean hint,

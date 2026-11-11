@@ -18,8 +18,7 @@
  */
 package org.apache.openjpa.persistence.xml;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -27,7 +26,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
+class TestToOneLazyXmlOverride extends SQLListenerTestCase {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, XmlOverrideToOneEntity.class);
@@ -39,7 +38,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
     }
 
     @Test
-    public void testToManyLazyOverride() {
+    void toManyLazyOverride() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -54,7 +53,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
 
             em.find(XmlOverrideToOneEntity.class, (int) x.getId());
 
-            assertTrue(sql.size() == 1);
+            assertEquals(1, sql.size());
             String lastSql = sql.get(0);
             // Make sure we don't have any joins!
             assertFalse(lastSql.contains("join") || lastSql.contains("JOIN"),

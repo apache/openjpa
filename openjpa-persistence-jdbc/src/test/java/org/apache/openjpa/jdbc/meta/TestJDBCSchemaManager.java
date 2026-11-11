@@ -16,12 +16,12 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -43,7 +43,7 @@ import jakarta.persistence.SchemaValidationException;
  * Test that a {@link MappingTool#ACTION_REFRESH} uses the right
  * types for new columns and takes any mapping in DBDictionary into account.
  */
-public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
+class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
     /**
      * First we create a schema mapping with boolean representation as CHAR(1).
      * Then we create an entry.
@@ -51,7 +51,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
      * This should result in an empty diff.
      */
     @Test
-    public void testSchemaReset() throws Exception {
+    void schemaReset() throws Exception {
         EntityManagerFactory emf = createEMF(UUIDEntity.class, DROP_TABLES);
         EntityManager em = emf.createEntityManager();
 
@@ -79,7 +79,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testBuildSchema() throws IOException, SQLException {
+    void buildSchema() throws Exception {
         EntityManagerFactory emf = createEMF(UUIDEntity.class, EntityBoolChar.class, DROP_TABLES);
         emf.createEntityManager();
 
@@ -88,7 +88,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testTruncate() {
+    void truncate() {
         EntityManagerFactory emf = createEMF(UUIDEntity.class, EntityBoolChar.class, DROP_TABLES);
         EntityManager em = emf.createEntityManager();
 
@@ -111,7 +111,7 @@ public class TestJDBCSchemaManager extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testValidate() {
+    void validate() {
         OpenJPAEntityManagerFactorySPI emf = createEMF(UUIDEntity.class, EntityBoolChar.class, DROP_TABLES);;
         EntityManager em = emf.createEntityManager();
 

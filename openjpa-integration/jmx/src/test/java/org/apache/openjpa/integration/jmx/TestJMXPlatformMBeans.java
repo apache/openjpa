@@ -18,10 +18,7 @@
  */
 package org.apache.openjpa.integration.jmx;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
@@ -49,16 +46,17 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
+class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
     private static String clsName = CachedEntity.class.getName();
 
     /**
      * Verifies data cache metrics are available through simple instrumentation.
      */
     @Test
-    public void testDataCacheInstrument() {
+    void dataCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
 
         // Verify an EMF was created with the supplied instrumentation
@@ -73,12 +71,12 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), JMXProvider.class);
+        assertEquals(JMXProvider.class, provider.getClass());
         Instrument inst = provider.getInstrumentByName("DataCache");
         assertNotNull(inst);
-        assertTrue(inst instanceof DataCacheInstrument);
+        assertInstanceOf(DataCacheInstrument.class, inst);
         DataCacheInstrument dci = (DataCacheInstrument)inst;
-        assertEquals(dci.getCacheName(), "default");
+        assertEquals("default", dci.getCacheName());
 
         OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
 
@@ -102,11 +100,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         // more realistic test.
         ExecutorService executor = Executors.newFixedThreadPool(1);
         Future<Boolean> result = executor.submit(new DCMBeanCallable());
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             assertTrue(result.get());
-        } catch (Throwable t) {
-            fail("DataCache verification failed: " + t);
-        }
+        }, "DataCache verification failed: ");
 
         closeEMF(oemf);
     }
@@ -115,7 +111,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
      * Verifies query cache metrics are available through simple instrumentation.
      */
     @Test
-    public void testQueryCacheInstrument() {
+    void queryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
 
         // Verify an EMF was created with the supplied instrumentation
@@ -130,11 +126,11 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), JMXProvider.class);
+        assertEquals(JMXProvider.class, provider.getClass());
 
         Instrument inst = provider.getInstrumentByName("QueryCache");
         assertNotNull(inst);
-        assertTrue(inst instanceof QueryCacheInstrument);
+        assertInstanceOf(QueryCacheInstrument.class, inst);
         QueryCacheInstrument qci = (QueryCacheInstrument)inst;
 
         assertEquals(0,qci.getExecutionCount());
@@ -177,11 +173,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         Future<Boolean> execResult = executor.submit(new QueryCachesMBeanCallable(
             QueryCachesMBeanCallable.QC_OBJNAME,
             QueryCachesMBeanCallable.QC_QM));
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             assertTrue(execResult.get());
-        } catch (Throwable t) {
-            fail("QueryCache verification failed: " + t);
-        }
+        }, "QueryCache verification failed: ");
         closeEMF(oemf);
     }
 
@@ -189,7 +183,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
      * Verifies prepared query cache metrics are available through simple instrumentation.
      */
     @Test
-    public void testPreparedQueryCacheInstrument() {
+    void preparedQueryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx-qsc");
 
         // Verify an EMF was created with the supplied instrumentation
@@ -204,11 +198,11 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertNotNull(providers);
         assertEquals(1, providers.size());
         InstrumentationProvider provider = providers.iterator().next();
-        assertEquals(provider.getClass(), JMXProvider.class);
+        assertEquals(JMXProvider.class, provider.getClass());
 
         Instrument inst = provider.getInstrumentByName("QuerySQLCache");
         assertNotNull(inst);
-        assertTrue(inst instanceof PreparedQueryCacheInstrument);
+        assertInstanceOf(PreparedQueryCacheInstrument.class, inst);
         PreparedQueryCacheInstrument qci = (PreparedQueryCacheInstrument)inst;
 
         assertEquals(0,qci.getExecutionCount());
@@ -251,11 +245,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         Future<Boolean> execResult = executor.submit(new QueryCachesMBeanCallable(
             QueryCachesMBeanCallable.QSC_OBJNAME,
             QueryCachesMBeanCallable.QSC_QM));
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             assertTrue(execResult.get());
-        } catch (Throwable t) {
-            fail("QueryCache verification failed: " + t);
-        }
+        }, "QueryCache verification failed: ");
 
         closeEMF(oemf);
     }

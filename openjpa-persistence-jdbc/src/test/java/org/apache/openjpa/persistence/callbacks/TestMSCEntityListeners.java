@@ -52,7 +52,7 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
     }
 
     @Test
-    public void testMSCEntityListeners() {
+    void mscEntityListeners() {
         helper(MSC_LISTENER_ENTITY);
     }
 

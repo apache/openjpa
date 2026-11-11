@@ -23,34 +23,34 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class TestGitUtils {
+class TestGitUtils {
 
     @Test
-    public void testNull() {
+    void testNull() {
         assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(null));
     }
 
     @Test
-    public void testBasic() {
+    void basic() {
         long i = 0xBC614E;
         assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614E"));
     }
 
     @Test
-    public void testBasic2() {
+    void basic2() {
         int i = 0xfef543b;
         assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("fef543b"));
     }
 
     @Test
-    public void testGoodTrailingString() {
+    void goodTrailingString() {
         long i = 0xBC614E;
         assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614Em"));
         assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614EM"));
     }
 
     @Test
-    public void testBad() {
+    void bad() {
         long i = 0xBC614E;
         assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(i + "BC614Ems"));
         assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion("ZC614EM"));

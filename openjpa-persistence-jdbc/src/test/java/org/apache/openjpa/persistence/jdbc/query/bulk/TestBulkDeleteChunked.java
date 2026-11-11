@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
 
     /** Two keys per statement, so the chunking is exercised by a handful of rows. */
     private static final int CHUNK_SIZE = 2;
@@ -45,7 +45,7 @@ public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
      * carries a shorter <code>IN</code> list.
      */
     @Test
-    public void testPartialLastChunk() {
+    void partialLastChunk() {
         assertChunkedDelete(5);
     }
 
@@ -54,7 +54,7 @@ public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
      * with an empty <code>IN</code> list.
      */
     @Test
-    public void testExactMultipleOfChunkSize() {
+    void exactMultipleOfChunkSize() {
         assertChunkedDelete(2 * CHUNK_SIZE);
     }
 

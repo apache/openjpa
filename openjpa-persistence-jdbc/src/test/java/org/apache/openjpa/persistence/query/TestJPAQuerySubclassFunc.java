@@ -30,9 +30,9 @@ import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestJPAQuerySubclassFunc extends BaseQueryTest {
+class TestJPAQuerySubclassFunc extends BaseQueryTest {
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager pm = getEM();
@@ -51,7 +51,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
     }
 
     @Test
-    public void testSubClassIsTrueFunction() {
+    void subClassIsTrueFunction() {
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
 
@@ -71,7 +71,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
     }
 
     @Test
-    public void testSubClassIsFalseFunction() {
+    void subClassIsFalseFunction() {
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
 

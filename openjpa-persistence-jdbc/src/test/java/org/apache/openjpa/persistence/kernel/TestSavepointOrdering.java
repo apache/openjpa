@@ -28,7 +28,6 @@ package org.apache.openjpa.persistence.kernel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
@@ -43,6 +42,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,18 +55,18 @@ public class TestSavepointOrdering extends BaseKernelTest {
     static Map<String, TrackingSavepoint> _assigned = new HashMap<>();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         _assigned.clear();
     }
 
     @Test
-    public void testCleanUpCommit() {
+    void cleanUpCommit() {
         doCleanUpTest(true);
     }
 
     @Test
-    public void testCleanUpRollback() {
+    void cleanUpRollback() {
         doCleanUpTest(false);
     }
 
@@ -89,12 +89,12 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     @Test
-    public void testOrderingWithRollback() {
+    void orderingWithRollback() {
         doOrderingTest(true);
     }
 
     @Test
-    public void testOrderingWithRelease() {
+    void orderingWithRelease() {
         doOrderingTest(false);
     }
 
@@ -145,7 +145,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     @Test
-    public void testDisallowFlush() {
+    void disallowFlush() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
@@ -164,7 +164,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     @Test
-    public void testDisallowFlush2() {
+    void disallowFlush2() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
@@ -184,7 +184,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
     }
 
     @Test
-    public void testAllowFlush() {
+    void allowFlush() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
@@ -194,17 +194,15 @@ public class TestSavepointOrdering extends BaseKernelTest {
         startTx(pm);
         pm.persist(new RuntimeTest1());
         pm.setSavepoint("a");
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             pm.flush();
-        } catch (Exception e) {
-            fail("allows flush.");
-        }
+        }, "allows flush.");
         rollbackTx(pm);
         endEm(pm);
     }
 
     @Test
-    public void testAllowFlush2() {
+    void allowFlush2() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
@@ -214,11 +212,9 @@ public class TestSavepointOrdering extends BaseKernelTest {
         startTx(pm);
         pm.persist(new RuntimeTest1());
         pm.flush();
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             pm.setSavepoint("a");
-        } catch (Exception e) {
-            fail("allows flush.");
-        }
+        }, "allows flush.");
         rollbackTx(pm);
         endEm(pm);
     }
@@ -227,7 +223,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         TrackingSavepoint sp = _assigned.get(name);
         assertNotNull(sp);
         assertEquals(sp.flags & flag, flag);
-        assertTrue((sp.flags & noflag) == 0);
+        assertEquals(0, (sp.flags & noflag));
     }
 
     public static class TrackingSavepointManager implements SavepointManager {

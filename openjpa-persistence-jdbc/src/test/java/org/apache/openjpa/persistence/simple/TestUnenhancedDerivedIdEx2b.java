@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * This test uses RUNTIME ENHANCEMENT (unenhanced entities).
  * Mirrors TCK core/derivedid/ex2b/Client.DIDTest.
  */
-public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
+class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +51,7 @@ public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEx2b_EmbeddedIdWithNonEmbeddableIdClass() {
+    void ex2bEmbeddedIdWithNonEmbeddableIdClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

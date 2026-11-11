@@ -43,13 +43,13 @@ public class TestOneToMany extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
     }
 
     @Test
-    public void testOneToMany() {
+    void oneToMany() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);
@@ -80,7 +80,7 @@ public class TestOneToMany extends AnnotationTestCase
     }
 
     @Test
-    public void testInverseOwnerOneToMany() {
+    void inverseOwnerOneToMany() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc = new AnnoTest1(5);

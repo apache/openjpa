@@ -33,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestBulkJPQLAndDataCache
+class TestBulkJPQLAndDataCache
     extends SingleEMFTestCase {
 
     private Object oid;
@@ -57,7 +57,7 @@ public class TestBulkJPQLAndDataCache
     }
 
     @Test
-    public void testBulkDelete() {
+    void bulkDelete() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         List result = em.createQuery("SELECT o FROM AllFieldTypes o")
@@ -79,7 +79,7 @@ public class TestBulkJPQLAndDataCache
     }
 
     @Test
-    public void testBulkUpdate() {
+    void bulkUpdate() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -102,7 +102,7 @@ public class TestBulkJPQLAndDataCache
     }
 
     @Test
-    public void testBulkDeleteOfCascadingEntity() {
+    void bulkDeleteOfCascadingEntity() {
         CascadeParent parent = new CascadeParent();
         parent.setName("parent");
         CascadeChild child = new CascadeChild();

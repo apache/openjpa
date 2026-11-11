@@ -51,7 +51,7 @@ public class TestLifecycleEventManager extends AbstractTestCase {
     }
 
     @Test
-    public void testAllClassListener() {
+    void allClassListener() {
         MetaDataRepository repos =
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
                 OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))
@@ -126,7 +126,7 @@ public class TestLifecycleEventManager extends AbstractTestCase {
     }
 
     @Test
-    public void testBaseClassListener() {
+    void baseClassListener() {
         MetaDataRepository repos =
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
                 OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))

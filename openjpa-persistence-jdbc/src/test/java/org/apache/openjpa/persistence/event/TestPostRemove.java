@@ -64,7 +64,7 @@ public class TestPostRemove extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostRemoveInvokedOnlyAfterDatabaseDeleteWithLogicalFlush() {
+    void postRemoveInvokedOnlyAfterDatabaseDeleteWithLogicalFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
@@ -78,7 +78,7 @@ public class TestPostRemove extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostRemoveInvokedAfterDatabaseDeleteWithoutFlush() {
+    void postRemoveInvokedAfterDatabaseDeleteWithoutFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
@@ -91,7 +91,7 @@ public class TestPostRemove extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostRemoveNotInvokedAfterRollback() {
+    void postRemoveNotInvokedAfterRollback() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
@@ -104,7 +104,7 @@ public class TestPostRemove extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostRemoveNotInvokedAfterRollbackWithIntermediateFlush() {
+    void postRemoveNotInvokedAfterRollbackWithIntermediateFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
@@ -119,7 +119,7 @@ public class TestPostRemove extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPostRemoveInvokedOnFlushThatIssuesDatabaseDelete() {
+    void postRemoveInvokedOnFlushThatIssuesDatabaseDelete() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
@@ -142,7 +142,7 @@ public class TestPostRemove extends SingleEMFTestCase {
 
 
     @Test
-    public void testPostRemoveNotInvokedAfterDatabaseInsert() {
+    void postRemoveNotInvokedAfterDatabaseInsert() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();

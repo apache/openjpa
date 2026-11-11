@@ -44,35 +44,35 @@ public class TestEnumerated extends AnnotationTestCase
 	}
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(AnnoTest1.class);
     }
 
     /** public void testMapping() {
-             ClassMapping cls = (ClassMapping) getConfiguration().
-                 getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class,
-                 null, true);
-             FieldMapping fm = cls.getDeclaredFieldMapping("enumeration");
-             assertNotNull(fm);
-             assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-             assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
-             assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
-
-             fm = cls.getDeclaredFieldMapping("ordinalEnumeration");
-             assertNotNull(fm);
-             assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-             assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
-             assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
-
-             fm = cls.getDeclaredFieldMapping("stringEnumeration");
-             assertNotNull(fm);
-             assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
-             assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
-             assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
-         }*/
+                  ClassMapping cls = (ClassMapping) getConfiguration().
+                      getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class,
+                      null, true);
+                  FieldMapping fm = cls.getDeclaredFieldMapping("enumeration");
+                  assertNotNull(fm);
+                  assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+                  assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+                  assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
+     
+                  fm = cls.getDeclaredFieldMapping("ordinalEnumeration");
+                  assertNotNull(fm);
+                  assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+                  assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+                  assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
+     
+                  fm = cls.getDeclaredFieldMapping("stringEnumeration");
+                  assertNotNull(fm);
+                  assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
+                  assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
+                  assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
+              }*/
 
     @Test
-    public void testBehavior()
+    void behavior()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);

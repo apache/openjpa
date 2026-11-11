@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
  */
-public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
+class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -61,7 +61,7 @@ public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
      * it returns.
      */
     @Test
-    public void testPostRemoveFiresDuringExecuteUpdate() {
+    void postRemoveFiresDuringExecuteUpdate() {
         createData(emf);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -84,7 +84,7 @@ public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
      * back.
      */
     @Test
-    public void testPostRemoveFiresAtCommitWithoutTheFlush() {
+    void postRemoveFiresAtCommitWithoutTheFlush() {
         OpenJPAEntityManagerFactorySPI factory = createEMF(CLEAR_TABLES,
             BulkCallbackEntity.class, "openjpa.Compatibility",
             "FlushAfterInMemoryBulkOperation=false");

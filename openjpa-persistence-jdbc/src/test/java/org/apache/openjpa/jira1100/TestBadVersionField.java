@@ -37,14 +37,14 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestBadVersionField extends SingleEMFTestCase {
+class TestBadVersionField extends SingleEMFTestCase {
     @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BadVersionFieldEntity.class);
     }
 
     @Test
-    public void testWrongVersionFieldNotSupported() {
+    void wrongVersionFieldNotSupported() {
         try {
             EntityManager em = emf.createEntityManager();
             fail("Expected to fail with unsupported Version field type");

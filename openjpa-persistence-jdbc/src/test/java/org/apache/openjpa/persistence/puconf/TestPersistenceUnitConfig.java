@@ -40,7 +40,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithGoodPU() {
+    void createEMFWithGoodPU() {
         EntityManagerFactory emf = null;
         try {
             emf = createEmf("PUTest-Good");
@@ -57,7 +57,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithBadJarFileElement() {
+    void createEMFWithBadJarFileElement() {
         EntityManagerFactory emf = null;
         try {
             // Create EMF, expecting no problems.
@@ -74,7 +74,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithNonOpenJPAProvider() {
+    void createEMFWithNonOpenJPAProvider() {
         EntityManagerFactory emf = null;
         try {
             emf = createEmf("PUTest-NonOpenJPAProvider");
@@ -95,7 +95,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithBadJarFileElementAndNonOpenJPAProvider() {
+    void createEMFWithBadJarFileElementAndNonOpenJPAProvider() {
         EntityManagerFactory emf = null;
         try {
             emf = createEmf("PUTest-BadJarFile-NonOpenJPAProvider");
@@ -116,7 +116,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithCustomInjectScope() {
+    void createEMFWithCustomInjectScope() {
     	EntityManagerFactory emf = null;
     	try {
     		emf = createEmf("PUTest-New-Scope");
@@ -132,7 +132,7 @@ public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     }
 
     @Test
-    public void testCreateEMFWithCustomQualifiers() {
+    void createEMFWithCustomQualifiers() {
     	EntityManagerFactory emf = null;
     	try {
     		emf = createEmf("PUTest-Qualifiers");

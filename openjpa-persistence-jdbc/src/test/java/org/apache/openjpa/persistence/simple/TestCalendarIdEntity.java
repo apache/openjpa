@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * Tests that java.util.Calendar can be used as a primary key type.
  * JPA allows Calendar as a basic type, and the TCK uses it as an @Id.
  */
-public class TestCalendarIdEntity extends SingleEMFTestCase {
+class TestCalendarIdEntity extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -41,7 +41,7 @@ public class TestCalendarIdEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testPersistAndFindWithCalendarId() {
+    void persistAndFindWithCalendarId() {
         Calendar now = Calendar.getInstance();
         // truncate to seconds to avoid DB precision issues
         now.set(Calendar.MILLISECOND, 0);
@@ -63,7 +63,7 @@ public class TestCalendarIdEntity extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCalendarIdEntityCreatesEMF() {
+    void calendarIdEntityCreatesEMF() {
         // Just verify that creating the EMF with a Calendar @Id doesn't throw
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);

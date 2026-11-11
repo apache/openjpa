@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for showing OPENJPA-1900
  */
-public class TestEntitySerialize extends SingleEMFTestCase {
+class TestEntitySerialize extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -54,7 +54,7 @@ public class TestEntitySerialize extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSerialization() throws Exception {
+    void serialization() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("Annuity1Compat",
                 "org/apache/openjpa/persistence/proxy/persistence1.xml");

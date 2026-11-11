@@ -71,7 +71,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 	}
 
     @Test
-    public void testOrderByAliasAscending() {
+    void orderByAliasAscending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name ASC";
         EntityManager em = emf.createEntityManager();
 
@@ -80,7 +80,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByConcatAliasDescending() {
+    void orderByConcatAliasDescending() {
         String jpql = "SELECT CONCAT(p.name, '123') as cname " +
             "FROM Game p ORDER BY cname DESC";
         EntityManager em = emf.createEntityManager();
@@ -90,7 +90,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByAliasDescending() {
+    void orderByAliasDescending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name DESC";
         EntityManager em = emf.createEntityManager();
 
@@ -99,7 +99,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByQueryAscending() {
+    void orderByQueryAscending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
 
@@ -108,7 +108,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByQueryDescending() {
+    void orderByQueryDescending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
 
@@ -117,7 +117,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByQueryProjectionAscending() {
+    void orderByQueryProjectionAscending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
 
@@ -126,7 +126,7 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOrderByQueryProjectionDescending() {
+    void orderByQueryProjectionDescending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
 

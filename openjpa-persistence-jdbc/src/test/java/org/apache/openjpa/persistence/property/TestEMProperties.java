@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  * <b>TestEMProperties</b> is used to test various persistence properties set through EntityManager.setProperty() API
  * to ensure no errors are thrown.
  */
-public class TestEMProperties extends SingleEMFTestCase {
+class TestEMProperties extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -53,7 +53,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryTimeoutPropertyDefault() {
+    void queryTimeoutPropertyDefault() {
         EntityManager em = emf.createEntityManager();
 
         String sql = "select * from EntityContact";
@@ -65,7 +65,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryTimeoutPropertyOnEntityManagerCreation() {
+    void queryTimeoutPropertyOnEntityManagerCreation() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("jakarta.persistence.query.timeout", "12345");
         // Setting a value of type String should convert if possible and not return an error
@@ -80,7 +80,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testQueryTimeoutPropertySetOnEntityManager() {
+    void queryTimeoutPropertySetOnEntityManager() {
         EntityManager em = emf.createEntityManager();
 
         // Setting a value of type String should convert if possible and not return an error
@@ -95,7 +95,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCacheModeStringSetOnEntityManager() {
+    void cacheModeStringSetOnEntityManager() {
         EntityManager em = emf.createEntityManager();
 
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "BYPASS");
@@ -111,7 +111,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCacheModeStringOnEntityManagerCreation() {
+    void cacheModeStringOnEntityManagerCreation() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JPAProperties.CACHE_RETRIEVE_MODE, "BYPASS");
         properties.put(JPAProperties.CACHE_STORE_MODE, "REFRESH");
@@ -127,7 +127,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCacheModeStringIsCaseInsensitive() {
+    void cacheModeStringIsCaseInsensitive() {
         EntityManager em = emf.createEntityManager();
 
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "use");
@@ -140,7 +140,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testCacheModeEnumStillWorks() {
+    void cacheModeEnumStillWorks() {
         EntityManager em = emf.createEntityManager();
 
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
@@ -162,7 +162,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInvalidCacheModeStringFails() {
+    void invalidCacheModeStringFails() {
         EntityManager em = emf.createEntityManager();
         try {
             em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, "NOPE");
@@ -178,7 +178,7 @@ public class TestEMProperties extends SingleEMFTestCase {
     }
 
     @Test
-    public void testNullCacheModeResetsToDefault() {
+    void nullCacheModeResetsToDefault() {
         EntityManager em = emf.createEntityManager();
 
         em.setProperty(JPAProperties.CACHE_STORE_MODE, null);

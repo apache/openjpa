@@ -65,11 +65,10 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testDBDictionaryGetBatchFetchSize() throws Exception {
+    void dBDictionaryGetBatchFetchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         assertEquals(Integer.MIN_VALUE, db.getBatchFetchSize(1));
     }
-
 
 
     /**
@@ -83,7 +82,7 @@ public class TestMySQLDictionary {
      *             method calls are made
      */
     @Test
-    public void testPreparedStatementGetFetchBatchSize() throws Exception {
+    void preparedStatementGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
 
@@ -120,7 +119,7 @@ public class TestMySQLDictionary {
      *             method calls are made
      */
     @Test
-    public void testPreparedCallGetFetchBatchSize() throws Exception {
+    void preparedCallGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
 
@@ -150,21 +149,21 @@ public class TestMySQLDictionary {
      * get the column length appended, MySQL rejects a size on JSON (OPENJPA-3018).
      */
     @Test
-    public void testJsonColumnDefinitionHasNoSize() {
+    void jsonColumnDefinitionHasNoSize() {
         DBDictionary db = new MySQLDictionary();
         assertEquals("json", db.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", db.getTypeName(column(Types.VARCHAR, null, 255)));
     }
 
     @Test
-    public void testExtractWeekIsIsoWeek() {
+    void extractWeekIsIsoWeek() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("WEEK({1}, 3)", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
         assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
 
     @Test
-    public void testExtractSecondKeepsFraction() {
+    void extractSecondKeepsFraction() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("(EXTRACT(SECOND FROM {1}) + EXTRACT(MICROSECOND FROM {1}) / 1000000.0)",
             dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
@@ -178,7 +177,7 @@ public class TestMySQLDictionary {
      * room for a fraction (OPENJPA-3062).
      */
     @Test
-    public void testDecimalPrecisionAndScaleAreKept() {
+    void decimalPrecisionAndScaleAreKept() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("NUMERIC(10, 2)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 2)));
         assertEquals("NUMERIC(10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 0)));
@@ -191,7 +190,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testUnsizedDecimalKeepsFraction() {
+    void unsizedDecimalKeepsFraction() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.NUMBER, 0, 0)));
@@ -208,21 +207,21 @@ public class TestMySQLDictionary {
      * so that the column can still be created.
      */
     @Test
-    public void testUnsizedDecimalScaleIsCapped() {
+    void unsizedDecimalScaleIsCapped() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 30)));
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 35)));
     }
 
     @Test
-    public void testUnsizedIntegralDecimalIsUnchanged() {
+    void unsizedIntegralDecimalIsUnchanged() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGINTEGER, 0, 0)));
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.LONG, 0, 0)));
     }
 
     @Test
-    public void testDecimalColumnDefinitionIsUnchanged() {
+    void decimalColumnDefinitionIsUnchanged() {
         DBDictionary dict = new MySQLDictionary();
         Column col = decimal(JavaTypes.BIGDECIMAL, 0, 0);
         col.setTypeName("NUMERIC");
@@ -232,7 +231,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testConfiguredDecimalTypeNameIsKept() {
+    void configuredDecimalTypeNameIsKept() {
         DBDictionary dict = new MySQLDictionary();
         dict.numericTypeName = "DECIMAL(19,4)";
         assertEquals("DECIMAL(19,4)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
@@ -247,7 +246,7 @@ public class TestMySQLDictionary {
      * into a plain string literal, which gives COALESCE or CASE a string result (OPENJPA-2935).
      */
     @Test
-    public void testDateTimeLiteralIsTyped() {
+    void dateTimeLiteralIsTyped() {
         DBDictionary dict = new MySQLDictionary();
         assertEquals("DATE '2020-01-02'", dict.toJDBCEscapedDateTimeLiteral("{d '2020-01-02'}", Literal.TYPE_DATE));
         assertEquals("TIME '03:04:05'", dict.toJDBCEscapedDateTimeLiteral("{t '03:04:05'}", Literal.TYPE_TIME));
@@ -262,7 +261,7 @@ public class TestMySQLDictionary {
      * OpenJPA's own decorators, which the store's connection always has.
      */
     @Test
-    public void testReplicationConnectionBehindDecorators() throws Exception {
+    void replicationConnectionBehindDecorators() throws Exception {
         MySQLDictionary dict = new ReplicationTestDictionary();
         assertTrue(dict.isReplicationConnection(decorated(connection(FakeReplicationConnection.class))));
         assertTrue(dict.isReplicationConnection(connection(FakeReplicationConnection.class)));
@@ -274,7 +273,7 @@ public class TestMySQLDictionary {
      * is a wrapper for it.
      */
     @Test
-    public void testReplicationConnectionBehindPoolWrapper() throws Exception {
+    void replicationConnectionBehindPoolWrapper() throws Exception {
         MySQLDictionary dict = new ReplicationTestDictionary();
         assertTrue(dict.isReplicationConnection(decorated(poolWrapper(connection(FakeReplicationConnection.class)))));
         assertFalse(dict.isReplicationConnection(decorated(poolWrapper(connection()))));
@@ -286,7 +285,7 @@ public class TestMySQLDictionary {
      * replication connection.
      */
     @Test
-    public void testConfigurationDoesNotOverrideConnection() throws Exception {
+    void configurationDoesNotOverrideConnection() throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setConnectionDriverName("com.mysql.jdbc.ReplicationDriver");
         conf.setConnectionURL("jdbc:mysql:replication://source,replica/test");
@@ -301,7 +300,7 @@ public class TestMySQLDictionary {
      * recognized by its configured name.
      */
     @Test
-    public void testLegacyReplicationDriverName() throws Exception {
+    void legacyReplicationDriverName() throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setConnectionDriverName("com.mysql.jdbc.ReplicationDriver");
         MySQLDictionary dict = new NoDriverDictionary();
@@ -320,7 +319,7 @@ public class TestMySQLDictionary {
      * decides when a replication connection is read-only.
      */
     @Test
-    public void testDecorateLeavesConnectionWritable() throws Exception {
+    void decorateLeavesConnectionWritable() throws Exception {
         MySQLDictionary dict = new ReplicationTestDictionary();
         dict.setConfiguration(new JDBCConfigurationImpl());
         dict.connected = true;

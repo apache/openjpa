@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
-public class TestIndirectRecursion extends SingleEMFTestCase {
+class TestIndirectRecursion extends SingleEMFTestCase {
     // The connection matrix
     static byte[][] transitions = {
       //  s1 s2 s3 s4 s5
@@ -76,7 +76,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
     }
 
     @Test
-    public void testFetch() {
+    void fetch() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

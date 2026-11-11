@@ -71,7 +71,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         Map propsMap = new HashMap();
@@ -105,7 +105,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
      * Test that pessimistic locking is working in the data store.
      */
     @Test
-    public void testPessimisticLocking() throws Throwable {
+    void pessimisticLocking() throws Throwable {
         pessimisticLockingTest(false);
     }
 
@@ -115,7 +115,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
      * that the datastore's pessimistic locking is working.
      */
     @Test
-    public void testPessimisticLockingInternal() throws Throwable {
+    void pessimisticLockingInternal() throws Throwable {
         pessimisticLockingTest(true);
     }
 

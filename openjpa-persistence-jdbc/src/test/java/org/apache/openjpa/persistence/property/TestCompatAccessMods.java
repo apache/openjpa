@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestCompatAccessMods extends SingleEMFTestCase {
+class TestCompatAccessMods extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +44,7 @@ public class TestCompatAccessMods extends SingleEMFTestCase {
      * a separate enhancement task for PrivAccessModsEntity.
      */
     @Test
-    public void testAccessMods() {
+    void accessMods() {
         EntityManager em = emf.createEntityManager();
 
         PrivAccessModsEntity pame = new PrivAccessModsEntity();

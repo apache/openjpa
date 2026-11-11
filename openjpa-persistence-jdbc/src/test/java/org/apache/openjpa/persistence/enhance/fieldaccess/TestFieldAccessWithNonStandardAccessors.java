@@ -43,10 +43,10 @@ import org.junit.jupiter.api.Test;
  * The JPA 3.2 TCK (e.g. Order entity) treats getdescription/setdescription
  * as valid property accessors, so 'description' must be persistent.
  */
-public class TestFieldAccessWithNonStandardAccessors {
+class TestFieldAccessWithNonStandardAccessors {
 
     @Test
-    public void testPropertyAccessWithLowercaseAccessorIsPersistent() {
+    void propertyAccessWithLowercaseAccessorIsPersistent() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",
@@ -77,7 +77,7 @@ public class TestFieldAccessWithNonStandardAccessors {
     }
 
     @Test
-    public void testPropertyAccessEntityCanPersistAndFind() {
+    void propertyAccessEntityCanPersistAndFind() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",

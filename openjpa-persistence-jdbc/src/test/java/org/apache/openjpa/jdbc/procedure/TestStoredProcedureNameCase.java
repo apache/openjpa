@@ -73,7 +73,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
     }
 
     @Test
-    public void testOutParameter() {
+    void outParameter() {
         EntityManager em = emf.createEntityManager();
         try {
             create(em, "GetNameFromOut", "(IN IN_PARAM INTEGER, OUT OUT_PARAM VARCHAR(255))", "nameFromOut", 0);
@@ -89,7 +89,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInOutParameter() {
+    void inOutParameter() {
         EntityManager em = emf.createEntityManager();
         try {
             create(em, "GetNameFromInOut", "(INOUT INOUT_PARAM VARCHAR(255))", "nameFromInOut", 0);
@@ -104,7 +104,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
     }
 
     @Test
-    public void testResultSet() {
+    void resultSet() {
         EntityManager em = emf.createEntityManager();
         try {
             create(em, "GetAllAscFromRS", "()", "allAscFromRS", 1);
@@ -121,7 +121,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
     }
 
     @Test
-    public void testTemporalParameter() {
+    void temporalParameter() {
         EntityManager em = emf.createEntityManager();
         try {
             create(em, "GetDayUsingDateFromOut", "(IN IN_PARAM DATE, OUT OUT_PARAM INTEGER)", "dayFromOut", 0);
@@ -146,7 +146,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUnknownProcedure() {
+    void unknownProcedure() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createStoredProcedureQuery("DoesNotExistAnywhere");

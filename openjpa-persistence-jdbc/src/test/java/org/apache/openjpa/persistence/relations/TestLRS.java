@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-public class TestLRS
+class TestLRS
     extends SingleEMFTestCase {
 
     private long id;
@@ -68,7 +68,7 @@ public class TestLRS
     }
 
     @Test
-    public void testEMClear() {
+    void eMClear() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -79,7 +79,7 @@ public class TestLRS
     }
 
     @Test
-    public void testEMClose() {
+    void eMClose() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -89,7 +89,7 @@ public class TestLRS
     }
 
     @Test
-    public void testDetachCopy() {
+    void detachCopy() {
         OpenJPAEntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -101,7 +101,7 @@ public class TestLRS
     }
 
     @Test
-    public void testRelationships(){
+    void relationships(){
         OpenJPAEntityManager em = emf.createEntityManager();
         LrsEntityA a = new LrsEntityA("name");
         LrsEntityB b = new LrsEntityB("name-b", a);

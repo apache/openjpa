@@ -27,10 +27,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -52,10 +49,10 @@ import org.apache.openjpa.util.AbstractLRSProxyMap;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     @Test
-    public void testInverseKeyMapMapping() {
+    void inverseKeyMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
                 (InverseKeyMapPC.class, null, true);
@@ -67,15 +64,14 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
 
         assertEquals("stringField", map.getKey().getValueMappedBy());
         assertEquals(str, map.getKey().getValueMappedByMetaData());
-        assertTrue(map.getStrategy() instanceof
-                RelationMapInverseKeyFieldStrategy);
+        assertInstanceOf(RelationMapInverseKeyFieldStrategy.class, map.getStrategy());
         assertEquals(1, map.getKeyMapping().getColumns().length);
         assertEquals(map.getKeyMapping().getColumns()[0],
                 str.getColumns()[0]);
     }
 
     @Test
-    public void testJoinTableMapMapping() {
+    void joinTableMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
                 (JoinTableMapPC.class, null, true);
@@ -87,31 +83,31 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
 
         assertEquals("stringField", map.getKey().getValueMappedBy());
         assertEquals(str, map.getKey().getValueMappedByMetaData());
-        assertTrue(map.getStrategy() instanceof RelationMapTableFieldStrategy);
+        assertInstanceOf(RelationMapTableFieldStrategy.class, map.getStrategy());
         assertEquals(1, map.getKeyMapping().getColumns().length);
         assertEquals(map.getKeyMapping().getColumns()[0],
                 str.getColumns()[0]);
     }
 
     @Test
-    public void testInverseKeyMap() {
+    void inverseKeyMap() {
         mappedByMap(new InverseKeyMapPC(), false);
         queryMap(new InverseKeyMapPC());
     }
 
     @Test
-    public void testInverseKeyLRSMap() {
+    void inverseKeyLRSMap() {
         mappedByMap(new InverseKeyMapPC(), true);
     }
 
     @Test
-    public void testJoinTableMap() {
+    void joinTableMap() {
         mappedByMap(new JoinTableMapPC(), false);
         queryMap(new JoinTableMapPC());
     }
 
     @Test
-    public void testJoinTableLRSMap() {
+    void joinTableLRSMap() {
         mappedByMap(new JoinTableMapPC(), true);
     }
 
@@ -148,7 +144,7 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
             pm = (OpenJPAEntityManager)currentEntityManager();
             pc = (MappedByMapPC) pm.getObjectId(oid);
             if (lrs)
-                assertTrue(pc.getHelpers() instanceof AbstractLRSProxyMap);
+                assertInstanceOf(AbstractLRSProxyMap.class, pc.getHelpers());
             assertEquals(3, pc.getHelpers().size());
             assertFalse(pc.getHelpers().containsKey("foo"));
             assertNull(pc.getHelpers().get("foo"));
@@ -211,7 +207,7 @@ public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.ker
             itr = values.iterator();
             while (itr.hasNext()) {
                 Object next = itr.next();
-                assertTrue(next instanceof HelperPC);
+                assertInstanceOf(HelperPC.class, next);
                 ordered.add(((HelperPC) next).getStringField());
             }
             //FIXME jthomas

@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-public class TestBasicAnnotation extends SingleEMFTestCase {
+class TestBasicAnnotation extends SingleEMFTestCase {
     private static String VAL_LOCAL_DATE = "2019-01-01";
     private static String VAL_LOCAL_TIME = "14:57:15";
 
@@ -50,7 +50,7 @@ public class TestBasicAnnotation extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEagerFetchType() {
+    void eagerFetchType() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes aft = new AllFieldTypes();

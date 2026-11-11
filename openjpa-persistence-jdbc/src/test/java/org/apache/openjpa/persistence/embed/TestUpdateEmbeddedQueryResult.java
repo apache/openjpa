@@ -46,7 +46,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testUpdateEmbedded() {
+    void updateEmbedded() {
         EntityManager em = emf.createEntityManager();
         Address a = new Address();
         a.setStreetAddress("555 Bailey Ave");
@@ -68,7 +68,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         List<Address> list = em.createQuery(query).getResultList();
         Address a1 = list.get(0);
 
-        assertEquals(a1.getGeocode().getLatitude(),1.0f);
+        assertEquals(1.0f, a1.getGeocode().getLatitude());
 
         Long id = a1.getId();
 
@@ -80,7 +80,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         em.getTransaction().commit();
 
         Address a2 = em.find(Address.class, id);
-        assertEquals(a2.getGeocode().getLatitude(),3.0f);
+        assertEquals(3.0f, a2.getGeocode().getLatitude());
 
         em.getTransaction().begin();
         g.setLatitude(5.0f);
@@ -89,7 +89,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
 
         em.clear();
         Address a3 = em.find(Address.class, id);
-        assertEquals(a3.getGeocode().getLatitude(),5.0f);
+        assertEquals(5.0f, a3.getGeocode().getLatitude());
 
         em.clear();
         query = "select a.geocode from Address a where a.id = ?1";
@@ -111,7 +111,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEntityA_Embed_Embed_update() {
+    void entityAEmbedEmbedUpdate() {
         createEntityA_Embed_Embed();
         updateEmbedded_EntityA_Embed_Embed();
     }
@@ -158,14 +158,14 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBulkUpdateEmbeddedField() {
+    void bulkUpdateEmbeddedField() {
         EntityManager em = emf.createEntityManager();
         String update = "UPDATE EntityA_Embed_Embed a set a.embed.embed.intVal1 = ?1," +
                 " a.embed.embed.intVal2 = ?2 where a.id = 10";
         em.getTransaction().begin();
         int count = em.createQuery(update).setParameter(1, 100).setParameter(2, 200).executeUpdate();
         em.getTransaction().commit();
-        assertEquals(count, 0);
+        assertEquals(0, count);
 
         // test invalid bulk update embeddable field
         update = "UPDATE EntityA_Embed_Embed a set a.embed.embed = ?1";

@@ -51,10 +51,10 @@ import org.junit.jupiter.api.Test;
  *
  *
  */
-public class TestJPQLSubquery extends CriteriaTest {
+class TestJPQLSubquery extends CriteriaTest {
 
     @Test
-    public void testSubqueries1() {
+    void subqueries1() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE "
             + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) "
             + " FROM Customer c)";
@@ -79,7 +79,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries2() {
+    void subqueries2() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
             + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp ="
             + " emp.spouse)";
@@ -112,7 +112,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries3() {
+    void subqueries3() {
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
             + "SELECT m.salary FROM Manager m WHERE m.department = "
             + "emp.department)";
@@ -146,7 +146,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4() {
+    void subqueries4() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM c.orders o) > 10";
         String expectedSQL = "SELECT t0.id, t0.accountNum, t3.id, t3.city, t3.country, t3.county, t3.state, "
@@ -172,7 +172,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4a() {
+    void subqueries4a() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM Customer c1 JOIN c1.orders o WHERE c = c1) > 10";
         String expectedSQL = "SELECT t2.id, t2.accountNum, t3.id, t3.city, t3.country, t3.county, t3.state, "
@@ -198,7 +198,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4b() {
+    void subqueries4b() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM Customer c1 JOIN c1.orders o WHERE c.id = c1.id) > 10";
 
@@ -225,7 +225,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4c() {
+    void subqueries4c() {
         String jpql = "SELECT c FROM Customer c WHERE "
             + "(SELECT COUNT(o) FROM Customer c1 JOIN c1.orders o) > 10";
         String expectedSQL = "SELECT t2.id, t2.accountNum, t3.id, t3.city, t3.country, t3.county, t3.state, "
@@ -249,7 +249,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4d() {
+    void subqueries4d() {
         String jpql = "SELECT c FROM Customer c WHERE (SELECT COUNT(o) "
             + "FROM Customer c1 JOIN c1.orders o WHERE c.address.county = c1.address.county) > 10";
 
@@ -283,7 +283,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries4e() {
+    void subqueries4e() {
         String jpql = "SELECT c FROM Customer c WHERE EXISTS "
             + "(SELECT o.id FROM Order o WHERE o.customer = c)";
         String expectedSQL = "SELECT t1.id, t1.accountNum, t2.id, t2.city, t2.country, t2.county, t2.state, " +
@@ -310,7 +310,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries5() {
+    void subqueries5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
             + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
         String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -340,7 +340,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries5a() {
+    void subqueries5a() {
         String jpql = "SELECT o FROM Order o WHERE o.name = SOME ("
             + "SELECT a.name FROM o.customer c JOIN c.accounts a)";
         String expectedSQL = "SELECT t3.id, t3.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -370,7 +370,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6() {
+    void subqueries6() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT a.balance FROM c.accounts a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -400,7 +400,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6a() {
+    void subqueries6a() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.name FROM c.accounts a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t4.id, t4.accountNum, t5.id, t5.city, t5.country, t5.county, "
@@ -430,7 +430,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6b() {
+    void subqueries6b() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE o.name = "
             + "SOME (SELECT a.county FROM c.address a)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t3.id, t3.accountNum, t4.id, t4.city, t4.country, t4.county, "
@@ -459,7 +459,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6c() {
+    void subqueries6c() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
@@ -491,7 +491,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6d() {
+    void subqueries6d() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a1 JOIN a1.user u WHERE a.city = a1.city)";
         String expectedSQL = "SELECT t2.id, t2.cnt, t5.id, t5.accountNum, t6.id, t6.city, t6.country, t6.county, "
@@ -525,7 +525,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6e() {
+    void subqueries6e() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
 
@@ -558,7 +558,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6f() {
+    void subqueries6f() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address.user u)";
 
@@ -578,7 +578,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubqueries6g() {
+    void subqueries6g() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
             + "ALL (SELECT u.age FROM c.address a JOIN a.user u)";
 
@@ -613,7 +613,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     // redundant t3
     // compare to 6e, t3 should be in main query for LEFT OUTER JOIN
     @Test
-    public void testSubqueries6h() {
+    void subqueries6h() {
         String jpql = "SELECT o FROM Order o JOIN o.customer.address a WHERE 10000 < "
             + "ALL (SELECT u.age FROM a.user u)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t1.id, t1.accountNum, t6.id, t6.city, t6.country, t6.county, "
@@ -631,7 +631,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testExist1() {
+    void exist1() {
         String jpql = "SELECT DISTINCT c.name FROM CompUser c WHERE EXISTS"
             + " (SELECT a FROM Address a WHERE a = c.address )";
 
@@ -653,7 +653,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testExist1a() {
+    void exist1a() {
         String jpql = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS"
             + " (SELECT s FROM CompUser s WHERE s.address.country = "
             + "o.address.country)";
@@ -680,7 +680,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testExist1b() {
+    void exist1b() {
         String jpql = "select c from Customer c left join c.orders o where exists"
             + " (select o2 from c.orders o2 where o2 = o)";
 
@@ -712,7 +712,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testNotExist1() {
+    void notExist1() {
         String jpql = "SELECT DISTINCT c.name FROM CompUser c WHERE NOT EXISTS"
             + " (SELECT a FROM Address a WHERE a = c.address )";
 
@@ -734,7 +734,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testNotExist1a() {
+    void notExist1a() {
         String jpql = "select c from Customer c left join c.orders o where not exists"
             + " (select o2 from c.orders o2 where o2 = o)";
 
@@ -766,7 +766,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testAny() {
+    void any() {
         String jpql = "SELECT o.name FROM CompUser o "
             + "WHERE o.address.zipCode = ANY (SELECT s.computerName "
             + " FROM CompUser s WHERE s.address.country IS NOT NULL)";
@@ -795,7 +795,7 @@ public class TestJPQLSubquery extends CriteriaTest {
 
     // redundant t1
     @Test
-    public void testSubquery01() {
+    void subquery01() {
         String jpql = "select o1.id from Order o1 where o1.id in "
             + " (select distinct o.id from LineItem i, Order o"
             + " where i.quantity > 10 and o.count > 1000 and i.id = o.id)";
@@ -827,7 +827,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery02() {
+    void subquery02() {
         String jpql = "select o.id from Order o where o.customer.balanceOwed ="
             + " (select max(o2.customer.balanceOwed) from Order o2"
             + " where o.customer.id = o2.customer.id)";
@@ -854,7 +854,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery03() {
+    void subquery03() {
         String jpql = "select o from Order o where o.customer.balanceOwed ="
             + " (select max(o2.customer.balanceOwed) from Order o2"
             + " where o.customer.id = o2.customer.id)";
@@ -887,7 +887,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery04() {
+    void subquery04() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select count(i) from o.lineItems i)";
 
@@ -911,7 +911,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery05() {
+    void subquery05() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select count(o.quantity) from Order o)";
 
@@ -932,7 +932,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery06() {
+    void subquery06() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select count(o.id) from Order o)";
 
@@ -954,7 +954,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery07() {
+    void subquery07() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select avg(o.quantity) from Order o)";
 
@@ -975,7 +975,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery08() {
+    void subquery08() {
         String jpql = "select c.name from Customer c "
             + "where exists (select o from c.orders o where o.id = 1) "
             + "or exists (select o from c.orders o where o.id = 2)";
@@ -1009,7 +1009,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery09() {
+    void subquery09() {
         String jpql = "select c.name from Customer c, in(c.orders) o "
             + "where o.quantity between "
             + "(select max(o.quantity) from Order o) and "
@@ -1040,7 +1040,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery10() {
+    void subquery10() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select sum(o2.quantity) from Customer c, "
             + "in(c.orders) o2) ";
@@ -1064,7 +1064,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery11() {
+    void subquery11() {
         String jpql = "select o.id from Order o where o.quantity between"
             + " (select avg(o2.quantity) from Customer c, in(c.orders) o2)"
             + " and (select min(o2.quantity) from Customer c, in(c.orders)"
@@ -1098,7 +1098,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery12() {
+    void subquery12() {
         String jpql = "select o.id from Customer c, in(c.orders)o "
             + "where o.quantity > (select sum(o2.quantity)"
             + " from c.orders o2)";
@@ -1125,7 +1125,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery13() {
+    void subquery13() {
         String jpql = "select o1.id, c.name from Order o1, Customer c"
             + " where o1.quantity = "
             + " any(select o2.quantity from in(c.orders) o2)";
@@ -1155,7 +1155,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery14() {
+    void subquery14() {
         String jpql = "SELECT p, m FROM Publisher p "
             + "LEFT OUTER JOIN p.magazineCollection m "
             + "WHERE m.id = (SELECT MAX(m2.id) FROM Magazine m2 "
@@ -1194,7 +1194,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery15() {
+    void subquery15() {
         String jpql = "select o.id from Order o where o.delivered =(select "
             + "   CASE WHEN o2.quantity > 10 THEN true"
             + "     WHEN o2.quantity = 10 THEN false "
@@ -1235,7 +1235,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery16() {
+    void subquery16() {
         String jpql = "select o1.id from Order o1 where o1.quantity > "
             + " (select o.quantity*2 from LineItem i, Order o"
             + " where i.quantity > 10 and o.quantity > 1000 and i.id = "
@@ -1266,7 +1266,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery17() {
+    void subquery17() {
         String jpql = "select o.id from Order o where o.customer.name ="
             + " (select substring(o2.customer.name, 3) from Order o2"
             + " where o.customer.id = o2.customer.id)";
@@ -1298,7 +1298,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery18() {
+    void subquery18() {
         String jpql = "select o.id from Order o where o.orderTs >"
             + " (select CURRENT_TIMESTAMP from o.lineItems i)";
 
@@ -1321,7 +1321,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery19() {
+    void subquery19() {
         String jpql = "select o.id from Order o where o.quantity >"
             + " (select SQRT(o.quantity) from Order o where o.delivered"
             + " = true)";
@@ -1344,7 +1344,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery20() {
+    void subquery20() {
         String jpql = "select o.id from Order o where o.customer.name in"
             + " (select CONCAT(o.customer.name, 'XX') from Order o"
             + " where o.quantity > 10)";
@@ -1372,7 +1372,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery21() {
+    void subquery21() {
         String jpql = "select c from Customer c where c.creditRating ="
             + " (select CASE WHEN o2.quantity > 10 THEN "
             + "            Customer$CreditRating.POOR "
@@ -1417,7 +1417,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery22() {
+    void subquery22() {
         String jpql = "select c from Customer c "
             + "where c.creditRating = (select COALESCE (c1.creditRating, "
             + "org.apache.openjpa.persistence.criteria."
@@ -1456,7 +1456,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery23() {
+    void subquery23() {
         String jpql = "select c from Customer c "
             + "where c.creditRating = (select NULLIF (c1.creditRating, "
             + "org.apache.openjpa.persistence.criteria."
@@ -1492,7 +1492,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery24() {
+    void subquery24() {
         String jpql = "select o from Order o where o.count > (select count(o) from Order o)";
 
         String expectedSQL = "SELECT t0.id, t0.cnt, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " +
@@ -1520,7 +1520,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testSubquery25() {
+    void subquery25() {
         String jpql = "select o from Order o where o.count > (select count(o2) from Order o2)";
 
         String expectedSQL = "SELECT t0.id, t0.cnt, t2.id, t2.accountNum, t3.id, t3.city, t3.country, " +
@@ -1549,7 +1549,7 @@ public class TestJPQLSubquery extends CriteriaTest {
 
 
     @Test
-    public void testSubSelectMaxDateRange() {
+    void subSelectMaxDateRange() {
         String jpql = "SELECT e,d from Employee e, Dependent d "
             + "WHERE e.empId = :empid "
             + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
@@ -1589,7 +1589,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testCorrelatedNestedSubquery1() {
+    void correlatedNestedSubquery1() {
         String jpql = "Select Object (c) From Customer c Where Not Exists ("
                 + "   Select a.id From Account As a Where "
                 + "        a.customer = c  And "
@@ -1627,7 +1627,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testCorrelatedNestedSubquery1a() {
+    void correlatedNestedSubquery1a() {
         String jpql = "Select Object (o) From Product o Where Not Exists ("
             + "   Select a.id From Account As a Where "
             + "        a.product = o  And "
@@ -1660,7 +1660,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testPluralCorrelatedJoin1() {
+    void pluralCorrelatedJoin1() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08, "
             + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
             + "WHERE a.state = "
@@ -1693,7 +1693,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testPluralCorrelatedJoin2() {
+    void pluralCorrelatedJoin2() {
         String jpql = "SELECT d.name FROM Department d JOIN d.employees e JOIN e.manager m "
            + "WHERE m.salary = (SELECT e1.salary from Employee e1 JOIN e1.manager m1 "
            + "where m.name = m1.name)";
@@ -1724,7 +1724,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testPluralCorrelatedJoin3() {
+    void pluralCorrelatedJoin3() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c JOIN c.accounts a WHERE 10000 < "
             + "ANY (SELECT a1.balance FROM Account a1 WHERE a.owner = a1.owner)";
         String expectedSQL = "SELECT t0.id, t0.cnt, t6.id, t6.accountNum, t7.id, t7.city, "
@@ -1760,7 +1760,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testPluralCorrelatedJoin4() {
+    void pluralCorrelatedJoin4() {
         String jpql =
         "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a JOIN a.owner owner WHERE 10000 < "
         + "ANY (SELECT a1.balance FROM Account a1 JOIN a1.owner owner1 WHERE owner.name = owner1.name)";
@@ -1793,7 +1793,7 @@ public class TestJPQLSubquery extends CriteriaTest {
     }
 
     @Test
-    public void testPluralCorrelatedJoin5() {
+    void pluralCorrelatedJoin5() {
         String jpql = "SELECT o.quantity FROM Order o JOIN o.customer c JOIN c.accounts a WHERE c.name = "
             + "ANY (SELECT owner.name FROM a.owner owner WHERE owner.id = 1)";
         String expectedSQL = "SELECT t0.quantity FROM CR_ODR t0 "

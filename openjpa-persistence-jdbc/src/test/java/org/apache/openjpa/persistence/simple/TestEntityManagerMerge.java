@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
@@ -33,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-public class TestEntityManagerMerge
+class TestEntityManagerMerge
     extends SingleEMTestCase {
 
     @BeforeEach
@@ -42,7 +40,7 @@ public class TestEntityManagerMerge
     }
 
     @Test
-    public void testMerge() {
+    void merge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -57,9 +55,8 @@ public class TestEntityManagerMerge
 
         // Attempt to merge this updated object into the PC.  Should be ignored.
         AllFieldTypes mergedObject = em.merge(testObject);
-        assertTrue(mergedObject.equals(testObject),
-                "mergedObject and testObject are not equal");
-        assertTrue(mergedObject == testObject,
+        assertEquals(mergedObject, testObject, "mergedObject and testObject are not equal");
+        assertSame(mergedObject, testObject,
                 "mergedObject and testObject are not ==");
         assertTrue(em.contains(testObject), "testObject not found in pc");
         assertTrue(em.contains(mergedObject), "mergedObject not found in pc");
@@ -67,9 +64,8 @@ public class TestEntityManagerMerge
         // And, once again...
         testObject.setStringField("yet another update");
         AllFieldTypes mergedObject2 = em.merge(testObject);
-        assertTrue(mergedObject2.equals(testObject),
-                "mergedObject2 and testObject are not equal");
-        assertTrue(mergedObject2 == testObject,
+        assertEquals(mergedObject2, testObject, "mergedObject2 and testObject are not equal");
+        assertSame(mergedObject2, testObject,
                 "mergedObject2 and testObject are not ==");
         assertTrue(em.contains(testObject), "testObject not found in pc");
         assertTrue(em.contains(mergedObject2), "mergedObject2 not found in pc");
@@ -84,7 +80,7 @@ public class TestEntityManagerMerge
      * row in the database succeeds.
      */
     @Test
-    public void testMergeExistingEntity() {
+    void mergeExistingEntity() {
         Person p = new Person();
         p.setId(102);
 

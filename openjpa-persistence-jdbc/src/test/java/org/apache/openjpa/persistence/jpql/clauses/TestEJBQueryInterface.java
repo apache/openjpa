@@ -41,7 +41,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         int instNum = 10;
 
@@ -67,7 +67,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     }
 
     @Test
-    public void testResultList() {
+    void resultList() {
         EntityManager em = currentEntityManager();
         List list = em.createQuery("Select object(o) from Entity1 o")
             .getResultList();
@@ -78,7 +78,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     }
 
     @Test
-    public void testGetSingleList() {
+    void getSingleList() {
         EntityManager em = currentEntityManager();
         String curr = 2 + "";
 
@@ -94,26 +94,26 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     }
 
     @Test
-    public void testExecuteUpdate() {
+    void executeUpdate() {
 
         EntityManager em = currentEntityManager();
         startTx(em);
         int ret = em.createQuery("Delete FROM Entity1 o WHERE o.pk = 2")
             .executeUpdate();
 
-        assertEquals(ret, 1);
+        assertEquals(1, ret);
 
         int ret2 = em.createQuery("Delete FROM Entity1 o WHERE o.pk = 22")
             .executeUpdate();
 
-        assertEquals(ret2, 0);
+        assertEquals(0, ret2);
 
         endTx(em);
         endEm(em);
     }
 
     @Test
-    public void testSetMaxResults() {
+    void setMaxResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o")
@@ -127,7 +127,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     }
 
     @Test
-    public void testSetFirstResults() {
+    void setFirstResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o order by o.pk")

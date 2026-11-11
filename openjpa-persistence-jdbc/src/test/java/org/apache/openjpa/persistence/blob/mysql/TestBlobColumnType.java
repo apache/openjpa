@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * Testcase for MySQL Blob types. OPENJPA-740 introduced intelligent column type for BLOBs, OPENJPA-1870 refined it a
  * bit.
  */
-public class TestBlobColumnType extends SingleEMFTestCase {
+class TestBlobColumnType extends SingleEMFTestCase {
 
     private static boolean _firstRun=true;
     private boolean _runTest = false; // only test with MySQL
@@ -75,42 +75,42 @@ public class TestBlobColumnType extends SingleEMFTestCase {
     }
 
     @Test
-    public void testSmallLob() {
+    void smallLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.tinyBlobTypeName, getCol("smallLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testMedLob() {
+    void medLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.mediumBlobTypeName, getCol("medLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testLongBlob() {
+    void longBlob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.longBlobTypeName, getCol("longLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testOldLob() {
+    void oldLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("oldLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testDefaultLob() {
+    void defaultLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
         }
     }
 
     @Test
-    public void testDefinedLob() {
+    void definedLob() {
         if (_runTest) {
             assertEquals("BINARY", getCol("definedLob").getTypeIdentifier().getName());
         }

@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * and a drop-script-source actually drops the table.
  * Reproduces TCK se.schemaGeneration.annotations.table pattern.
  */
-public class TestSchemaGenDrop extends SingleEMFTestCase {
+class TestSchemaGenDrop extends SingleEMFTestCase {
 
     private static final String SCHEMA_DIR = System.getProperty("java.io.tmpdir")
         + File.separator + "openjpa_schemagen_test";
@@ -48,7 +48,7 @@ public class TestSchemaGenDrop extends SingleEMFTestCase {
     }
 
     @Test
-    public void testDropViaGenerateSchema() throws Exception {
+    void dropViaGenerateSchema() throws Exception {
         File dir = new File(SCHEMA_DIR);
         dir.mkdirs();
 

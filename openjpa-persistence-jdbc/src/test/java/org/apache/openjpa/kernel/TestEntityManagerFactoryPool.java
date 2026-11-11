@@ -31,7 +31,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEntityManagerFactoryPool
+class TestEntityManagerFactoryPool
     extends SingleEMFTestCase {
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class TestEntityManagerFactoryPool
     }
 
     @Test
-    public void testBrokerFactoryPoolHit() {
+    void brokerFactoryPoolHit() {
         Map m = new HashMap();
         // also tests string values for the property
         m.put("openjpa.EntityManagerFactoryPool", "True");
@@ -54,7 +54,7 @@ public class TestEntityManagerFactoryPool
     }
 
     @Test
-    public void testBrokerFactoryPoolMiss() {
+    void brokerFactoryPoolMiss() {
         Map m = new HashMap();
         m.put("openjpa.EntityManagerFactoryPool", Boolean.TRUE);
         EntityManagerFactory emf1 = Persistence.createEntityManagerFactory(

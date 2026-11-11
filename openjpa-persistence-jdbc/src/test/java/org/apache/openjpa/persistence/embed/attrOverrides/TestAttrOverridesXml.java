@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,7 +35,6 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +57,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     }
 
     @Test
-    public void testAttrOverride1() {
+    void attrOverride1() {
         sql.clear();
     	createObj1();
     	findObj1();
@@ -73,7 +70,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
      * in XML overrides the base column definition.
      */
     @Test
-    public void testBasicEmbedAttrOverride() {
+    void basicEmbedAttrOverride() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         BasicEntityXML be = new BasicEntityXML();
@@ -99,7 +96,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
      * only embeddable has attribute overrides applied correctly.
      */
     @Test
-    public void testXMLEntityWithAnnotatedOverrideEmbed() {
+    void xmlEntityWithAnnotatedOverrideEmbed() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLOverEntity xoe = new XMLOverEntity();
@@ -154,11 +151,11 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     public void findObj1() {
         EntityManager em = emf.createEntityManager();
         CustomerXml p = em.find(CustomerXml.class, 1);
-        Assertions.assertEquals(p.getId(), Integer.valueOf(1));
-        Assertions.assertEquals(p.getAddress().getCity(), "city_1");
-        Assertions.assertEquals(p.getAddress().getStreet(), "street_1");
-        Assertions.assertEquals(p.getAddress().getState(), "state_1");
-        Assertions.assertEquals(p.getName(), "name_1");
+        assertEquals(p.getId(), Integer.valueOf(1));
+        assertEquals("city_1", p.getAddress().getCity());
+        assertEquals("street_1", p.getAddress().getStreet());
+        assertEquals("state_1", p.getAddress().getState());
+        assertEquals("name_1", p.getName());
         em.close();
     }
 
@@ -169,7 +166,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         String jpql = "select p from CustomerXml1 p";
         Query q = em.createQuery(jpql);
         List<CustomerXml> ps = q.getResultList();
-        Assertions.assertEquals(ps.size(), numPersons);
+        assertEquals(ps.size(), numPersons);
         tran.commit();
         em.close();
     }

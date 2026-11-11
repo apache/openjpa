@@ -90,7 +90,7 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
      *
      */
     @Test
-    public void testM2MDataCache() {
+    void m2mDataCache() {
         EntityManager em = emf.createEntityManager();
         populate(em);
         em.close();
@@ -108,7 +108,7 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
     }
 
     @Test
-    public void testEagerFetch() {
+    void eagerFetch() {
         EntityManager em = emf.createEntityManager();
         populate(em);
         em.close();

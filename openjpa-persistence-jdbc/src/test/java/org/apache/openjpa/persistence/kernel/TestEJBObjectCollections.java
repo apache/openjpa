@@ -45,7 +45,7 @@ public class TestEJBObjectCollections extends AbstractTestCase {
     }
 
     @Test
-    public void testHashSet() {
+    void hashSet() {
         assertEquals(1, add(new Object[]{ "Foo" }, 1).getHashSet().size());
         assertEquals(1, add(new Object[]{ "Foo" }, 2).getHashSet().size());
 
@@ -55,7 +55,7 @@ public class TestEJBObjectCollections extends AbstractTestCase {
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         deleteAll(ObjectCollectionHolder.class);
         deleteAll(AllFieldsTypeTest.class);
     }

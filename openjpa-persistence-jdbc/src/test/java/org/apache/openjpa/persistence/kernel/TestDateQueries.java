@@ -46,7 +46,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestDateQueries extends BaseKernelTest {
+class TestDateQueries extends BaseKernelTest {
 
     private OpenJPAEntityManager _pm = null;
     private Date _date = null;
@@ -55,7 +55,7 @@ public class TestDateQueries extends BaseKernelTest {
     private final Timestamp referenceTst = new Timestamp(10000000000L);
 
     @BeforeEach
-    public void setUp()
+    void setUp()
         throws Exception {
         super.setUp(AllFieldTypesTest.class);
 
@@ -100,7 +100,7 @@ public class TestDateQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testEquals() {
+    void equals() {
         Collection vals = executeQuery("testDate = :date");
         assertEquals(1, vals.size());
         assertEquals(_date, ((AllFieldTypesTest) vals.iterator().next()).
@@ -108,13 +108,13 @@ public class TestDateQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testNotEquals() {
+    void notEquals() {
         Collection vals = executeQuery("testDate <> :date");
         assertEquals(2, vals.size());
     }
 
     @Test
-    public void testDateScale() {
+    void dateScale() {
         DBDictionary dbDictionary = ((JDBCConfiguration) _pm.getConfiguration()).getDBDictionaryInstance();
         if (!dbDictionary.fractionalTypeNameSet.contains(dbDictionary.timestampTypeName)) {
             getLog().info("skipping testDateScale because DB doesn't support different fractions in timestamps");
@@ -183,7 +183,7 @@ public class TestDateQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testBefore() {
+    void before() {
         Collection vals = executeQuery("testDate < :date");
         assertEquals(1, vals.size());
         assertEquals(_before, ((AllFieldTypesTest) vals.iterator().next()).
@@ -191,7 +191,7 @@ public class TestDateQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testAfter() {
+    void after() {
         Collection vals = executeQuery("testDate > :date");
         assertEquals(1, vals.size());
         assertEquals(_after, ((AllFieldTypesTest) vals.iterator().next()).
@@ -199,7 +199,7 @@ public class TestDateQueries extends BaseKernelTest {
     }
 
     @Test
-    public void testOrderBy() {
+    void orderBy() {
         String query =
             "SELECT o FROM AllFieldTypesTest o ORDER BY o.testDate ASC";
         OpenJPAQuery q = _pm.createQuery(query);

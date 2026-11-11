@@ -22,7 +22,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
+class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
@@ -34,7 +34,7 @@ public class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
      *  using Issue428Entity which does not have an annotated @Id field.
      */
     @Test
-    public void test428() {
+    void test428() {
         emf.createEntityManager().close();
     }
 }

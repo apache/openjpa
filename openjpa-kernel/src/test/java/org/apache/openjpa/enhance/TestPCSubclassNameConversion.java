@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.enhance;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class TestPCSubclassNameConversion {
+class TestPCSubclassNameConversion {
 
     @Test
-    public void testPCSubclassNameConversion() {
+    void pCSubclassNameConversion() {
         String name = PCEnhancer.toPCSubclassName(Object.class);
         assertTrue(PCEnhancer.isPCSubclassName(name));
         assertEquals(Object.class.getName(),
