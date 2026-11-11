@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,13 +30,15 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for Query parameter API compliance (JPA spec).
  */
 public class TestQueryParameterAPI extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
@@ -40,6 +46,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
     /**
      * getParameter(name, type) should return the parameter when the type matches.
      */
+    @Test
     public void testGetParameterStringClassMatch() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
@@ -55,6 +62,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameter(name, type) should throw IllegalArgumentException
      * when the type does not match.
      */
+    @Test
     public void testGetParameterStringClassMismatch() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
@@ -72,6 +80,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
     /**
      * getParameter(pos, type) should return the parameter when the type matches.
      */
+    @Test
     public void testGetParameterIntClassMatch() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery(
@@ -86,6 +95,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameter(pos, type) should throw IllegalArgumentException
      * when the type does not match.
      */
+    @Test
     public void testGetParameterIntClassMismatch() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery(
@@ -104,6 +114,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameterValue(Parameter) should throw IllegalStateException
      * when the parameter has not been bound.
      */
+    @Test
     public void testGetParameterValueParameterUnbound() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
@@ -123,6 +134,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * getParameterValue(String) should throw IllegalStateException
      * when the parameter has not been bound.
      */
+    @Test
     public void testGetParameterValueStringUnbound() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
@@ -141,6 +153,7 @@ public class TestQueryParameterAPI extends SingleEMFTestCase {
      * setParameter(Parameter, Object) should throw IllegalArgumentException
      * when the parameter does not belong to the query.
      */
+    @Test
     public void testSetParameterFromDifferentQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q1 = em.createQuery(

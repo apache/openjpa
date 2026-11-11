@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.tools.maven.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 public class ItDropSchemaTest {
 

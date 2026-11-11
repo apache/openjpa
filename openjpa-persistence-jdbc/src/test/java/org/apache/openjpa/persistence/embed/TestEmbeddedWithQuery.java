@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +29,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEmbeddedWithQuery extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EParent.class, EChild.class, EGeneric.class,
             "openjpa.MaxFetchDepth", "1",
@@ -38,6 +43,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
         populate();
     }
 
+    @Test
     public void testFullEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 
@@ -70,6 +76,7 @@ public class TestEmbeddedWithQuery extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testPartialEmbeddableLoadByJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 

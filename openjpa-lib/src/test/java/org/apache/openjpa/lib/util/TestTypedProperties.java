@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.lib.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link TypedProperties} type.
@@ -33,7 +34,7 @@ public class TestTypedProperties {
     private TypedProperties _props = null;
     private TypedProperties _defs = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         _props = new TypedProperties();
         _props.setProperty("bool", "true");

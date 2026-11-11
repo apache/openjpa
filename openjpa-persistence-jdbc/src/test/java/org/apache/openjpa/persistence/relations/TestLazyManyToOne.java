@@ -18,17 +18,22 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestLazyManyToOne extends SQLListenerTestCase {
 
     private int id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BasicEntity.class, UnidirectionalManyToOne.class, CLEAR_TABLES);
 
@@ -45,6 +50,7 @@ public class TestLazyManyToOne extends SQLListenerTestCase {
         sql.clear();
     }
 
+    @Test
     public void testLazyManyToOne() {
         EntityManager em = emf.createEntityManager();
         UnidirectionalManyToOne pc = em.find(UnidirectionalManyToOne.class, id);

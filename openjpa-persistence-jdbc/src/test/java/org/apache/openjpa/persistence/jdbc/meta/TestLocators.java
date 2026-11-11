@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Arrays;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -37,21 +40,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.LocatorTestObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestLocators
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private OpenJPAEntityManagerFactory pmf;
 
-    public TestLocators(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestLocators */
-    public TestLocators() {
-    }
-    @Override
+    @BeforeEach
     public void setUp() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -65,7 +63,7 @@ public class TestLocators
         pm.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         super.tearDown();
@@ -73,10 +71,12 @@ public class TestLocators
        deleteAll(LocatorTestObject.class);
     }
 
+    @Test
     public void testBLOBs() {
         doBlobTest(50000);
     }
 
+    @Test
     public void testSmallBLOBs() {
         doBlobTest(50);
 
@@ -117,6 +117,7 @@ public class TestLocators
         }
     }
 
+    @Test
     public void testShrinkBLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -148,10 +149,12 @@ public class TestLocators
         }
     }
 
+    @Test
     public void testCLOBs() {
         doClobTest(50000);
     }
 
+    @Test
     public void testSmallCLOBs() {
         doClobTest(50);
 
@@ -193,6 +196,7 @@ public class TestLocators
         }
     }
 
+    @Test
     public void testShrinkCLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);

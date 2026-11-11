@@ -28,11 +28,19 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestStateManagerImplData extends BaseKernelTest {
 
@@ -42,17 +50,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
     Boolean _f3;
 
-    /**
-     * Creates a new instance of TestStateManagerImplData
-     */
-    public TestStateManagerImplData() {
-    }
-
-    public TestStateManagerImplData(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class);
     }
@@ -70,6 +68,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
         _meta.getField(3).setUsesImplData(_f3);
     }
 
+    @Test
     public void testImplData() {
         ModRuntimeTest1 pc = new ModRuntimeTest1();
 
@@ -123,6 +122,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testNotClearedIfRetainValues() {
         notClearedIfRetainValuesTest(true);
         notClearedIfRetainValuesTest(false);

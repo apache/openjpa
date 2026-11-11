@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -28,14 +30,15 @@ import jakarta.persistence.Persistence;
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestAutoDetachProperty extends TestCase {
+public class TestAutoDetachProperty {
     private EntityManager em;
     private EntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         // Don't modify system props, as we are trying to get as close as
         // possible to testing props in persistence.xml
@@ -47,7 +50,7 @@ public class TestAutoDetachProperty extends TestCase {
         em = emf.createEntityManager();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         em.close();
         em = null;
@@ -55,19 +58,22 @@ public class TestAutoDetachProperty extends TestCase {
         emf = null;
     }
 
+    @Test
     public void testIsAutoDetachingOnClose() {
-        assertTrue("not autodetaching on close as expected",
-                isAutoDetachingOnClose());
+        assertTrue(isAutoDetachingOnClose(),
+                "not autodetaching on close as expected");
     }
 
+    @Test
     public void testIsAutoDetachingOnCommit() {
-        assertTrue("not autodetaching on commit as expected",
-                isAutoDetachingOnCommit());
+        assertTrue(isAutoDetachingOnCommit(),
+                "not autodetaching on commit as expected");
     }
 
+    @Test
     public void testIsAutoDetachingOnNonTxRead() {
-        assertTrue("not autodetaching on nontransactional read as expected",
-                isAutoDetachingOnNonTxRead());
+        assertTrue(isAutoDetachingOnNonTxRead(),
+                "not autodetaching on nontransactional read as expected");
     }
 
     private boolean isAutoDetachingOnClose() {

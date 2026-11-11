@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.derivedid;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
@@ -27,10 +29,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDerivedIdentity  extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EBigDecimalID.class, EDBigDecimalID.class,
             EBigIntegerID.class, EDBigIntegerID.class,
@@ -78,6 +82,7 @@ public class TestDerivedIdentity  extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testDerivedIdentity() {
         EntityManager em = emf.createEntityManager();
         Query query = null;

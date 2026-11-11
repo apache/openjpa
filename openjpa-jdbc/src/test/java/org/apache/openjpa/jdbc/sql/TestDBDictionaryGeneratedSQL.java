@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -29,14 +29,15 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.util.UserException;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class TestDBDictionaryGeneratedSQL {
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
     @Test
     public void testCreateTableLongNameException() {

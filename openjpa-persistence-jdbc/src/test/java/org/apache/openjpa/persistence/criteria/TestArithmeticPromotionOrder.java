@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -33,6 +36,9 @@ import jakarta.persistence.criteria.Root;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Checks that JPQL arithmetic on a BigDecimal or BigInteger operand and a
@@ -46,7 +52,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     private CriteriaBuilder cb;
     private EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         // a query evaluated in memory must not be served from the SQL cache
         super.setUp(CLEAR_TABLES, NumericOperands.class, "openjpa.jdbc.QuerySQLCache", "false");
@@ -62,7 +68,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
         em.clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -70,6 +76,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testBigDecimalAndDouble() {
         assertArithmetic(Double.valueOf(3.5), "n.decA + n.doubleA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Double> get("doubleA")));
@@ -81,6 +88,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
             r -> cb.quot(r.<Double> get("doubleA"), r.<BigDecimal> get("decA")));
     }
 
+    @Test
     public void testBigDecimalAndFloat() {
         assertArithmetic(Float.valueOf(2.5f), "n.decA + n.floatA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Float> get("floatA")));
@@ -88,6 +96,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
             r -> cb.prod(r.<Float> get("floatA"), r.<BigDecimal> get("decA")));
     }
 
+    @Test
     public void testBigIntegerAndFloatingPoint() {
         assertArithmetic(Double.valueOf(4.5), "n.bigIntA * n.doubleA",
             r -> cb.prod(r.<BigInteger> get("bigIntA"), r.<Double> get("doubleA")));
@@ -95,6 +104,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
             r -> cb.sum(r.<Float> get("floatA"), r.<BigInteger> get("bigIntA")));
     }
 
+    @Test
     public void testBigDecimalAndIntegralOperands() {
         assertArithmetic(new BigDecimal("9"), "n.decA + n.intA",
             r -> cb.sum(r.<BigDecimal> get("decA"), r.<Integer> get("intA")));
@@ -109,6 +119,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
      * numeric literal of type BigDecimal, like a BigDecimal literal of the
      * Criteria API.
      */
+    @Test
     public void testDecimalLiteral() {
         assertArithmetic(new BigDecimal("3.0"), "n.decA * 1.5",
             r -> cb.prod(r.<BigDecimal> get("decA"), new BigDecimal("1.5")));
@@ -123,6 +134,7 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
     /**
      * Compares a BigDecimal and a Double operand as before, as exact values.
      */
+    @Test
     public void testComparison() {
         String jpql = "SELECT n.id FROM NumericOperands n WHERE n.decA > n.doubleA "
             + "AND n.decA + n.doubleA = 3.5 AND n.floatA * 1.5 < n.decA";
@@ -146,20 +158,20 @@ public class TestArithmeticPromotionOrder extends SingleEMFTestCase {
         Root<NumericOperands> r = c.from(NumericOperands.class);
         Expression<?> e = criteria.apply(r);
         c.select(e);
-        assertEquals("criteria type " + jpql, expected.getClass(), Filters.wrap(e.getJavaType()));
+        assertEquals(expected.getClass(), Filters.wrap(e.getJavaType()), "criteria type " + jpql);
         assertValue("criteria " + jpql, expected, em.createQuery(c).getSingleResult());
         assertValue("criteria in memory " + jpql, expected,
             inMemory(em.createQuery(c)).getSingleResult());
     }
 
     private static void assertValue(String message, Number expected, Object actual) {
-        assertNotNull(message, actual);
-        assertEquals(message + " = " + actual, expected.getClass(), actual.getClass());
+        assertNotNull(actual, message);
+        assertEquals(expected.getClass(), actual.getClass(), message + " = " + actual);
         if (expected instanceof BigDecimal) {
-            assertEquals(message + " = " + actual, 0,
-                ((BigDecimal) expected).compareTo((BigDecimal) actual));
+            assertEquals(0, ((BigDecimal) expected).compareTo((BigDecimal) actual),
+                message + " = " + actual);
         } else {
-            assertEquals(message, expected, actual);
+            assertEquals(expected, actual, message);
         }
     }
 

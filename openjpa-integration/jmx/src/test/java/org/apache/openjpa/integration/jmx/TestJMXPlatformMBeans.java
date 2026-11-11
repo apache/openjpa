@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.integration.jmx;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +49,15 @@ import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
     private static String clsName = CachedEntity.class.getName();
+
     /**
      * Verifies data cache metrics are available through simple instrumentation.
      */
+    @Test
     public void testDataCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
 
@@ -106,6 +114,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
     /**
      * Verifies query cache metrics are available through simple instrumentation.
      */
+    @Test
     public void testQueryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
 
@@ -179,6 +188,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
     /**
      * Verifies prepared query cache metrics are available through simple instrumentation.
      */
+    @Test
     public void testPreparedQueryCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx-qsc");
 

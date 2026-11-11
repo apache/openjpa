@@ -28,23 +28,21 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.AppIdClassString;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestClassStringConstructor extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestClassStringConstructor
-     */
-    public TestClassStringConstructor(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(AppIdClassString.class);
     }
 
+    @Test
     public void testConstructor() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);

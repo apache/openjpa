@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.exception;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,6 +36,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLErrorCodeReader;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests proper JPA exceptions are raised by the implementation.
@@ -44,7 +50,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestException extends SingleEMFTestCase {
 	private static long ID_COUNTER = System.currentTimeMillis();
 
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(PObject.class, CLEAR_TABLES);
     }
@@ -102,7 +108,8 @@ public class TestException extends SingleEMFTestCase {
 		}
 	}
 
-	public void testThrowsEntityExistsException() {
+    @Test
+    public void testThrowsEntityExistsException() {
 		EntityManager em = emf.createEntityManager();
 
 		em.getTransaction().begin();
@@ -126,7 +133,8 @@ public class TestException extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testThrowsEntityNotFoundException() {
+    @Test
+    public void testThrowsEntityNotFoundException() {
 		EntityManager em = emf.createEntityManager();
 
 		em.getTransaction().begin();
@@ -152,7 +160,8 @@ public class TestException extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testErrorCodeConfigurationHasAllKnownDictionaries() {
+    @Test
+    public void testErrorCodeConfigurationHasAllKnownDictionaries() {
 		SQLErrorCodeReader reader = new SQLErrorCodeReader();
 		InputStream in = DBDictionary.class.getResourceAsStream
 			("sql-error-state-codes.xml");
@@ -170,11 +179,12 @@ public class TestException extends SingleEMFTestCase {
 		}
 	}
 
-	/**
-	 * Invalid query throws IllegalArgumentException on construction
-	 * as per JPA spec.
-	 */
-	public void testIllegalArgumennExceptionOnInvalidQuery() {
+    /**
+     * Invalid query throws IllegalArgumentException on construction
+     * as per JPA spec.
+     */
+    @Test
+    public void testIllegalArgumennExceptionOnInvalidQuery() {
 	    EntityManager em = emf.createEntityManager();
 	    try {
 	      em.createQuery("This is not a valid JPQL query");
@@ -185,10 +195,11 @@ public class TestException extends SingleEMFTestCase {
 	    em.close();
 	}
 
-	/**
-	 * Invalid named query fails as per spec on factory based construction.
-	 */
-     public void testIllegalArgumennExceptionOnInvalidNamedQuery() {
+    /**
+     * Invalid named query fails as per spec on factory based construction.
+     */
+    @Test
+    public void testIllegalArgumennExceptionOnInvalidNamedQuery() {
          EntityManager em = emf.createEntityManager();
          try {
              Query query = em.createNamedQuery("This is invalid Named query");

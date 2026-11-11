@@ -27,23 +27,18 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestStaticInnerClasses extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestStaticInnerClasses
-     */
-    public TestStaticInnerClasses() {
-    }
-
-    public TestStaticInnerClasses(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         super.setUp(StaticInnerClassesContainer.Inner.class);
@@ -57,6 +52,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testGetById() {
         OpenJPAEntityManager pm = getPM();
         StaticInnerClassesContainer.Inner inner = pm.find(StaticInnerClassesContainer.Inner.class, _oid);
@@ -65,6 +61,7 @@ public class TestStaticInnerClasses extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testGetByQuery() {
 //        OpenJPAEntityManager pm = getPM();
 //

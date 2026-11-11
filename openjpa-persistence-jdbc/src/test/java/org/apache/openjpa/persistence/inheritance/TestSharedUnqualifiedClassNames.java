@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities, mapped superclasses, and embeddables can all share
@@ -37,7 +41,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSharedUnqualifiedClassNames
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(org.apache.openjpa.persistence.inheritance.mappedsuperclass
                 .SharedName1.class,
@@ -50,8 +54,9 @@ public class TestSharedUnqualifiedClassNames
         emf.createEntityManager().close();
     }
 
-    @AllowFailure(message="MappedSuperclass can be aliased and has higher" +
-    "search order in alias if it clashes with other types's alias")
+    @AllowFailure(message = "MappedSuperclass can be aliased and has higher" +
+        "search order in alias if it clashes with other types's alias")
+    @Test
     public void testMappedSuperclass() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
@@ -61,6 +66,7 @@ public class TestSharedUnqualifiedClassNames
             meta.getDescribedType());
     }
 
+    @Test
     public void testEmbeddable() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()

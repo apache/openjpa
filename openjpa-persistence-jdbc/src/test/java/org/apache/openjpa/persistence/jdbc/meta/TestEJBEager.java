@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerPC;
@@ -26,19 +30,15 @@ import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC3;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC4;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBEager
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestEJBEager extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
-	public TestEJBEager(String name)
-	{
-		super(name);
-	}
-
-	@Override
+    @BeforeEach
     @SuppressWarnings("unchecked")
-	public void setUp()
+    public void setUp()
 	{
 		deleteAll(EagerPCSub.class);
 		deleteAll(EagerPC.class);
@@ -116,7 +116,8 @@ public class TestEJBEager
 		endEm(pm);
 	}
 
-	public void testOuterJoin ()
+    @Test
+    public void testOuterJoin ()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -134,7 +135,8 @@ public class TestEJBEager
 		endEm(pm);
 	}
 
-	public void testOuterJoinToSubclass ()
+    @Test
+    public void testOuterJoinToSubclass ()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);

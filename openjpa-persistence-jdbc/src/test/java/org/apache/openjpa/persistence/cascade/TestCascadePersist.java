@@ -22,14 +22,17 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCascadePersist extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(DROP_TABLES, CascadePersistEntity.class, "openjpa.Compatibility",
             "CheckDatabaseForCascadePersistToDetachedEntity=false");
     }
 
+    @Test
     public void testCascadePersistToDetachedFailure() {
         long startId = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();
@@ -54,6 +57,7 @@ public class TestCascadePersist extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testCascadePersistToManagedEntity() {
         long startId = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();
@@ -73,6 +77,7 @@ public class TestCascadePersist extends SQLListenerTestCase {
     /*
      * Prior to OPENJPA-1986, an extra SELECT was executed in this scenario.
      */
+    @Test
     public void testCascaseExtraneousSQL(){
         long id = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();

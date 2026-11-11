@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -26,6 +29,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.metamodel.EntityType;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 StaticMetamodel constants: EntityType class_
@@ -33,11 +38,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMetamodelConstants extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, MetamodelConstantsEntity.class);
     }
 
+    @Test
     public void testQueryConstantsExist() {
         assertEquals("MetamodelConstantsEntity.findAll",
             MetamodelConstantsEntity_.QUERY_METAMODELCONSTANTSENTITY_FINDALL);
@@ -47,30 +53,34 @@ public class TestMetamodelConstants extends SingleEMFTestCase {
             MetamodelConstantsEntity_.QUERY_METAMODELCONSTANTSENTITY_FINDNATIVE);
     }
 
+    @Test
     public void testResultSetMappingConstantExists() {
         assertEquals("MetamodelConstantsEntity.resultMapping",
             MetamodelConstantsEntity_.MAPPING_METAMODELCONSTANTSENTITY_RESULTMAPPING);
     }
 
+    @Test
     public void testQueryConstantsArePublicStaticFinal() throws Exception {
         Field f = MetamodelConstantsEntity_.class
             .getDeclaredField("QUERY_METAMODELCONSTANTSENTITY_FINDALL");
         int mod = f.getModifiers();
-        assertTrue("Should be public", Modifier.isPublic(mod));
-        assertTrue("Should be static", Modifier.isStatic(mod));
-        assertTrue("Should be final", Modifier.isFinal(mod));
+        assertTrue(Modifier.isPublic(mod), "Should be public");
+        assertTrue(Modifier.isStatic(mod), "Should be static");
+        assertTrue(Modifier.isFinal(mod), "Should be final");
         assertEquals(String.class, f.getType());
     }
 
+    @Test
     public void testEntityTypeFieldExists() throws Exception {
         Field f = MetamodelConstantsEntity_.class.getDeclaredField("class_");
         int mod = f.getModifiers();
-        assertTrue("Should be public", Modifier.isPublic(mod));
-        assertTrue("Should be static", Modifier.isStatic(mod));
-        assertTrue("Should be volatile", Modifier.isVolatile(mod));
+        assertTrue(Modifier.isPublic(mod), "Should be public");
+        assertTrue(Modifier.isStatic(mod), "Should be static");
+        assertTrue(Modifier.isVolatile(mod), "Should be volatile");
         assertEquals(EntityType.class, f.getType());
     }
 
+    @Test
     public void testQueryConstantsUsableWithCreateNamedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

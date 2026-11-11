@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +34,11 @@ import org.apache.openjpa.persistence.merge.model.Model;
 import org.apache.openjpa.persistence.merge.model.ShipPackage;
 import org.apache.openjpa.persistence.merge.model.ShipPackage2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMergeDetachStateField extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Label.class, ShipPackage.class,
         	  Label2.class, ShipPackage2.class,
@@ -52,6 +57,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * Merge: Label
      * Verify after merge:  Label' <--> ShipPackage'
      */
+    @Test
     public void testCascadeMergeDetachState() {
         EntityManager em = emf.createEntityManager();
 
@@ -105,6 +111,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * Merge: ShipPackage2
      * Verify after merge: ShipPackage2' <-->  Label2'
      */
+    @Test
     public void testCascadeMergeDetachState2() {
         EntityManager em = emf.createEntityManager();
 
@@ -152,6 +159,7 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * the entity does not get populated with a DetachedStateManager upon
      * detachment, but merge should still succeed.
      */
+    @Test
     public void testCascadeMergeDetachStateComplex() {
         EntityManager em = emf.createEntityManager();
 

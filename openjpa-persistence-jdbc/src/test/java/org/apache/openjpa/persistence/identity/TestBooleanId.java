@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities can use boolean ids
@@ -33,7 +41,7 @@ public class TestBooleanId extends SQLListenerTestCase {
     private BooleanIdEntity se;
     private CompoundBooleanIdEntity ce;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(BooleanIdEntity.class,
             CompoundBooleanIdEntity.class,
@@ -41,12 +49,13 @@ public class TestBooleanId extends SQLListenerTestCase {
         assertTrue(emf != null);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEM(em);
         super.tearDown();
     }
 
+    @Test
     public void testSimpleBooleanIdEntity() {
         se = new BooleanIdEntity(true,"name");
 
@@ -62,6 +71,7 @@ public class TestBooleanId extends SQLListenerTestCase {
         assertNotNull(se);
     }
 
+    @Test
     public void testCompoundIdEntity() {
         em = emf.createEntityManager();
         testCompoundIdEntity("string1", true, true);
@@ -73,6 +83,7 @@ public class TestBooleanId extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     private void testCompoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
         // create and persist the entity
         try {

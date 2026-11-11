@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Specification of Configuration.
@@ -33,17 +40,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestSpecificationConfiguration extends SingleEMFTestCase {
 
+    @Test
     public void testSpecificationIsSet() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
     }
 
+    @Test
     public void testSpecificationIsJPA() {
         Specification spec = getSpecifcation();
         assertTrue(spec.isSame("JPA"));
         assertTrue(spec.isSame("jpa"));
     }
 
+    @Test
     public void testSpecificationVersionIsJPA1() {
         Specification spec = getSpecifcation();
         int major = spec.getVersion();
@@ -51,6 +61,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         assertTrue(spec.isSame("JPA"));
     }
 
+    @Test
     public void testSpecificationVersionIsJPA2() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
@@ -71,6 +82,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSpecificationVersionIsJPA3_0() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -89,6 +101,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSpecificationVersionIsJPA3_1() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
@@ -108,6 +121,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSpecificationVersionIsJPA3_2() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -126,6 +140,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testLowerVersionCanBeSet() {
         super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();
@@ -138,6 +153,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
      * Slight change for 2.0, in that the geronimo spec does not rethrow
      * all exceptions wrapped as a PersistenceException
      */
+    @Test
     public void testHigherVersionCanNotBeSet() {
         try {
             super.setUp("openjpa.Specification", "jpa 3.0",
@@ -154,10 +170,12 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testDifferentSpecCanBeSet() {
         super.setUp("openjpa.Specification", "jdo 3.0");
     }
 
+    @Test
     public void testSpecCanBeSetToNullString() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
@@ -165,6 +183,7 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         assertNull(getSpecifcation());
     }
 
+    @Test
     public void testSpecCanBeSetToNullSpecification() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);

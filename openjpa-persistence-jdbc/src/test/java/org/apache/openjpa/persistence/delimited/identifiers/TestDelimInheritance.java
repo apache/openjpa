@@ -1,11 +1,3 @@
-package org.apache.openjpa.persistence.delimited.identifiers;
-
-import java.util.List;
-
-import jakarta.persistence.Query;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,7 +16,24 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.openjpa.persistence.delimited.identifiers;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.List;
+
+import jakarta.persistence.Query;
+
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDelimInheritance extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -33,14 +42,12 @@ public class TestDelimInheritance extends SQLListenerTestCase {
     Chevrolet chevrolet;
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Car.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac.class,
@@ -52,7 +59,7 @@ public class TestDelimInheritance extends SQLListenerTestCase {
         assertNotNull(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -78,6 +85,7 @@ public class TestDelimInheritance extends SQLListenerTestCase {
         chevrolet.setColor("black");
     }
 
+    @Test
     public void testCreate() {
         id++;
         createPontiac(id);

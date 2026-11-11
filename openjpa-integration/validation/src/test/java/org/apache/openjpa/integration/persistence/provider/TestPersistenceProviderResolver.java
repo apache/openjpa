@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.integration.persistence.provider;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -36,10 +40,11 @@ import java.util.jar.JarOutputStream;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceProviderResolver;
 import jakarta.persistence.spi.PersistenceProviderResolverHolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestPersistenceProviderResolver extends TestCase {
+public class TestPersistenceProviderResolver {
     File persistenceProviderFile;
     File targetJar1;
     File targetJar2;
@@ -53,9 +58,8 @@ public class TestPersistenceProviderResolver extends TestCase {
     ClassLoader originalLoader = null;
     TempUrlLoader tempLoader = null;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
 
         currentDir = System.getProperty("user.dir");
 
@@ -75,13 +79,13 @@ public class TestPersistenceProviderResolver extends TestCase {
         originalLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
         // Restore the original classloader, in case there was an exception
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
+    @Test
     public void testDefault() {
         List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
@@ -89,6 +93,7 @@ public class TestPersistenceProviderResolver extends TestCase {
     }
 
 
+    @Test
     public void testDefaultMultipleJars() throws Exception {
         String[] contents = new String[]{dummyProvider1};
         buildFile("testPersistenceProviderResolver1", contents);
@@ -104,6 +109,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
+    @Test
     public void testDefaultMultipleProviders() throws Exception {
         String[] contents = new String[]{dummyProvider1, dummyProvider2};
         buildFile("testPersistenceProviderResolver2", contents);
@@ -122,6 +128,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
+    @Test
     public void testClearCachedProviders() {
         PersistenceProviderResolver resolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
@@ -134,6 +141,7 @@ public class TestPersistenceProviderResolver extends TestCase {
         checkProviders(providerNames);
     }
 
+    @Test
     public void testNonDefaultResolver() {
         PersistenceProviderResolver originalResolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();

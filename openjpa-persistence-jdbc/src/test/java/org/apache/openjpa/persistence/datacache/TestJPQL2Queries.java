@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,18 +35,21 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestJPQL2Queries
     extends AbstractTestCase {
 
-    public TestJPQL2Queries(String test) {
-        super(test, "datacachecactusapp");
+    public TestJPQL2Queries() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(CacheObjectA.class);
 
@@ -65,7 +70,7 @@ public class TestJPQL2Queries
         CacheTestHelper.cacheManager(_factory).getSystemQueryCache().clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         try {
@@ -77,14 +82,17 @@ public class TestJPQL2Queries
         super.tearDown();
     }
 
+    @Test
     public void testUpperRange() {
         rangeTestHelper(0, 10);
     }
 
+    @Test
     public void testLowerRange() {
         rangeTestHelper(5, 50);
     }
 
+    @Test
     public void testBothRanges() {
         rangeTestHelper(20, 28);
     }
@@ -125,6 +133,7 @@ public class TestJPQL2Queries
         broker.close();
     }
 
+    @Test
     public void testResultClassIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "Select a FROM " +

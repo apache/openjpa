@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -38,19 +41,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest1;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest2;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest5;
+import org.junit.jupiter.api.Test;
 
 
-public class TestJoinToBaseClass
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestJoinToBaseClass extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-
-
-    /** Creates a new instance of TestJoinToBaseClass */
-    public TestJoinToBaseClass(String name)
-    {
-    	super(name);
-    }
-
+    @Test
     public void testMapping() {
         ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
             getMappingRepositoryInstance().
@@ -68,6 +64,7 @@ public class TestJoinToBaseClass
         assertEquals("V2", cols[1].getName());
     }
 
+    @Test
     public void testConstraintAnalysis() {
         //FIXME jthomas
         //PersistenceManagerFactory factory = getPMFactory(new String[]{

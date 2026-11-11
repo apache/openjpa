@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.query.results;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -28,14 +30,17 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.criteria.results.ShipRate;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestResultSetMapping extends SQLListenerTestCase{
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, ShipRate.class);
     }
 
+    @Test
     public void testQuery () {
         EntityManager em = emf.createEntityManager();
         try

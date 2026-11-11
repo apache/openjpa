@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -38,18 +42,20 @@ import org.apache.openjpa.persistence.datacache.common.apps.
         SelfReferencingCacheTestObject;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.UserException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
-public class TestJPQLRelationProjections
-    extends AbstractTestCase {
+public class TestJPQLRelationProjections extends AbstractTestCase {
 
-    public TestJPQLRelationProjections(String test) {
-        super(test, "datacachecactusapp");
+    public TestJPQLRelationProjections() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(CacheObjectJ.class);
         deleteAll(CacheObjectE.class);
@@ -92,7 +98,7 @@ public class TestJPQLRelationProjections
         CacheTestHelper.cacheManager(_factory).getSystemQueryCache().clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         _factory.close();
@@ -100,6 +106,7 @@ public class TestJPQLRelationProjections
         super.tearDown();
     }
 
+    @Test
     public void testNullRelatedPCIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.e FROM " +
@@ -113,6 +120,7 @@ public class TestJPQLRelationProjections
         assertNull(c.iterator().next());
     }
 
+    @Test
     public void testNullRelatedPCAndProjectionIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
@@ -130,6 +138,7 @@ public class TestJPQLRelationProjections
         assertNull(result[1]);
     }
 
+    @Test
     public void testNonNullRelatedPCIsCached() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.e FROM " +
@@ -143,6 +152,7 @@ public class TestJPQLRelationProjections
         assertEquals(CacheObjectE.class, c.iterator().next().getClass());
     }
 
+    @Test
     public void testNonNullRelatedPCAndProjectionIsCached() {
         Broker broker = _factory.newBroker();
         Query q =
@@ -161,6 +171,7 @@ public class TestJPQLRelationProjections
         assertEquals(CacheObjectE.class, result[1].getClass());
     }
 
+    @Test
     public void testEmbeddedFields() {
         Broker broker = _factory.newBroker();
         Query q =
@@ -185,6 +196,7 @@ public class TestJPQLRelationProjections
         assertEquals(CacheObjectAChild1.class, l.get(0).getClass());
     }
 
+    @Test
     public void testNonNullRelationOfSameTypeAsCandidate() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.o FROM " +
@@ -206,6 +218,7 @@ public class TestJPQLRelationProjections
             ((SelfReferencingCacheTestObject) l.get(0)).getStr());
     }
 
+    @Test
     public void testNullRelationOfSameTypeAsCandidate() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a.o FROM " +

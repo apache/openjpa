@@ -18,21 +18,21 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEJBCustomMapping
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestEJBCustomMapping extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
-	public TestEJBCustomMapping(String name)
-	{
-		super(name);
-	}
-
-	@Override
+    @BeforeEach
     public void setUp ()
 	{
 		deleteAll(CustomMappingPC.class);
@@ -49,7 +49,8 @@ public class TestEJBCustomMapping
 		endEm(pm);
 	}
 
-	public void testInsert ()
+    @Test
+    public void testInsert ()
 	{
 		EntityManager pm = currentEntityManager();
 		CustomMappingPC pc = pm.find(CustomMappingPC.class, _oid);
@@ -60,7 +61,8 @@ public class TestEJBCustomMapping
 		endEm(pm);
 	}
 
-	public void testUpdate ()
+    @Test
+    public void testUpdate ()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);

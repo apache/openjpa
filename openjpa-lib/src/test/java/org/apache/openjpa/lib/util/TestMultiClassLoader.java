@@ -17,13 +17,15 @@
  * under the License.
  */
 package org.apache.openjpa.lib.util;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.URL;
 
-import org.junit.Test;
-import org.junit.Before;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link MultiClassLoader}.
@@ -36,7 +38,7 @@ public class TestMultiClassLoader {
 
     private MultiClassLoader _loader = new MultiClassLoader();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         _loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         _loader.addClassLoader(SYSTEM_LOADER);

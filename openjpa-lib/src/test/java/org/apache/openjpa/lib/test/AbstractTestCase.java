@@ -17,6 +17,9 @@
  * under the License.
  */
 package org.apache.openjpa.lib.test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,9 +42,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.apache.regexp.REUtil;
-
-import org.junit.After;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * TestCase framework to run various tests against solarmetric code.
@@ -58,8 +59,7 @@ import static org.junit.Assert.*;
  */
 public abstract class AbstractTestCase {
 
-    private static final Localizer _loc =
-        Localizer.forPackage(AbstractTestCase.class);
+    private static final Localizer _loc = Localizer.forPackage(AbstractTestCase.class);
 
     private Log log = null;
 
@@ -80,7 +80,7 @@ public abstract class AbstractTestCase {
 
 
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         if ("true".equals(System.getProperty("meminfo")))
             printMemoryInfo();

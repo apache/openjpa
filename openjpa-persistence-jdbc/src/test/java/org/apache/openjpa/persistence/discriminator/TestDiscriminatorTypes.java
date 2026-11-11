@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.discriminator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +30,12 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDiscriminatorTypes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CharAbstractEntity.class, CharLeafEntity.class,
                 CharRootEntity.class, IntegerAbstractEntity.class,
@@ -38,6 +44,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
                 StringRootEntity.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testCharDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load types
 
@@ -74,6 +81,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testIntDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
 
@@ -113,6 +121,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testStringDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
         Discriminator discrim = getMapping("StringAbstractEntity")
@@ -148,6 +157,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testExistsQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

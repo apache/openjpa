@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -30,7 +35,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Storage of Java <code>char</code> and <code>Character</code> fields in
@@ -38,7 +44,7 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
  * like the one of the Jakarta Persistence TCK, and with an explicit
  * <code>StoreCharsAsNumbers=true</code> (OPENJPA-3033).
  */
-public class TestCharStorage extends PersistenceTestCase {
+public class TestCharStorage extends AbstractPersistenceTestCase {
 
     private static final String DICT_PROP = "openjpa.jdbc.DBDictionary";
 
@@ -46,6 +52,7 @@ public class TestCharStorage extends PersistenceTestCase {
      * A schema created by OpenJPA maps char fields according to the
      * dictionary default, which is a CHAR column on Derby.
      */
+    @Test
     public void testCharFieldsInGeneratedSchema() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStorageEntity.class, DROP_TABLES);
         try {
@@ -69,6 +76,7 @@ public class TestCharStorage extends PersistenceTestCase {
      * characters. Dictionaries that still store chars as numbers by default
      * need StoreCharsAsNumbers=false for such a column.
      */
+    @Test
     public void testCharFieldsInPrecreatedCharColumn() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStoragePrecreatedEntity.class);
         DBDictionary dict = dictionary(emf);
@@ -101,6 +109,7 @@ public class TestCharStorage extends PersistenceTestCase {
      * An explicit StoreCharsAsNumbers=true keeps the numeric mapping that
      * schemas created by earlier releases rely on.
      */
+    @Test
     public void testExplicitStoreCharsAsNumbers() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createEMF(CharStorageBase.class, CharStorageNumericEntity.class, DROP_TABLES,
             DICT_PROP, withStoreCharsAsNumbers(System.getProperty(DICT_PROP), true));
@@ -125,7 +134,7 @@ public class TestCharStorage extends PersistenceTestCase {
         if (dict instanceof DerbyDictionary || dict instanceof SQLServerDictionary
             || dict instanceof H2Dictionary || dict instanceof MySQLDictionary
             || dict instanceof MariaDBDictionary || dict instanceof OracleDictionary) {
-            assertFalse(dict.platform + " must store chars as CHAR by default", dict.storeCharsAsNumbers);
+            assertFalse(dict.storeCharsAsNumbers, dict.platform + " must store chars as CHAR by default");
         }
     }
 
@@ -273,16 +282,16 @@ public class TestCharStorage extends PersistenceTestCase {
                                 // Oracle has no INTEGER type, integer columns are reported as NUMBER
                                 actual = Types.INTEGER;
                             }
-                            assertEquals(table + "." + column, expected, actual);
+                            assertEquals(expected, actual, table + "." + column);
                             if (expected == Types.CHAR) {
-                                assertEquals(table + "." + column + " size", 1, rs.getInt("COLUMN_SIZE"));
+                                assertEquals(1, rs.getInt("COLUMN_SIZE"), table + "." + column + " size");
                             }
                             found = true;
                         }
                     }
                 }
             }
-            assertTrue("column " + table + "." + column + " not found", found);
+            assertTrue(found, "column " + table + "." + column + " not found");
         }
     }
 

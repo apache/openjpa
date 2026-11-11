@@ -18,15 +18,16 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link ReferenceHashSet}.
@@ -39,7 +40,7 @@ public class TestReferenceSet {
 
     private Object _heldValue = 2;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         _coll.add(_heldValue);
         _coll.add(1);

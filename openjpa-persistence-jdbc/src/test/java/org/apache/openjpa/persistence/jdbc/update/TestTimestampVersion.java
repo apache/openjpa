@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +29,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for update on entity that uses a Timestamp as version.
@@ -36,11 +41,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestTimestampVersion extends SingleEMFTestCase {
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, TimestampedEntity.class, NumericVersionedEntity.class, BaseTimestampedEntity.class);
     }
-	public void testQueryOnVersion() {
+
+    @Test
+    public void testQueryOnVersion() {
 	    EntityManager em = emf.createEntityManager();
 	    String pql = "SELECT s FROM TimestampedEntity s WHERE s.version < :endDate";
         Query queryObj = em.createQuery(pql);
@@ -49,6 +56,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         List<TimestampedEntity> scenarioList = queryObj.getResultList();
 	}
 
+    @Test
     public void testBulkUpdateOnTimestampedVersion() {
         TimestampedEntity pc = new TimestampedEntity();
         pc.setName("Original");
@@ -75,10 +83,11 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.refresh(pc);
         Timestamp newVersion = pc.getVersion();
-        assertTrue("Expected newVersion=" + newVersion.toString() + " to be after oldVersion=" + oldVersion.toString(),
-            newVersion.after(oldVersion));
+        assertTrue(newVersion.after(oldVersion),
+            "Expected newVersion=" + newVersion.toString() + " to be after oldVersion=" + oldVersion.toString());
     }
 
+    @Test
     public void testBulkUpdateOnNumericVersion() {
         NumericVersionedEntity pc = new NumericVersionedEntity();
         pc.setName("Original");

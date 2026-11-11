@@ -35,23 +35,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestOpenResultsCommit extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestOpenResultsCommit
-     */
-    public TestOpenResultsCommit() {
-    }
-
-    public TestOpenResultsCommit(String testName) {
-        super(testName);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
-        super.setUp();
 
         deleteAll(RuntimeTest1.class);
 
@@ -63,6 +53,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testCommitWithModeTransaction() {
         try {
             testCommitWithOpenResults("transaction");
@@ -74,6 +65,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testCommitWithModeOpenJPAEntityManager() {
         try {
             testCommitWithOpenResults("persistence-manager");
@@ -85,6 +77,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testCommitWithModeOnDemand() {
         try {
             testCommitWithOpenResults("on-demand");
@@ -96,6 +89,7 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
+    @Test
     private void testCommitWithOpenResults(String crm) {
         Map props = new HashMap();
         props.put("openjpa.DefaultFetchThreshold", 1 + "");

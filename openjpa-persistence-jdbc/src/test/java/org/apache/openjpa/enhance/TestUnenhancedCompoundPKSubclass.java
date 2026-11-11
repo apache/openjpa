@@ -18,15 +18,18 @@
 package org.apache.openjpa.enhance;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedCompoundPKFieldAccessSuperclass.class,
             UnenhancedCompoundPKFieldAccessSubclass.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testCompoundPKFieldAccessUserDefined() {
         UnenhancedCompoundPKFieldAccessSuperclass un =
             new UnenhancedCompoundPKFieldAccessSubclass(17, 31);
@@ -35,6 +38,7 @@ public class TestUnenhancedCompoundPKSubclass extends SingleEMTestCase {
         compoundPKHelper(un, oid, true);
     }
 
+    @Test
     public void testCompoundPKFieldAccessOpenJPADefined() {
         UnenhancedCompoundPKFieldAccessSuperclass un =
             new UnenhancedCompoundPKFieldAccessSubclass(17, 31);

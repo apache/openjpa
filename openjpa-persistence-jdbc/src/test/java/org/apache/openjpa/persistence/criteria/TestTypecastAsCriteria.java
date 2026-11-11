@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -25,9 +28,11 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.junit.jupiter.api.Test;
 
 public class TestTypecastAsCriteria extends CriteriaTest {
 
+    @Test
     public void testTypecastAsString() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
@@ -43,6 +48,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testTypecastAsInteger() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
@@ -58,6 +64,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testTypecastAsLong() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
@@ -73,6 +80,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testTypecastAsFloat() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
@@ -88,6 +96,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testTypecastAsDouble() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
@@ -103,6 +112,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testTypecastAsInvalid() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs

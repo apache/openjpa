@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +32,7 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.persistence.EntityManagerFactoryImpl;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCBrokerFactory;
 import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests user-level configuration is set on per-slice basis.
@@ -40,6 +46,7 @@ public class TestConfiguration extends SliceTestCase {
         return "per-slice";
     }
 
+    @Test
     public void testConfig() {
         assertTrue(emf.getConfiguration() instanceof DistributedConfiguration);
         DistributedJDBCConfiguration conf =
@@ -64,6 +71,7 @@ public class TestConfiguration extends SliceTestCase {
         assertFalse(slices.contains("Three"));
     }
 
+    @Test
     public void testDynamicConfiguration() {
         DistributedJDBCConfiguration conf = (DistributedJDBCConfiguration) emf.getConfiguration();
         List<String> slices = conf.getAvailableSliceNames();

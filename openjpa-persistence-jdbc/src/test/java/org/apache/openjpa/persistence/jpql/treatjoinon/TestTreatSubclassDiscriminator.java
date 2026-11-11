@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * TREAT(x AS Middle) over a three level single table hierarchy must match
@@ -31,7 +35,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TProduct.class, TSoftwareProduct.class, TGameProduct.class,
             TLineItem.class, TOrder.class, DROP_TABLES);
@@ -69,6 +73,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
@@ -79,6 +84,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatJoinLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
@@ -88,6 +94,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatInWhereExclusiveProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
@@ -97,6 +104,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatInWhereCommonProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
@@ -106,6 +114,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatInWhereRestrictsOnlyItsPredicate() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
@@ -117,6 +126,7 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testTreatInWhereOnJoinVariable() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(

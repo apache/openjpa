@@ -29,10 +29,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TestDBDictionary {
     @Test
@@ -59,7 +59,7 @@ public class TestDBDictionary {
         int expected = 1_000_000_000;
         for (int digits = 0; digits <= 9; digits++) {
             col.setPrecision(digits);
-            assertEquals("digits " + digits, expected, dictionary.getTimestampPrecision(col));
+            assertEquals(expected, dictionary.getTimestampPrecision(col), "digits " + digits);
             expected /= 10;
         }
         // not a number of fractional digits, e.g. the precision of a procedure parameter

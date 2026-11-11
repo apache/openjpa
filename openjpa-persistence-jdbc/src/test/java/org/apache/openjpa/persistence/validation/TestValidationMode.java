@@ -13,6 +13,9 @@
  */
 package org.apache.openjpa.persistence.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +31,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the new Bean Validation Mode support in the JPA 2.0 spec.
@@ -44,7 +49,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestValidationMode extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, SimpleEntity.class);
     }
@@ -53,6 +58,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   1) By default, validation mode == AUTO
      */
+    @Test
     public void testValidationMode1() {
         getLog().trace("testValidationMode1() - Default mode is AUTO");
         // create our EMF
@@ -65,9 +71,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify default validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Default validation mode",
-                String.valueOf(ValidationMode.AUTO),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.AUTO),
+                conf.getValidationMode(),
+                "Default validation mode");
         } finally {
             cleanup(emf);
         }
@@ -77,6 +83,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   2) Validation mode of AUTO in persistence.xml is the same as default
      */
+    @Test
     public void testValidationMode2() {
         getLog().trace("testValidationMode1() - AUTO in persistence.xml");
         // create our EMF
@@ -89,9 +96,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify expected validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.AUTO),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.AUTO),
+                conf.getValidationMode(),
+                "Validation mode");
         } finally {
             cleanup(emf);
         }
@@ -101,6 +108,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   3) Validation mode of NONE in persistence.xml overrides default
      */
+    @Test
     public void testValidationMode3() {
         getLog().trace("testValidationMode3() - persistence.xml overrides " +
             "Default");
@@ -114,9 +122,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.NONE),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.NONE),
+                conf.getValidationMode(),
+                "Validation mode");
         } finally {
             cleanup(emf);
         }
@@ -128,6 +136,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      *   and causes an exception when neither the Validation APIs nor
      *   a provider are available
      */
+    @Test
     public void testValidationMode4() {
         getLog().trace("testValidationMode4() - persistence.xml overrides " +
             "Default");
@@ -142,9 +151,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.CALLBACK),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.CALLBACK),
+                conf.getValidationMode(),
+                "Validation mode");
         } catch (PersistenceException e) {
             // expected when no Validation APIs or provider are available
             getLog().trace("testValidationMode4() - caught expected " +
@@ -158,6 +167,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   5) Validation mode in createEMF(Map props) overrides no persistence.xml
      */
+    @Test
     public void testValidationMode5() {
         getLog().trace("testValidationMode5() - Map(NONE) overrides default");
 
@@ -177,9 +187,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.NONE),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.NONE),
+                conf.getValidationMode(),
+                "Validation mode");
         } finally {
             cleanup(emf);
         }
@@ -189,6 +199,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   6) Validation mode in createEMF(Map props) overrides persistence.xml
      */
+    @Test
     public void testValidationMode6() {
         getLog().trace("testValidationMode6() - Map(NONE) overrides PU " +
             "provided mode=callback");
@@ -209,9 +220,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.NONE),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.NONE),
+                conf.getValidationMode(),
+                "Validation mode");
         } finally {
             cleanup(emf);
         }
@@ -221,6 +232,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   7) Validation mode in createEMF(Map props) can be a ValidationMode enum
      */
+    @Test
     public void testValidationMode7() {
         getLog().trace("testValidationMode7() - Map(ValidationMode.NONE) " +
             "overrides PU provided mode=callback");
@@ -241,9 +253,9 @@ public class TestValidationMode extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.NONE),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.NONE),
+                conf.getValidationMode(),
+                "Validation mode");
         } finally {
             cleanup(emf);
         }
@@ -253,6 +265,7 @@ public class TestValidationMode extends SingleEMFTestCase {
      * Scenario being tested:
      *   8) Life cycle event should be entity manager (Broker) specific.
      */
+    @Test
     public void testUniqueLifecycleManager() {
         getLog().trace("testUniqueLifecycleManager() - Life cycle event tests");
         // create our EMF

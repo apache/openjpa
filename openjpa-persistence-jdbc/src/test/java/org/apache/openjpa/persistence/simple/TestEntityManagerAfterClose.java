@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that methods called on a closed EntityManager and its associated
@@ -30,11 +36,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntityManagerAfterClose extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
 
+    @Test
     public void testGetEntityManagerFactoryAfterClose() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -46,6 +53,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testGetCriteriaBuilderAfterClose() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -57,6 +65,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testGetMetamodelAfterClose() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -68,6 +77,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testIsJoinedToTransactionAfterClose() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -79,6 +89,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSetPropertyAfterClose() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -90,6 +101,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryGetFlushModeAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -102,6 +114,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryGetHintsAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -114,6 +127,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryGetLockModeAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -126,6 +140,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryGetParametersAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -138,6 +153,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQuerySetFlushModeAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -150,6 +166,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQuerySetHintAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -162,6 +179,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQuerySetLockModeAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a");
@@ -174,6 +192,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryIsBoundAfterClose() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery("SELECT a FROM AllFieldTypes a WHERE a.intField = :p");
@@ -192,6 +211,7 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
      * Mimics TCK queryMethodsAfterClose5Test pattern: begin tx, close EM,
      * call query method (throws ISE), then check getRollbackOnly() in catch.
      */
+    @Test
     public void testGetRollbackOnlyAfterCloseWithActiveTx() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -204,11 +224,11 @@ public class TestEntityManagerAfterClose extends SingleEMFTestCase {
             // close() no longer rolls back; tx is still active (deferred close)
             // The ISE from getLockMode() on a close-invoked EM marks rollback
             boolean rollbackOnly = em.getTransaction().getRollbackOnly();
-            assertFalse("Transaction should not be marked rollback-only", rollbackOnly);
+            assertFalse(rollbackOnly, "Transaction should not be marked rollback-only");
         }
         // Transaction should still be active since close() defers until tx completes
-        assertTrue("Transaction should still be active after close with deferred close",
-            em.getTransaction().isActive());
+        assertTrue(em.getTransaction().isActive(),
+            "Transaction should still be active after close with deferred close");
         // Clean up: rollback the still-active transaction
         em.getTransaction().rollback();
     }

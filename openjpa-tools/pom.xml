@@ -41,11 +41,4 @@
         <module>openjpa-fetch-statistics</module>
         <module>openjpa-fetch-statistics-was</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
 </project>

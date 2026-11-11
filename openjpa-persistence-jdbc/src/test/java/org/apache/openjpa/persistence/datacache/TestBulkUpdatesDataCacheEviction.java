@@ -18,19 +18,27 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.Cache;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
     Object[] props = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
     Object[] noEvictProps = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
         , "openjpa.DataCache", "true(EvictOnBulkUpdate=false)" };
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(props);
     }
@@ -39,6 +47,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
      * This test ensures that after executing an update against the db, the updated type is purged from
      * the DataCache.
      */
+    @Test
     public void testUpdate() throws Exception {
         EntityManager em = emf.createEntityManager();
         Cache cache = emf.getCache();
@@ -68,6 +77,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
      * This test ensures that after executing a delete against the db, the deleted type is purged from
      * the DataCache.
      */
+    @Test
     public void testDelete() throws Exception {
         EntityManager em = emf.createEntityManager();
         Cache cache = emf.getCache();
@@ -91,6 +101,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUpdateNoEvict(){
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(getPersistenceUnitName(), noEvictProps);
         Cache cache = emf.getCache();
@@ -116,6 +127,7 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testDeleteNoEvict() throws Exception {
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(getPersistenceUnitName(), noEvictProps);
         Cache cache = emf.getCache();

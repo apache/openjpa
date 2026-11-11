@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,8 +27,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that we can exclude subclass instances from query results.
@@ -36,7 +38,7 @@ import junit.textui.TestRunner;
 public class TestQueryExcludingSubclasses
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
@@ -65,6 +67,7 @@ public class TestQueryExcludingSubclasses
         em.close();
     }
 
+    @Test
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
@@ -82,6 +85,7 @@ public class TestQueryExcludingSubclasses
         em.close();
     }
 
+    @Test
     public void testQueryExcludingSubclasses() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
@@ -95,9 +99,4 @@ public class TestQueryExcludingSubclasses
         }
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestQueryExcludingSubclasses.class);
-    }
 }
-

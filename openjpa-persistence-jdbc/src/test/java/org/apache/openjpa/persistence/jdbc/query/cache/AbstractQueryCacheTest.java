@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
@@ -28,6 +30,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.QueryResultCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.CacheMap;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
     private Class[] entityClassTypes = { Part.class, PartBase.class,
@@ -64,7 +68,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (deleteData) {
             deleteAllData();
@@ -219,6 +223,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
      *    a fresh SELECT operation on the database.
      *
      */
+    @Test
     public void testEviction() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!checkSupportsIdentityGenerationType()) {

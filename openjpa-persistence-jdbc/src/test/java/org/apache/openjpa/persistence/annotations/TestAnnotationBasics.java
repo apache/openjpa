@@ -18,26 +18,30 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Entity1;
+import org.junit.jupiter.api.Test;
 
 public class TestAnnotationBasics extends AnnotationTestCase {
 
-	public TestAnnotationBasics(String name)
+	public TestAnnotationBasics()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
+    @Test
     public void testSingleFieldIdentity()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         ClassMetaData meta = JPAFacadeHelper.getMetaData(em, Entity1.class);
-        assertTrue("Entity1 should use application identity",
-            ClassMetaData.ID_APPLICATION == meta.getIdentityType());
-        assertTrue("Entity1 should use single-field identity",
-            meta.isOpenJPAIdentity());
+        assertTrue(ClassMetaData.ID_APPLICATION == meta.getIdentityType(),
+            "Entity1 should use application identity");
+        assertTrue(meta.isOpenJPAIdentity(),
+            "Entity1 should use single-field identity");
         endEm(em);
     }
 /*

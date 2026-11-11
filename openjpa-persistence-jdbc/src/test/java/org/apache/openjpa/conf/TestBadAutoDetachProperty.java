@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 
 import jakarta.persistence.EntityManager;
@@ -26,8 +28,10 @@ import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestBadAutoDetachProperty extends AbstractPersistenceTestCase {
+    @Test
     public void testEmptyValue() {
         HashMap props = new HashMap(System.getProperties());
         props.put("openjpa.AutoDetach", "");
@@ -37,6 +41,7 @@ public class TestBadAutoDetachProperty extends AbstractPersistenceTestCase {
         closeEMF(emf);
     }
 
+    @Test
     public void testCommaOnlyValue() {
         EntityManagerFactory emf = null;
         EntityManager em = null;
@@ -71,6 +76,7 @@ public class TestBadAutoDetachProperty extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testEmptyItemValue() {
         EntityManagerFactory emf = null;
         EntityManager em = null;

@@ -18,12 +18,13 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Method;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDictionaryFactory {
 
@@ -175,7 +176,7 @@ public class TestDictionaryFactory {
 
     private static Method getProtocol;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try {
             getProtocol = DBDictionaryFactory.class.getDeclaredMethod(

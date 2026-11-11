@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.auto;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
@@ -25,10 +28,13 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAutoIncrement extends SingleEMTestCase {
     boolean disabled = false;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, AutoIncrementEntity.class);
         DBDictionary dic = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -44,6 +50,7 @@ public class TestAutoIncrement extends SingleEMTestCase {
         createZeroIdEntity();
     }
 
+    @Test
     public void test() {
         if (disabled) {
             return;
@@ -58,6 +65,7 @@ public class TestAutoIncrement extends SingleEMTestCase {
         assertNotEquals(null, e2.getId());
     }
 
+    @Test
     public void testMergeNewEntity() {
         if (disabled) {
             return;

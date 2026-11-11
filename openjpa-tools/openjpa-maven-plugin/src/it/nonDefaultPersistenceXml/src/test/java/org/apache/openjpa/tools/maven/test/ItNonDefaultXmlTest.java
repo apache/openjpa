@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.tools.maven.test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -29,9 +32,9 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ItNonDefaultXmlTest extends TestCase {
+public class ItNonDefaultXmlTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -55,6 +58,7 @@ public class ItNonDefaultXmlTest extends TestCase {
      * check if the generated classes have been enhanced.
      * @throws Exception
      */
+    @Test
     public void testEnhancement() throws Exception
     {
         Class tec = Thread.currentThread().getContextClassLoader().loadClass( TEST_ENTITY_CLASS );
@@ -70,13 +74,14 @@ public class ItNonDefaultXmlTest extends TestCase {
             }
         }
 
-        assertTrue( "the class " + TEST_ENTITY_CLASS + " does not implement PersistenceCapable!", isPersistenceCapable );
+        assertTrue(isPersistenceCapable, "the class " + TEST_ENTITY_CLASS + " does not implement PersistenceCapable!");
     }
 
     /**
      * check if the generated SQL script is correct.
      * @throws Exception
      */
+    @Test
     public void testSqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );
@@ -89,6 +94,7 @@ public class ItNonDefaultXmlTest extends TestCase {
      * check if the generated schema.xml is correct.
      * @throws Exception
      */
+    @Test
     public void testSchemaGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SCHEMA_FILE );
@@ -102,9 +108,7 @@ public class ItNonDefaultXmlTest extends TestCase {
         while ( (refLine = schemaRef.readLine()) != null)
         {
             String genLine = schemaGen.readLine();
-            assertEquals("generated schema.xml differs from expected one!", refLine, genLine );
+            assertEquals(refLine, genLine, "generated schema.xml differs from expected one!");
         }
     }
-
-
 }

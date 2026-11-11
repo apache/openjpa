@@ -25,11 +25,10 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * the single-JVM commit provider to communicate updates..
  */
 @AllowFailure(message="surefire excluded")
-public class TestConcurrentDataCache
-    extends CacheTest {
+public class TestConcurrentDataCache extends CacheTest {
 
-    public TestConcurrentDataCache(String test) {
-        super(test);
+    public TestConcurrentDataCache() {
+        super();
     }
 
     @Override

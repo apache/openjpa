@@ -26,6 +26,12 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -49,23 +55,15 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPersistenceManager extends BaseKernelTest {
 
     private int _id = 0;
     private int _id2 = 0;
 
-    public TestPersistenceManager(String name) {
-        super(name);
-    }
-
-    /**
-     * Creates a new instance of TestOpenJPAEntityManager
-     */
-    public TestPersistenceManager() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
@@ -88,6 +86,7 @@ public class TestPersistenceManager extends BaseKernelTest {
      * No-op test that can be run in name to see if the setup is working
      * properly.
      */
+    @Test
     public void testSetup() {
     }
 
@@ -95,6 +94,7 @@ public class TestPersistenceManager extends BaseKernelTest {
      * Tests that the PM throws Exceptions on usage attempts after it has been
      * closed.
      */
+    @Test
     public void testClosed() {
         OpenJPAEntityManager pm = getPM();
         endEm(pm);
@@ -130,6 +130,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testMultipleCloseThreaded()
         throws Throwable {
         final OpenJPAEntityManager pm = getPM();
@@ -173,6 +174,7 @@ public class TestPersistenceManager extends BaseKernelTest {
      * illegal states, such as persisting instances outside of transactions,
      * etc.
      */
+    @Test
     public void testIllegalState() {
         OpenJPAEntityManager pm = getPM();
 
@@ -201,11 +203,12 @@ public class TestPersistenceManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testOpenJPAEntityManagerFactorySerializable()
         throws Exception {
         OpenJPAEntityManagerFactory pmf =
             (OpenJPAEntityManagerFactory) getEmf();
-        assertNotNull("OpenJPAEntityManagerFactory is null.", pmf);
+        assertNotNull(pmf, "OpenJPAEntityManagerFactory is null.");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -214,8 +217,8 @@ public class TestPersistenceManager extends BaseKernelTest {
         OpenJPAEntityManagerFactory pmf2 = (OpenJPAEntityManagerFactory)
             new ObjectInputStream(
                 new ByteArrayInputStream(baos.toByteArray())).readObject();
-        assertNotNull("Deserialized OpenJPAEntityManagerFactory is null.",
-            pmf2);
+        assertNotNull(pmf2,
+            "Deserialized OpenJPAEntityManagerFactory is null.");
 
         OpenJPAEntityManager pm = pmf2.createEntityManager();
         startTx(pm);
@@ -237,6 +240,7 @@ public class TestPersistenceManager extends BaseKernelTest {
     /**
      * Test that a getObjectById() returns the correct instance.
      */
+    @Test
     public void testGetObjectById() {
         // test with valid id
         OpenJPAEntityManager pm = getPM();
@@ -257,8 +261,8 @@ public class TestPersistenceManager extends BaseKernelTest {
         try {
             RuntimeTest4 a = (RuntimeTest4) pm.getReference(RuntimeTest4.class,
                 invalidId);
-            assertNotNull("invalid without subclasses and without validating "
-                + "should return hollow or throw exception", a);
+            assertNotNull(a, "invalid without subclasses and without validating "
+                + "should return hollow or throw exception");
             a.getName();
             fail("Allowed access of invalid hollow instance.");
         }
@@ -272,6 +276,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testGetObjectsById() {
         OpenJPAEntityManager pm = getPM();
         ArrayList idlist = new ArrayList();
@@ -332,6 +337,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testEvictAll() {
         OpenJPAEntityManager pm = getPM();
 
@@ -348,6 +354,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testEvictAllCollection() {
         OpenJPAEntityManager pm = getPM();
 
@@ -364,6 +371,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testEvictAllClass() {
         OpenJPAEntityManager pm = getPM();
 
@@ -380,6 +388,7 @@ public class TestPersistenceManager extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testEvictAllClassFailure() {
         OpenJPAEntityManager pm = getPM();
 
@@ -398,10 +407,11 @@ public class TestPersistenceManager extends BaseKernelTest {
                 break;
             }
         }
-        assertTrue("should have found some RuntimeTest1s that were not "
-            + "evicted", foundPNONTRANS);
+        assertTrue(foundPNONTRANS, "should have found some RuntimeTest1s that were not "
+            + "evicted");
     }
 
+    @Test
     public void testEvictAllExtent() {
         OpenJPAEntityManager pm = getPM();
 

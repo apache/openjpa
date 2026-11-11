@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.conf.Value;
@@ -25,6 +31,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests dynamic modification of configuration property.
@@ -34,11 +42,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDynamicConfiguration extends SingleEMFTestCase {
 
-	@Override
+    @BeforeEach
     public void setUp() throws Exception {
 		super.setUp(PObject.class);
 	}
 
+    @Test
     public void testConfigurationIsEqualByValueAndHashCode() {
 		OpenJPAEntityManagerFactorySPI emf1 = createEMF(FRESH_EMF);
 		assertNotNull(emf1);
@@ -63,14 +72,16 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		}
 	}
 
-	public void testConfigurationIsReadOnlyAfterFirstConstruction() {
+    @Test
+    public void testConfigurationIsReadOnlyAfterFirstConstruction() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		assertFalse(conf.isReadOnly());
 		emf.createEntityManager();
 		assertTrue(conf.isReadOnly());
 	}
 
-	public void testNonDynamicValuesCanNotBeChanged() {
+    @Test
+    public void testNonDynamicValuesCanNotBeChanged() {
 		emf.createEntityManager();
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
@@ -84,7 +95,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		}
 	}
 
-	public void testDynamicValuesCanBeChanged() {
+    @Test
+    public void testDynamicValuesCanBeChanged() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		int oldValue = conf.getLockTimeout();
@@ -94,7 +106,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertEquals(newValue, conf.getLockTimeout());
 	}
 
-	public void testDynamicValuesAreCorrectlySet() {
+    @Test
+    public void testDynamicValuesAreCorrectlySet() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		Value lockTimeoutValue = conf.getValue("LockTimeout");
@@ -106,7 +119,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertFalse(connectionURLValue.isDynamic());
 	}
 
-	public void testDynamicChangeDoesNotChangeHashCode() {
+    @Test
+    public void testDynamicChangeDoesNotChangeHashCode() {
 		OpenJPAConfiguration conf1 = emf.getConfiguration();
 
 		int oldValue = conf1.getLockTimeout();
@@ -118,7 +132,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertEquals(oldHash, newHash);
 	}
 
-	public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
+    @Test
+    public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		// ensure that PObject is in metadata repository

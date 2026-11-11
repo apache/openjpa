@@ -18,23 +18,28 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBTransactions extends AbstractTestCase {
 
-    public TestEJBTransactions(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBTransactions() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
+    @Test
     public void testTxCannotBeCommittedTwiceInDiffThreads() throws Throwable {
         final ArrayList list = new ArrayList();
 
@@ -74,6 +79,7 @@ public class TestEJBTransactions extends AbstractTestCase {
         thread.join();
     }
 
+    @Test
     public void testTransactionsCannotBeCommittedTwice() {
         EntityManager pm = currentEntityManager();
         rollbackTx(pm);
@@ -90,6 +96,7 @@ public class TestEJBTransactions extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testTransactionsCannotBeRolledBackTwice() {
         EntityManager pm = currentEntityManager();
         startTx(pm);

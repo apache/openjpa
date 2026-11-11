@@ -18,6 +18,11 @@
  */
  package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -42,19 +47,43 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
-import junit.framework.TestCase;
+class TestWrapperExtension implements InvocationInterceptor {
 
-/**
- * Extends junit.framework.TestCase
- *
- * @version $Rev$ $Date$
- */
-public abstract class AbstractCriteriaTestCase extends TestCase {
+    @Override
+    public void interceptTestMethod(Invocation<Void> invocation,
+                                    ReflectiveInvocationContext<Method> invocationContext,
+                                    ExtensionContext extensionContext) throws Throwable
+    {
+        Throwable exception = null;
+        try {
+            invocation.proceed();
+        } catch (Throwable running) {
+            exception = running;
+        } finally {
+            try {
+                ((AbstractCriteriaTestCase)extensionContext.getRequiredTestInstance()).releaseResources();
+            } catch (Throwable tearingDown) {
+                if (exception == null) {
+                    exception = tearingDown;
+                } else {
+                    exception.addSuppressed(tearingDown);
+                }
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
+    }
+}
 
-	private static final Logger logger = Logger.getLogger(AbstractCriteriaTestCase.class.getCanonicalName());
+public abstract class AbstractCriteriaTestCase {
+    private static final Logger logger = Logger.getLogger(AbstractCriteriaTestCase.class.getCanonicalName());
 
     protected abstract SQLAuditor getAuditor();
 
@@ -67,7 +96,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         return dict;
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         releaseResources();
     }
@@ -91,8 +120,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             this::clearAuditor,
             this::closeEntityManagerFactory,
             this::clearReferences,
-            this::clearDictionary,
-            super::tearDown,
+            this::clearDictionary
         };
         Exception failure = null;
         for (ReleaseStep step : steps) {
@@ -282,8 +310,8 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         if (jSQL.size() != cSQL.size()) {
             printSQL("Target SQL for JPQL", jSQL);
             printSQL("Target SQL for CriteriaQuery", cSQL);
-            assertEquals("No. of SQL generated for JPQL and CriteriaQuery for " + jpql + " is different", jSQL.size(),
-                cSQL.size());
+            assertEquals(jSQL.size(), cSQL.size(),
+                "No. of SQL generated for JPQL and CriteriaQuery for " + jpql + " is different");
         }
 
         if (!(dict instanceof DerbyDictionary || dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary))
@@ -295,15 +323,15 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 printSQL("Target SQL for JPQL", jSQL);
                 printSQL("Target SQL for CriteriaQuery", cSQL);
             }
-            assertTrue(i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different\r\n" +
+            assertTrue(eq,
+                    i + "-th SQL for JPQL and CriteriaQuery for " + jpql + " is different\r\n" +
                     "JPQL = [" + jSQL.get(i) + "]\r\n" +
-                    "CSQL = [" + cSQL.get(i) + "]\r\n",
-                    eq);
+                    "CSQL = [" + cSQL.get(i) + "]\r\n");
         }
 
         if (expectedSQL != null) {
-            assertTrue("SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL,
-                    same(expectedSQL, jSQL.get(0)));
+            assertTrue(same(expectedSQL, jSQL.get(0)),
+                    "SQL for JPQL " + jpql + " is different than expecetd " + expectedSQL);
 
         }
     }
@@ -329,7 +357,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
                 printSQL("SQL for JPQL", jSQL.get(i));
                 printSQL("Expected SQL", expectedSQL);
             }
-            assertTrue(i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL, eq);
+            assertTrue(eq, i + "-th SQL for JPQL: " + jSQL.get(i) + " are different than Expected SQL " + expectedSQL);
         }
     }
 
@@ -356,7 +384,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         if (!eq) {
             printSQL("SQL for JPQL", jSql);
         }
-        assertTrue("SQL for JPQL " + jSql + " is different than expecetd " + expectedSQL, eq);
+        assertTrue(eq, "SQL for JPQL " + jSql + " is different than expecetd " + expectedSQL);
     }
 
     void executeExpectFail(CriteriaQuery<?> c, String jpql) {
@@ -441,88 +469,6 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
             return ((ReportingSQLException) t).getSQL();
         }
         return "Can not extract SQL from exception " + e;
-    }
-
-    /**
-     * Runs the test with {@code setUp()} inside the guarded block, so that {@code tearDown()}
-     * runs exactly once whether or not {@code setUp()} completed.
-     * <p>
-     * {@link junit.framework.TestCase#runBare()} calls {@code setUp()} <em>outside</em> its
-     * try/finally, so a failure there skips {@code tearDown()} altogether. The criteria tests
-     * open an {@link EntityManager} in {@link CriteriaTest#setUp()} and share one static
-     * EntityManagerFactory across every criteria test class, so each such failure used to
-     * leak that EntityManager together with the JDBC connection it had retained. With a pool
-     * of ten connections a dozen failures emptied it, and every later test in the same JVM
-     * then failed with "Cannot get a connection, pool error Timeout waiting for idle object"
-     * instead of with its own problem (OPENJPA-3016).
-     */
-    @Override
-    public void runBare() throws Throwable {
-        try {
-            runBareReleasingResources();
-        } catch (Throwable t) {
-            AllowFailure allowFailure = getAllowFailure();
-            if (allowFailure != null && allowFailure.value()) {
-                logger.fine("*** FAILED (but ignored): " + this);
-                logger.fine("***              Reason : " + allowFailure.message());
-                logger.fine("Stacktrace of failure");
-                t.printStackTrace();
-            } else {
-                throw t;
-            }
-        }
-    }
-
-    /**
-     * Mirrors {@link junit.framework.TestCase#runBare()} except that {@code setUp()} is
-     * covered by the try/finally, so {@code tearDown()} always releases what {@code setUp()}
-     * opened. Both are called exactly once. A failure in {@code tearDown()} after the test
-     * already failed is added to the test's failure as suppressed, so it is not lost.
-     */
-    private void runBareReleasingResources() throws Throwable {
-        Throwable exception = null;
-        try {
-            setUp();
-            runTest();
-        } catch (Throwable running) {
-            exception = running;
-        } finally {
-            try {
-                tearDown();
-            } catch (Throwable tearingDown) {
-                if (exception == null) {
-                    exception = tearingDown;
-                } else {
-                    exception.addSuppressed(tearingDown);
-                }
-            }
-        }
-        if (exception != null) {
-            throw exception;
-        }
-    }
-
-    /**
-     * Affirms if the test case or the test method is annotated with
-     *
-     * @AllowFailure. Method level annotation has higher precedence than Class level annotation.
-     *
-     *                Set -DIgnoreAllowFailure=true to ignore this directive altogether.
-     */
-    protected AllowFailure getAllowFailure() {
-        if (Boolean.getBoolean("IgnoreAllowFailure")) {
-            return null;
-        }
-        try {
-            Method runMethod = getClass().getMethod(getName(), (Class[]) null);
-            AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
-            if (anno != null) {
-                return anno;
-            }
-        } catch (SecurityException | NoSuchMethodException e) {
-            // ignore
-        }
-        return getClass().getAnnotation(AllowFailure.class);
     }
 
     public class SQLAuditor extends FilteringJDBCListener {

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,8 @@ import jakarta.persistence.TypedQueryReference;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@code EntityManager.createQuery(TypedQueryReference)} added in JPA 3.2.
@@ -36,7 +42,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
 
     private static final String TIMEOUT_HINT = "jakarta.persistence.query.timeout";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class, CLEAR_TABLES);
         EntityManager em = emf.createEntityManager();
@@ -68,6 +74,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         };
     }
 
+    @Test
     public void testCreateQueryFromReference() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -84,6 +91,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testResultTypeIsApplied() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -95,6 +103,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testReferenceHintsAreApplied() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -107,6 +116,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParametersStillWork() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -119,6 +129,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testNullReference() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -131,6 +142,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUnknownQueryName() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -143,6 +155,7 @@ public class TestTypedQueryReference extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testClosedEntityManager() {
         EntityManager em = emf.createEntityManager();
         em.close();

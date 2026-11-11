@@ -18,23 +18,29 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBNoPersistentFields extends AbstractTestCase {
 
     private TestEJBNoPersistentFieldsNholderEntity holder;
 
-    public TestEJBNoPersistentFields(String test) {
-        super(test, "kernelcactusapp");
+    public TestEJBNoPersistentFields() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         deleteAll(TestEJBNoPersistentFieldsNholderEntity.class);
     }
 
+    @Test
     public void testNoPersistentFields() {
         EntityManager em = currentEntityManager();
         startTx(em);

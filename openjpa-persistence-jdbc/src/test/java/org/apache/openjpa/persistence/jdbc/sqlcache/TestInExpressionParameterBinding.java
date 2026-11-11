@@ -19,6 +19,11 @@
 
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +35,9 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests parameter binding to IN() expressions.
@@ -54,7 +62,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     private static List<Integer> ORIGINAL_ZIPS;
     private OpenJPAEntityManager _em;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         if (_emf == null) {
             super.setUp(Address.class, "openjpa.ConnectionFactoryProperties", "PrintParameters=true", CLEAR_TABLES);
@@ -66,7 +74,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         _em = _emf.createEntityManager();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         // block super class tear down
     }
@@ -82,6 +90,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testWithCollectionParamOfDifferentSize() {
         String jpql = "select a from Address a where a.zip in (:p)";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
@@ -95,6 +104,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testWithCollectionParamOfDifferentSizeNoParentheses() {
         String jpql = "select a from Address a where a.zip in :p";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
@@ -107,6 +117,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         assertEquals(zips2.size(), result2.size());
     }
 
+    @Test
     public void testWithSingleParam() {
         String jpql = "select a from Address a where a.zip in (:p)";
         Integer zip1 = ORIGINAL_ZIPS.get(4);
@@ -121,6 +132,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         assertEquals(zip2.intValue(), result2.get(0).getZip());
     }
 
+    @Test
     public void testWithMultiplParamOfDifferentSizeNoParentheses() {
         String jpql = "select a from Address a where a.zip in (:p1,:p2,:p3)";
         List<Integer> zips1 = ORIGINAL_ZIPS.subList(0, 3);
@@ -141,6 +153,7 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
         assertEquals(zips2.size(), result2.size());
     }
 
+    @Test
     public void testWithSingleParamNoParentheses() {
         OpenJPAEntityManager em = _emf.createEntityManager();
         String jpql = "select a from Address a where a.zip in :p";
@@ -159,8 +172,8 @@ public class TestInExpressionParameterBinding extends SingleEMFTestCase {
 
     void assertCached(String id) {
         PreparedQuery cached = getPreparedQueryCache().get(id);
-        assertNotNull(getPreparedQueryCache() + ": " + getPreparedQueryCache().getMapView() +
-                " does not contain " + id, cached);
+        assertNotNull(cached, getPreparedQueryCache() + ": " + getPreparedQueryCache().getMapView() +
+                " does not contain " + id);
     }
 
     void assertNotCached(String id) {

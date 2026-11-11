@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.jointable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +30,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
@@ -34,7 +39,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
     private int numFTEmployees = 2;
     private int numContractors = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Contractor.class, Employee.class, Department.class, Person.class,
             FulltimeEmployee.class, ParttimeEmployee.class,
@@ -70,6 +75,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testInheritanceJoinedTypeOperator() {
         EntityManager em = emf.createEntityManager();
         Query q = null;
@@ -166,6 +172,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testInheritanceTypeJoinedQuery() {
         EntityManager em = emf.createEntityManager();
         Query q = null;

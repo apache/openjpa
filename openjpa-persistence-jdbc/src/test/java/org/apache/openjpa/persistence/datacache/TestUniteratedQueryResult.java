@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,19 +32,21 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestUniteratedQueryResult extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestUniteratedQueryResult.class.getCanonicalName());
 
-    public TestUniteratedQueryResult(String test) {
-        super(test, "datacachecactusapp");
+    public TestUniteratedQueryResult() {
+        super("datacachecactusapp");
     }
 
     private EntityManagerFactory _pmf;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         logger.fine("****Deleted Records "
             + deleteAll(CacheObjectA.class));
@@ -55,6 +59,7 @@ public class TestUniteratedQueryResult extends AbstractTestCase {
         _pmf = getEmf(propsMap);
     }
 
+    @Test
     public void test() {
         CacheObjectA pc1 = new CacheObjectA();
         pc1.setName("pc1");

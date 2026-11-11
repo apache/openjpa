@@ -18,13 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
@@ -34,11 +39,12 @@ import junit.textui.TestRunner;
 public class TestPersistence
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, Place.class);
     }
 
+    @Test
     public void testCreateEntityManager() {
         EntityManager em = emf.createEntityManager();
 
@@ -56,6 +62,7 @@ public class TestPersistence
         em.close();
     }
 
+    @Test
     public void testPersist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -64,6 +71,7 @@ public class TestPersistence
         em.close();
     }
 
+    @Test
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -89,6 +97,7 @@ public class TestPersistence
         em.close();
     }
 
+    @Test
     public void testNewDeleteNew() {
         EntityManager em = emf.createEntityManager();
 
@@ -127,9 +136,4 @@ public class TestPersistence
         assertEquals("Lexington", place.getLocation());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestPersistence.class);
-    }
 }
-

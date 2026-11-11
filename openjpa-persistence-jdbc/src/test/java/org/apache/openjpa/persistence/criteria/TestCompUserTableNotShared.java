@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.Test;
 
 /**
  * Affirms that the two unrelated {@code CompUser} hierarchies in the test suite map to
@@ -37,6 +41,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  */
 public class TestCompUserTableNotShared extends CriteriaTest {
 
+    @Test
     public void testTheTwoCompUserHierarchiesDoNotShareATable() {
         String criteriaTable = tableOf(getEntityManagerFactory(), CompUser.class);
 
@@ -52,18 +57,18 @@ public class TestCompUserTableNotShared extends CriteriaTest {
             other.close();
         }
 
-        assertFalse("org.apache.openjpa.persistence.criteria.CompUser and "
+        assertFalse(criteriaTable.equalsIgnoreCase(commonAppsTable),
+            "org.apache.openjpa.persistence.criteria.CompUser and "
             + "org.apache.openjpa.persistence.common.apps.CompUser must not share the table \""
             + criteriaTable + "\": whichever test package runs second rewrites every column of "
             + "it on every EntityManagerFactory, which MariaDB rejects after about a dozen "
-            + "rotations with \"Row size too large\"",
-            criteriaTable.equalsIgnoreCase(commonAppsTable));
+            + "rotations with \"Row size too large\"");
     }
 
     private String tableOf(OpenJPAEntityManagerFactorySPI factory, Class<?> entity) {
         ClassMapping mapping = (ClassMapping) ((JDBCConfiguration) factory.getConfiguration())
             .getMappingRepositoryInstance().getMetaData(entity, entity.getClassLoader(), true);
-        assertNotNull("no mapping for " + entity.getName(), mapping);
+        assertNotNull(mapping, "no mapping for " + entity.getName());
         return mapping.getTable().getIdentifier().getName();
     }
 }

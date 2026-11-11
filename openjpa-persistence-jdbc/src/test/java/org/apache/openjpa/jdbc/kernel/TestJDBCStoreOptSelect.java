@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreManager;
@@ -29,18 +33,21 @@ import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
     Object[] props = new Object[] { CLEAR_TABLES, OptSelectEntity.class
         };
     OptSelectEntity e1, e2;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(props);
         createData();
     }
 
+    @Test
     public void test() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         StoreManager store = ((EntityManagerImpl) em).getBroker().getStoreManager().getDelegate();

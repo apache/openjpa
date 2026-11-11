@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -25,11 +28,15 @@ import java.util.Scanner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the added useSchemaElement functionality of the
@@ -40,6 +47,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         File f = new File("target/orm.xml");
@@ -48,7 +60,6 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
         if (f.exists()) {
             assertTrue(f.delete());
         }
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
     }
 
     @Override
@@ -56,6 +67,7 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
         return "rev-mapping-pu";
     }
 
+    @Test
     public void testGettersAndSetters() throws Exception {
 
         JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactory) emf).getConfiguration();

@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entities with @Id on field + @Column on getters (without
@@ -30,17 +35,19 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMixedAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MixedAccessBase.class, MixedAccessChild.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testMetadataResolution() {
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
     }
 
+    @Test
     public void testPersistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

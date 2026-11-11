@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.EnumSet;
 
 import org.apache.openjpa.event.CallbackModes;
@@ -27,10 +29,7 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.kernel.DetachState;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.RestoreState;
-
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class TestEnumToKernelConstantMappings {
 

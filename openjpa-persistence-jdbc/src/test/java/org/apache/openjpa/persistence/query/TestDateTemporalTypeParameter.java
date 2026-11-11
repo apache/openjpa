@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
@@ -30,6 +33,8 @@ import jakarta.persistence.TemporalType;
 import org.apache.openjpa.persistence.detach.Entity20;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A Calendar, java.util.Date or java.sql.Date bound for a DATE column or with TemporalType.DATE, as a query
@@ -38,11 +43,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Entity20.class, TemporalFieldTypes.class);
     }
 
+    @Test
     public void testCalendarAndDateParametersAreBoundWithoutTimeOfDay() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);
@@ -71,6 +77,7 @@ public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testDateAttributesAreStoredWithoutTimeOfDay() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);
@@ -97,6 +104,7 @@ public class TestDateTemporalTypeParameter extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSqlDateWithTimeOfDayIsBoundWithoutIt() {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR_OF_DAY, 13);

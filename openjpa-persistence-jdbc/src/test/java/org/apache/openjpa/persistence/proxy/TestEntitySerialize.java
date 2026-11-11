@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.UUID;
 
 import jakarta.persistence.EntityManager;
@@ -36,19 +38,22 @@ import org.apache.openjpa.persistence.proxy.entities.Payout;
 import org.apache.openjpa.persistence.proxy.entities.Person;
 import org.apache.openjpa.persistence.proxy.entities.Rider;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for showing OPENJPA-1900
  */
 public class TestEntitySerialize extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class, Person.class,
             Rider.class);
     }
 
+    @Test
     public void testSerialization() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("Annuity1Compat",

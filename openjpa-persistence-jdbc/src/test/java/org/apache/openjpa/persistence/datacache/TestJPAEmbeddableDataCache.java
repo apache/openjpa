@@ -25,17 +25,16 @@ import org.apache.openjpa.persistence.datacache.entities.ContactInfo;
 import org.apache.openjpa.persistence.datacache.entities.Person;
 import org.apache.openjpa.persistence.datacache.entities.Phone;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestJPAEmbeddableDataCache extends SingleEMFTestCase {
-    Object[] params = new Object[] { Person.class, ContactInfo.class, Phone.class, "openjpa.DataCache", "true",
-        CLEAR_TABLES };
-
     @Override
-    protected void setUp(Object... props) {
-        super.setUp(params);
-
+    public void setUp(Object... props) {
+        super.setUp(Person.class, ContactInfo.class, Phone.class, "openjpa.DataCache", "true",
+            CLEAR_TABLES);
     }
 
+    @Test
     public void test() {
         EntityManager em = emf.createEntityManager();
         try {

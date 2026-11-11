@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * An element of a collection converted as a whole that is changed in place
@@ -30,7 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestConvertedDataCacheRollback extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedListEntity.class, DROP_TABLES, "openjpa.DataCache", "true");
         try (EntityManager em = emf.createEntityManager()) {
@@ -50,6 +55,7 @@ public class TestConvertedDataCacheRollback extends SingleEMFTestCase {
         assertTrue(emf.getCache().contains(ConvertedListEntity.class, 1L));
     }
 
+    @Test
     public void testElementChangedInPlaceIsNotCachedByALoad() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

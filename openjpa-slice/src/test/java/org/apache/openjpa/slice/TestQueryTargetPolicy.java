@@ -18,10 +18,16 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests query ordering.
@@ -39,7 +45,7 @@ public class TestQueryTargetPolicy extends SliceTestCase {
         return "ordering";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 Car.class, Manufacturer.class,
@@ -86,6 +92,7 @@ public class TestQueryTargetPolicy extends SliceTestCase {
     public static final String QueryPersonByName = "select p from Person p where p.name=:name";
     public static final String QueryPersonByNameSwap = "select q from Person q where q.name=:name";
 
+    @Test
     public void testTargetSingleSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

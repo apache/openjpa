@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.jira_2883;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entity with generated id created as expected
@@ -32,18 +36,19 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 @DatabasePlatform("oracle.jdbc.driver.OracleDriver")
 public class TestOracleGeneratedId extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, OracleGeneratedIdEntity.class,
                 "openjpa.jdbc.DBDictionary", "oracle(UseTriggersForAutoAssign=true, MaxAutoAssignNameLength=28, BatchLimit=100)");
     }
 
+    @Test
     public void testGeneratedId() {
         EntityManager em = null;
         try {
             em = emf.createEntityManager();
-            assertFalse("'supportsAutoAssign' should be turned OFF", (((JDBCConfiguration) emf.getConfiguration()).
-                    getDBDictionaryInstance().supportsAutoAssign));
+            assertFalse((((JDBCConfiguration) emf.getConfiguration()).
+                    getDBDictionaryInstance().supportsAutoAssign), "'supportsAutoAssign' should be turned OFF");
         } finally {
             if (em != null) {
                 em.close();

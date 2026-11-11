@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,20 +31,23 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.
         FlushDataCacheObject;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestFlushDataCache
     extends AbstractTestCase {
 
-    public TestFlushDataCache(String str) {
-        super(str, "datacachecactusapp");
+    public TestFlushDataCache() {
+        super("datacachecactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(FlushDataCacheObject.class);
     }
 
+    @Test
     public void testQueryFlushPlusDataCache() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
@@ -96,6 +101,7 @@ public class TestFlushDataCache
         endEm(em);
     }
 
+    @Test
     public void testEmptyCommit() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");

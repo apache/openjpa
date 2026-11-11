@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.util.GeneralException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestSchemaVersionValidation {
     /**
@@ -42,9 +44,10 @@ public class TestSchemaVersionValidation {
     // JREs fail differently for this test. Detection and
     // assertion of a JRE specific failure has shown to be error prone
     // so only a generic exception is detected.
-    @Test(expected = Exception.class)
+    @Test
     public void testBad2_0PersistenceXml() {
-        doCreateEmf(null, "persistence-2_0-no-pu.xml", false);
+        assertThrows(Exception.class, () ->
+            doCreateEmf(null, "persistence-2_0-no-pu.xml", false));
     }
 
     /**
@@ -76,9 +79,10 @@ public class TestSchemaVersionValidation {
     /**
      * Verify a version 66.6 persistence.xml with bad URL cannot be loaded
      */
-    @Test(expected = GeneralException.class)
+    @Test
     public void testOffline66_6Persistence2_2OrmXml() {
-        doCreateEmf("XSDTest", "offline_persistence-66_6-orm-2_2.xml");
+        assertThrows(GeneralException.class, () ->
+            doCreateEmf("XSDTest", "offline_persistence-66_6-orm-2_2.xml"));
     }
 
     /**

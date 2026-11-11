@@ -27,11 +27,15 @@
 
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests usage of COUNT(*) in SQL query.
@@ -44,23 +48,27 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestWildCardCount extends SQLListenerTestCase {
     private EntityManager em;
-    @Override
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, "openjpa.jdbc.QuerySQLCache", "false");
         em = emf.createEntityManager();
         sql.clear();
     }
 
+    @Test
     public void testWildCardForCountInSingleProjectTerm() {
         String jpql = "select COUNT(p) from RuntimeTest1 p";
         executeAndAssert(jpql);
     }
 
+    @Test
     public void testWildCardForCountInMultipleProjectTerms() {
         String jpql = "select COUNT(p.intField),SUM(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);
     }
 
+    @Test
     public void testWildCardForCountInMultipleProjectTermsButCountIsNotFirstTerm() {
         String jpql = "select SUM(p.intField),COUNT(p.intField) from RuntimeTest1 p GROUP BY p.intField";
         executeAndAssert(jpql);

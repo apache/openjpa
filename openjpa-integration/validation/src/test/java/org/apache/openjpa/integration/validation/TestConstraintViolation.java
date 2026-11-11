@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +36,15 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConstraintViolation extends AbstractPersistenceTestCase {
 
     EntityManagerFactory emf2 = null;
     Log log = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         Map<String, String> props = new HashMap<>();
         props.put("jakarta.persistence.validation.group.pre-remove", "jakarta.validation.groups.Default");
@@ -57,6 +64,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         em.close();
     }
 
+    @Test
     public void testPersistNormalValidation() {
         EntityManager em = emf2.createEntityManager();
 
@@ -96,6 +104,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testPersistImageNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
@@ -143,6 +152,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testPersistEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
@@ -191,6 +201,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testRemoveEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
@@ -250,6 +261,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testFlushEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 

@@ -19,11 +19,12 @@
 package org.apache.openjpa.persistence.jdbc.xml;
 
 import org.apache.openjpa.persistence.jdbc.annotations.TestNonstandardMappingAnnotations;
+import org.junit.jupiter.api.BeforeEach;
 
 public class TestNonstandardMappingXML extends
     TestNonstandardMappingAnnotations {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp();
     }

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
@@ -25,6 +28,9 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test was added for OPENJPA-1999. 'Add' support for allowing positional parameters to start at something other
@@ -39,7 +45,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
     String _name2;
     String _val2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(SimpleEntity.class, "openjpa.Compatibility", "ConvertPositionalParametersToNamed=true"
 //        ,"openjpa.Log","SQL=trace"
@@ -68,7 +74,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         _em.clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (_em.getTransaction().isActive()) {
             _em.getTransaction().rollback();
@@ -77,6 +83,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testNamedPositionalStartAtNonOne() {
         SimpleEntity se =
             _em.createNamedQuery("SelectWithPositionalParameterNonOneStart", SimpleEntity.class)
@@ -84,6 +91,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         assertNotNull(se);
     }
 
+    @Test
     public void testJPQLPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;
@@ -96,6 +104,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         assertNotNull(se);
     }
 
+    @Test
     public void testJPQLWithSubQueryPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;
@@ -109,6 +118,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         assertNotNull(se);
     }
 
+    @Test
     public void testPreparedQueryPositionalStartAtNonOne() {
         int idPos = 54;
         int namePos = 23;
@@ -129,6 +139,7 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
         assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
     }
 
+    @Test
     public void testPreparedQueryWithSubQueryPositionalStartAtNonOne() {
         int idPos = 7;
         int namePos = 908;

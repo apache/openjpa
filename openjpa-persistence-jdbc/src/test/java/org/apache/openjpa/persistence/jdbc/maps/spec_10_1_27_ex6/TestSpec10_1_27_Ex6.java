@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex6;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +32,9 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
     public int numCompany = 2;
@@ -44,7 +47,7 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
     public int newVpId = 100;
     public List rsAllCompany = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Company.class,
@@ -54,15 +57,18 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
         rsAllCompany = getAll(Company.class);
     }
 
+    @Test
     public void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
     @AllowFailure
+    @Test
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
+    @Test
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
@@ -233,7 +239,7 @@ public class TestSpec10_1_27_Ex6 extends SQLListenerTestCase {
     public void assertCompany(Company c) {
         int id = c.getId();
         Map organization = c.getOrganization();
-        Assert.assertEquals(2,organization.size());
+        Assertions.assertEquals(2,organization.size());
     }
 
     public void assertDivision(Division d) {

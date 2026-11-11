@@ -18,17 +18,22 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTableGenerator extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Dog.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testInitialValue() {
         EntityManager em = emf.createEntityManager();
 

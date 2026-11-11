@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.embed.xmloverride;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that a class declared as embeddable ONLY in orm.xml (without
@@ -31,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestXmlEmbeddableOverride extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -46,6 +51,7 @@ public class TestXmlEmbeddableOverride extends SingleEMFTestCase {
      * persisted and retrieved correctly with its individual fields mapped
      * to columns (not serialized as a BLOB).
      */
+    @Test
     public void testXmlEmbeddableOverride() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -66,11 +72,11 @@ public class TestXmlEmbeddableOverride extends SingleEMFTestCase {
 
             // Retrieve and verify
             ComplaintEntity retrieved = em.find(ComplaintEntity.class, 1);
-            assertNotNull("Complaint should be found", retrieved);
+            assertNotNull(retrieved, "Complaint should be found");
             assertEquals(42, retrieved.getComplaintNumber());
 
             XmlApplicant retrievedApplicant = retrieved.getApplicant();
-            assertNotNull("Applicant should not be null", retrievedApplicant);
+            assertNotNull(retrievedApplicant, "Applicant should not be null");
             assertEquals("John Doe", retrievedApplicant.getName());
             assertEquals("123 Main St", retrievedApplicant.getAddress());
 

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +28,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for PersistentCollection Annotation
@@ -33,7 +38,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestPersistentCollection extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(PColl_EntityA.class, PColl_EmbedB.class, PColl_EntityC.class,
                 PColl_EntityA1.class, PColl_EntityB.class, PColl_EntityStringEager.class,
@@ -41,6 +46,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testPersistentCollectionOfEmbeddables() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -84,6 +90,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testPersistentCollectionOfEntities() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -127,6 +134,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testPersistentCollectionStringsLazy() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -157,6 +165,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testPersistentCollectionStringsEager() {
         EntityManager em = emf.createEntityManager();
         try {

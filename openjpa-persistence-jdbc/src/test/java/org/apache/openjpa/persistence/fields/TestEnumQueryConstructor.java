@@ -18,15 +18,19 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEnumQueryConstructor
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EnumFieldType.class, CLEAR_TABLES);
 
@@ -39,6 +43,7 @@ public class TestEnumQueryConstructor
         em.close();
     }
 
+    @Test
     public void testEnumQueryConstructor() {
         Query q = em.createQuery(
             "select new EnumFieldType(e.intField, e.enumField) " +

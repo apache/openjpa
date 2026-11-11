@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
@@ -28,6 +31,9 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -41,14 +47,15 @@ public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     DBDictionary dict;
 
     @Override
-    public void setUp() throws Exception {
+    protected boolean isSupported(DBDictionary dict) {
         // NOTE: This test is only configured to run on DB2 and Derby since
         // those DBs handle non-default schemas without additional authority or
         // configuration
-        setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
-        if (isTestsDisabled())
-            return;
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.EntityC.class,
             org.apache.openjpa.persistence.delimited.identifiers.EntityD.class,
@@ -65,7 +72,7 @@ public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
         dict = conf.getDBDictionaryInstance();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -104,6 +111,7 @@ public class TestManualDelimitedJoinAnnotations extends SQLListenerTestCase {
         entityD2.setEntityD3(entityD3);
     }
 
+    @Test
     public void testCreate() {
         id++;
         createCandD(id);

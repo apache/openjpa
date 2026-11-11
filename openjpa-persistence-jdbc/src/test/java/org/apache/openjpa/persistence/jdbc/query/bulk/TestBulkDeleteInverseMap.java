@@ -16,7 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The inverse side of a map is not a table owned by the map: its rows are
@@ -28,7 +32,7 @@ import jakarta.persistence.EntityManager;
  */
 public class TestBulkDeleteInverseMap extends AbstractBulkDeleteTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteMapOwner.class,
             BulkDeleteMapBase.class, BulkDeleteMapSub.class);
@@ -36,6 +40,7 @@ public class TestBulkDeleteInverseMap extends AbstractBulkDeleteTestCase {
         sql.clear();
     }
 
+    @Test
     public void testRelatedEntityRowsSurviveBulkDelete() {
         assertEquals(1, delete("delete from BulkDeleteMapOwner o"));
 

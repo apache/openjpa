@@ -18,20 +18,24 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 
 import org.apache.openjpa.enhance.DynamicStorage;
 import org.apache.openjpa.enhance.DynamicStorageGenerator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestDynamicStorageGenerator
-    extends AbstractTestCase {
+public class TestDynamicStorageGenerator extends AbstractTestCase {
 
-    public TestDynamicStorageGenerator(String s) {
-        super(s, "enhancecactusapp");
+    public TestDynamicStorageGenerator() {
+        super("enhancecactusapp");
     }
 
+    @Test
     public void testStorage() throws Exception {
 
         DynamicStorageGenerator gen = new DynamicStorageGenerator();

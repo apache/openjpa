@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +31,8 @@ import jakarta.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestLocking extends SQLListenerTestCase {
     String _phone = "5075555555";
@@ -37,7 +42,7 @@ public class TestLocking extends SQLListenerTestCase {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Person.class, PhoneNumber.class
         // ,"openjpa.Log", "SQL=trace"
@@ -45,6 +50,7 @@ public class TestLocking extends SQLListenerTestCase {
         populate();
     }
 
+    @Test
     public void testExtendedLockScope() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("jakarta.persistence.lock.scope", PessimisticLockScope.EXTENDED);

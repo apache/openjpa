@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestM21UniVersion extends SingleEMFTestCase {
     public static String SALESID = "SALES";
@@ -31,7 +35,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
     public static String EMPLOYEE3ID = "EMPLOYEE3";
 
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
                 M21UniDepartment.class,
@@ -73,6 +77,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testNonRelationalFieldInverseSideVersionUpdate() {
         // Change only non-relation fields on Department.
         // Version number of Department should be updated.
@@ -108,6 +113,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testNonRelationalFieldOwnerSideVersionUpdate() {
         // Change only non-relation fields on Employee.
         // Version number of Employee should be updated.
@@ -142,6 +148,7 @@ public class TestM21UniVersion extends SingleEMFTestCase {
         assertEquals(e2VersionPost, e2VersionPre + 1);
     }
 
+    @Test
     public void testRelationalFieldOwnerSideVersionUpdate() {
         // Assign employees to a new Department.
         // Since there is a unidirectional ManyToOne relationship

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that sql statements get flushed in an order which does not violate
@@ -40,7 +44,7 @@ public class TestNoForeignKeyViolation
     private EntityC entityC;
     private EntityD entityD;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class,
               EntityE.class, EntityF.class, EntityG.class);
@@ -66,6 +70,7 @@ public class TestNoForeignKeyViolation
         entityC.setEntityD(entityD);
     }
 
+    @Test
     public void testSqlOrder() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -104,6 +109,7 @@ public class TestNoForeignKeyViolation
         }
     }
 
+    @Test
     public void testSimpleCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -124,6 +130,7 @@ public class TestNoForeignKeyViolation
         }
     }
 
+    @Test
     public void testComplexCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -154,6 +161,7 @@ public class TestNoForeignKeyViolation
         }
     }
 
+    @Test
     public void testComplexTwoCycles() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -185,6 +193,7 @@ public class TestNoForeignKeyViolation
         }
     }
 
+    @Test
     public void testForeignKeyCascade() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).

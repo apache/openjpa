@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Loading a field of an instance with unflushed changes must not put those
@@ -31,7 +37,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
 
     private static final long ID = 1L;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         // RefreshFromDataCache lets a refresh go through the data cache, so
         // that its loaded state is cached
@@ -57,6 +63,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         assertTrue(emf.getCache().contains(CachedLazyEntity.class, ID));
     }
 
+    @Test
     public void testLoadFieldDoesNotCacheDirtyBasicField() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -76,6 +83,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testLoadFieldDoesNotCacheDirtyCollection() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -88,6 +96,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         assertCommittedState();
     }
 
+    @Test
     public void testFindAllDoesNotCacheDirtyField() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -104,6 +113,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         assertCommittedState();
     }
 
+    @Test
     public void testLoadFieldOfFlushedInstanceDoesNotCacheIt() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -119,6 +129,7 @@ public class TestDataCacheLoadDirtyInstance extends SQLListenerTestCase {
         assertCommittedState();
     }
 
+    @Test
     public void testRefreshOfFlushedInstanceDoesNotCacheIt() {
         try (OpenJPAEntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

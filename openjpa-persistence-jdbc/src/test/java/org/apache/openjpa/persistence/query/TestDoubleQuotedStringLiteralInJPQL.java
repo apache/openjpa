@@ -18,16 +18,20 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDoubleQuotedStringLiteralInJPQL
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
 
@@ -46,6 +50,7 @@ public class TestDoubleQuotedStringLiteralInJPQL
         em.close();
     }
 
+    @Test
     public void testdDoubleQuotedStringLiteralInJPQL() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select count(o) " +

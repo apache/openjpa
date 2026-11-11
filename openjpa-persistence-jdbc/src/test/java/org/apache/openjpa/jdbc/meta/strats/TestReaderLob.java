@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Test;
 
 /**
  * Defines all the abstract methods from AbstractLobTest to tests the
@@ -88,6 +92,7 @@ public class TestReaderLob extends AbstractLobTest {
      * Inserts and updates content of more than 8 KB with characters that take
      * more than one byte in UTF-8.
      */
+    @Test
     public void testInsertAndUpdateMultiByteContent() throws IOException {
         String s = repeatString("\u00e4\u00f6\u00fc \u20ac\u00df, ", 2000);
         insert(newLobEntity(s, 1));
@@ -106,6 +111,7 @@ public class TestReaderLob extends AbstractLobTest {
         }
     }
 
+    @Test
     public void testInsertEmpty() throws IOException {
         insert(newLobEntity("", 1));
         try (EntityManager em = emf.createEntityManager()) {

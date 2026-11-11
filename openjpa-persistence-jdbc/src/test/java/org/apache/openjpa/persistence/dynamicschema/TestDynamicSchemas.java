@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +30,8 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -55,11 +60,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDynamicSchemas extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
 
+    @Test
     public void testDerbyDynamicSchema() {
         OpenJPAEntityManagerFactorySPI derbyEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -72,6 +78,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testDB2DynamicSchema() {
         OpenJPAEntityManagerFactorySPI db2EMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -84,6 +91,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testOracleDynamicSchema() {
         OpenJPAEntityManagerFactorySPI oracleEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -96,6 +104,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testAccessDynamicSchema() {
         OpenJPAEntityManagerFactorySPI accessEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -108,6 +117,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testSQLServerDynamicSchema() {
         OpenJPAEntityManagerFactorySPI sqlserverEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -120,6 +130,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testMariaDBDynamicSchema() {
         OpenJPAEntityManagerFactorySPI mysqlEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -132,6 +143,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testMySQLDynamicSchema() {
         OpenJPAEntityManagerFactorySPI mysqlEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -144,6 +156,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testPostgresDynamicSchema() {
         OpenJPAEntityManagerFactorySPI postgresEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -156,6 +169,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testInformixDynamicSchema() {
         OpenJPAEntityManagerFactorySPI informixEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -168,6 +182,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testSybaseDynamicSchema() {
         OpenJPAEntityManagerFactorySPI sybaseEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -180,6 +195,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testFirebirdDynamicSchema() {
         OpenJPAEntityManagerFactorySPI firebirdEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
@@ -234,8 +250,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
         for (Column column : columns) {
             assertTrue(column.getName().length() > 0);
             assertTrue(column.getName().length() <= dict.maxColumnNameLength);
-            assertFalse("Column" + column.getName(), dict.getInvalidColumnWordSet().
-                contains(column.getName().toUpperCase(Locale.ROOT)));
+            assertFalse(dict.getInvalidColumnWordSet().
+                contains(column.getName().toUpperCase(Locale.ROOT)), "Column" + column.getName());
         }
     }
 }

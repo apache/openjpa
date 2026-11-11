@@ -18,19 +18,22 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestResultSetMapping
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class);
 
@@ -41,6 +44,7 @@ public class TestResultSetMapping
         em.close();
     }
 
+    @Test
     public void testSimpleQuery() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createNamedQuery("findSimpleEntitites");
@@ -50,9 +54,5 @@ public class TestResultSetMapping
             assertSame(re.getClass(), SimpleEntity.class);
         }
         em.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestResultSetMapping.class);
     }
 }

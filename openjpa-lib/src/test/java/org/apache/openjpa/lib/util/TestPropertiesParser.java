@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,10 +39,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyException;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 // things to test:
 // - delimiters in keys
@@ -225,8 +227,8 @@ public class TestPropertiesParser {
 
                 p.load(in);
 
-                assertNotNull("Property \"" + key + "\" was null",
-                        p.getProperty(key));
+                assertNotNull(p.getProperty(key),
+                        "Property \"" + key + "\" was null");
                 assertEquals(val.trim(), p.getProperty(key).trim());
             }
             catch (Throwable ioe) {
@@ -299,8 +301,8 @@ public class TestPropertiesParser {
             String s1 = new String(out1.toByteArray());
             String s2 = new String(out2.toByteArray());
 
-            assertTrue("Expected <" + s1 + "> but was <" + s2 + ">",
-                    s1.indexOf(s2) != -1);
+            assertTrue(s1.indexOf(s2) != -1,
+                    "Expected <" + s1 + "> but was <" + s2 + ">");
         }
     }
 

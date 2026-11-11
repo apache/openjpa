@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,8 +32,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a cascading one-many backed by a foreign key.
@@ -36,11 +43,12 @@ import junit.textui.TestRunner;
 public class TestCascadingOneManyWithForeignKey
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CascadingOneManyParent.class, CascadingOneManyChild.class);
     }
 
+    @Test
     public void testPersist() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
@@ -70,6 +78,7 @@ public class TestCascadingOneManyWithForeignKey
         em.close();
     }
 
+    @Test
     public void testDelete() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
@@ -108,6 +117,7 @@ public class TestCascadingOneManyWithForeignKey
         assertEquals(0, res.size());
     }
 
+    @Test
     public void testForeignKey() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         if (!conf.getDBDictionaryInstance().supportsForeignKeys)
@@ -149,9 +159,4 @@ public class TestCascadingOneManyWithForeignKey
         }
         oem.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestCascadingOneManyWithForeignKey.class);
-    }
 }
-

@@ -19,23 +19,33 @@
 package org.apache.openjpa.persistence.simple;
 
 import jakarta.persistence.EntityManager;
+
 import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.time.LocalDateTime;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPA 3.2 LocalDateTime and Instant as @Version types.
  */
 public class TestTimeVersionTypes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
                 LocalDateTimeVersionEntity.class,
                 InstantVersionEntity.class);
     }
 
+    @Test
     public void testLocalDateTimeVersionAssignedOnPersist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -53,6 +63,7 @@ public class TestTimeVersionTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLocalDateTimeVersionIncrementsOnUpdate() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -77,9 +88,10 @@ public class TestTimeVersionTypes extends SingleEMFTestCase {
 
         assertNotNull(v1);
         assertNotNull(v2);
-        assertTrue("Version should have increased", v2.isAfter(v1));
+        assertTrue(v2.isAfter(v1), "Version should have increased");
     }
 
+    @Test
     public void testInstantVersionAssignedOnPersist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -97,6 +109,7 @@ public class TestTimeVersionTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testInstantVersionIncrementsOnUpdate() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -121,9 +134,10 @@ public class TestTimeVersionTypes extends SingleEMFTestCase {
 
         assertNotNull(v1);
         assertNotNull(v2);
-        assertTrue("Version should have increased", v2.isAfter(v1));
+        assertTrue(v2.isAfter(v1), "Version should have increased");
     }
 
+    @Test
     public void testLocalDateTimeOptimisticLocking() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -161,6 +175,7 @@ public class TestTimeVersionTypes extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testInstantOptimisticLocking() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

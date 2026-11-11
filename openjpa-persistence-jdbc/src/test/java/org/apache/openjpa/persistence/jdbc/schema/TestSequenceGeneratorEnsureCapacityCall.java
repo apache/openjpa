@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
@@ -28,26 +30,21 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqA;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqD;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSequenceGeneratorEnsureCapacityCall
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-
-
-    /** Creates a new instance of TestSequenceGeneratorEnsureCapacityCall */
-    public TestSequenceGeneratorEnsureCapacityCall(String name)
-    {
-    	super(name);
-    }
+public class TestSequenceGeneratorEnsureCapacityCall extends TestSQLListenerTestCase {
 
     // class SeqA uses the default sequence factory.
+    @Test
     public void testDBSequenceFactory() {
         TableJDBCSeq seq = (TableJDBCSeq) seqForClass(SeqA.class);
         incrementTest(SeqA.class, seq.getAllocate());
     }
 
     // class SeqD uses the db-class sequence factory.
+    @Test
     public void testClassDBSequenceFactory() {
         ClassTableJDBCSeq seq = (ClassTableJDBCSeq) seqForClass(SeqD.class);
         incrementTest(SeqD.class, seq.getAllocate());
@@ -67,9 +64,9 @@ public class TestSequenceGeneratorEnsureCapacityCall
         sql.clear();
         for (int i = 0; i < amountToIncrement; i++) {
             s.getIncrement();
-            assertEquals("SQL list should have been empty on sequence"
+            assertEquals(0, sql.size(), "SQL list should have been empty on sequence"
                 + " fetch #" + i + " of #" + amountToIncrement
-                + ", but contained: " + sql, 0, sql.size());
+                + ", but contained: " + sql);
         }
     }
 

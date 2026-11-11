@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.MapKey;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -36,14 +40,14 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestMapKey extends AnnotationTestCase
 {
 
-	public TestMapKey(String name)
+	public TestMapKey()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
     //private ClassMapping _mapping;
 
-    @Override
+    @BeforeEach
     public void setUp()
     {
         deleteAll(Flat1.class);
@@ -54,32 +58,33 @@ public class TestMapKey extends AnnotationTestCase
 //            null, true);
     }
 
-   /** public void testDefaultMapKeyMapping() {
-        FieldMapping fm = _mapping.getFieldMapping("defaultMapKey");
-        assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
-        assertEquals("pk", fm.getKey().getValueMappedBy());
-        assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
-            true).getField("pk"), fm.getKey().getValueMappedByMetaData());
-    }
+    /** public void testDefaultMapKeyMapping() {
+             FieldMapping fm = _mapping.getFieldMapping("defaultMapKey");
+             assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+             assertEquals("pk", fm.getKey().getValueMappedBy());
+             assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
+                 true).getField("pk"), fm.getKey().getValueMappedByMetaData());
+         }
 
-    public void testNamedMapKeyMapping() {
-        FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
-        assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
-        assertEquals("basic", fm.getKey().getValueMappedBy());
-        assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
-            true).getField("basic"), fm.getKey().getValueMappedByMetaData());
-    }
+         public void testNamedMapKeyMapping() {
+             FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
+             assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
+             assertEquals("basic", fm.getKey().getValueMappedBy());
+             assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
+                 true).getField("basic"), fm.getKey().getValueMappedByMetaData());
+         }
 
-    public void testInverseOwnerMapKeyMapping() {
-        FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
-        assertTrue(fm.getStrategy() instanceof
-            RelationMapInverseKeyFieldStrategy);
-        assertEquals("basic", fm.getKey().getValueMappedBy());
-        assertEquals(_mapping.getRepository().getMetaData(AnnoTest2.class,
-            null, true).getField("basic"), fm.getKey().
-            getValueMappedByMetaData());
-    }**/
+         public void testInverseOwnerMapKeyMapping() {
+             FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
+             assertTrue(fm.getStrategy() instanceof
+                 RelationMapInverseKeyFieldStrategy);
+             assertEquals("basic", fm.getKey().getValueMappedBy());
+             assertEquals(_mapping.getRepository().getMetaData(AnnoTest2.class,
+                 null, true).getField("basic"), fm.getKey().
+                 getValueMappedByMetaData());
+         }**/
 
+    @Test
     public void testInsertAndRetrieve()
     {
 

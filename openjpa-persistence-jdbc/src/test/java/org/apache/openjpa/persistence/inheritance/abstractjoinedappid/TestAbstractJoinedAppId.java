@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -25,8 +29,8 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that you traverse an inverse key-baesd relation to an abstract
@@ -35,7 +39,7 @@ import junit.textui.TestRunner;
 public class TestAbstractJoinedAppId
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Superclass.class, Subclass.class, RelationOwner.class,
             DROP_TABLES);
@@ -56,6 +60,7 @@ public class TestAbstractJoinedAppId
         em.close();
     }
 
+    @Test
     public void testEntityTypeForAbstractJoined() {
         EntityManager em = emf.createEntityManager();
         String query = "select s from RelationOwner r join r.supers s where TYPE(s) = Subclass";
@@ -69,6 +74,7 @@ public class TestAbstractJoinedAppId
         em.close();
     }
 
+    @Test
     public void testTraverseRelation() {
         EntityManager em = emf.createEntityManager();
         RelationOwner ro = em.find(RelationOwner.class, 1);
@@ -83,9 +89,4 @@ public class TestAbstractJoinedAppId
         assertEquals("subattr", ((Subclass) s).getAttr2());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestAbstractJoinedAppId.class);
-    }
 }
-

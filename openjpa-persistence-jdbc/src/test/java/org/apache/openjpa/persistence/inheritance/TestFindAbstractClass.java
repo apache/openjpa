@@ -18,13 +18,17 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that you can find a concrete subclass record when passing in its
@@ -35,7 +39,7 @@ import junit.textui.TestRunner;
 public class TestFindAbstractClass
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AbstractBase.class, ConcreteSubclass.class, CLEAR_TABLES);
 
@@ -50,6 +54,7 @@ public class TestFindAbstractClass
         em.close();
     }
 
+    @Test
     public void testEntityTypeInheritanceTypeJoined() {
         EntityManager em = emf.createEntityManager();
         String query = "select c from AbstractBase c where TYPE(c) = ConcreteSubclass";
@@ -61,6 +66,7 @@ public class TestFindAbstractClass
         em.close();
     }
 
+    @Test
     public void testFind() {
         EntityManager em = emf.createEntityManager();
         AbstractBase e = em.find(AbstractBase.class, "id");
@@ -68,10 +74,6 @@ public class TestFindAbstractClass
         assertTrue(e instanceof ConcreteSubclass);
         assertEquals(1, ((ConcreteSubclass) e).getSubclassData());
         em.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestFindAbstractClass.class);
     }
 }
 

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.annotation.ElementType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,11 +38,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.validation.TraversableResolverImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 // The following 2 are dynamically loaded by loadPathImpl() from setUp()
 // import org.hibernate.validator.engine.PathImpl;
 // import com.agimatec.validation.jsr303.util.PathImpl;
-
-import junit.framework.TestCase;
 
 /**
  * Test the TraversableResolver methods
@@ -52,7 +58,7 @@ import junit.framework.TestCase;
  *    1) testPages()
  *    2) testTitle
  */
-public class TestTraversableResolver extends TestCase {
+public class TestTraversableResolver {
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private Log log = null;
     private OpenJPAEntityManager em = null;
@@ -65,7 +71,7 @@ public class TestTraversableResolver extends TestCase {
      * the create should be successful. This is to setup a situation
      * where fields to be potentially validated are not necessarily loaded.
      */
-    @Override
+    @BeforeEach
     public void setUp() {
         createBook(1, "long title", 234);
     }
@@ -101,6 +107,7 @@ public class TestTraversableResolver extends TestCase {
      * being performed and a ConstraintViolationException should be returned
      * because the title is too long.
      */
+    @Test
     public void testLoadedTitle() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
@@ -126,6 +133,7 @@ public class TestTraversableResolver extends TestCase {
      * false for both of these. Therefore a validation should not be performed.
      * The commit should succeed with no exception.
      */
+    @Test
     public void testUnloaded() {
         createEMF("non-validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
@@ -149,6 +157,7 @@ public class TestTraversableResolver extends TestCase {
      * resulting in a validation being performed. A ConstraintViolation
      * should be thrown since the publisher name is too long.
      */
+    @Test
     public void testCascading() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
@@ -174,6 +183,7 @@ public class TestTraversableResolver extends TestCase {
      * Test the isReachable() and isCascadable() methods on the pages element of Book,
      * which is eagerly fetched by default.
      */
+    @Test
     public void testPages() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
@@ -194,6 +204,7 @@ public class TestTraversableResolver extends TestCase {
      * Test the isReachable() method on the title.
      * It is configured with fetch=FetvhType.LAZY.
      */
+    @Test
     public void testTitle() {
         createEMF("validation-pu", "SchemaAction='add')");
         em = emf.createEntityManager();
@@ -249,7 +260,7 @@ public class TestTraversableResolver extends TestCase {
                 log.trace("getLeafNodeFromPath: Did not find com.agimatec.validation.jsr303.util.PathImpl");
             }
         }
-        assertNotNull("Could not load a Bean Validation provider specific PathImpl", PathImpl);
+        assertNotNull(PathImpl, "Could not load a Bean Validation provider specific PathImpl");
         try {
             Method createPathFromString = PathImpl.getMethod("createPathFromString", String.class);
             assertNotNull(createPathFromString);

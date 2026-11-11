@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.convert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,13 +30,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPA AttributeConverter support.
  */
 public class TestAttributeConverter extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             ConvertEntity.class,
@@ -46,6 +53,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
     /**
      * Test basic same-type converter (String -> String).
      */
+    @Test
     public void testSameTypeConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -67,6 +75,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
     /**
      * Test cross-type converter (String entity -> Integer DB).
      */
+    @Test
     public void testCrossTypeConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -87,6 +96,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
     /**
      * Test that converter is applied via JPQL query results.
      */
+    @Test
     public void testConverterWithJPQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -109,6 +119,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Test converter exception during persist is wrapped in
      * PersistenceException.
      */
+    @Test
     public void testConverterExceptionOnPersist() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -139,6 +150,7 @@ public class TestAttributeConverter extends SingleEMFTestCase {
      * Test element collection with converter.
      * Tested separately once element collection support is working.
      */
+    @Test
     public void testElementCollectionConverter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

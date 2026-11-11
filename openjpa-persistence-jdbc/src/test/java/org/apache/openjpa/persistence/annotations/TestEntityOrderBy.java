@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.OrderByEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test @OrderBy annotation support.</p>
@@ -33,14 +37,14 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 public class TestEntityOrderBy extends AnnotationTestCase
 {
 
-	public TestEntityOrderBy(String name)
+	public TestEntityOrderBy()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
 //    private ClassMetaData _meta;
 
-    @Override
+    @BeforeEach
     public void setUp()
     {
 //        _meta = ((OpenJPAConfiguration) getConfiguration()).
@@ -48,17 +52,17 @@ public class TestEntityOrderBy extends AnnotationTestCase
 //            null, true);
     }
 
- /*   public void testEmptyOrderBy() {
-        String dec = Order.ELEMENT + " asc";
-        assertEquals(dec, _meta.getField("strings").getOrderDeclaration());
-        assertEquals(dec, _meta.getField("pkRels").getOrderDeclaration());
-    }
-
-    public void testSpecifiedOrderBy() {
-        assertEquals("string desc", _meta.getField("stringRels").
-            getOrderDeclaration());
-    }
-*/
+    /*   public void testEmptyOrderBy() {
+           String dec = Order.ELEMENT + " asc";
+           assertEquals(dec, _meta.getField("strings").getOrderDeclaration());
+           assertEquals(dec, _meta.getField("pkRels").getOrderDeclaration());
+       }
+        public void testSpecifiedOrderBy() {
+           assertEquals("string desc", _meta.getField("stringRels").
+               getOrderDeclaration());
+       }
+    */
+    @Test
     public void testUse() {
         // note: functionality thoroughly tested in kodo.meta.TestOrderBy;
         // this is just a sanity check on JPA use

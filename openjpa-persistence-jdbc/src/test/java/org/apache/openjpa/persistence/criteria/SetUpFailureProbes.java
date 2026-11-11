@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Criteria tests that fail on purpose, driven by
@@ -49,7 +55,7 @@ public final class SetUpFailureProbes {
         /** The EntityManager the last probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             opened = getEntityManager();
@@ -63,7 +69,7 @@ public final class SetUpFailureProbes {
          * connection pool - open, so that a connection a probe fails to release stays missing
          * from the pool for the probes that follow it.
          */
-        @Override
+        @AfterEach
         public void tearDown() throws Exception {
             try {
                 closeEntityManager();
@@ -73,6 +79,7 @@ public final class SetUpFailureProbes {
             }
         }
 
+        @Test
         public void testNeverRuns() {
             fail("setUp() must have failed before this ran");
         }
@@ -89,7 +96,7 @@ public final class SetUpFailureProbes {
         /** The factory in use while the probe ran, so the caller can affirm it was closed. */
         static OpenJPAEntityManagerFactorySPI factory;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             factory = getEntityManagerFactory();
@@ -108,6 +115,7 @@ public final class SetUpFailureProbes {
                 }));
         }
 
+        @Test
         public void testPasses() {
             assertNotNull(getEntityManagerFactory());
         }
@@ -123,7 +131,7 @@ public final class SetUpFailureProbes {
         /** The EntityManager the probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             opened = getEntityManager();
@@ -132,6 +140,7 @@ public final class SetUpFailureProbes {
             throw new IllegalStateException("deliberate setUp failure after taking a connection");
         }
 
+        @Test
         public void testNeverRuns() {
             fail("setUp() must have failed before this ran");
         }

@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,6 +41,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.Test;
 
 
 public class TestDBSequenceFactory
@@ -45,18 +49,11 @@ public class TestDBSequenceFactory
 
     private Broker _broker;
 
-    /** Creates a new instance of TestDBSequenceFactory */
-    public TestDBSequenceFactory() {
-    }
-
-    public TestDBSequenceFactory(String test) {
-        super(test);
-    }
-
     /**
      * Tests that all sequence numbers are unique and in order.
      * Will fail for dbs without pessimistic locking.
      */
+    @Test
     public void testSequence()
         throws Exception {
         _broker = getBrokerFactory().newBroker();

@@ -16,10 +16,15 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A bulk update or delete that has to be executed in memory applies the
@@ -31,7 +36,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteCompositeOwner.class,
             BulkDeleteItem.class);
@@ -44,6 +49,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * a later <code>find()</code> in the same transaction does not see the
      * deleted instance even when the context has been cleared in between.
      */
+    @Test
     public void testInMemoryDeleteIsVisibleAfterClear() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -63,6 +69,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * The same for an update: the row carries the new value before the
      * transaction commits.
      */
+    @Test
     public void testInMemoryUpdateIsVisibleAfterClear() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -89,6 +96,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * datastore first - under <code>AUTO</code> that query flushes the context
      * before the bulk operation even starts.
      */
+    @Test
     public void testUnrelatedPendingChangeIsFlushedAsWell() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.COMMIT);
@@ -112,6 +120,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * pinned - the writes the bulk delete itself emits are ordered inside
      * the flush and carry no meaning for this test.
      */
+    @Test
     public void testUnrelatedPendingChangeIsFlushedByTrailingFlush() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.AUTO);
@@ -135,6 +144,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * before the write of the unrelated instance, so that write cannot come
      * from a pre-flush.
      */
+    @Test
     public void testCandidateCollectionUnderAutoFlushesUnrelatedChange() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.AUTO);
@@ -154,6 +164,7 @@ public class TestInMemoryBulkFlush extends AbstractInMemoryBulkFlushTestCase {
      * trailing flush is then skipped instead of failing the bulk operation,
      * so the operation still reports its row count and is written at commit.
      */
+    @Test
     public void testSavepointSuppressesTheFlushInsteadOfFailing() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

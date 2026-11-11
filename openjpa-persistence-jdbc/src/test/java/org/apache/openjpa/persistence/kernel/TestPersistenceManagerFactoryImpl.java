@@ -26,6 +26,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -43,22 +47,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
     private OpenJPAConfiguration _conf = null;
 
-    /**
-     * Creates a new instance of TestOpenJPAEntityManagerFactoryImpl
-     */
-    public TestPersistenceManagerFactoryImpl() {
-    }
-
-    public TestPersistenceManagerFactoryImpl(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         _conf = new OpenJPAConfigurationImpl();
         _conf.setConnection2UserName("user");
@@ -73,21 +69,21 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * openjpaentitymanagers. Therefore it's been commented out.
      * FIX ME: aokeke
      */
-/*    public void testConfigurationFreeze()
-    {
-        OpenJPAEntityManagerFactory pmf =
-            getOpenJPAEntityManagerFactory(_conf.toProperties(false));
-        assertEquals("user", pmf.getConfiguration().getConnection2UserName());
-        assertEquals("url", pmf.getConfiguration().getConnection2URL());
-        try
+    /*    public void testConfigurationFreeze()
         {
-            pmf.getConfiguration().setConnection2URL("url2");
-            fail("Allowed configuration change.");
-        }
-        catch (Exception e)
-        {
-        }
-    }*/
+            OpenJPAEntityManagerFactory pmf =
+                getOpenJPAEntityManagerFactory(_conf.toProperties(false));
+            assertEquals("user", pmf.getConfiguration().getConnection2UserName());
+            assertEquals("url", pmf.getConfiguration().getConnection2URL());
+            try
+            {
+                pmf.getConfiguration().setConnection2URL("url2");
+                fail("Allowed configuration change.");
+            }
+            catch (Exception e)
+            {
+            }
+        }*/
 
     /**
      * Test that persistence manager factories are being pooled.
@@ -137,6 +133,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * Tests that lifecycle listeners are transferred from factory to
      * persistence managers.
      */
+    @Test
     public void testFactoryLifecycleListeners() {
         OpenJPAEntityManagerFactory pmf =
             (OpenJPAEntityManagerFactory) getEmf();
@@ -162,14 +159,14 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
                 (pmf.createEntityManager());
             MetaDataRepository repos = broker.getConfiguration().
                 getMetaDataRepositoryInstance();
-            assertTrue("no listeners defined added to Runtimetest4",
-                broker.getLifecycleEventManager().hasLoadListeners(
+            assertTrue(broker.getLifecycleEventManager().hasLoadListeners(
                     new RuntimeTest4("foo"),
-                    repos.getMetaData(RuntimeTest4.class, null, true)));
-            assertFalse("there should be listeners def for runtimetest1",
-                broker.getLifecycleEventManager().hasLoadListeners
+                    repos.getMetaData(RuntimeTest4.class, null, true)),
+                "no listeners defined added to Runtimetest4");
+            assertFalse(broker.getLifecycleEventManager().hasLoadListeners
                     (new RuntimeTest1(), repos.getMetaData
-                        (RuntimeTest1.class, null, true)));
+                        (RuntimeTest1.class, null, true)),
+                "there should be listeners def for runtimetest1");
             broker.close();
         } finally {
             pmfSPI.removeLifecycleListener(listener);
@@ -197,6 +194,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * Tests that the <code>Platform</code> property is set by the
      * concrete PMF implementation.
      */
+    @Test
     public void testPlatform() {
         OpenJPAEntityManagerFactory pmf =
             (OpenJPAEntityManagerFactory) getEmf();
@@ -211,7 +209,7 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
 
     public static class BrokerFactoryTest extends AbstractBrokerFactory {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         // standard brokerfactory getter implemented by subclasses

@@ -23,8 +23,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 /**
  * Distributed cache test.
  */
-public class DistributedCacheTest
-    extends CacheTest {
+public class DistributedCacheTest extends CacheTest {
 
     private static String cache = null;
     private static String queryCache = null;
@@ -42,12 +41,12 @@ public class DistributedCacheTest
         provider = plugin;
     }
 
-    public DistributedCacheTest(String test) {
-        super(test);
+    public DistributedCacheTest() {
+        super();
     }
 
-    public DistributedCacheTest(String test, Class testClass) {
-        super(test);
+    public DistributedCacheTest(Class testClass) {
+        super();
     }
 
     @Override

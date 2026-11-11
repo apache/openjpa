@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,17 +38,19 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.Duration;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestTCPRemoteClassChanges extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestTCPRemoteClassChanges.class.getCanonicalName());
 
-    public TestTCPRemoteClassChanges(String s) {
-        super(s, "eventcactusapp");
+    public TestTCPRemoteClassChanges() {
+        super("eventcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -68,6 +72,7 @@ public class TestTCPRemoteClassChanges extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testAddedClasses() {
         // Create two pmfs in a cluster that are using RCPTCP.
         OpenJPAEntityManagerFactory pmfSender = createDistinctFactory(

@@ -18,14 +18,18 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Timestamp;
 
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import org.junit.jupiter.api.Test;
 
 public class TestSubqueries extends CriteriaTest {
 
+    @Test
     public void testExist() {
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS"
                 + " (SELECT c FROM Address c WHERE c = o.address )";
@@ -42,6 +46,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testNotExist() {
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE NOT EXISTS"
                 + " (SELECT s FROM CompUser s WHERE s.address.country = "
@@ -60,6 +65,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testAny() {
         String query = "SELECT o.name FROM CompUser o "
                      + "WHERE o.address.zipCode = "
@@ -80,6 +86,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery01() {
         String query = "select o1.id from Order o1 where o1.id in "
                 + " (select distinct o.id from LineItem i, Order o"
@@ -101,6 +108,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery02() {
         String query = "select o.id from Order o where o.customer.balanceOwed ="
                 + " (select max(o2.customer.balanceOwed) from Order o2"
@@ -120,6 +128,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery03() {
         String query = "select o from Order o where o.customer.balanceOwed ="
                 + " (select max(o2.customer.balanceOwed) from Order o2"
@@ -139,6 +148,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery04() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(i) from o.lineItems i)";
@@ -153,6 +163,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery05() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(o.quantity) from Order o)";
@@ -169,6 +180,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery06() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select count(o.id) from Order o)";
@@ -185,6 +197,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery07() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select avg(o.quantity) from Order o)";
@@ -200,6 +213,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery08() {
         String query = "select c.name from Customer c "
                 + "where exists(select o from c.orders o where o.id = 1) "
@@ -224,6 +238,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery09() {
         String query = "select c.name from Customer c, in(c.orders) o "
                 + "where o.quantity between "
@@ -248,6 +263,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery10() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select sum(o2.quantity) from Customer c, "
@@ -268,6 +284,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery11() {
         String query = "select o.id from Order o where o.quantity between"
                 + " (select avg(o2.quantity) from Customer c, in(c.orders) o2)"
@@ -293,6 +310,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery12() {
         String query = "select o.id from Customer c, in(c.orders)o "
                 + "where o.quantity > (select sum(o2.quantity)"
@@ -312,6 +330,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery13() {
         String query = "select o1.id, c.name from Order o1, Customer c"
                 + " where o1.quantity = "
@@ -333,6 +352,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery14() {
         String query = "SELECT p, m FROM Publisher p "
             + "LEFT OUTER JOIN p.magazineCollection m "
@@ -370,6 +390,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery15() {
         String query = "select o.id from Order o where o.delivered =(select "
                 + "   CASE WHEN o2.quantity > 10 THEN true"
@@ -397,6 +418,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery16() {
         String query = "select o1.id from Order o1 where o1.quantity > "
                 + " (select o.quantity*2 from LineItem i, Order o"
@@ -421,6 +443,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery17() {
         String query = "select o.id from Order o where o.customer.name ="
                 + " (select substring(o2.customer.name, 3) from Order o2"
@@ -442,6 +465,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery18() {
         String query = "select o.id from Order o where o.orderTs >"
                 + " (select CURRENT_TIMESTAMP from o.lineItems i)";
@@ -460,6 +484,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery19() {
         String query = "select o.id from Order o where o.quantity >"
                 + " (select SQRT(o.quantity) from Order o where o.delivered" +
@@ -478,6 +503,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery20() {
         String query = "select o.id from Order o where o.customer.name in"
                 + " (select CONCAT(o.customer.name, 'XX') from Order o"
@@ -496,6 +522,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery21() {
         String query = "select c from Customer c where c.creditRating ="
                 + " (select "
@@ -529,6 +556,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery22() {
         String query = "select c from Customer c "
                 + "where c.creditRating = (select COALESCE (c1.creditRating, "
@@ -556,6 +584,7 @@ public class TestSubqueries extends CriteriaTest {
     }
 
 
+    @Test
     public void testSubquery23() {
         String query =
             "select c from Customer c "
@@ -580,6 +609,7 @@ public class TestSubqueries extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSubquery24() {
         em.getTransaction().begin();
 
@@ -620,6 +650,7 @@ public class TestSubqueries extends CriteriaTest {
      * Test 2 different ParameterExpression instances which both have the same name.
      * They should
      */
+    @Test
     public void testSubquery25() {
         em.getTransaction().begin();
 

@@ -27,16 +27,20 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMultiTableSelfCollection
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestMultiTableSelfCollection extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object a1oid;
     private Object a2oid;
     private Object a3oid;
@@ -47,15 +51,7 @@ public class TestMultiTableSelfCollection
     private Object c3oid;
     private Object c4oid;
 
-    public TestMultiTableSelfCollection(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestMultiTableSelfCollection */
-    public TestMultiTableSelfCollection() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(MultiA.class);
 
@@ -116,6 +112,7 @@ public class TestMultiTableSelfCollection
         pm.close();
     }
 
+    @Test
     public void testSelfCollections() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
 

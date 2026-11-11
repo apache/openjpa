@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.meta.ClassMetaData;
@@ -27,6 +32,8 @@ import org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlDetail;
 import org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlItem;
 import org.apache.openjpa.persistence.lifecycle.entity.OrphanXmlParent;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Orphan removal on relations mapped in orm.xml that also cascade remove,
@@ -34,7 +41,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestOrphanRemovalXml extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -44,6 +51,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         return "orphan-xml-pu";
     }
 
+    @Test
     public void testOrphanRemovalKeptWithCascadeRemove() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
@@ -58,6 +66,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
             meta.getField("extra").getCascadeDelete());
     }
 
+    @Test
     public void testOrphanRemovedFromCascadeAllCollection() {
         createParent(1);
 
@@ -72,6 +81,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         assertEquals(1, count(OrphanXmlChild.class));
     }
 
+    @Test
     public void testOrphanRemovedFromCascadeRemoveCollection() {
         createParent(1);
 
@@ -86,6 +96,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         assertEquals(1, count(OrphanXmlItem.class));
     }
 
+    @Test
     public void testOrphanRemovedFromCascadeAllOneToOne() {
         createParent(1);
 
@@ -100,6 +111,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         assertEquals(1, count(OrphanXmlDetail.class));
     }
 
+    @Test
     public void testOrphanReplacedInCascadeAllOneToOne() {
         createParent(1);
 
@@ -117,6 +129,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testOrphanRemovedFromCascadeRemoveOneToOne() {
         createParent(1);
 
@@ -134,6 +147,7 @@ public class TestOrphanRemovalXml extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testRemoveOwnerRemovesDependents() {
         createParent(1);
 

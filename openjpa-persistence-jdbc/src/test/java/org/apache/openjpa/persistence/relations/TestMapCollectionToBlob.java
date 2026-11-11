@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -28,16 +30,19 @@ import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedBlobFieldStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMapCollectionToBlob
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(HandlerToHandlerMapInstance.class, CLEAR_TABLES,
             "openjpa.Compatibility", "StoreMapCollectionInEntityAsBlob=true");
     }
 
+    @Test
     public void testHandlerToHandlerMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerToHandlerMapInstance.class);

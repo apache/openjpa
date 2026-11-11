@@ -19,9 +19,9 @@
 package org.apache.openjpa.lib.util;
 
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link ParameterTemplate} utility class.

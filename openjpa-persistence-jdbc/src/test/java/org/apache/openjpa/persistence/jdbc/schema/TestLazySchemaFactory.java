@@ -27,28 +27,26 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.LazySchemaFactory;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestLazySchemaFactory
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestLazySchemaFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private SchemaGroup _group = null;
     private boolean _fks = true;
 
-    /** Creates a new instance of TestLazySchemaFactory */
-    public TestLazySchemaFactory() {
-    }
-
-    public TestLazySchemaFactory(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         // see if the dict supports foreign keys; mysql can support them, but
@@ -67,6 +65,7 @@ public class TestLazySchemaFactory
         _group = factory;
     }
 
+    @Test
     public void testLazySchemaFactory() {
         // should read tables 1 and 2...
         Table table = _group.findTable("T1");

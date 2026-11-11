@@ -18,16 +18,22 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
 
+    @Test
     public void testInheritanceComparatorWithBase() {
         inheritanceComparatorHelper(true);
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(A.class, B.class, C.class, AbstractThing.class);
     }
@@ -45,6 +51,7 @@ public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
         assertTrue(comp.compare(AbstractThing.class, C.class) < 0);
     }
 
+    @Test
     public void testMetaDataInheritanceComparatorWithBase() {
         metaDataInheritanceComparatorHelper(true);
     }
@@ -73,6 +80,7 @@ public class TestMetaDataInheritanceComparator extends SingleEMFTestCase {
         assertEquals(-1, comp.compare(at, c));
     }
 
+    @Test
     public void testEndToEnd() {
         // make sure we can get things fully instantiated
         emf.createEntityManager().close();

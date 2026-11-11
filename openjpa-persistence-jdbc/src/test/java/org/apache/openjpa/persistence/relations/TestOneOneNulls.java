@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,8 +28,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that both sides of a mapped-by relation are null when not set
@@ -40,7 +43,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
     private long cid1;
     private long cid2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class, CLEAR_TABLES);
 
@@ -75,6 +78,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testFindOneToOneNullDefaults() {
         BidiParent parent;
         BidiChild child;
@@ -94,6 +98,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testFindOneToOneNullExplicit() {
         BidiParent parent;
         BidiChild child;
@@ -113,6 +118,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryOneToOneNullChild() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("SELECT o FROM BidiParent o "
@@ -128,6 +134,7 @@ public class TestOneOneNulls extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryOneToOneNullParent() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("SELECT o FROM BidiChild o "
@@ -142,9 +149,4 @@ public class TestOneOneNulls extends SingleEMFTestCase {
         }
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestOneOneNulls.class);
-    }
 }
-

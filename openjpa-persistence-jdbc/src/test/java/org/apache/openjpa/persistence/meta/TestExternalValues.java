@@ -19,6 +19,11 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +34,8 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests the {@link ExternalValuesFieldMapping}.</p>
@@ -39,16 +46,17 @@ import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
 public class TestExternalValues
     extends AbstractTestCase {
 
-    public TestExternalValues(String test) {
-        super(test, "metacactusapp");
+    public TestExternalValues() {
+        super("metacactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         deleteAll(ExternalValues.class);
     }
 
+    @Test
     public void testInsert() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -85,6 +93,7 @@ public class TestExternalValues
         endEm(pm);
     }
 
+    @Test
     public void testComplexStrings() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -105,6 +114,7 @@ public class TestExternalValues
         endEm(pm);
     }
 
+    @Test
     public void testAllNull() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -121,6 +131,7 @@ public class TestExternalValues
         endEm(pm);
     }
 
+    @Test
     public void testPositionalBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
@@ -137,6 +148,7 @@ public class TestExternalValues
         }
     }
 
+    @Test
     public void testNamedBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);
@@ -153,6 +165,7 @@ public class TestExternalValues
         }
     }
 
+    @Test
     public void testPositionalBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
@@ -170,6 +183,7 @@ public class TestExternalValues
        }
     }
 
+    @Test
     public void testNamedBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);

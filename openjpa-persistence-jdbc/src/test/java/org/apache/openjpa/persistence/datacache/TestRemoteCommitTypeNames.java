@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +40,7 @@ import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * The type names of a remote commit event are looked up among the persistent
@@ -61,31 +67,33 @@ public class TestRemoteCommitTypeNames extends SingleEMFTestCase {
         initialized = false;
     }
 
+    @Test
     public void testDataCacheIgnoresUnknownTypeNames() {
         CachedPerson person = persist(1);
         assertTrue(emf.getCache().contains(CachedPerson.class, person.getId()));
 
         AbstractDataCache cache = getDataCache();
         cache.afterCommit(newEvent(Arrays.asList(NOT_PERSISTENT, UNKNOWN)));
-        assertFalse("a non-persistent class must not be initialized", initialized);
+        assertFalse(initialized, "a non-persistent class must not be initialized");
         assertTrue(emf.getCache().contains(CachedPerson.class, person.getId()));
 
         cache.afterCommit(newEvent(Arrays.asList(NOT_PERSISTENT, UNKNOWN, CachedPerson.class.getName())));
-        assertFalse("a non-persistent class must not be initialized", initialized);
+        assertFalse(initialized, "a non-persistent class must not be initialized");
         assertFalse(emf.getCache().contains(CachedPerson.class, person.getId()));
     }
 
+    @Test
     public void testQueryCacheIgnoresUnknownTypeNames() {
         AbstractQueryCache cache = getQueryCache();
         List<Collection<?>> changes = new ArrayList<>();
         cache.addTypesChangedListener((TypesChangedEvent event) -> changes.add(event.getTypes()));
 
         cache.afterCommit(newEvent(Arrays.asList(NOT_PERSISTENT, UNKNOWN)));
-        assertFalse("a non-persistent class must not be initialized", initialized);
+        assertFalse(initialized, "a non-persistent class must not be initialized");
         assertTrue(changes.isEmpty());
 
         cache.afterCommit(newEvent(Arrays.asList(NOT_PERSISTENT, UNKNOWN, CachedPerson.class.getName())));
-        assertFalse("a non-persistent class must not be initialized", initialized);
+        assertFalse(initialized, "a non-persistent class must not be initialized");
         assertEquals(1, changes.size());
         Set<Object> expected = new HashSet<>(Arrays.asList(CachedPerson.class));
         assertEquals(expected, new HashSet<>(changes.get(0)));

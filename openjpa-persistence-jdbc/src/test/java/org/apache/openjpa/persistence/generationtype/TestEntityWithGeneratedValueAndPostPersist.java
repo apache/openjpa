@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests OpenJPA's support for the GeneratedValue annotation
@@ -33,7 +37,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
 
     private int cache;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityWithGeneratedValueAndPostPersist.class, CLEAR_TABLES);
         cache = 0;
@@ -45,6 +49,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
         cache = val;
     }
 
+    @Test
     public void testValueCapturedInPostPersistAfterCommit() {
 
         // get EM and start tx
@@ -62,11 +67,12 @@ public class TestEntityWithGeneratedValueAndPostPersist
         em.getTransaction().commit();
 
         // check the value captured by the PostPersist callback
-        assertEquals("Entity's current value does not match value captured " +
-        		"in postPersist", pc.getBingo(), cache);
+        assertEquals(pc.getBingo(), cache, "Entity's current value does not match value captured " +
+        		"in postPersist");
         closeEM(em);
     }
 
+    @Test
     public void testValueCapturedInPostPersistAfterFlush() {
 
         // get EM and start tx
@@ -84,15 +90,15 @@ public class TestEntityWithGeneratedValueAndPostPersist
         em.flush();
 
         // check the value captured by the PostPersist callback
-        assertEquals("Entity's current value does not match value captured " +
-        		"in postPersist", pc.getBingo(), cache);
+        assertEquals(pc.getBingo(), cache, "Entity's current value does not match value captured " +
+        		"in postPersist");
 
         // commit
         em.getTransaction().commit();
 
         // check the value captured by the PostPersist callback
-        assertEquals("Entity's current value does not match value captured " +
-        		"in postPersist", pc.getBingo(), cache);
+        assertEquals(pc.getBingo(), cache, "Entity's current value does not match value captured " +
+        		"in postPersist");
         closeEM(em);
     }
 

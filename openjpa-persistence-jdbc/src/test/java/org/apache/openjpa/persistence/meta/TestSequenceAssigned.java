@@ -19,25 +19,31 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned2;
 import org.apache.openjpa.persistence.meta.common.apps.SequenceAssigned3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSequenceAssigned
-    extends AbstractTestCase {
+public class TestSequenceAssigned extends AbstractTestCase {
 
-    public TestSequenceAssigned(String testName) {
-        super(testName, "metacactusapp");
+    public TestSequenceAssigned() {
+        super("metacactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(SequenceAssigned.class);
         deleteAll(SequenceAssigned3.class);
     }
 
+    @Test
     public void testGetObjectId() {
         SequenceAssigned pc = new SequenceAssigned();
         OpenJPAEntityManager pm =
@@ -53,6 +59,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testGetValue() {
         SequenceAssigned pc = new SequenceAssigned();
         OpenJPAEntityManager pm =
@@ -65,6 +72,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testPrimitive() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned pc2 = new SequenceAssigned();
@@ -81,6 +89,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testManualAssign() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned3 pc2 = new SequenceAssigned3();
@@ -104,6 +113,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testInheritance() {
         SequenceAssigned2 pc = new SequenceAssigned2();
         SequenceAssigned2 pc2 = new SequenceAssigned2();
@@ -120,6 +130,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testWrapper() {
         SequenceAssigned3 pc = new SequenceAssigned3();
         SequenceAssigned3 pc2 = new SequenceAssigned3();
@@ -138,6 +149,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testGetObjectById() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -154,6 +166,7 @@ public class TestSequenceAssigned
         endEm(pm);
     }
 
+    @Test
     public void testReachability() {
         SequenceAssigned pc = new SequenceAssigned();
         SequenceAssigned pc2 = new SequenceAssigned();

@@ -18,20 +18,20 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBPolymorphicQuery extends BaseQueryTest {
-
-    public TestEJBPolymorphicQuery(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
@@ -61,6 +61,7 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
      * the hierarchy that the result is its instances and that of all its
      * subclass.
      */
+    @Test
     public void testPolymorphicSelect() {
         EntityManager em = currentEntityManager();
 
@@ -73,6 +74,7 @@ public class TestEJBPolymorphicQuery extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testPolymorphicDelete() {
         EntityManager em = currentEntityManager();
         startTx(em);

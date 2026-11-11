@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
@@ -40,24 +44,21 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
-
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // Need to skip tests on some databases.
         // See createSchemas() comment at the bottom
-        setUnsupportedDatabases(
-                MariaDBDictionary.class,
-                MySQLDictionary.class,
-                OracleDictionary.class,
-                SQLServerDictionary.class,
-                SybaseDictionary.class);
-        if (isTestsDisabled()) {
-            // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
-            return;
-        }
+        return !Stream.of(MySQLDictionary.class, MariaDBDictionary.class, OracleDictionary.class,
+                    SQLServerDictionary.class, SybaseDictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         createSchemas();
 
         setUp(Dog1.class, Dog2.class, Dog3.class, Dog4.class,
@@ -149,6 +150,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testGeneratedAUTO() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
@@ -226,6 +228,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testGeneratedTABLE() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
@@ -371,6 +374,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testGeneratedIDENTITY() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);

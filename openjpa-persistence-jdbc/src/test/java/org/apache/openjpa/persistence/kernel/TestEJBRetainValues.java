@@ -18,20 +18,25 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBRetainValues extends AbstractTestCase {
 
-    public TestEJBRetainValues(String testName) {
-        super(testName, "kernelcactusapp");
+    public TestEJBRetainValues() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -40,6 +45,7 @@ public class TestEJBRetainValues extends AbstractTestCase {
      * tests the behavior of the same object being viewed from
      * different PersistenceManagers with RetainValues set to true
      */
+    @Test
     public void testRetainValues() {
         // persist the object with field == "x"
         RuntimeTest1 test = new RuntimeTest1();
@@ -52,7 +58,7 @@ public class TestEJBRetainValues extends AbstractTestCase {
         //	find the object in a different PM
         EntityManager pm2 = currentEntityManager();
         List l = (buildSelectQuery(pm2, "x"));
-        assertNotNull("l is null in testRetainValues", l);
+        assertNotNull(l, "l is null in testRetainValues");
         RuntimeTest1 sameThing = (RuntimeTest1) l.iterator().next();
 
         assertEquals("x", sameThing.getStringField());

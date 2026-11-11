@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -29,25 +32,29 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestIsolationLevelOverride
-    extends SQLListenerTestCase {
+public class TestIsolationLevelOverride extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class,
             "openjpa.Optimistic", "false",
             "openjpa.LockManager", "pessimistic");
     }
 
+    @Test
     public void testIsolationOverrideViaFetchPlan() {
         testIsolationLevelOverride(false, false);
     }
 
+    @Test
     public void testIsolationOverrideViaHint() {
         testIsolationLevelOverride(true, false);
     }
 
+    @Test
     public void testIsolationOverrideViaStringHint() {
         testIsolationLevelOverride(true, true);
     }

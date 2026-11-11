@@ -18,20 +18,20 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJPAQuerySubclassFunc extends BaseQueryTest {
-
-    public TestJPAQuerySubclassFunc(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 
@@ -50,6 +50,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testSubClassIsTrueFunction() {
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
@@ -60,8 +61,8 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
 
         List list = query.getResultList();
 
-        assertEquals("I expect size to be 6 since subclasses are included", 6,
-            list.size());
+        assertEquals(6, list.size(),
+            "I expect size to be 6 since subclasses are included");
         assertTrue(list.contains("TestQueryResults1"));
         assertTrue(list.contains("TestQueryResults2"));
 
@@ -69,6 +70,7 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testSubClassIsFalseFunction() {
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
@@ -79,8 +81,8 @@ public class TestJPAQuerySubclassFunc extends BaseQueryTest {
 
         List list = query.getResultList();
 
-        assertEquals("I expect size to be 3 since subclasses are not included",
-            3, list.size());
+        assertEquals(3,
+            list.size(), "I expect size to be 3 since subclasses are not included");
         assertTrue(list.contains("TestQueryResults1"));
         assertTrue(list.contains("TestQueryResults3"));
         assertTrue(list.contains("TestQueryResults5"));

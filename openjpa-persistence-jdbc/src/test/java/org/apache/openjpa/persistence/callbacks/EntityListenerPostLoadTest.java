@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EntityListenerPostLoadTest extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -38,6 +44,7 @@ public class EntityListenerPostLoadTest extends SingleEMFTestCase {
      * &#064;PostLoad get's executed. After I save my entity to the database, the &#064;PostLoad following merge should
      * return exactly the value stored to the database. Even if the value got changed locally in the meantime.
      */
+    @Test
     public void testPostLoadValues() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {

@@ -28,21 +28,19 @@
 package org.apache.openjpa.persistence.jdbc.meta.tableperclass;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.persistence.jdbc.common.apps.PlaceholderTypesA;
 import org.apache.openjpa.persistence.jdbc.common.apps.PlaceholderTypesB;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.Test;
 
 
-public class TestUnionPlaceholderTypes
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-    /** Creates a new instance of TestUnionPlaceholderTypes */
-    public TestUnionPlaceholderTypes(String name)
-    {
-    	super(name);
-    }
+public class TestUnionPlaceholderTypes extends TestSQLListenerTestCase {
 
     private boolean _union = false;
 
@@ -54,6 +52,7 @@ public class TestUnionPlaceholderTypes
         //.getAdvancedSQL().getSupportsUnion();
     }
 
+    @Test
     public void testUnion()
         throws Exception {
        deleteAll(PlaceholderTypesA.class);

@@ -18,18 +18,24 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     EntityF entityF;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
 
         super.setUp(
@@ -41,7 +47,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         assertNotNull(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -64,6 +70,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
         entityF.addDelimCollectionMap("yyy", "zzz");
     }
 
+    @Test
     public void testCreateF() {
         createEntityF();
 
@@ -77,6 +84,7 @@ public class TestNoSchemaManualDelimId extends SQLListenerTestCase {
 
     // Run a second time to re-create a situation that initially caused a problem when running this
     // test consecutive times.
+    @Test
     public void testCreateF2() {
         createEntityF();
 

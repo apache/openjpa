@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Properties;
 
 import jakarta.persistence.EntityManager;
@@ -27,8 +31,7 @@ import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.util.UserException;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies appropriate exception is thrown when an incorrect protocol or
@@ -43,7 +46,7 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestBadJdbcUrl extends TestCase {
+public class TestBadJdbcUrl {
     public static final String GOOD_URL =
         "jdbc:derby:target/database/openjpa-derby-database;create=true";
     public static final String GOOD_DRIVER =
@@ -57,10 +60,11 @@ public class TestBadJdbcUrl extends TestCase {
     public static final String BAD_CONN_PROPS =
         "connectionUrl=bad,connectionDriver=bad";
 
-	/*
-	 * Test specifying URL with bad protocol but a valid Driver.
-	 */
-	public void testBadUrlProtocolValueWithValidDriverClass() {
+    /*
+     * Test specifying URL with bad protocol but a valid Driver.
+     */
+    @Test
+    public void testBadUrlProtocolValueWithValidDriverClass() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
@@ -68,10 +72,11 @@ public class TestBadJdbcUrl extends TestCase {
                 UserException.class, GOOD_DRIVER, BAD_URL_PROTOCOL);
 	}
 
-	/*
-	 * Test specifying URL with bad protocol but a valid DataSource.
-	 */
-	public void testBadUrlProtocolValueWithValidDataSource() {
+    /*
+     * Test specifying URL with bad protocol but a valid DataSource.
+     */
+    @Test
+    public void testBadUrlProtocolValueWithValidDataSource() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DATASOURCE);
 		p.put("openjpa.ConnectionURL", BAD_URL_PROTOCOL);
@@ -80,10 +85,11 @@ public class TestBadJdbcUrl extends TestCase {
 				null, (String[])null);
 	}
 
-	/*
-	 * Test specifying URL with bad sub-protocol but a valid Driver.
-	 */
-	public void testBadUrlSubprotocolValueWithValidDriverClass() {
+    /*
+     * Test specifying URL with bad sub-protocol but a valid Driver.
+     */
+    @Test
+    public void testBadUrlSubprotocolValueWithValidDriverClass() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
@@ -91,10 +97,11 @@ public class TestBadJdbcUrl extends TestCase {
                 UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
 	}
 
-	/*
-	 * Test specifying URL with bad sub-protocol but a valid Driver.
-	 */
-	public void testBadUrlSubprotocolValueWithValidDataSource() {
+    /*
+     * Test specifying URL with bad sub-protocol but a valid Driver.
+     */
+    @Test
+    public void testBadUrlSubprotocolValueWithValidDataSource() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", GOOD_DRIVER);
 		p.put("openjpa.ConnectionURL", BAD_URL_SUBPROTOCOL);
@@ -102,10 +109,11 @@ public class TestBadJdbcUrl extends TestCase {
                 UserException.class, GOOD_DRIVER, BAD_URL_SUBPROTOCOL);
 	}
 
-	/*
-	 * Test specifying Valid URL with an invalid Driver.
-	 */
-	public void testValidUrlWithInvalidDriver() {
+    /*
+     * Test specifying Valid URL with an invalid Driver.
+     */
+    @Test
+    public void testValidUrlWithInvalidDriver() {
 		Properties p = new Properties();
 		p.put("openjpa.ConnectionDriverName", BAD_DRIVER);
 		p.put("openjpa.ConnectionURL", GOOD_URL);
@@ -193,7 +201,7 @@ public class TestBadJdbcUrl extends TestCase {
 			return;
 		String message = actual.getMessage();
 		for (String key : keys) {
-            assertTrue(key + " is not in " + message, message.contains(key));
+            assertTrue(message.contains(key), key + " is not in " + message);
 		}
 	}
 }

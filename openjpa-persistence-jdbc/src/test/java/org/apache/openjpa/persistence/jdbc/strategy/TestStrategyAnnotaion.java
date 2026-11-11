@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.strategy;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,15 +27,18 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestStrategyAnnotaion extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(Person.class, Address.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testStrategy() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
             "testStrategy", System.getProperties());

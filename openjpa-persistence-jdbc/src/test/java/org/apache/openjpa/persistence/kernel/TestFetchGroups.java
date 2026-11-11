@@ -27,6 +27,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Date;
@@ -46,6 +50,9 @@ import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachE;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachF;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.apache.openjpa.persistence.kernel.common.apps.
         FetchGroupTestObjectChild;
 
@@ -55,17 +62,7 @@ public class TestFetchGroups extends BaseKernelTest {
     private int oid2;
     private int oidc1;
 
-    public TestFetchGroups(String s) {
-        super(s);
-    }
-
-    /**
-     * Creates a new instance of TestFetchGroups
-     */
-    public TestFetchGroups() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(FetchGroupTestObject.class, FetchGroupTestObjectChild.class,
             AttachA.class, AttachB.class, AttachC.class, AttachD.class, AttachE.class, AttachF.class);
@@ -122,6 +119,7 @@ public class TestFetchGroups extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testFetchGroupsFromConfiguration() {
         Map props = new HashMap();
         props.put("openjpa.FetchGroups", "default,fg1,fg2");
@@ -132,6 +130,7 @@ public class TestFetchGroups extends BaseKernelTest {
         factory.close();
     }
 
+    @Test
     public void testFetchGroupsNoConfiguration() {
         OpenJPAEntityManager pm = getPM();
 
@@ -155,6 +154,7 @@ public class TestFetchGroups extends BaseKernelTest {
         checkObject(pm, o2, true, false, false, false, true, true);
     }
 
+    @Test
     public void testRetrieveAll() {
         OpenJPAEntityManager pm = getPM();
 
@@ -180,6 +180,7 @@ public class TestFetchGroups extends BaseKernelTest {
         checkObject(pm, o1, true, true, true, true, false, false);
     }
 
+    @Test
     public void testFetchGroupConfiguration() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan fetch = pm.getFetchPlan();
@@ -214,10 +215,11 @@ public class TestFetchGroups extends BaseKernelTest {
     private void checkGroups(OpenJPAEntityManager pm, String[] groups) {
         HashSet groupSet = new HashSet(Arrays.asList(groups));
         groupSet.add(FetchPlan.GROUP_DEFAULT);
-        assertEquals("groupSet dont match", groupSet,
-            new HashSet(pm.getFetchPlan().getFetchGroups()));
+        assertEquals(groupSet, new HashSet(pm.getFetchPlan().getFetchGroups()),
+            "groupSet dont match");
     }
 
+    @Test
     public void testFetchGroupsChildWithConfiguration() {
         OpenJPAEntityManager pm = getPM();
         pm.getFetchPlan().addFetchGroup("g1");
@@ -240,6 +242,7 @@ public class TestFetchGroups extends BaseKernelTest {
         c1.getH();
     }
 
+    @Test
     public void testFetchGroupsWithConfiguration() {
         OpenJPAEntityManager pm = getPM();
 
@@ -269,6 +272,7 @@ public class TestFetchGroups extends BaseKernelTest {
      * Tests that relation fields are loaded immediately when
      * they are in one of the PM's configured fetch groups.
      */
+    @Test
     public void testRelationsLoaded() {
         OpenJPAEntityManager pm = getPM();
         pm.getFetchPlan().addFetchGroup("g2");
@@ -278,7 +282,7 @@ public class TestFetchGroups extends BaseKernelTest {
 
         // load o2 and retrieve its state manager
         OpenJPAStateManager sm = getStateManager(getO2(pm), pm);
-        assertNotNull("SM is NULL", sm);
+        assertNotNull(sm, "SM is NULL");
 
         // 'g' is the name of a 1-1 relation field to o1 in configured
         // fetch group 'g2'; make sure it is loaded
@@ -287,7 +291,7 @@ public class TestFetchGroups extends BaseKernelTest {
             assertTrue(sm.getLoaded().get(field));
             assertEquals(oid1,
                 ((FetchGroupTestObject) sm.fetchObjectField(field)).getId());
-        } catch (junit.framework.AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             bug(623, afe, "One to one mappings do not work with custom "
                 + "fetch groups");
         }
@@ -356,6 +360,7 @@ public class TestFetchGroups extends BaseKernelTest {
      * Tests that named fetch groups actually bring in the
      * managed object.
      */
+    @Test
     public void testFetchGroupInstantiated() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);

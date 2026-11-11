@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -39,22 +41,15 @@ import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPessimisticLocking extends BaseKernelTest {
 
     private Object _id = null;
     private int _bugCount = 0;
     private OpenJPAEntityManagerFactory _factory = null;
-
-    public TestPessimisticLocking(String name) {
-        super(name);
-    }
-
-    /**
-     * Creates a new instance of TestPessimisticLocking
-     */
-    public TestPessimisticLocking() {
-    }
 
     protected boolean skipTest() {
         if (getConfiguration() instanceof JDBCConfiguration) {
@@ -75,7 +70,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
         return pm;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -94,7 +89,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
         endEm(pm);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         try {
             if (_factory != null) {
@@ -109,6 +104,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
     /**
      * Test that pessimistic locking is working in the data store.
      */
+    @Test
     public void testPessimisticLocking() throws Throwable {
         pessimisticLockingTest(false);
     }
@@ -118,6 +114,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
      * test will validate that the test case itself is working correctly, not
      * that the datastore's pessimistic locking is working.
      */
+    @Test
     public void testPessimisticLockingInternal() throws Throwable {
         pessimisticLockingTest(true);
     }

@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.testlocalizer.LocalizerTestHelper;
 
-import org.junit.Test;
-import org.junit.Before;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Localizer.
@@ -38,7 +39,7 @@ public class TestLocalizer {
 
     private Localizer _locals = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         _locals = Localizer.forPackage(LocalizerTestHelper.class);
     }

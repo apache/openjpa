@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -35,6 +40,9 @@ import java.util.concurrent.TimeoutException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests when multiple user threads enter the same EntityManager and executes
@@ -58,7 +66,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         return "ordering";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 CLEAR_TABLES, "openjpa.Multithreaded", "true");
@@ -78,7 +86,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         futures = new Future[THREADS];
     }
 
-    @Override
+    @AfterEach
     public void tearDown()  throws Exception {
         group.shutdown();
         super.tearDown();
@@ -113,6 +121,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testQueryResultIsOrderedAcrossSlice() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -141,6 +150,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testAggregateQuery() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -179,6 +189,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testAggregateQueryWithMissingValueFromSlice() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -198,6 +209,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testSetMaxResult() {
         final EntityManager em = emf.createEntityManager();
         final int limit = 3;
@@ -225,6 +237,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testHeavyLoad() {
         Thread[] threads = new Thread[800];
         for (int i = 0; i < 800; i++) {
@@ -254,6 +267,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         }
     }
 
+    @Test
     public void testHint() {
         final List<String> targets = new ArrayList<>();
         targets.add("Even");
@@ -280,6 +294,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testInMemoryOrderBy() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -298,6 +313,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQueryParameter() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -318,6 +334,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQueryParameterEntity() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

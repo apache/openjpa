@@ -27,22 +27,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Locale;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizD;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizJ;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizK;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestQueryAgainstEntireMappedHierarchy
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-    /** Creates a new instance of TestQueryAgainstEntireMappedHierarchy */
-    public TestQueryAgainstEntireMappedHierarchy(String name)
-    {
-    	super(name);
-    }
+public class TestQueryAgainstEntireMappedHierarchy extends TestSQLListenerTestCase {
 
     @Override
     public void setUpTestCase()
@@ -74,6 +71,7 @@ public class TestQueryAgainstEntireMappedHierarchy
         pm.close();
     }
 
+    @Test
     public void testQueryAgainstEntireMappedHierarchy() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         sql.clear();

@@ -23,11 +23,12 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDataCachingAndUnenhancedPropertyAccess
-    extends SingleEMFTestCase {
+public class TestDataCachingAndUnenhancedPropertyAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedIdentityIdPropertyAccess.class, CLEAR_TABLES,
             "openjpa.DataCache", "true",
@@ -35,6 +36,7 @@ public class TestDataCachingAndUnenhancedPropertyAccess
             "openjpa.RuntimeUnenhancedClasses", "supported");
     }
 
+    @Test
     public void testSimpleDataCacheOperation() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -48,6 +50,7 @@ public class TestDataCachingAndUnenhancedPropertyAccess
         em.close();
     }
 
+    @Test
     public void testAccessIdBeforeCommit() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).

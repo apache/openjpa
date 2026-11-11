@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +34,8 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * CriteriaBuilder.treat() over a join of a three level single table hierarchy must narrow the
@@ -39,7 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestTreatJoinCriteria extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TProduct.class, TSoftwareProduct.class, TGameProduct.class,
             TLineItem.class, TOrder.class, DROP_TABLES);
@@ -78,6 +83,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUntreatedJoinReturnsAllProducts() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -92,6 +98,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTreatedJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -107,6 +114,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTreatedJoinToLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -123,6 +131,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     /**
      * The narrowed join resolves attributes that are declared by the treated class only.
      */
+    @Test
     public void testTreatedJoinResolvesSubclassAttribute() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -136,6 +145,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTreatedRootIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -150,6 +160,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTreatedRootToLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -165,6 +176,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     /**
      * A type that is not a subtype of the join can not be a TREAT target.
      */
+    @Test
     public void testTreatToUnrelatedTypeIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -180,6 +192,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTreatedCollectionJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -198,6 +211,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
     /**
      * The narrowed collection join resolves attributes that are declared by the treated class only.
      */
+    @Test
     public void testTreatedCollectionJoinResolvesSubclassAttribute() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -215,6 +229,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * A join that is correlated to an outer query carries no kernel variable of its own, so it
      * can not be narrowed. The attempt must be diagnosed instead of being silently ignored.
      */
+    @Test
     public void testTreatOfCorrelatedJoinIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -236,6 +251,7 @@ public class TestTreatJoinCriteria extends SingleEMFTestCase {
      * Narrowing an arbitrary path expression is not implemented and must be diagnosed instead of
      * returning the path unnarrowed.
      */
+    @Test
     public void testTreatOfPlainPathIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();

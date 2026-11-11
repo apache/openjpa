@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -28,6 +34,8 @@ import org.apache.openjpa.meta.UpdateStrategies;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the parsing of Kodo metadata extension annotations.</p>
@@ -39,7 +47,7 @@ public class TestExtensionAnnotations
 
     private ClassMapping _mapping;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ExtensionsEntity.class);
         _mapping = ((JDBCConfiguration) emf.getConfiguration()).
@@ -47,16 +55,19 @@ public class TestExtensionAnnotations
             null, true);
     }
 
+    @Test
     public void testDataStoreId() {
         assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(ValueStrategies.SEQUENCE, _mapping.getIdentityStrategy());
         assertEquals("system", _mapping.getIdentitySequenceName());
     }
 
+    @Test
     public void testDataCache() {
         assertNull(_mapping.getDataCacheName());
     }
 
+    @Test
     public void testFetchGroups() {
         FetchGroup fg = _mapping.getFetchGroup("detail");
         assertNotNull(fg);
@@ -71,6 +82,7 @@ public class TestExtensionAnnotations
         assertEquals(1, fg.getRecursionDepth(fm));
     }
 
+    @Test
     public void testValueStrategy() {
         assertEquals(ValueStrategies.UUID_HEX,
             _mapping.getField("uuid").getValueStrategy());
@@ -85,16 +97,19 @@ public class TestExtensionAnnotations
         assertEquals("system", seq.getValueSequenceName());
     }
 
+    @Test
     public void testReadOnly() {
         assertEquals(UpdateStrategies.RESTRICT,
             _mapping.getField("seq").getUpdateStrategy());
     }
 
+    @Test
     public void testInverseLogical() {
         assertEquals("owner", _mapping.getField("rel").getInverse());
         assertNull(_mapping.getField("owner").getInverse());
     }
 
+    @Test
     public void testDependent() {
         assertEquals(ValueMetaData.CASCADE_AUTO,
             _mapping.getField("rel").getCascadeDelete());
@@ -104,11 +119,13 @@ public class TestExtensionAnnotations
             _mapping.getField("eager").getElement().getCascadeDelete());
     }
 
+    @Test
     public void testLRS() {
         assertTrue(_mapping.getField("lrs").isLRS());
         assertFalse(_mapping.getField("eager").isLRS());
     }
 
+    @Test
     public void testClassCriteria() {
         assertTrue(_mapping.getFieldMapping("eager").getElementMapping().
             getUseClassCriteria());
@@ -117,6 +134,7 @@ public class TestExtensionAnnotations
             getUseClassCriteria());
     }
 
+    @Test
     public void testExternalValues() {
         FieldMapping externalValues = _mapping.getFieldMapping
             ("externalValues");
@@ -128,6 +146,7 @@ public class TestExtensionAnnotations
             get('F'));
     }
 
+    @Test
     public void testExternalizer() {
         FieldMapping externalizer = _mapping.getFieldMapping("externalizer");
         assertEquals(JavaTypes.OBJECT, externalizer.getDeclaredTypeCode());

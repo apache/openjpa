@@ -23,11 +23,18 @@ import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -51,7 +58,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     private final Java8TimeTypes entity1 = new Java8TimeTypes();
     private final Java8TimeTypes entity2 = new Java8TimeTypes();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Java8TimeTypes.class
             //, "openjpa.Log", "SQL=TRACE,Tests=TRACE"
@@ -93,6 +100,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testReadJava8Types() {
 
         // now read it back.
@@ -115,6 +123,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     // we've got reports from various functions not properly working with Java8 Dates.
+    @Test
     public void testReadLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select t.localDateField from Java8TimeTypes AS t", LocalDate.class);
@@ -124,6 +133,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     // max function
+    @Test
     public void testMaxLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select max(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
@@ -132,6 +142,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMaxLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDateTime> qry = em.createQuery("select max(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
@@ -140,6 +151,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMaxLocalTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select max(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
@@ -150,6 +162,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMaxOffsetTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select max(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
@@ -168,6 +181,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMaxOffsetDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetDateTime> qry = em.createQuery("select max(t.offsetDateTimeField) from Java8TimeTypes AS t", OffsetDateTime.class);
@@ -178,6 +192,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
     }
 
     // min function
+    @Test
     public void testMinLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDate> qry = em.createQuery("select min(t.localDateField) from Java8TimeTypes AS t", LocalDate.class);
@@ -185,6 +200,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         assertEquals(LocalDate.parse(VAL_LOCAL_DATE), min);
     }
 
+    @Test
     public void testMinLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalDateTime> qry = em.createQuery("select min(t.localDateTimeField) from Java8TimeTypes AS t", LocalDateTime.class);
@@ -193,6 +209,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMinLocalTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<LocalTime> qry = em.createQuery("select min(t.localTimeField) from Java8TimeTypes AS t", LocalTime.class);
@@ -203,6 +220,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMinOffsetTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetTime> qry = em.createQuery("select min(t.offsetTimeField) from Java8TimeTypes AS t", OffsetTime.class);
@@ -221,6 +239,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMinOffsetDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<OffsetDateTime> qry
@@ -231,6 +250,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCurrentDateLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
@@ -241,6 +261,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCurrentDateLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
@@ -251,6 +272,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testGetCurrentLocalDate() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
@@ -265,6 +287,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
      * CURRENT_DATE and LOCAL DATE are the date of the database server without a time of day,
      * so they equal a date stored for today.
      */
+    @Test
     public void testCurrentDateEqualsDateOfToday() {
         try (EntityManager em = emf.createEntityManager()) {
             final String today = "select LOCAL DATE from Java8TimeTypes AS j where j.id = 1";
@@ -291,6 +314,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testGetCurrentLocalDateTime() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Java8TimeTypes> qry
@@ -301,6 +325,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testGetCurrentLocalTime() {
         // LOCAL TIME is the time of the database server, which may run in another
         // time zone than this JVM, so the expected rows are computed from it
@@ -317,15 +342,16 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
             }
             for (Java8TimeTypes entity : List.of(entity1, entity2)) {
                 if (!entity.getLocalTimeField().isAfter(before)) {
-                    assertTrue(entity.getLocalTimeField() + " <= " + before, ids.contains(entity.getId()));
+                    assertTrue(ids.contains(entity.getId()), entity.getLocalTimeField() + " <= " + before);
                 }
                 if (entity.getLocalTimeField().isAfter(after)) {
-                    assertFalse(entity.getLocalTimeField() + " > " + after, ids.contains(entity.getId()));
+                    assertFalse(ids.contains(entity.getId()), entity.getLocalTimeField() + " > " + after);
                 }
             }
         }
     }
 
+    @Test
     public void testExtractSecondKeepsFractionFromColumns() {
         DBDictionary dict = getDbDictionary(emf);
         if (!(dict instanceof H2Dictionary || dict instanceof MySQLDictionary
@@ -363,6 +389,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testReadInstant() {
         EntityManager em = emf.createEntityManager();
         Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
@@ -370,6 +397,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testReadYear() {
         EntityManager em = emf.createEntityManager();
         Java8TimeTypes eRead = em.find(Java8TimeTypes.class, 1);
@@ -377,6 +405,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSelectInstant() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Instant> qry = em.createQuery(
@@ -387,6 +416,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSelectYear() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Year> qry = em.createQuery(
@@ -397,6 +427,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMaxInstant() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Instant> qry = em.createQuery(
@@ -406,6 +437,7 @@ public class TestJava8TimeTypes extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMinYear() {
         EntityManager em = emf.createEntityManager();
         final TypedQuery<Year> qry = em.createQuery(

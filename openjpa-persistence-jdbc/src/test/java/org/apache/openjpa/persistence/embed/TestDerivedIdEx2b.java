@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests derived identity ex2b (JPA 2.4.1.3): @EmbeddedId with non-@Embeddable
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDerivedIdEx2b extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             DID2bEmployee.class,
@@ -40,6 +45,7 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
             DID2bDependentId.class);
     }
 
+    @Test
     public void testPersistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -56,12 +62,13 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
         // Find by composite EmbeddedId
         DID2bDependent found = em.find(DID2bDependent.class,
             new DID2bDependentId("Obama", new DID2bEmployeeId("Java", "Duke")));
-        assertNotNull("Should find dependent by EmbeddedId key", found);
+        assertNotNull(found, "Should find dependent by EmbeddedId key");
 
         em.getTransaction().commit();
         em.close();
     }
 
+    @Test
     public void testQueryViaRelation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -79,12 +86,13 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
         List depList = em.createQuery(
             "Select d from DID2bDependent d where d.id.name='Obama' and d.emp.firstName='Java'")
             .getResultList();
-        assertTrue("Query via relation should return results", depList.size() > 0);
+        assertTrue(depList.size() > 0, "Query via relation should return results");
 
         em.getTransaction().commit();
         em.close();
     }
 
+    @Test
     public void testQueryViaEmbeddedIdPath() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -102,7 +110,7 @@ public class TestDerivedIdEx2b extends SingleEMFTestCase {
         List depList = em.createQuery(
             "Select d from DID2bDependent d where d.id.name='Obama' and d.id.empPK.firstName='Java'")
             .getResultList();
-        assertTrue("Query via embedded id path should return results", depList.size() > 0);
+        assertTrue(depList.size() > 0, "Query via embedded id path should return results");
 
         em.getTransaction().commit();
         em.close();

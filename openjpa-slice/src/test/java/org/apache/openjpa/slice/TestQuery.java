@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests query ordering.
@@ -41,7 +48,7 @@ public class TestQuery extends SliceTestCase {
         return "ordering";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
                 Car.class, Manufacturer.class,
@@ -81,6 +88,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testOrderedQueryResultWhenOrderableItemSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -100,6 +108,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testOrderedQueryResultWhenOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -116,6 +125,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testOrderedQueryResultWhenNavigatedOrderableItemNotSelected() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -136,6 +146,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -163,6 +174,7 @@ public class TestQuery extends SliceTestCase {
         assertEquals(max, max1);
     }
 
+    @Test
     public void testAggregateQueryWithMissingValueFromSlice() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -174,6 +186,7 @@ public class TestQuery extends SliceTestCase {
         assertEquals(VALUE_MAX, ((Number)max).intValue());
     }
 
+    @Test
     public void testSetMaxResult() {
         EntityManager em = emf.createEntityManager();
         int limit = 3;
@@ -192,6 +205,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testHint() {
         List<String> targets = new ArrayList<>();
         targets.add("Even");
@@ -202,11 +216,12 @@ public class TestQuery extends SliceTestCase {
         List result = query.getResultList();
         for (Object pc : result) {
             String slice = SlicePersistence.getSlice(pc);
-            assertTrue("Expected original slice " + slice + " in " + targets, targets.contains(slice));
+            assertTrue(targets.contains(slice), "Expected original slice " + slice + " in " + targets);
         }
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQueryTargetPolicy() {
         List<String> targets = new ArrayList<>();
         targets.add("Even");
@@ -222,6 +237,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testInMemoryOrderBy() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -231,6 +247,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQueryParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -241,6 +258,7 @@ public class TestQuery extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQueryParameterEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -270,6 +288,7 @@ public class TestQuery extends SliceTestCase {
      * *always* in different slices.
      *
      */
+    @Test
     public void testCollocationConstraintViolation() {
         // This transaction will store Manufacturer only
         EntityManager em = emf.createEntityManager();

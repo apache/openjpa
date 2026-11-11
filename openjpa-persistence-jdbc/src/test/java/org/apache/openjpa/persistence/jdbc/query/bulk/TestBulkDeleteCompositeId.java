@@ -16,7 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The rows of an owned table can only be deleted by a single key column. A
@@ -31,13 +35,14 @@ public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
 
     private static final int TAG_COUNT = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteCompositeOwner.class);
         createCompositeData();
         sql.clear();
     }
 
+    @Test
     public void testCompositeKeyCandidateIsDeletedInMemory() {
         assertEquals(1, delete(
             "delete from BulkDeleteCompositeOwner o where o.name=:n",
@@ -55,6 +60,7 @@ public class TestBulkDeleteCompositeId extends AbstractBulkDeleteTestCase {
      * Without criteria no key is needed, so even a composite key candidate is
      * deleted in SQL and its owned table is emptied outright.
      */
+    @Test
     public void testCompositeKeyCandidateWithoutCriteria() {
         assertEquals(2, delete("delete from BulkDeleteCompositeOwner o"));
 

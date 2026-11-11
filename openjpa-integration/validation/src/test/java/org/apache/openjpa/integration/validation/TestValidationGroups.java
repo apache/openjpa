@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,6 +36,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Bean Validation groups support as defined in the JPA 2.0 spec
@@ -66,6 +72,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1a) verify validation occurs using the default validation groups
      * on pre-persist and pre-update on commit
      */
+    @Test
     public void testDefaultValidationGroup() {
         verifyDefaultValidationGroup(false);
     }
@@ -74,6 +81,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1af) verify validation occurs using the default validation groups
      * on pre-persist and pre-update on flush
      */
+    @Test
     public void testDefaultValidationGroupFlush() {
         verifyDefaultValidationGroup(true);
     }
@@ -83,6 +91,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1b) verify validation does not occur using the default validation group
      * on the PreRemove lifecycle event on commit.
      */
+    @Test
     public void testDefaultPreRemove() {
         verifyDefaultPreRemove(false);
     }
@@ -91,15 +100,17 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1bf) verify validation does not occur using the default validation group
      * on the PreRemove lifecycle event on flush.
      */
+    @Test
     public void testDefaultPreRemoveFlush() {
         verifyDefaultPreRemove(true);
     }
 
     /**
-	 * 1c) verify validation occurs on the default group when default is
-	 *  specified for pre-remove on commit
-	 */
-	public void testSpecifiedDefaultPreRemove() {
+     * 1c) verify validation occurs on the default group when default is
+     *  specified for pre-remove on commit
+     */
+    @Test
+    public void testSpecifiedDefaultPreRemove() {
 	    verifySpecifiedDefaultPreRemove(true);
 	}
 
@@ -107,6 +118,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1cf) verify validation occurs on the default group when default is
      *  specified for pre-remove on flush
      */
+    @Test
     public void testSpecifiedDefaultPreRemoveFlush() {
         verifySpecifiedDefaultPreRemove(false);
     }
@@ -114,6 +126,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
     /**
      * 1e) PrePersist does not validate with no validation group defined.
      */
+    @Test
     public void testPersistNoValidationGroup() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
@@ -147,6 +160,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
     /**
      *  1f) PreUpdate does not validate when no validation group defined.
      */
+    @Test
     public void testUpdateNoValidationGroup() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
@@ -189,6 +203,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 1g) PreUpdate only called when a pre-update validation group defined
      *     (ie. per-persist and pre-remove are disabled).
      */
+    @Test
     public void testUpdateOnlyValidationGroup() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
@@ -229,10 +244,12 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
             closeEMF(emf);
         }
     }
+
     /**
      *  1h) PrePersist only called when pre-persist validation group defined
      *      (ie. per-persist and pre-remove are disabled).
      */
+    @Test
     public void testPersistOnlyValidationGroup() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
@@ -291,6 +308,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 2a) verify non-default validation group for all lifecycle events on
      * commit.  default validation group constraints should not validate
      */
+    @Test
     public void testNonDefaultValidationGroup() {
         verifyNonDefaultValidationGroup(false);
     }
@@ -299,6 +317,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 2af) verify non-default validation group for all lifecycle events on
      * flush.  default validation group constraints should not validate
      */
+    @Test
     public void testNonDefaultValidationGroupFlush() {
         verifyNonDefaultValidationGroup(true);
     }
@@ -307,6 +326,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 2b1) verify multiple/mixed validation groups via persistence.xml
      * @param flush
      */
+    @Test
     public void testPesistenceXMLMultipleValidationGroups() {
 
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
@@ -316,10 +336,12 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
         assertNotNull(emf);
         verifyMultipleValidationGroups(emf);
     }
+
     /**
      * 2b2) verify multiple/mixed validation groups via properties
      * @param flush
      */
+    @Test
     public void testMultipleValidationGroups() {
 
         // Configure persistence properties via map
@@ -438,6 +460,7 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      * 3a) No validation groups for pre-persist and pre-update and none for
      * pre-remove by default.  No validation should occur.
      */
+    @Test
     public void testNoValidationGroups() {
 
         // Configure persistence properties via map

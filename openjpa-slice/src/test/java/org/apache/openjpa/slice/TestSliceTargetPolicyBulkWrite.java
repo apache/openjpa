@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,6 +28,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.slice.policy.FirstSliceQueryTargetPolicy;
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A configured {@link QueryTargetPolicy} is consulted for bulk statements as
@@ -39,7 +44,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         return "slice";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, CLEAR_TABLES,
             "openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName(),
@@ -50,7 +55,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             sliceNames = ((DistributedConfiguration) emf.getConfiguration()).getActiveSliceNames();
-            assertTrue("need at least two slices, got " + sliceNames, sliceNames.size() > 1);
+            assertTrue(sliceNames.size() > 1, "need at least two slices, got " + sliceNames);
             for (int i = 0; i < 4 * sliceNames.size(); i++) {
                 PObject pc = new PObject();
                 pc.setValue(0);
@@ -74,6 +79,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         return query.executeUpdate();
     }
 
+    @Test
     public void testPolicyAppliesToJpqlBulkDelete() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -85,6 +91,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(sliceNames.get(1), 0));
     }
 
+    @Test
     public void testPolicyAppliesToJpqlBulkUpdate() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -96,6 +103,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         assertEquals(0, countIn(sliceNames.get(1), 42));
     }
 
+    @Test
     public void testPolicyAppliesToJpqlBulkUpdateWithParameters() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -110,6 +118,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(sliceNames.get(1), 0));
     }
 
+    @Test
     public void testPolicyAppliesToNativeBulkStatements() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -123,6 +132,7 @@ public class TestSliceTargetPolicyBulkWrite extends SliceTestCase {
     }
 
     /** An explicit target stays in place when other hints are set after it. */
+    @Test
     public void testExplicitTargetWinsOverPolicyAfterAnotherHint() {
         seed();
         String second = sliceNames.get(1);

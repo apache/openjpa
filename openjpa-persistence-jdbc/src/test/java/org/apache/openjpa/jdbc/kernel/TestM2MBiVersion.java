@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestM2MBiVersion extends SingleEMFTestCase {
     public static String SALESID = "SALES";
@@ -33,7 +37,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     public static String EMPLOYEE2ID = "EMPLOYEE2";
     public static String EMPLOYEE3ID = "EMPLOYEE3";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
                 M2MBiDepartment.class,
@@ -78,6 +82,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testNonRelationalFieldInverseSideVersionUpdate() {
         EntityManager em = emf.createEntityManager();
 
@@ -110,6 +115,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testNonRelationalFieldOwnerSideVersionUpdate() {
         // Change only non-relation fields on Employee.
         // Version number of Employee should be updated.
@@ -145,6 +151,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testRelationalFieldBothSidesVersionUpdate() {
         // Move Employee from old Department to new Department.
         // Update both sides of the relationship.

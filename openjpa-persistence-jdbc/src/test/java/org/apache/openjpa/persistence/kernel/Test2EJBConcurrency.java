@@ -18,20 +18,24 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.Entity1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class Test2EJBConcurrency extends AbstractTestCase {
 
     private Object _id = null;
 
-    public Test2EJBConcurrency(String name) {
-        super(name, "kernelcactusapp");
+    public Test2EJBConcurrency() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         deleteAll(Entity1.class);
 
@@ -49,6 +53,7 @@ public class Test2EJBConcurrency extends AbstractTestCase {
     /**
      * Test optimistic concurrency.
      */
+    @Test
     public void testOptConcurrency1()
         throws Exception {
         EntityManager em1 = currentEntityManager();
@@ -60,28 +65,28 @@ public class Test2EJBConcurrency extends AbstractTestCase {
         Entity1 b1 = (Entity1) em1.find(Entity1.class, 3);
         b1.setStringField("STRING2");
         endTx(em1);
-        assertEquals("b1.getstringField is not STRING2 as exp.", "STRING2",
-            b1.getStringField());
+        assertEquals("STRING2", b1.getStringField(),
+            "b1.getstringField is not STRING2 as exp.");
 
         Entity1 b2 = (Entity1) em2.find(Entity1.class, 3);
-        assertEquals("b2.getstringField is not STRING2 as exp.", "STRING2",
-            b2.getStringField());
+        assertEquals("STRING2", b2.getStringField(),
+            "b2.getstringField is not STRING2 as exp.");
         b2.setStringField("STRING3");
         endTx(em2);
-        assertEquals("b2.getstringField is not STRING3 as exp.", "STRING3",
-            b2.getStringField());
+        assertEquals("STRING3", b2.getStringField(),
+            "b2.getstringField is not STRING3 as exp.");
 
         startTx(em1);
         b1 = (Entity1) em1.find(Entity1.class, 3);
         em1.refresh(b1);
-        assertEquals("b1.getstringField is not STRING3 as exp.", "STRING2",
-            b1.getStringField());
+        assertEquals("STRING2", b1.getStringField(),
+            "b1.getstringField is not STRING3 as exp.");
         b1.setStringField("STRING4");
         endTx(em1);
 
         b2 = (Entity1) em2.find(Entity1.class, 3);
-        assertEquals("b2.getstringField is not STRING3 as exp.", "STRING3",
-            b2.getStringField());
+        assertEquals("STRING3", b2.getStringField(),
+            "b2.getstringField is not STRING3 as exp.");
 
         endEm(em1);
         endEm(em2);

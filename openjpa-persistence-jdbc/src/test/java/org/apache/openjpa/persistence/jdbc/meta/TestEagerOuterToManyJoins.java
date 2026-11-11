@@ -28,6 +28,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,23 +44,17 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEagerOuterToManyJoins
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-    /** Creates a new instance of TestEagerOuterToManyJoins */
-    public TestEagerOuterToManyJoins(String name) {
-    	super(name);
-    }
-
+public class TestEagerOuterToManyJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     public boolean skipTest() {
-        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).
-                getDBDictionaryInstance();
+        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance();
         return !dict.supportsSubselect;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
 
        deleteAll(HelperPC.class);
@@ -66,10 +63,12 @@ public class TestEagerOuterToManyJoins
     }
 
 
+    @Test
     public void testStringCollectionById() {
         stringCollectionByIdTest(false);
     }
 
+    @Test
     public void testEmptyStringCollectionById() {
         stringCollectionByIdTest(true);
     }
@@ -83,29 +82,33 @@ public class TestEagerOuterToManyJoins
         EagerOuterJoinPC pc = (EagerOuterJoinPC) pm.getObjectId(oid);
         assertEquals("1", pc.getName());
         if (empty)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("1.1"));
             assertTrue(pc.getStringCollection().contains("1.2"));
         }
         pm.close();
     }
 
+    @Test
     public void testStringCollectionByQuery() {
         stringCollectionByQueryTest(0);
     }
 
+    @Test
     public void testEmptyStringCollectionByQuery1() {
         stringCollectionByQueryTest(1);
     }
 
+    @Test
     public void testEmptyStringCollectionByQuery2() {
         stringCollectionByQueryTest(2);
     }
 
+    @Test
     public void testEmptyStringCollectionByQuery3() {
         stringCollectionByQueryTest(3);
     }
@@ -128,11 +131,11 @@ public class TestEagerOuterToManyJoins
         EagerOuterJoinPC pc = (EagerOuterJoinPC) itr.next();
         assertEquals("1", pc.getName());
         if ((empty & 1) > 0)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("1.1"));
             assertTrue(pc.getStringCollection().contains("1.2"));
         }
@@ -140,11 +143,11 @@ public class TestEagerOuterToManyJoins
         pc = (EagerOuterJoinPC) itr.next();
         assertEquals("2", pc.getName());
         if ((empty & 2) > 0)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("2.1"));
             assertTrue(pc.getStringCollection().contains("2.2"));
         }
@@ -177,6 +180,7 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testStringListById() {
         Object oid = insertStringList();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -192,6 +196,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testStringListByQuery() {
         insertStringList();
 
@@ -241,10 +246,12 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testOneManyCollectionById() {
         oneManyCollectionByIdTest(false);
     }
 
+    @Test
     public void testEmptyOneManyCollectionById() {
         oneManyCollectionByIdTest(true);
     }
@@ -264,18 +271,22 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testOneManyCollectionByQuery() {
         oneManyCollectionByQueryTest(0);
     }
 
+    @Test
     public void testEmptyOneManyCollectionByQuery1() {
         oneManyCollectionByQueryTest(1);
     }
 
+    @Test
     public void testEmptyOneManyCollectionByQuery2() {
         oneManyCollectionByQueryTest(2);
     }
 
+    @Test
     public void testEmptyOneManyCollectionByQuery3() {
         oneManyCollectionByQueryTest(3);
     }
@@ -350,6 +361,7 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testManyManyCollectionById() {
         Object oid = insertManyManyCollection();
 
@@ -362,6 +374,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testManyManyCollectionByQuery() {
         insertManyManyCollection();
 
@@ -415,10 +428,12 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testManyManyListById() {
         manyManyListByIdTest(false);
     }
 
+    @Test
     public void testEmptyManyManyListById() {
         manyManyListByIdTest(true);
     }
@@ -444,18 +459,22 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testManyManyListByQuery() {
         manyManyListByQueryTest(0);
     }
 
+    @Test
     public void testEmptyManyManyListByQuery1() {
         manyManyListByQueryTest(1);
     }
 
+    @Test
     public void testEmptyManyManyListByQuery2() {
         manyManyListByQueryTest(2);
     }
 
+    @Test
     public void testEmptyManyManyListByQuery3() {
         manyManyListByQueryTest(3);
     }
@@ -537,6 +556,7 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testTwoCollectionsInFetchGroupsById() {
         Object oid = insertTwoCollections();
 
@@ -558,6 +578,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testTwoCollectionsInFetchGroupsByQuery() {
         insertTwoCollections();
 
@@ -634,6 +655,7 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
+    @Test
     public void testQueryRandomAccess() {
         insertManyStringList();
 
@@ -658,6 +680,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testQueryRange() {
         insertManyStringList();
 
@@ -698,6 +721,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testEagerToOneThenEagerToMany() {
         insertEagers();
 
@@ -709,7 +733,7 @@ public class TestEagerOuterToManyJoins
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
-        assertEquals(new ArrayList(results).toString(), 2, results.size());
+        assertEquals(2, results.size(), new ArrayList(results).toString());
 
         Iterator itr = results.iterator();
         EagerOuterJoinPC2 ref = (EagerOuterJoinPC2) itr.next();
@@ -728,6 +752,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testEagerToManyThenEagerToOne() {
         insertEagers();
 
@@ -755,6 +780,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testEagerToManyThenEagerToMany() {
         insertEagers();
 
@@ -787,6 +813,7 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
+    @Test
     public void testEagerToOneAndToManyThenEagerToOne() {
         Object oid = insertEagers();
 

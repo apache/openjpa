@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,6 +33,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Tim McConnell
@@ -41,12 +45,13 @@ public class TestSequence extends SingleEMFTestCase {
     private String multiThreadExecuting = null;
     private static final int NUMBER_ENTITIES = 5000;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityPerson.class, EntityEmployee.class, CLEAR_TABLES,
             "openjpa.Multithreaded", "true");
     }
 
+    @Test
     public void testMultiThreadedNativeSequences() throws Exception {
         boolean supportsNativeSequence = false;
 

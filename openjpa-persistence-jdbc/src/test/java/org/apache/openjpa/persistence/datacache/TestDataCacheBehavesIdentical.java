@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 
@@ -31,6 +37,9 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwned;
 import org.apache.openjpa.persistence.querycache.common.apps.BidirectionalOne2OneOwner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests various application behavior with or without DataCache.
@@ -69,9 +78,8 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
     /**
      * Sets up two EntityManagerFactory: one with DataCache another without.
      */
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         if (emfWithDataCache == null) {
             emfWithDataCache = createEMF(
                     "openjpa.jdbc.SynchronizeMappings",    "buildSchema",
@@ -103,7 +111,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         TEST_COUNT++;
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         // HACK - need to manually close EMFs after all tests have run
         if (TEST_COUNT >= 21) {
@@ -247,21 +255,25 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         assertEquals(expectConsistent ? owner2 : owner1, owned2.getOwner());
     }
 
+    @Test
     public void testConsitentBidirectionalRelationIsPreservedWithDataCache() {
         verifyBidirectionalRelation(WITH_DATACACHE, CONSISTENT, CONSISTENT);
     }
 
+    @Test
     public void testConsitentBidirectionalRelationIsPreservedWithoutDataCache()
     {
         verifyBidirectionalRelation(!WITH_DATACACHE, CONSISTENT, CONSISTENT);
     }
 
+    @Test
     public void testInconsitentBidirectionalRelationIsPreservedWithDataCache() {
         verifyBidirectionalRelation(WITH_DATACACHE, !CONSISTENT, !CONSISTENT);
     }
 
+    @Test
     public void
-        testInconsitentBidirectionalRelationIsNotPreservedWithoutDataCache() {
+    testInconsitentBidirectionalRelationIsNotPreservedWithoutDataCache() {
         verifyBidirectionalRelation(!WITH_DATACACHE, !CONSISTENT, CONSISTENT);
     }
 
@@ -385,26 +397,31 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testDirtyRefreshWithNoLockHitsDatabase() {
         verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, !REFRESH_FROM_DATACACHE,
                 MARKER_DATABASE);
     }
 
+    @Test
     public void testDirtyRefreshWithNoLockHitsDataCache() {
         verifyRefresh(WITH_DATACACHE, NOLOCK, DIRTY, REFRESH_FROM_DATACACHE,
                 MARKER_DATACACHE);
     }
 
+    @Test
     public void testCleanRefreshWithNoLockDoesNotHitDatabase() {
         verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, !REFRESH_FROM_DATACACHE,
                 MARKER_DATACACHE);
     }
 
+    @Test
     public void testCleanRefreshWithNoLockHitsDataCache() {
         verifyRefresh(WITH_DATACACHE, NOLOCK, !DIRTY, REFRESH_FROM_DATACACHE,
                 MARKER_DATACACHE);
     }
 
+    @Test
     public void testDirtyRefreshWithReadLockHitsDatabase() {
         verifyRefresh(WITH_DATACACHE, LockModeType.READ, DIRTY,
                 REFRESH_FROM_DATACACHE, MARKER_DATABASE);
@@ -412,6 +429,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                 !REFRESH_FROM_DATACACHE, MARKER_DATABASE);
     }
 
+    @Test
     public void testCleanRefreshWithReadLockDoesNotHitDatabase() {
         verifyRefresh(WITH_DATACACHE, LockModeType.READ, !DIRTY,
                 REFRESH_FROM_DATACACHE, MARKER_DATACACHE);
@@ -419,6 +437,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                 !REFRESH_FROM_DATACACHE, MARKER_DATACACHE);
     }
 
+    @Test
     public void testDirtyRefreshWithWriteLockHitsDatabase() {
         verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, DIRTY,
                 REFRESH_FROM_DATACACHE, MARKER_DATABASE);
@@ -426,6 +445,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                 !REFRESH_FROM_DATACACHE, MARKER_DATABASE);
     }
 
+    @Test
     public void testCleanRefreshWithWriteLockDoesNotHitDatabase() {
         verifyRefresh(WITH_DATACACHE, LockModeType.WRITE, !DIRTY,
                 REFRESH_FROM_DATACACHE, MARKER_DATACACHE);
@@ -433,6 +453,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                 !REFRESH_FROM_DATACACHE, MARKER_DATACACHE);
     }
 
+    @Test
     public void testDirtyRefreshWithoutDataCacheAlwaysHitsDatabase() {
         verifyRefresh(!WITH_DATACACHE, NOLOCK, DIRTY, REFRESH_FROM_DATACACHE,
                 MARKER_DATABASE);
@@ -449,6 +470,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                 !REFRESH_FROM_DATACACHE, MARKER_DATABASE);
     }
 
+    @Test
     public void testCleanRefreshWithoutDataCacheDoesNotHitDatabase() {
         verifyRefresh(!WITH_DATACACHE, NOLOCK, !DIRTY, REFRESH_FROM_DATACACHE,
                 MARKER_CACHE);
@@ -533,33 +555,40 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testDeleteIsNotDetectedOnCleanRefreshWithoutLockWithDataCache() {
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, !DIRTY, NOLOCK, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnCleanRefreshWithLockWithDataCache() {
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, !DIRTY, LockModeType.READ,  ENTITY_NOT_FOUND_ERROR);
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, !DIRTY, LockModeType.WRITE, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnDirtyRefreshWithoutLockWithDataCache() {
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, DIRTY, NOLOCK, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnDirtyRefreshWithLockWithDataCache() {
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, DIRTY, LockModeType.READ,  ENTITY_NOT_FOUND_ERROR);
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, DIRTY, LockModeType.WRITE, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnDirtyRefreshWitDataCache() {
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, DIRTY, LockModeType.READ,  ENTITY_NOT_FOUND_ERROR);
         verifyDeleteDetectionOnRefresh(WITH_DATACACHE, DIRTY, LockModeType.WRITE, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnCleanRefreshWithoutLockWithoutDataCache() {
         verifyDeleteDetectionOnRefresh(!WITH_DATACACHE, !DIRTY, NOLOCK, ENTITY_NOT_FOUND_ERROR);
     }
 
+    @Test
     public void testDeleteIsDetectedOnCleanRefreshWithLockWithoutDataCache() {
         verifyDeleteDetectionOnRefresh(!WITH_DATACACHE, !DIRTY, LockModeType.READ,  ENTITY_NOT_FOUND_ERROR);
         verifyDeleteDetectionOnRefresh(!WITH_DATACACHE, !DIRTY, LockModeType.WRITE, ENTITY_NOT_FOUND_ERROR);

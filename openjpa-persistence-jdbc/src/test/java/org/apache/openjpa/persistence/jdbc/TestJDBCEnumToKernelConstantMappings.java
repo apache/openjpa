@@ -18,17 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.ResultSet;
 
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
+public class TestJDBCEnumToKernelConstantMappings {
 
-public class TestJDBCEnumToKernelConstantMappings
-    extends TestCase {
-
+    @Test
     public void testEagerFetchModes() {
         assertEquals(EagerFetchModes.EAGER_NONE,
             FetchMode.NONE.toKernelConstant());
@@ -58,6 +59,7 @@ public class TestJDBCEnumToKernelConstantMappings
             FetchMode.values().length);
     }
 
+    @Test
     public void testLRSSizeType() {
         assertEquals(LRSSizes.SIZE_UNKNOWN,
             LRSSizeAlgorithm.UNKNOWN.toKernelConstant());
@@ -87,6 +89,7 @@ public class TestJDBCEnumToKernelConstantMappings
             LRSSizeAlgorithm.values().length);
     }
 
+    @Test
     public void testJoinSyntaxType() {
         assertEquals(JoinSyntaxes.SYNTAX_SQL92,
             JoinSyntax.SQL92.toKernelConstant());
@@ -116,6 +119,7 @@ public class TestJDBCEnumToKernelConstantMappings
             JoinSyntax.values().length);
     }
 
+    @Test
     public void testResultSetType() {
         assertEquals(ResultSet.TYPE_FORWARD_ONLY,
             ResultSetType.FORWARD_ONLY.toKernelConstant());
@@ -138,6 +142,7 @@ public class TestJDBCEnumToKernelConstantMappings
         assertEquals(3, ResultSetType.values().length);
     }
 
+    @Test
     public void testFetchDirection() {
         assertEquals(ResultSet.FETCH_FORWARD,
             FetchDirection.FORWARD.toKernelConstant());

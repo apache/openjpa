@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
@@ -25,16 +27,19 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCollectionTracking extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(A.class,"openjpa.Compatibility","autoOff=false");
     }
 
+    @Test
     public void testCollectTracking() {
         int initialValue = 10, changedAge = 40;
         String changedName = "changed Name";

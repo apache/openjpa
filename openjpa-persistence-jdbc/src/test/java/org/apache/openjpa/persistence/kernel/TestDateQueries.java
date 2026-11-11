@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -40,6 +43,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDateQueries extends BaseKernelTest {
 
@@ -49,17 +54,7 @@ public class TestDateQueries extends BaseKernelTest {
     private Date _after = null;
     private final Timestamp referenceTst = new Timestamp(10000000000L);
 
-    /**
-     * Creates a new instance of TestDateQueries
-     */
-    public TestDateQueries() {
-    }
-
-    public TestDateQueries(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         super.setUp(AllFieldTypesTest.class);
@@ -104,6 +99,7 @@ public class TestDateQueries extends BaseKernelTest {
         _pm.clear();
     }
 
+    @Test
     public void testEquals() {
         Collection vals = executeQuery("testDate = :date");
         assertEquals(1, vals.size());
@@ -111,11 +107,13 @@ public class TestDateQueries extends BaseKernelTest {
             getTestDate());
     }
 
+    @Test
     public void testNotEquals() {
         Collection vals = executeQuery("testDate <> :date");
         assertEquals(2, vals.size());
     }
 
+    @Test
     public void testDateScale() {
         DBDictionary dbDictionary = ((JDBCConfiguration) _pm.getConfiguration()).getDBDictionaryInstance();
         if (!dbDictionary.fractionalTypeNameSet.contains(dbDictionary.timestampTypeName)) {
@@ -184,6 +182,7 @@ public class TestDateQueries extends BaseKernelTest {
         return digits;
     }
 
+    @Test
     public void testBefore() {
         Collection vals = executeQuery("testDate < :date");
         assertEquals(1, vals.size());
@@ -191,6 +190,7 @@ public class TestDateQueries extends BaseKernelTest {
             getTestDate());
     }
 
+    @Test
     public void testAfter() {
         Collection vals = executeQuery("testDate > :date");
         assertEquals(1, vals.size());
@@ -198,6 +198,7 @@ public class TestDateQueries extends BaseKernelTest {
             getTestDate());
     }
 
+    @Test
     public void testOrderBy() {
         String query =
             "SELECT o FROM AllFieldTypesTest o ORDER BY o.testDate ASC";

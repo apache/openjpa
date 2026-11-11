@@ -18,11 +18,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test embedded id classes.</p>
@@ -35,7 +43,7 @@ public class TestEmbeddedId
     EmbeddedIdClass _oid;
     EmbeddedIdClass _roid;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EmbeddedIdEntity.class, EmbeddedIdClass.class, CLEAR_TABLES);
 
@@ -63,6 +71,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testGetObjectId() {
         OpenJPAEntityManager em = emf.createEntityManager();
         EmbeddedIdEntity e = em.find(EmbeddedIdEntity.class, _oid);
@@ -80,6 +89,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testMutateEmbeddedIdFieldValueOfNew() {
         EmbeddedIdEntity e1 = new EmbeddedIdEntity();
         e1.setValue("e1");
@@ -123,6 +133,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testMutateEmbeddedIdFieldValueOfExisting() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -140,6 +151,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testDetachAttach() {
         OpenJPAEntityManager em = emf.createEntityManager();
         EmbeddedIdEntity e = em.find(EmbeddedIdEntity.class, _oid);
@@ -166,6 +178,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testQuery() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from EmbeddedIdEntity e "
@@ -184,6 +197,7 @@ public class TestEmbeddedId
         em.close();
     }
 
+    @Test
     public void testAutoAssigned() {
         // begin with null id object
         OpenJPAEntityManager em = emf.createEntityManager();

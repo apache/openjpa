@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Calendar;
 
 import jakarta.persistence.EntityManager;
@@ -29,13 +33,15 @@ import org.apache.openjpa.persistence.detachment.model.DMCustomer;
 import org.apache.openjpa.persistence.detachment.model.DMCustomerInventory;
 import org.apache.openjpa.persistence.detachment.model.DMItem;
 import org.apache.openjpa.util.Proxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachLite extends TestDetach {
     Object[] props =
         new Object[] { "openjpa.DetachState", "loaded(LiteAutoDetach=true)", DMCustomer.class,
             DMCustomerInventory.class, DMItem.class, CLEAR_TABLES };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(props);
 
@@ -46,6 +52,7 @@ public class TestDetachLite extends TestDetach {
         root = createData();
     }
 
+    @Test
     public void testPendingClear() {
         EntityManager em = emf.createEntityManager();
         DMCustomer dm = em.find(DMCustomer.class, root.getId());
@@ -56,6 +63,7 @@ public class TestDetachLite extends TestDetach {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testLeaveProxy() {
         Object[] p = props;
         p[1] = "loaded(LiteAutoDetach=true,DetachProxyFields=false)";
@@ -92,6 +100,7 @@ public class TestDetachLite extends TestDetach {
         }
     }
 
+    @Test
     public void testProxyClear() {
         DMCustomer dc = new DMCustomer();
         Calendar cal = Calendar.getInstance();
@@ -117,6 +126,7 @@ public class TestDetachLite extends TestDetach {
         }
     }
 
+    @Test
     public void testCloseDetach() {
         root = em.merge(root);
         PersistenceCapable pc = (PersistenceCapable) root;

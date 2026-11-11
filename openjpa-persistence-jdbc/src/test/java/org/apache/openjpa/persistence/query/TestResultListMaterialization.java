@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +33,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the default materialized <code>Query.getResultList()</code> and the
@@ -39,7 +45,7 @@ public class TestResultListMaterialization extends SingleEMFTestCase {
 
     private static final String JPQL = "SELECT o FROM AllFieldTypes o";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
         populate(emf);
@@ -67,25 +73,27 @@ public class TestResultListMaterialization extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testResultListIsMaterializedByDefault() {
         EntityManager em = emf.createEntityManager();
         List<?> result = batchedQuery(em).getResultList();
-        assertTrue("expected an ArrayList, got " + result.getClass(), result instanceof ArrayList);
+        assertTrue(result instanceof ArrayList, "expected an ArrayList, got " + result.getClass());
         assertFalse(result instanceof ResultList);
         em.close();
         // the snapshot is detached from the EntityManager lifecycle
         assertEquals(10, result.size());
     }
 
+    @Test
     public void testCompatibilityOptionRestoresLazyResultList() {
         OpenJPAEntityManagerFactorySPI factory = createEMF(AllFieldTypes.class,
             "openjpa.Compatibility", "MaterializeQueryResultList=false");
         try {
             EntityManager em = factory.createEntityManager();
             List<?> result = batchedQuery(em).getResultList();
-            assertTrue("expected a lazy ResultList, got " + result.getClass(), result instanceof ResultList);
+            assertTrue(result instanceof ResultList, "expected a lazy ResultList, got " + result.getClass());
             // rows are still streamed from the open result object provider
-            assertTrue("result list should not be materialized", ((ResultList<?>) result).isProviderOpen());
+            assertTrue(((ResultList<?>) result).isProviderOpen(), "result list should not be materialized");
             assertEquals(10, result.size());
             em.close();
         } finally {

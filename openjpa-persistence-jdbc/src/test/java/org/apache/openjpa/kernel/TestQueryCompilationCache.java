@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,13 +32,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.NamedEntity;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
 
+public class TestQueryCompilationCache {
 
-public class TestQueryCompilationCache
-    extends TestCase {
-
+    @Test
     public void testDynamicJPQLWithNamedEntity() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory", "jpa(Types="

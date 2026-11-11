@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.QTimeout;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Query.setTimeout(null) clears a timeout set through that method.
@@ -32,11 +37,12 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
 
     private static final String JPQL = "SELECT o FROM QTimeout o";
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(QTimeout.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testUnsetTimeoutIsNull() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
@@ -48,6 +54,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testExplicitZeroIsReported() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
@@ -59,6 +66,7 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSetTimeoutIsReported() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
@@ -71,24 +79,26 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testNullTimeoutClearsPreviousValue() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             Query q = em.createQuery(JPQL);
             q.setTimeout(5000);
             q.setTimeout(null);
-            assertNull("A cleared timeout must not report the previous value",
-                q.getTimeout());
-            assertEquals("A cleared query must use what it inherits", 0,
-                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
-            assertEquals("The query must fall back to what it inherits",
-                em.getFetchPlan().getQueryTimeout(),
-                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
+            assertNull(q.getTimeout(),
+                "A cleared timeout must not report the previous value");
+            assertEquals(0, ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout(),
+                "A cleared query must use what it inherits");
+            assertEquals(em.getFetchPlan().getQueryTimeout(),
+                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout(),
+                "The query must fall back to what it inherits");
         } finally {
             em.close();
         }
     }
 
+    @Test
     public void testNullTimeoutRestoresInheritedValue() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
@@ -98,16 +108,17 @@ public class TestQueryTimeoutClear extends SingleEMFTestCase {
             assertEquals(Integer.valueOf(5000), q.getTimeout());
 
             q.setTimeout(null);
-            assertNull("Nothing is set on the query after a clear",
-                q.getTimeout());
-            assertEquals("Clearing must restore the entity manager's timeout, "
-                + "not the configuration default", 9000,
-                ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout());
+            assertNull(q.getTimeout(),
+                "Nothing is set on the query after a clear");
+            assertEquals(9000, ((OpenJPAQuery<?>) q).getFetchPlan().getQueryTimeout(),
+                "Clearing must restore the entity manager's timeout, "
+                + "not the configuration default");
         } finally {
             em.close();
         }
     }
 
+    @Test
     public void testNullTimeoutOnAFreshQueryIsHarmless() {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {

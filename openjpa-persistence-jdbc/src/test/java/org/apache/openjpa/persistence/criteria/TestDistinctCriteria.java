@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +29,12 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDistinctCriteria extends CriteriaTest {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         try {
@@ -40,7 +45,7 @@ public class TestDistinctCriteria extends CriteriaTest {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         try {
             deleteDataForTestDistinct();
@@ -90,6 +95,7 @@ public class TestDistinctCriteria extends CriteriaTest {
     }
 
 
+    @Test
     public void testDistinct() {
         CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
         Root<Customer> customer = cq.from(Customer.class);

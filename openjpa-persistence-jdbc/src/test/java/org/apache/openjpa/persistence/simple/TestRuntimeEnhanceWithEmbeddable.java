@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Date;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests runtime enhancement with embeddable + entity (property access).
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedProductEntity.class,
@@ -46,6 +51,7 @@ public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
      * Test: persist entity with embedded, then update via merge.
      * This triggers enhancement of both the entity and embeddable.
      */
+    @Test
     public void testPersistAndMergeWithEmbeddable() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -70,17 +76,18 @@ public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
         // Verify in new EM
         em = emf.createEntityManager();
         UnenhancedProductEntity found = em.find(UnenhancedProductEntity.class, "P1");
-        assertNotNull("Product should be found", found);
-        assertEquals("Price should be 25.0", 25.0, found.getPrice(), 0.001);
-        assertNotNull("ShelfLife should not be null", found.getShelfLife());
-        assertEquals("InceptionDate should match",
-            Date.valueOf("2025-01-01"), found.getShelfLife().getInceptionDate());
+        assertNotNull(found, "Product should be found");
+        assertEquals(25.0, found.getPrice(), 0.001, "Price should be 25.0");
+        assertNotNull(found.getShelfLife(), "ShelfLife should not be null");
+        assertEquals(Date.valueOf("2025-01-01"),
+            found.getShelfLife().getInceptionDate(), "InceptionDate should match");
         em.close();
     }
 
     /**
      * Test: persist + set + merge + query (full TCK pattern with embeddable).
      */
+    @Test
     public void testQueryAfterMergeWithEmbeddable() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -115,7 +122,7 @@ public class TestRuntimeEnhanceWithEmbeddable extends SingleEMFTestCase {
 
         List<?> results = em.createQuery(
             "SELECT p FROM UnenhancedProductEntity p WHERE p.price > 150").getResultList();
-        assertEquals("Should find 1 product with price > 150", 1, results.size());
+        assertEquals(1, results.size(), "Should find 1 product with price > 150");
 
         em.getTransaction().commit();
         em.close();

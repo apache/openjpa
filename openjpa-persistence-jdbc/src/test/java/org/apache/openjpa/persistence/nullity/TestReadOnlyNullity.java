@@ -23,6 +23,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.AbstractDB2Dictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase that verifies that null checking is omitted for "read only" fields.
@@ -33,7 +35,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     private boolean skip = false;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         OpenJPAEntityManagerFactorySPI emf = createEMF(new Object[] {});
         if (((JDBCConfiguration) emf.getConfiguration())
@@ -50,6 +52,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * Test that a non-insertable field may be set to null. This test is skipped
      * for non-db2 databases.
      */
+    @Test
     public void testNonInsertableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();
@@ -63,6 +66,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * Test that a non-updatable field may be set to null. This test is skipped
      * for non-db2 databases.
      */
+    @Test
     public void testNonUpdatableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();

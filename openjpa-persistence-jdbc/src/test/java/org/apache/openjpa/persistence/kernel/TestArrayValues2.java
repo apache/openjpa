@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Array;
 import java.text.Collator;
 import java.util.Arrays;
@@ -26,8 +31,8 @@ import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ArraysTest;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Test varying kinds of array values.
@@ -40,6 +45,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     private static double DOUBLE_PRECISION = 0.01D;
     public static float FLOAT_PRECISION = 0.01F;
 
+    @Test
     public void testStringArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -49,6 +55,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testLongArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -61,6 +68,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testLongPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -73,6 +81,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testShortArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -82,6 +91,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testShortPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -91,6 +101,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }
 
+    @Test
     public void testIntArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -100,6 +111,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testIntPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -108,6 +120,7 @@ public class TestArrayValues2 extends BaseKernelTest {
             array[i] = randomInt();
         saveArray(array, true, false);
     }
+
 // FixMe: Both tests hangs on Mysql
     /*public void testByteArray()
         throws Exception {
@@ -127,6 +140,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }*/
 
+    @Test
     public void testBooleanArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -136,6 +150,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testCharacterArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -146,6 +161,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testCharacterPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -156,6 +172,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }
 
+    @Test
     public void testCharacterPrimitiveClobArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -166,6 +183,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, true);
     }
 
+    @Test
     public void testBooleanPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -175,6 +193,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }
 
+    @Test
     public void testFloatArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -184,6 +203,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testFloatPrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -193,6 +213,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }
 
+    @Test
     public void testDoubleArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -202,6 +223,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
+    @Test
     public void testDoublePrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -211,6 +233,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, true, false);
     }
 
+    @Test
     public void testDateArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
@@ -302,13 +325,13 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     private void assertClassAndValueEquals(Object o1, Object o2) {
-        assertTrue("First object was null", o1 != null);
-        assertTrue("Second object was null", o2 != null);
+        assertTrue(o1 != null, "First object was null");
+        assertTrue(o2 != null, "Second object was null");
 
-        assertTrue("Types did not match (class1="
+        assertTrue(o1.getClass().isAssignableFrom(o2.getClass()),
+            "Types did not match (class1="
             + o1.getClass().getName() + ", class2="
-            + o2.getClass().getName() + ")",
-            o1.getClass().isAssignableFrom(o2.getClass()));
+            + o2.getClass().getName() + ")");
 
         // floats and doubles are a little special: we only
         // compare them to a certain precision, after which
@@ -322,10 +345,10 @@ public class TestArrayValues2 extends BaseKernelTest {
                     (Float) o2,
                 FLOAT_PRECISION);
         else
-            assertEquals("Object did not match (class1="
+            assertEquals(o1,
+                o2, "Object did not match (class1="
                 + o1.getClass().getName() + ", class2="
-                + o2.getClass().getName() + ")",
-                o1, o2);
+                + o2.getClass().getName() + ")");
     }
 
     /**

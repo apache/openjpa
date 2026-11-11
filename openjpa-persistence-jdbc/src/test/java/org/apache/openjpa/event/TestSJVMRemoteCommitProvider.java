@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,16 +31,18 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSJVMRemoteCommitProvider
-extends AbstractCachedEMFTestCase {
+public class TestSJVMRemoteCommitProvider extends AbstractCachedEMFTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf1;
     private OpenJPAEntityManagerFactorySPI emf2;
     private ListenerImpl listen1;
     private ListenerImpl listen2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         Map sjvm1 = new HashMap();
         sjvm1.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -57,7 +62,7 @@ extends AbstractCachedEMFTestCase {
             listen2 = new ListenerImpl());
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         clear(emf1);
@@ -66,6 +71,7 @@ extends AbstractCachedEMFTestCase {
         closeEMF(emf2);
     }
 
+    @Test
     public void testSJVMRemoteCommitProvider() {
         assertNotSame(JPAFacadeHelper.toBrokerFactory(emf1),
             JPAFacadeHelper.toBrokerFactory(emf2));

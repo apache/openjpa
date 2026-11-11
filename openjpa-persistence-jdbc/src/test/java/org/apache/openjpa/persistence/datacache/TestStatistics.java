@@ -22,13 +22,21 @@ import jakarta.persistence.EntityManager;
 
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Tests statistics of data cache operation.
@@ -50,7 +58,7 @@ public class TestStatistics extends SingleEMFTestCase {
     private StoreCache cache;
     CacheStatistics stats;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(p);
         cache = emf.getStoreCache();
@@ -66,6 +74,7 @@ public class TestStatistics extends SingleEMFTestCase {
     /**
      * Test that the CacheStatistics is disabled by default.
      */
+    @Test
     public void testDefaultSettings() {
         Object[] props = { "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm" };
         OpenJPAEntityManagerFactory emf1 = createNamedEMF("second-persistence-unit", props);
@@ -76,6 +85,7 @@ public class TestStatistics extends SingleEMFTestCase {
     /**
      * Finding an entity from a clean should hit the L2 cache.
      */
+    @Test
     public void testSimpleFind() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics person = createData(false, false);
@@ -98,6 +108,7 @@ public class TestStatistics extends SingleEMFTestCase {
         assertCached(p, pid, L1Cached, L2Cached);
     }
 
+    @Test
     public void testFind() {
         int hit = 0, evict = 0, read = 0, write = 0;
         CachedEntityStatistics person = createData(true, true);
@@ -171,6 +182,7 @@ public class TestStatistics extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testMultipleUnits() {
         OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
         OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm");
@@ -183,6 +195,7 @@ public class TestStatistics extends SingleEMFTestCase {
         closeEMF(emf2);
     }
 
+    @Test
     public void testPersist() {
         int hit = 0, read = 0, write = 0;
 
@@ -209,6 +222,7 @@ public class TestStatistics extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testRefresh() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
@@ -227,6 +241,7 @@ public class TestStatistics extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testMerge() {
         int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
@@ -282,9 +297,9 @@ public class TestStatistics extends SingleEMFTestCase {
             throw new RuntimeException("invalid assertion. Null class");
         } else {
             try {
-                assertEquals("Hit count doesn't match", hit, stats.getHitCount(cls));
-                assertEquals("Read count doesn't match", read, stats.getReadCount(cls));
-                assertEquals("Write count doesn't match", write, stats.getWriteCount(cls));
+                assertEquals(hit, stats.getHitCount(cls), "Hit count doesn't match");
+                assertEquals(read, stats.getReadCount(cls), "Read count doesn't match");
+                assertEquals(write, stats.getWriteCount(cls), "Write count doesn't match");
             } catch (AssertionFailedError t) {
                 logger.fine("hit : " + stats.getHitCount(cls) + " read: " + stats.getReadCount(cls) + " write: "
                     + stats.getWriteCount(cls));
@@ -295,9 +310,9 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     void assertDelta(long[] before, long[] after, long readDelta, long hitDelta, long writeDelta) {
-        assertEquals("READ count mismatch", readDelta, after[0] - before[0]);
-        assertEquals("HIT count mismatch", hitDelta, after[1] - before[1]);
-        assertEquals("WRITE count mismatch", writeDelta, after[2] - before[2]);
+        assertEquals(readDelta, after[0] - before[0], "READ count mismatch");
+        assertEquals(hitDelta, after[1] - before[1], "HIT count mismatch");
+        assertEquals(writeDelta, after[2] - before[2], "WRITE count mismatch");
     }
 
     void assertCached(Object o, Object oid, boolean l1, boolean l2) {

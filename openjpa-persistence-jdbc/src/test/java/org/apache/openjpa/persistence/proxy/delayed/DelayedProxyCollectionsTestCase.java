@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +42,8 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.util.proxy.DelayedProxy;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.proxy.ProxyCollection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies generic delay-load capabilities for delay-load collection proxies.
@@ -46,7 +54,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     protected static Set<String> _delayMethods;
     protected static Set<Class<?>> _ignoreInterfaces;
 
-    @Override
+    @BeforeEach
     public void setUp(Object...props) {
         List<Object> parms = new ArrayList<>();
         parms.addAll(Arrays.asList(
@@ -181,6 +189,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify an element can be non-index removed from a delayed proxy collection
      * without triggering a load of the collection.
      */
+    @Test
     public void testSingleRemove() {
 
         EntityManager em = emf.createEntityManager();
@@ -242,6 +251,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify an element can be non-index added to a delayed proxy collection
      * without triggering a load on the collection.
      */
+    @Test
     public void testSingleAdd() {
         EntityManager em = emf.createEntityManager();
 
@@ -305,6 +315,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify a mix of non-indexed add and remove operations can occur without
      * triggering a load on a delayed collection.
      */
+    @Test
     public void testMixedAddRemove() {
         EntityManager em = emf.createEntityManager();
 
@@ -391,6 +402,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that an eagerly loaded collection with delayed load enabled
      * functions as expected.
      */
+    @Test
     public void testEagerCollection() {
         EntityManager em = emf.createEntityManager();
 
@@ -428,6 +440,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     /*
      * Verify that a DB ordered collection is not delay load capable.
      */
+    @Test
     public void testOrderedCollection() {
         EntityManager em = emf.createEntityManager();
 
@@ -463,6 +476,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     /*
      * Verify that a collection will load upon serialization
      */
+    @Test
     public void testSerialization() {
         EntityManager em = emf.createEntityManager();
 
@@ -529,6 +543,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a lazy collection of embeddables works as expected
      * (delays load) with delayed loading enabled
      */
+    @Test
     public void testLazyEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
@@ -563,6 +578,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that an eager collection of embeddables works as expected
      * (no delay load) with delayed loading enabled
      */
+    @Test
     public void testEagerEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
@@ -600,6 +616,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
     /*
      * Verify that a collection can be loaded post detachment
      */
+    @Test
     public void testPostDetach() {
         EntityManager em = emf.createEntityManager();
 
@@ -678,6 +695,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a lazy collection within an embeddable can be
      * delayed.  The to-many in the embeddable uses
      */
+    @Test
     public void testEmbeddableRelationship() {
         EntityManager em = emf.createEntityManager();
 
@@ -724,6 +742,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verifies proxy methods which require loading the collection will trigger a
      * load.
      */
+    @Test
     public void testProxyMethods() {
         // Load up a collection
         EntityManager em = emf.createEntityManager();

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,6 +31,8 @@ import java.util.Date;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to test the default values associated with the @Basic
@@ -38,11 +44,12 @@ public class TestBasicAnnotation extends SingleEMFTestCase {
     private static String VAL_LOCAL_DATE = "2019-01-01";
     private static String VAL_LOCAL_TIME = "14:57:15";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, AllFieldTypes.class);
     }
 
+    @Test
     public void testEagerFetchType() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

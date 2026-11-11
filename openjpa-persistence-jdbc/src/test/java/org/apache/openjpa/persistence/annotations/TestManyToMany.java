@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Set;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for m-m
@@ -31,17 +37,18 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
  */
 public class TestManyToMany extends AnnotationTestCase
 {
-	public TestManyToMany(String name)
+	public TestManyToMany()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
     }
 
+    @Test
     public void testManyToMany() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -79,6 +86,7 @@ public class TestManyToMany extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testInverseOwnerManyToMany() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

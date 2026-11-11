@@ -22,13 +22,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTableNameInXml extends SQLListenerTestCase {
 
     String containsSQL = " FROM TableNameInXml ";
     String notContainsSQL = " FROM TableNameInXmlEntity ";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(TableNameInXmlEntity.class);
     }
@@ -36,6 +38,7 @@ public class TestTableNameInXml extends SQLListenerTestCase {
     /*
      * The SQL generated in this test should contain "FROM TableNameInXml" since the table name is defined in XML.
      */
+    @Test
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
 
@@ -51,6 +54,7 @@ public class TestTableNameInXml extends SQLListenerTestCase {
      * The SQL generated in this test should contain "FROM TableNameInXml" since the table name is defined in XML. Prior
      * to OPENJPA-2533, the table name in XML was not being picked up.
      */
+    @Test
     public void testNamedQuery() {
         EntityManager em = emf.createEntityManager();
 
@@ -66,6 +70,7 @@ public class TestTableNameInXml extends SQLListenerTestCase {
      * The SQL generated in this test should contain "FROM TableNameInXml" since the table name is defined in XML. This
      * test works because the named query is executed second.
      */
+    @Test
     public void testBoth() {
         EntityManager em = emf.createEntityManager();
 

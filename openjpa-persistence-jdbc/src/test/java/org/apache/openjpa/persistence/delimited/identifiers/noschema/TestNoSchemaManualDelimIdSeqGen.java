@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -34,13 +40,12 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
     EntityE entityE;
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return !(dict instanceof MariaDBDictionary || dict instanceof MySQLDictionary);
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
-
-        setUnsupportedDatabases(MariaDBDictionary.class);
-        setUnsupportedDatabases(MySQLDictionary.class);
-        if (isTestsDisabled())
-            return;
-
         super.setUp(EntityE.class, DROP_TABLES);
         assertNotNull(emf);
 
@@ -54,7 +59,7 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -100,6 +105,7 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
 //        }
 //    }
 
+    @Test
     public void testSeqGen() {
         if (!supportsNativeSequence) {
             return;

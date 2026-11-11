@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
@@ -42,7 +45,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.common.apps.DataStoreTripsPC;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestDataStoreTrips extends BaseJDBCTest{
@@ -54,14 +58,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
     private Object _oid = null;
     private SelectCounter _counter = null;
 
-    /** Creates a new instance of TestDataStoreTrips */
-    public TestDataStoreTrips() {
-    }
-    public TestDataStoreTrips(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
        deleteAll(DataStoreTripsPC.class);
@@ -113,6 +110,7 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         _counter.counts = 0;
     }
 
+    @Test
     public void testTrips() {
         OpenJPAEntityManager pm = _factory.createEntityManager();
         Extent ext = pm.createExtent(DataStoreTripsPC.class, true);
@@ -125,10 +123,11 @@ public class TestDataStoreTrips extends BaseJDBCTest{
         // initialized and so forth, but make sure there isn't more than
         // 1 + # objects trips to the DB
         assertTrue(_counter.selects > 0);
-        assertTrue("Should have been 1-3 trips to the data store; got "
-            + _counter.selects, _counter.selects < 5);
+        assertTrue(_counter.selects < 5, "Should have been 1-3 trips to the data store; got "
+            + _counter.selects);
     }
 
+    @Test
     public void testExistsCalls() {
         OpenJPAEntityManager pm = _factory.createEntityManager();
 

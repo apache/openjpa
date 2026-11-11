@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jira2780;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Properties;
@@ -29,8 +32,12 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ReverseMappingTool;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the added useSchemaElement functionality of the
@@ -39,10 +46,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Austin Dorenkamp (ajdorenk)
  */
 public class TestJira2780ReverseCustomizer extends SingleEMFTestCase {
-	
 	private static final Logger logger = Logger.getLogger(TestJira2780ReverseCustomizer.class.getCanonicalName());
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         File f = new File("target/orm.xml");
@@ -51,7 +62,6 @@ public class TestJira2780ReverseCustomizer extends SingleEMFTestCase {
         if (f.exists()) {
             assertTrue(f.delete());
         }
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
     }
 
     @Override
@@ -59,6 +69,7 @@ public class TestJira2780ReverseCustomizer extends SingleEMFTestCase {
         return "rev-mapping-jira2780-pu";
     }
 
+    @Test
     public void testGettersAndSetters() throws Exception {
 
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();

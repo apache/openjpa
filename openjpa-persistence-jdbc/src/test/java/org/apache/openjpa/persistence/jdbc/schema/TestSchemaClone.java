@@ -32,14 +32,6 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 
 public class TestSchemaClone extends TestXMLSchemaParser {
 
-    /** Creates a new instance of TestSchemaClone */
-    public TestSchemaClone() {
-    }
-
-    public TestSchemaClone(String test) {
-        super(test);
-    }
-
     @Override
     protected SchemaGroup getSchemaGroup()
     throws Exception {
@@ -47,9 +39,4 @@ public class TestSchemaClone extends TestXMLSchemaParser {
         SchemaGroup group = parseSchemaGroup();
         return (SchemaGroup) group.clone();
     }
-
-    public static void main(String[] args) {
-        //main(TestSchemaClone.class);
-    }
-
 }

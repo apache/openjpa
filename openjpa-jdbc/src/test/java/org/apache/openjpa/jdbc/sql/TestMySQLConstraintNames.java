@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
@@ -29,7 +29,8 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Named foreign key, unique and primary key constraints on MySQL and MariaDB
@@ -41,6 +42,15 @@ import org.junit.Test;
  * form stays available with <code>ConstraintNameMode=mid</code>.
  */
 public class TestMySQLConstraintNames {
+
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @AfterEach
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testMySQLNamedConstraints() {

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that makes sure the number of foreign keys are same on a table after
@@ -43,13 +47,14 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
 
     private JDBCConfiguration _conf;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(EntityF.class, EntityG.class);
         Map props = new HashMap(System.getProperties());
         _conf = (JDBCConfiguration) emf.getConfiguration();
     }
 
+    @Test
     public void testFKCount() throws SQLException {
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();
@@ -104,7 +109,8 @@ public class TestForeignKeyCountViolation extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testFKNamefromDB()throws SQLException {
+    @Test
+    public void testFKNamefromDB() throws SQLException {
 
         EntityManager em = emf.createEntityManager();
         Table tableG = getMapping(EntityG.class).getTable();

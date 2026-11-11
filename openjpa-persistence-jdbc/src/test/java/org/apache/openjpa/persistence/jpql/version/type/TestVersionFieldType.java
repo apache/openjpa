@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.version.type;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -25,6 +28,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies that the version field is of the proper java type
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestVersionFieldType extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, LongVersionEntity.class,
             ShortVersionEntity.class, PrimativeLongVersionEntity.class,
@@ -41,6 +46,7 @@ public class TestVersionFieldType extends SingleEMFTestCase {
         createTestData();
     }
 
+    @Test
     public void testProjectionVersionReturnType() {
         verifyType(LongVersionEntity.class, Long.class);
         verifyType(ShortVersionEntity.class, Short.class);
@@ -58,10 +64,10 @@ public class TestVersionFieldType extends SingleEMFTestCase {
         List<Object[]> objectList = query.getResultList();
 
         for (Object[] objects : objectList) {
-            assertNotNull("Version should not be null.", objects[1]);
-            assertTrue("Type should be " + expectedClsType.getName() +
-                ".  But it is " + objects[1].getClass(),
-                objects[1].getClass() == expectedClsType);
+            assertNotNull(objects[1], "Version should not be null.");
+            assertTrue(objects[1].getClass() == expectedClsType,
+                "Type should be " + expectedClsType.getName() +
+                ".  But it is " + objects[1].getClass());
         }
 
         em.close();

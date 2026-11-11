@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.sql.Array;
@@ -59,10 +61,8 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.Id;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>
@@ -81,7 +81,7 @@ public class TestUpdateManagerFlushException {
 
     private TestUpdateManager updMgr;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         updMgr = new TestUpdateManager();
     }

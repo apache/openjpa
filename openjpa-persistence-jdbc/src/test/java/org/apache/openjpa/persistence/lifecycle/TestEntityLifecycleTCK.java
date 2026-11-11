@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.lifecycle.entity.CascadeManyToOneA;
@@ -29,6 +36,8 @@ import org.apache.openjpa.persistence.lifecycle.entity.PersistManyToOneB;
 import org.apache.openjpa.persistence.lifecycle.entity.PersistOneToOneA;
 import org.apache.openjpa.persistence.lifecycle.entity.PersistOneToOneB;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Reproduces JPA TCK entity lifecycle test failures related to:
@@ -43,7 +52,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
               CascadeOneToOneA.class,
@@ -65,6 +74,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * After em.remove(B), em.contains(A) should be false.
      * Verifies cascade remove + orphanRemoval do not conflict.
      */
+    @Test
     public void testCascadeRemoveOneToOne() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -74,26 +84,26 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             em.persist(bRef);
 
             CascadeOneToOneA a2 = bRef.getA1();
-            assertTrue("bRef should be managed", em.contains(bRef));
-            assertSame("a2 should be same as a1", a1, a2);
+            assertTrue(em.contains(bRef), "bRef should be managed");
+            assertSame(a1, a2, "a2 should be same as a1");
 
             // Remove B - should cascade to A
             CascadeOneToOneB foundB = em.find(CascadeOneToOneB.class, "8");
             em.remove(foundB);
 
             // After cascade remove, A should no longer be contained
-            assertFalse("After cascade remove of B, A should not be contained",
-                        em.contains(a2));
-            assertFalse("After remove, B should not be contained",
-                        em.contains(bRef));
+            assertFalse(em.contains(a2),
+                        "After cascade remove of B, A should not be contained");
+            assertFalse(em.contains(bRef),
+                        "After remove, B should not be contained");
 
             em.flush();
 
             // After flush, find should return null
             CascadeOneToOneA stillExists =
                 em.find(CascadeOneToOneA.class, "8");
-            assertNull("A should be removed from DB after cascade",
-                       stillExists);
+            assertNull(stillExists,
+                       "A should be removed from DB after cascade");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -111,6 +121,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * TCK cascadeAll1X1Test9: Remove B, contains(A) returns false
      * because remove cascades from B to A via cascade=ALL.
      */
+    @Test
     public void testCascadeRemoveContains() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -120,15 +131,15 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             em.persist(bRef);
 
             CascadeOneToOneA a2 = bRef.getA1();
-            assertTrue("bRef should be managed", em.contains(bRef));
+            assertTrue(em.contains(bRef), "bRef should be managed");
             assertSame(a1, a2);
 
             CascadeOneToOneB newB = em.find(CascadeOneToOneB.class, "9");
             em.remove(newB);
 
             assertFalse(
-                "After cascade remove of B, contains(A) should be false",
-                em.contains(a2));
+                em.contains(a2),
+                "After cascade remove of B, contains(A) should be false");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -147,6 +158,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * remove to managed A. Per JPA spec, remove on new entity is ignored
      * but cascade still applies to referenced managed entities.
      */
+    @Test
     public void testCascadeRemoveNewEntity() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -157,19 +169,19 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             CascadeOneToOneB bRef =
                 new CascadeOneToOneB("10", "b10", 10, a1);
             // bRef is new (not persisted)
-            assertTrue("a1 should be managed", em.contains(a1));
+            assertTrue(em.contains(a1), "a1 should be managed");
             em.remove(bRef);
 
             boolean status = em.contains(a1);
             assertFalse(
-                "After cascade remove through new B, a1 should not be "
-                + "contained", status);
+                status, "After cascade remove through new B, a1 should not be "
+                + "contained");
 
             em.flush();
 
             CascadeOneToOneA stillExists =
                 em.find(CascadeOneToOneA.class, "10");
-            assertNull("A should be removed after cascade", stillExists);
+            assertNull(stillExists, "A should be removed after cascade");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -192,6 +204,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * After remove+flush, persist(B) should make B managed again
      * and cascade persist to A.
      */
+    @Test
     public void testCascadeAllManyToOnePersistAfterRemove() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -203,7 +216,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             em.flush();
 
             CascadeManyToOneA newA1 = b1.getA1Info();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             // Remove both A and B
             em.remove(newA1);
@@ -212,15 +225,15 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             // After flush, find should return null
             CascadeManyToOneB newB = em.find(CascadeManyToOneB.class, "2");
-            assertNull("B should be removed", newB);
+            assertNull(newB, "B should be removed");
 
             // Re-persist b1 - should cascade to A
             em.persist(b1);
             em.flush();
-            assertTrue("After re-persist, B should be managed",
-                       em.contains(b1));
-            assertNotNull("After re-persist, B.a1 should not be null",
-                          b1.getA1());
+            assertTrue(em.contains(b1),
+                       "After re-persist, B should be managed");
+            assertNotNull(b1.getA1(),
+                          "After re-persist, B.a1 should not be null");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -242,6 +255,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * TCK detachBasicTest1: Remove on a detached entity should throw
      * IllegalArgumentException or cause commit failure.
      */
+    @Test
     public void testRemoveDetachedThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -259,8 +273,8 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             // Now aRef is detached
             em.getTransaction().begin();
-            assertFalse("After clear, entity should be detached",
-                        em.contains(aRef));
+            assertFalse(em.contains(aRef),
+                        "After clear, entity should be detached");
 
             try {
                 em.remove(aRef);
@@ -289,6 +303,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * TCK detach1X1Test2: Remove on a detached OneToOne entity should
      * throw IllegalArgumentException.
      */
+    @Test
     public void testRemoveDetachedOneToOneThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -307,8 +322,8 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             }
 
             em.getTransaction().begin();
-            assertFalse("After clear, B should be detached",
-                        em.contains(bRef));
+            assertFalse(em.contains(bRef),
+                        "After clear, B should be detached");
 
             try {
                 em.remove(bRef);
@@ -338,6 +353,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * TCK persist1X1Test2: Persist a removed OneToOne entity - it
      * becomes managed. Uses cascade=PERSIST with orphanRemoval=true.
      */
+    @Test
     public void testPersistRemovedOneToOne() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -348,7 +364,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             PersistOneToOneB foundB =
                 em.find(PersistOneToOneB.class, "2");
-            assertTrue("B should be managed", em.contains(foundB));
+            assertTrue(em.contains(foundB), "B should be managed");
 
             // Remove B and flush
             em.remove(em.find(PersistOneToOneB.class, "2"));
@@ -356,8 +372,8 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             // Re-persist the removed entity
             em.persist(bRef);
-            assertTrue("After re-persist, B should be managed",
-                       em.contains(bRef));
+            assertTrue(em.contains(bRef),
+                       "After re-persist, B should be managed");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -376,6 +392,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * After remove+flush, persist(B) should cascade persist to A,
      * making both managed.
      */
+    @Test
     public void testPersistRemovedManyToOne() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -387,7 +404,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
             em.flush();
 
             PersistManyToOneA newA1 = b1.getA1Info();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             // Remove A and B, flush
             em.remove(newA1);
@@ -396,15 +413,15 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             // Verify B is removed
             PersistManyToOneB newB = em.find(PersistManyToOneB.class, "2");
-            assertNull("B should be removed", newB);
+            assertNull(newB, "B should be removed");
 
             // Re-persist b1 (cascade=PERSIST cascades to A)
             em.persist(b1);
             em.flush();
-            assertTrue("After re-persist, B should be managed",
-                       em.contains(b1));
-            assertNotNull("After re-persist, B.a1 should not be null",
-                          b1.getA1());
+            assertTrue(em.contains(b1),
+                       "After re-persist, B should be managed");
+            assertNotNull(b1.getA1(),
+                          "After re-persist, B.a1 should not be null");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -422,6 +439,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
      * TCK cascadeAll1X1Test2: Persist a removed entity with cascade=ALL.
      * Same as persist test but with cascade=ALL + orphanRemoval.
      */
+    @Test
     public void testPersistRemovedCascadeAll() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -432,7 +450,7 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             CascadeOneToOneB foundB =
                 em.find(CascadeOneToOneB.class, "2");
-            assertTrue("B should be managed", em.contains(foundB));
+            assertTrue(em.contains(foundB), "B should be managed");
 
             // Remove B and flush (cascade=ALL cascades remove to A)
             em.remove(em.find(CascadeOneToOneB.class, "2"));
@@ -440,8 +458,8 @@ public class TestEntityLifecycleTCK extends SingleEMFTestCase {
 
             // Re-persist the removed entity
             em.persist(bRef);
-            assertTrue("After re-persist, B should be managed",
-                       em.contains(bRef));
+            assertTrue(em.contains(bRef),
+                       "After re-persist, B should be managed");
 
             em.getTransaction().commit();
         } catch (Exception e) {

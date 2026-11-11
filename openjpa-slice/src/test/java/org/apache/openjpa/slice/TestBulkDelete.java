@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests delete-by-query.
@@ -38,14 +44,15 @@ public class TestBulkDelete extends SliceTestCase {
 	protected String getPersistenceUnitName() {
 		return "slice";
 	}
-	@Override
+
+    @BeforeEach
     public void setUp() throws Exception {
 		super.setUp(PObject.class, CLEAR_TABLES,
 				"openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName());
 
 	}
 
-	@Override
+    @AfterEach
     public void tearDown() throws Exception {
 		// Delete all instances from all slices
 		EntityManager em = emf.createEntityManager();
@@ -56,11 +63,12 @@ public class TestBulkDelete extends SliceTestCase {
 		super.tearDown();
 	}
 
-	/**
-	 * Creates N instances that are distributed in 3 slices.
-	 * Deletes all instances from only one slice.
-	 */
-	public void testBulkDelete() {
+    /**
+     * Creates N instances that are distributed in 3 slices.
+     * Deletes all instances from only one slice.
+     */
+    @Test
+    public void testBulkDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();

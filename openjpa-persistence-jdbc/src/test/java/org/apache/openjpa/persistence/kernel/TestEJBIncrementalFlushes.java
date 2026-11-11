@@ -18,19 +18,23 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.InstanceCallbacksTest;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBIncrementalFlushes extends AbstractTestCase {
 
-    public TestEJBIncrementalFlushes(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBIncrementalFlushes() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 
@@ -52,6 +56,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
 //		em.getTransaction ().commit ();
 //	}
 
+    @Test
     public void testFlushNoChange() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -66,6 +71,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testOptimisticLockGivesCorrectError() {
         EntityManager pm1 = currentEntityManager();
         EntityManager pm2 = currentEntityManager();

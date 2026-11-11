@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jira1794;
 
+import org.junit.jupiter.api.BeforeEach;
+
 /**
  * OPENJPA-1794
  * Verifies the return value of aggregate functions when a query result
@@ -26,7 +28,7 @@ package org.apache.openjpa.jira1794;
  */
 public class TestCompatAggregateFunctions extends TestAggregateFunctions {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                     "openjpa.Compatibility", "ReturnNullOnAggregateResult=false",

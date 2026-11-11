@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
@@ -31,10 +34,12 @@ import org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2;
 import org.apache.openjpa.persistence.access.xml.XMLFieldAccess2;
 import org.apache.openjpa.persistence.access.xml.XMLPropAccess2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDefaultAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             PropEntity.class, MappedCallbackSup.class);
@@ -46,6 +51,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * containing no persistent fields (only a callback) does not cause access
      * validation failures.
      */
+    @Test
     public void testDefaultMappedSuperclassAccess() {
 
         EntityManager em = emf.createEntityManager();
@@ -64,6 +70,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of FIELD in entity-mappings.
      */
+    @Test
     public void testEMDefaultFieldAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -82,6 +89,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of PROPERTY in entity-mappings.
      */
+    @Test
     public void testEMDefaultPropertyAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -100,6 +108,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of FIELD in persistence unit defaults.
      */
+    @Test
     public void testPUDefaultFieldAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -119,6 +128,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * Validates use of access specifier of PROPERTY in persistence unit
      * defaults.
      */
+    @Test
     public void testPUDefaultPropertyAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.

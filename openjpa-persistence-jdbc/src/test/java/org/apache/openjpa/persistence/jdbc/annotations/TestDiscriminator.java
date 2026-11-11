@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test discriminator mappings.</p>
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDiscriminator
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class,
             CLEAR_TABLES);
@@ -57,6 +62,7 @@ public class TestDiscriminator
 //        assertEquals(0, cls.getDiscriminator().getColumns().length);
 //    }
 
+    @Test
     public void testJoinedDiscriminatorWithColumn() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         MappingRepository repo = conf.getMappingRepositoryInstance();

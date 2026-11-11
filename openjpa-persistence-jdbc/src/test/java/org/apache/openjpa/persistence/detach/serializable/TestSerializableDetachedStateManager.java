@@ -23,14 +23,17 @@ import java.sql.Date;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSerializableDetachedStateManager extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, SerializableDetachedStateManager.class, DROP_TABLES, "openjpa.DetachState",
             "fgs(DetachedStateField=true)");
     }
 
+    @Test
     public void testRoundTrip() throws Exception {
         SerializableDetachedStateManager c = new SerializableDetachedStateManager();
         c.zDate = new Date(System.currentTimeMillis());

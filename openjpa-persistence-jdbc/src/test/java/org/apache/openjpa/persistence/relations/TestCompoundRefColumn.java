@@ -20,7 +20,10 @@ package org.apache.openjpa.persistence.relations;
 
 import jakarta.persistence.EntityManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies that read-only attributes mapped to the columns of a compound foreign key
@@ -36,6 +39,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
               CompoundRefRenamedTarget.class, CompoundRefRenamedOwner.class);
     }
 
+    @Test
     public void testCompoundRefColumnsAreFilled() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -59,6 +63,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testCompoundRefColumnsAreFilledWithSwappedJoinColumns() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -82,6 +87,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testCompoundRefColumnsAreUpdatedWhenRelationChanges() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -108,6 +114,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testCompoundRefColumnsAreFilledForEmbeddedId() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -131,6 +138,7 @@ public class TestCompoundRefColumn extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testCompoundRefColumnsAreFilledWhenIdColumnNamesDifferFromAttributeNames() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

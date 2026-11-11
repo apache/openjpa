@@ -18,14 +18,20 @@
  */
 package org.apache.openjpa.persistence.sequence.hsql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The test case demonstrates the expected return id sequence should be:
@@ -50,12 +56,12 @@ public class TestHSQLSequence extends SQLListenerTestCase {
     DBDictionary dict;
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.HSQLDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof HSQLDictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(HSQLEmployee.class, HSQLEmployee2.class, DROP_TABLES,
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=true"
                 //, "openjpa.Log", "SQL=TRACE,Tests=TRACE"
@@ -114,6 +120,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
         return em.find(HSQLEmployee2.class, id);
     }
 
+    @Test
     public void testId() {
         int counter = 1;
         int id = 0;
@@ -126,6 +133,7 @@ public class TestHSQLSequence extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testId2() {
         int counter = 1;
         int id = 0;

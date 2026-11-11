@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for 1-1
@@ -30,11 +35,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestOneToOne
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -55,6 +61,7 @@ public class TestOneToOne
         em.close();
     }
 
+    @Test
     public void testSelfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -74,6 +81,7 @@ public class TestOneToOne
         em.close();
     }
 
+    @Test
     public void testPKJoinSelfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -93,6 +101,7 @@ public class TestOneToOne
         em.close();
     }
 
+    @Test
     public void testOtherTableOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -113,6 +122,7 @@ public class TestOneToOne
         em.close();
     }
 
+    @Test
     public void testInverseOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

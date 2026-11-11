@@ -27,6 +27,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,23 +45,15 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSCompoundPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSPCIntf;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestLRSProxies
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
+public class TestLRSProxies extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object _oid = null;
     private Object _coid = null;
 
-    public TestLRSProxies(String casename) {
-        super(casename);
-    }
-
-
-    /** Creates a new instance of TestLRSProxies */
-    public TestLRSProxies() {
-    }
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(LRSPC.class);
        deleteAll(LRSCompoundPC.class);
@@ -124,21 +123,25 @@ public class TestLRSProxies
         pm.close();
     }
 
+    @Test
     public void testStringSet() {
         stringCollectionTest(_oid, true, true);
         stringCollectionTest(_coid, true, true);
     }
 
+    @Test
     public void testStringSetRetain() {
         stringCollectionTest(_oid, false, true);
         stringCollectionTest(_coid, false, true);
     }
 
+    @Test
     public void testStringCollection() {
         stringCollectionTest(_oid, true, false);
         stringCollectionTest(_coid, true, false);
     }
 
+    @Test
     public void testStringCollectionRetain() {
         stringCollectionTest(_oid, false, false);
         stringCollectionTest(_coid, false, false);
@@ -209,11 +212,13 @@ public class TestLRSProxies
         }
     }
 
+    @Test
     public void testStringMap() {
         stringMapTest(_oid, true);
         stringMapTest(_coid, true);
     }
 
+    @Test
     public void testStringMapRetain() {
         stringMapTest(_oid, false);
         stringMapTest(_coid, false);
@@ -283,21 +288,25 @@ public class TestLRSProxies
         //KodoJDOHelper.close(itr);
     }
 
+    @Test
     public void testRelSet() {
         relCollectionTest(_oid, true, true);
         relCollectionTest(_coid, true, true);
     }
 
+    @Test
     public void testRelSetRetain() {
         relCollectionTest(_oid, false, true);
         relCollectionTest(_coid, false, true);
     }
 
+    @Test
     public void testRelCollection() {
         relCollectionTest(_oid, true, false);
         relCollectionTest(_coid, true, false);
     }
 
+    @Test
     public void testRelCollectionRetain() {
         relCollectionTest(_oid, false, false);
         relCollectionTest(_coid, false, false);
@@ -377,11 +386,13 @@ public class TestLRSProxies
         assertFalse(set.contains(pc));
     }
 
+    @Test
     public void testRelMap() {
         relMapTest(_oid, true);
         relMapTest(_coid, true);
     }
 
+    @Test
     public void testRelMapRetain() {
         relMapTest(_oid, false);
         relMapTest(_coid, false);
@@ -463,6 +474,7 @@ public class TestLRSProxies
         //KodoJDOHelper.close(itr);
     }
 
+    @Test
     public void testTransfer() {
         // cannot transfer an lrs from one field to another
 
@@ -486,6 +498,7 @@ public class TestLRSProxies
         pm.close();
     }
 
+    @Test
     public void testShare() {
         OpenJPAEntityManager pm = getEm(true, true);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
@@ -509,6 +522,7 @@ public class TestLRSProxies
         pm.close();
     }
 
+    @Test
     public void testRollback() {
         //FIXME
         //PersistenceManagerFactory factory = getPMFactory(new String[]{
@@ -527,6 +541,7 @@ public class TestLRSProxies
         factory.close();
     }
 
+    @Test
     public void testReplace() {
         OpenJPAEntityManager pm = getEm(false, false);
         startTx(pm);
@@ -550,8 +565,9 @@ public class TestLRSProxies
         pm.close();
     }
 
+    @Test
     public void testAdd()
-    throws Exception {
+        throws Exception {
 /*
         //FIXME
         //KodoPersistenceManagerFactory pmf = getPMFactory(new String []{

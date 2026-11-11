@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that @AttributeOverride on an entity's own declared field
@@ -35,7 +40,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AttrOverrideEntity.class, AttrOverrideEmbed.class,
             CLEAR_TABLES);
@@ -45,6 +50,7 @@ public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
      * Verify that the entity can be created without metadata errors.
      * Before the fix, just creating the EntityManager would fail.
      */
+    @Test
     public void testEntityCreation() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -68,6 +74,7 @@ public class TestAttributeOverrideOnOwnField extends SingleEMFTestCase {
      * Test @AttributeOverride column rename works and @ElementCollection
      * with @OrderBy on embeddable field works.
      */
+    @Test
     public void testElementCollectionOrderBy() {
         EntityManager em = emf.createEntityManager();
         try {

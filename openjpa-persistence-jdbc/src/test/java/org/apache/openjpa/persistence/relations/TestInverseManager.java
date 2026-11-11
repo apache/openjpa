@@ -25,13 +25,16 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.merge.model.Toy;
 import org.apache.openjpa.persistence.merge.model.ToyBox;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestInverseManager extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Toy.class, ToyBox.class, "openjpa.InverseManager", "true(ManageLRS=true)");
     }
 
+    @Test
     public void testPersist() {
         EntityManager em = emf.createEntityManager();
 

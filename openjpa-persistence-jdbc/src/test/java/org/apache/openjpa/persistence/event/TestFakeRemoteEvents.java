@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +36,8 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestFakeRemoteEvents extends AbstractTestCase {
@@ -46,15 +50,16 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
 
     private static RemoteCommitProviderTestImpl currentProvider;
 
-    public TestFakeRemoteEvents(String s) {
-        super(s, "eventcactusapp");
+    public TestFakeRemoteEvents() {
+        super("eventcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
+    @Test
     public void testListener() {
 
         Map propsMap = new HashMap();
@@ -132,6 +137,7 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
         assertTrue(transactionListener.updated.size() == 0);
     }
 
+    @Test
     public void testProvider() {
         RemoteCommitProviderTestImpl provider;
         OpenJPAEntityManager pm;

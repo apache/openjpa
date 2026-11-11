@@ -17,16 +17,17 @@
  * under the License.
  */
 package org.apache.openjpa.lib.graph;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -39,7 +40,7 @@ public class TestDepthFirstAnalysis
 
     private DepthFirstAnalysis _dfa = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         setUpGraph1();
     }

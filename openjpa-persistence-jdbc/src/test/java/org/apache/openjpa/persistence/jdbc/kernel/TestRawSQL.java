@@ -20,6 +20,9 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -40,7 +43,8 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.jdbc.common.apps.RawSQL;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestRawSQL extends BaseJDBCTest {
@@ -50,11 +54,7 @@ public class TestRawSQL extends BaseJDBCTest {
     private String[] _strings = new String[]{ "a", "b", "c" };
     private int[] _ints = new int[]{ 1, 2, 3 };
 
-    public TestRawSQL(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(RawSQL.class);
         EntityManager em = currentEntityManager();
@@ -72,6 +72,7 @@ public class TestRawSQL extends BaseJDBCTest {
         em.close();
     }
 
+    @Test
     public void testLoadWithResult()
         throws Exception {
 
@@ -95,7 +96,8 @@ public class TestRawSQL extends BaseJDBCTest {
         em.close();
     }
 
-        public void testLoadWithPCROP()
+    @Test
+    public void testLoadWithPCROP()
         throws Exception {
 
         EntityManager em = currentEntityManager();

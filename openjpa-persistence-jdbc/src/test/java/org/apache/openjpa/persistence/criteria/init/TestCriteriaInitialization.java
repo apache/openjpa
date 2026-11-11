@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria.init;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,10 +29,12 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCriteriaInitialization extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, AddressEntity.class, AddressPk.class, MyUserEntity.class);
         EntityManager em = emf.createEntityManager();
@@ -52,6 +56,7 @@ public class TestCriteriaInitialization extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void test() {
         emf.close();
 

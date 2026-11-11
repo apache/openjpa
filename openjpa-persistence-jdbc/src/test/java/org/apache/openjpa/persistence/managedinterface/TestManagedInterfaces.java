@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -33,6 +39,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message=
     "On JDK6 Upgrade these tests are failing with wrong mapping. " +
@@ -40,7 +48,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
     "defined as property in ManageIFace sub-interface")
 public class TestManagedInterfaces extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(SimpleEntity.class, ManagedInterfaceEmbed.class,
             ManagedInterfaceSup.class, ManagedIface.class,
@@ -49,6 +57,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
             CLEAR_TABLES);
     }
 
+    @Test
     public void testEmbeddedMetaData() {
         emf.createEntityManager().close();
         ClassMetaData ownerMeta = JPAFacadeHelper.getMetaData(emf,
@@ -64,6 +73,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         assertTrue(embeddableMeta.isIntercepting());
     }
 
+    @Test
     public void testManagedInterface() throws Exception {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -107,6 +117,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testInterfaceOwner() {
         OpenJPAEntityManager em = emf.createEntityManager();
         ManagedInterfaceOwner pc = new ManagedInterfaceOwner();
@@ -152,6 +163,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCollection() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -200,6 +212,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCollectionPC() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -265,6 +278,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCollectionInterfaces() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -330,6 +344,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMixedQuery() {
         createMixed();
 
@@ -352,6 +367,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         // OPENJPA-481
     }
 
+    @Test
     public void testQueryForMixedInterfaceImpls() {
         createMixed();
 
@@ -364,6 +380,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMixedExtent() {
         createMixed();
 
@@ -406,6 +423,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testUnimplementedThrowsException() {
         OpenJPAEntityManager em = emf.createEntityManager();
         ManagedIface pc = createInstance(em, 1);
@@ -416,6 +434,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testNonMappedCreateInstanceException() {
         // OpenJPA's support of non-mapped interfaces differs from JDO support;
         // there is no special query or relation support for non-mapped
@@ -430,6 +449,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
             em.close();
     }
 
+    @Test
     public void testDetach() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

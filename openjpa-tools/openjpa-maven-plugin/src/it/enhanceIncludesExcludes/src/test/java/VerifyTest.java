@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import enhance.exclude.TestEntityA;
 import enhance.include.TestEntityB;

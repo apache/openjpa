@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -31,6 +35,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests MethodQL.
@@ -43,7 +49,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestMethodQLQuery
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class);
     }
@@ -53,6 +59,7 @@ public class TestMethodQLQuery
         return em.createQuery(QueryLanguages.LANG_METHODQL, methodName);
     }
 
+    @Test
     public void testMethodQLWithParameters() {
         OpenJPAQuery q = createMethodQuery("echo");
         Query kernelQ = q.unwrap(Query.class);
@@ -65,6 +72,7 @@ public class TestMethodQLQuery
         assertEquals("Lucas", params.get("lastName"));
     }
 
+    @Test
     public void testMethodQLWithoutParametersDeclared() {
         OpenJPAQuery q = createMethodQuery("echo");
         Object result = q.getResultList().get(0);
@@ -72,6 +80,7 @@ public class TestMethodQLQuery
         assertTrue(((Map)result).isEmpty());
     }
 
+    @Test
     public void testInvalidMethodReturnType() {
         OpenJPAQuery q = createMethodQuery("invalidReturnMeth");
         try {
@@ -82,6 +91,7 @@ public class TestMethodQLQuery
         }
     }
 
+    @Test
     public void testVoidMethodReturnType() {
         OpenJPAQuery q = createMethodQuery("voidMeth");
         try {

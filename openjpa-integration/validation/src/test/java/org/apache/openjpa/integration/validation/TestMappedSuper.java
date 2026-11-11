@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -28,6 +32,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 
 public class TestMappedSuper extends AbstractPersistenceTestCase {
@@ -35,6 +40,7 @@ public class TestMappedSuper extends AbstractPersistenceTestCase {
     /*
      * Verify constraints defined via XML on a mapped superclass are validated.
      */
+    @Test
     public void testMappedSuperXMLConstraint() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(

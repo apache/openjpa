@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.detachment.model.SimpleA;
@@ -26,8 +29,8 @@ import org.apache.openjpa.persistence.detachment.model.SimpleB;
 import org.apache.openjpa.persistence.detachment.model.SimpleC;
 import org.apache.openjpa.persistence.detachment.model.SimpleRef;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests merging an entity having a unidirectional one-to-one relation and
@@ -42,7 +45,7 @@ public class TestNoCascadeOneToOneMerge
     private int b1_id;
     private int b2_id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class,
             "openjpa.Compatibility", "FlushBeforeDetach=true," +
@@ -74,6 +77,7 @@ public class TestNoCascadeOneToOneMerge
         b2_id = b2.getId();
     }
 
+    @Test
     public void testMergeAllAttached () {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
@@ -96,6 +100,7 @@ public class TestNoCascadeOneToOneMerge
         assertEquals(b2_id, a.getRef().getId());
     }
 
+    @Test
     public void testMergeRefAttached () {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
@@ -122,6 +127,7 @@ public class TestNoCascadeOneToOneMerge
         assertEquals(b2_id, a.getRef().getId());
     }
 
+    @Test
     public void testMergeDetached () {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
@@ -146,9 +152,5 @@ public class TestNoCascadeOneToOneMerge
         em.close();
         assertNotNull(a);
         assertEquals(b2_id, a.getRef().getId());
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestNoCascadeOneToOneMerge.class);
     }
 }

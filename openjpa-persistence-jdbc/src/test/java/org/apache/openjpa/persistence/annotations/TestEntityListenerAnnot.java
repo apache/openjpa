@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -25,17 +29,19 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.ContractEmployee;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Employee;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="excluded")
 public class TestEntityListenerAnnot extends AnnotationTestCase
 {
 
-	public TestEntityListenerAnnot(String name)
+	public TestEntityListenerAnnot()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-	@Override
+    @BeforeEach
     public void setUp()
 	{
 		deleteAll(Employee.class);
@@ -43,7 +49,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		CallbackStorage.clearStore();
 	}
 
-	public void testPrePersist()
+    @Test
+    public void testPrePersist()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 
@@ -53,15 +60,16 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		CallbackStorage store = CallbackStorage.getInstance();
 
 		assertNotNull(store.getClist());
-        assertEquals("@pre/post persist callback is over/under-firing", 2,
-                store.getClist().size());
+        assertEquals(2, store.getClist().size(),
+                "@pre/post persist callback is over/under-firing");
 		assertEquals("longnamevalidatorprr", store.getClist().get(0));
 		assertEquals("contractemployee", store.getClist().get(1));
 
 		endEm(em);
 	}
 
-	public void testPostPersist()
+    @Test
+    public void testPostPersist()
 	{
 		OpenJPAEntityManager em = null;
 	  try{
@@ -74,15 +82,15 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		CallbackStorage store = CallbackStorage.getInstance();
 
 		assertNotNull(store.getClist());
-        assertEquals("@pre/post persist callback is over/under-firing", 4,
-                store.getClist().size());
+        assertEquals(4, store.getClist().size(),
+                "@pre/post persist callback is over/under-firing");
 		assertEquals("namevalidator", store.getClist().get(0));
 		assertEquals("longnamevalidatorprr", store.getClist().get(1));
 		assertEquals("employeepop", store.getClist().get(2));
-        assertEquals("We expected 'gen#" +  emp.getCheck() + " : "
+        assertEquals("gen#" + emp.getCheck(), store.getClist().get(3),
+                "We expected 'gen#" +  emp.getCheck() + " : "
                 + emp.getCheck() + "'. However, we got '"
-                + store.getClist().get(3) + "'", "gen#" + emp.getCheck(),
-                store.getClist().get(3));
+                + store.getClist().get(3) + "'");
 	  }
       finally {
 		endTx(em);
@@ -90,7 +98,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
       }
 	}
 
-	public void testPre_PostRemove()
+    @Test
+    public void testPre_PostRemove()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -112,8 +121,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		em.remove(emp);
 
 		assertTrue(!CallbackStorage.isEmpty());
-        assertEquals("callback is under/over-firing...", 2,
-                CallbackStorage.size());
+        assertEquals(2, CallbackStorage.size(),
+                "callback is under/over-firing...");
         assertEquals("namevalidatorprr",
                 CallbackStorage.getInstance().getClist().get(0));
         assertEquals("namevalidatorpor",
@@ -123,7 +132,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testPreUpdate()
+    @Test
+    public void testPreUpdate()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -154,7 +164,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testPreUpdate2()
+    @Test
+    public void testPreUpdate2()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -177,8 +188,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		List store = CallbackStorage.getInstance().getClist();
 
 		assertNotNull(store);
-        assertEquals("update callback is either underfiring or overfiring...",
-                3, store.size());
+        assertEquals(3,
+                store.size(), "update callback is either underfiring or overfiring...");
 		assertEquals("namevalidatorpou", store.get(0));
 		assertEquals("longnamevalidatorpou", store.get(1));
 		assertEquals("employeepou", store.get(2));
@@ -187,7 +198,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testPostLoad()
+    @Test
+    public void testPostLoad()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -209,8 +221,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 
 		assertNotNull(emp);
 		assertNotNull(CallbackStorage.getInstance().getClist());
-        assertEquals("PostLoad is overfiring...not accurate", 2,
-                CallbackStorage.getInstance().getClist().size());
+        assertEquals(2, CallbackStorage.getInstance().getClist().size(),
+                "PostLoad is overfiring...not accurate");
         assertEquals("employeepol",
                 CallbackStorage.getInstance().getClist().get(0));
         assertEquals("employeepol",
@@ -220,7 +232,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testGenPriKeyAvailInPostPersist()
+    @Test
+    public void testGenPriKeyAvailInPostPersist()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);

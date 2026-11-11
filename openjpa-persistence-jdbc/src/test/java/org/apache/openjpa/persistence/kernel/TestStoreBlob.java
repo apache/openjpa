@@ -29,26 +29,21 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.BlobTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestStoreBlob extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestStoreBlob
-     */
-    public TestStoreBlob() {
-    }
-
-    public TestStoreBlob(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(BlobTest.class);
     }
 
+    @Test
     public void testStoreBlob() {
         OpenJPAEntityManager pm;
 
@@ -73,9 +68,9 @@ public class TestStoreBlob extends BaseKernelTest {
 
         byte[] b2 = blob2.getBlob();
 
-        assertNotNull("Original blob was null", b1);
-        assertNotNull("Retrieved blob was null", b2);
-        assertEquals("Blob length was not the same", b1.length, b2.length);
+        assertNotNull(b1, "Original blob was null");
+        assertNotNull(b2, "Retrieved blob was null");
+        assertEquals(b1.length, b2.length, "Blob length was not the same");
         assertBytesEquals("Blob contents did not match", b1, b2);
 
         endTx(pm);
@@ -84,7 +79,7 @@ public class TestStoreBlob extends BaseKernelTest {
     private void assertBytesEquals(String str,
         byte[] a, byte[] b) {
         for (int i = 0; i < a.length; i++) {
-            assertEquals(str + " [" + i + "]", a[i], b[i]);
+            assertEquals(a[i], b[i], str + " [" + i + "]");
         }
     }
 }

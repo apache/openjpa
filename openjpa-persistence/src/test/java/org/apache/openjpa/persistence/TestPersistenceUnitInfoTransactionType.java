@@ -18,15 +18,14 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Map;
 
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceUnitTransactionType;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The transaction type is kept as {@link PersistenceUnitTransactionType} and only

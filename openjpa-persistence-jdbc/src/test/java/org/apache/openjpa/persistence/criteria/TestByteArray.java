@@ -19,6 +19,10 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,12 +32,15 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestByteArray extends SingleEMFTestCase {
     protected CriteriaBuilder cb;
     String pic = "IamNotAPicture";
     Character[] chars = new Character[] {'a', 'b'};
-    @Override
+
+    @BeforeEach
     public void setUp() {
         super.setUp(BlogUser.class
             // Using the following property will require corresponding
@@ -68,6 +75,7 @@ public class TestByteArray extends SingleEMFTestCase {
         assertNotNull(bu.getChars());
     }
 
+    @Test
     public void testSimpleQuery() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -83,6 +91,7 @@ public class TestByteArray extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQueryBytesNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -99,6 +108,7 @@ public class TestByteArray extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQueryBytesNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -114,6 +124,7 @@ public class TestByteArray extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQueryCharactersNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -129,6 +140,8 @@ public class TestByteArray extends SingleEMFTestCase {
 
         em.close();
     }
+
+    @Test
     public void testSimpleQueryCharactersNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -144,6 +157,7 @@ public class TestByteArray extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQueryCharsNotNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);
@@ -160,6 +174,7 @@ public class TestByteArray extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQueryCharsNull() {
         EntityManager em = emf.createEntityManager();
         CriteriaQuery<BlogUser> cq = cb.createQuery(BlogUser.class);

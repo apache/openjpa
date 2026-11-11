@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +30,8 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.SynchronizationType;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for EMF lifecycle behavior per JPA 3.2 spec:
@@ -36,7 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
@@ -45,6 +52,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * Per JPA spec 7.3.1, createEntityManager(SynchronizationType) with
      * UNSYNCHRONIZED on a RESOURCE_LOCAL EMF must throw IllegalStateException.
      */
+    @Test
     public void testCreateEMSyncTypeUnsynchronizedThrowsIllegalState() {
         try {
             emf.createEntityManager(SynchronizationType.UNSYNCHRONIZED);
@@ -59,6 +67,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * Per JPA spec 7.3.1, createEntityManager(SynchronizationType, Map) with
      * UNSYNCHRONIZED on a RESOURCE_LOCAL EMF must throw IllegalStateException.
      */
+    @Test
     public void testCreateEMSyncTypeMapUnsynchronizedThrowsIllegalState() {
         Map<String, Object> props = new HashMap<>();
         try {
@@ -73,6 +82,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
     /**
      * getProperties() on a closed EMF must throw IllegalStateException.
      */
+    @Test
     public void testGetPropertiesAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
@@ -94,6 +104,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * getPersistenceUnitUtil() on a closed EMF must throw
      * IllegalStateException.
      */
+    @Test
     public void testGetPersistenceUnitUtilAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
@@ -114,6 +125,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
     /**
      * close() on an already-closed EMF must throw IllegalStateException.
      */
+    @Test
     public void testCloseAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
@@ -134,6 +146,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
     /**
      * getCriteriaBuilder() on a closed EMF must throw IllegalStateException.
      */
+    @Test
     public void testGetCriteriaBuilderAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
@@ -154,6 +167,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
     /**
      * createEntityManager() on a closed EMF must throw IllegalStateException.
      */
+    @Test
     public void testCreateEMAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);
@@ -175,6 +189,7 @@ public class TestEntityManagerFactoryLifecycle extends SingleEMFTestCase {
      * createEntityManager(SynchronizationType) on a closed EMF must throw
      * IllegalStateException (regardless of sync type).
      */
+    @Test
     public void testCreateEMSyncTypeAfterCloseThrowsIllegalState() {
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
         assertNotNull(separateEmf);

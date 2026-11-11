@@ -19,12 +19,16 @@
 
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMerge extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
             Child.class, GrandChild.class);
@@ -32,6 +36,7 @@ public class TestMerge extends SQLListenerTestCase {
         populate();
     }
 
+    @Test
     public void testMergeManagedParent() {
         EntityManager em = emf.createEntityManager();
         ParentPK pk = new ParentPK(1);

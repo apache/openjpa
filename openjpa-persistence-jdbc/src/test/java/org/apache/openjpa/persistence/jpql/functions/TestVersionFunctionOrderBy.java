@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +32,8 @@ import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.CompVerUser;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that VERSION(x) in an ORDER BY clause orders by the version
@@ -34,7 +42,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, Address.class,
             SurrogateVersionEntity.class);
@@ -49,6 +57,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testOrderByVersionUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -60,6 +69,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testOrderByVersionDescendingUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -71,6 +81,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testOrderByVersionAmongOtherOrderings() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -82,6 +93,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testWhereVersionStillUsesVersionColumn() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -95,6 +107,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testVersionOnUnversionedTypeThrowsUserException() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -103,19 +116,20 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         } catch (RuntimeException e) {
             // must be a meaningful message, not a NullPointerException
             String msg = getNestedMessages(e);
-            assertTrue("Unexpected failure: " + msg,
-                msg.contains("does not") && msg.contains("version"));
-            assertTrue("Message should name the offending type: " + msg,
-                msg.contains(CompUser.class.getName()));
-            assertFalse("Should not fail with a NullPointerException: " + msg,
-                hasNPE(e));
-            assertFalse("VERSION() must not report an object-id failure: " + msg,
-                msg.contains("object id"));
+            assertTrue(msg.contains("does not") && msg.contains("version"),
+                "Unexpected failure: " + msg);
+            assertTrue(msg.contains(CompUser.class.getName()),
+                "Message should name the offending type: " + msg);
+            assertFalse(hasNPE(e),
+                "Should not fail with a NullPointerException: " + msg);
+            assertFalse(msg.contains("object id"),
+                "VERSION() must not report an object-id failure: " + msg);
         } finally {
             em.close();
         }
     }
 
+    @Test
     public void testProjectVersionOfSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -129,6 +143,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testWhereVersionOnSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -142,6 +157,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testOrderByVersionOnSurrogateVersionedType() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -157,6 +173,7 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testProjectVersionOnUnversionedTypeThrowsUserException() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -164,10 +181,10 @@ public class TestVersionFunctionOrderBy extends SQLListenerTestCase {
             fail("VERSION() on an unversioned type should be rejected");
         } catch (RuntimeException e) {
             String msg = getNestedMessages(e);
-            assertTrue("Unexpected failure: " + msg,
-                msg.contains("does not") && msg.contains("version"));
-            assertFalse("Should not fail with a NullPointerException: " + msg,
-                hasNPE(e));
+            assertTrue(msg.contains("does not") && msg.contains("version"),
+                "Unexpected failure: " + msg);
+            assertFalse(hasNPE(e),
+                "Should not fail with a NullPointerException: " + msg);
         } finally {
             em.close();
         }

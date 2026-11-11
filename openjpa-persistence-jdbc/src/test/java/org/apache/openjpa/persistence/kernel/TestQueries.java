@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -34,25 +37,21 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueries extends BaseKernelTest {
 
     private static final int CHILD_COUNT = 3;
     private int id = 10000;
 
-    public TestQueries(String name) {
-        super(name);
-    }
-
-    public TestQueries() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
     }
 
+    @Test
     public void testSimpleQuery() {
         OpenJPAEntityManager pm = getPM();
 
@@ -75,6 +74,7 @@ public class TestQueries extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testAndQuery() {
         String query = "intField1 > 10 AND o.intField1 < 50";
 
@@ -97,6 +97,7 @@ public class TestQueries extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testRelationQuery() {
         relationQuery(10, "JOE", 20);
         relationQuery(99, "BOB", 2);
@@ -119,14 +120,15 @@ public class TestQueries extends BaseKernelTest {
                 persist(newRuntimeTest2(stringField, intField), pm);
 
             Collection results = runQuery(RuntimeTest1.class, true, query, pm);
-            assertEquals("query (" + query + ") failed to yield "
-                + currentcount + " instances",
-                currentcount * CHILD_COUNT, results.size());
+            assertEquals(currentcount * CHILD_COUNT,
+                results.size(), "query (" + query + ") failed to yield "
+                + currentcount + " instances");
         }
 
         endEm(pm);
     }
 
+    @Test
     public void testQueryExecuteThrowsExceptionWhenNoNTR() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -174,9 +176,9 @@ public class TestQueries extends BaseKernelTest {
         query.setSubclasses(subs);
         items = query.getResultList();
         endTx(pm);
-        assertEquals("after deleting from query (" + query
-            + "), there should have been zero items",
-            0, items.size());
+        assertEquals(0,
+            items.size(), "after deleting from query (" + query
+            + "), there should have been zero items");
     }
 
     private Collection runQuery(Class type, boolean subs, String filter,

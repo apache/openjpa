@@ -27,25 +27,23 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.QueryTest1;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestStringFunctions
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestStringFunctions extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager _pm = null;
     private QueryTest1 _match = null;
 
-    /** Creates a new instance of TestStringFunctions */
-    public TestStringFunctions(String name)
-    {
-    	super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(QueryTest1.class);
 
@@ -65,7 +63,7 @@ public class TestStringFunctions
         _match = (QueryTest1) _pm.getObjectId(oid);
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         if (_pm != null)
@@ -74,36 +72,43 @@ public class TestStringFunctions
         super.tearDown();
     }
 
+    @Test
     public void testSubstring() {
         assertMatch("string.substring (3) == 'barbiz'");
         assertMatch("string.substring (3, 6) == 'bar'");
     }
 
+    @Test
     public void testIndexOf() {
         assertMatch("string.indexOf ('bar') == 3");
         assertMatch("string.indexOf (\"b\", 4) == 6");
         assertMatch("string.indexOf ('b', 4) == 6");
     }
 
+    @Test
     public void testToLowerCase() {
         assertMatch("string.toLowerCase () == 'foobarbiz'");
         assertMatch("'FOOBARBIZ'.toLowerCase () == string");
     }
 
+    @Test
     public void testToUpperCase() {
         assertMatch("string.toUpperCase () == 'FOOBARBIZ'");
     }
 
+    @Test
     public void testStartsWith() {
         assertMatch("string.startsWith ('foobar')");
         assertMatch("'foobarbizbaz'.startsWith (string)");
     }
 
+    @Test
     public void testEndsWith() {
         assertMatch("string.endsWith ('barbiz')");
         assertMatch("'bazfoobarbiz'.endsWith (string)");
     }
 
+    @Test
     public void testMatches() {
         assertMatch("string.matches ('.oobar.*')");
         assertMatch("string.matches ('FOO.AR.IZ(?i)')");

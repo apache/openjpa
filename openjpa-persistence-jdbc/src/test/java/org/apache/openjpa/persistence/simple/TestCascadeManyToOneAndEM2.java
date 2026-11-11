@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +33,8 @@ import jakarta.persistence.EntityNotFoundException;
 
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for TCK failures:
@@ -37,7 +45,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CascadeAEntity.class, CascadeBAllEntity.class, CascadeBPersistEntity.class,
               SimpleOrderEntity.class, CLEAR_TABLES);
@@ -48,6 +56,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * Persist B with cascade=ALL ManyToOne to A, remove both, re-persist B.
      * The cascade should re-persist A, and b.getA() should not be null.
      */
+    @Test
     public void testCascadeAllMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -59,7 +68,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
             em.flush();
 
             CascadeAEntity newA1 = b1.getA1();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             // Remove both entities
             em.remove(newA1);
@@ -68,14 +77,14 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
             // Verify B is gone
             CascadeBAllEntity found = em.find(CascadeBAllEntity.class, "2");
-            assertNull("B should be removed", found);
+            assertNull(found, "B should be removed");
 
             // Re-persist the removed B; cascade should re-persist A
             em.persist(b1);
             em.flush();
 
-            assertTrue("B should be managed", em.contains(b1));
-            assertNotNull("B's ManyToOne A should not be null after re-persist", b1.getA1());
+            assertTrue(em.contains(b1), "B should be managed");
+            assertNotNull(b1.getA1(), "B's ManyToOne A should not be null after re-persist");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -92,6 +101,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * TCK: persistMX1Test2
      * Same as above but with cascade=PERSIST only.
      */
+    @Test
     public void testPersistMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -103,7 +113,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
             em.flush();
 
             CascadeAEntity newA1 = b1.getA1();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             // Remove A and B
             em.remove(newA1);
@@ -112,14 +122,14 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
             // Verify B is removed
             CascadeBPersistEntity found = em.find(CascadeBPersistEntity.class, "2");
-            assertNull("B should be removed", found);
+            assertNull(found, "B should be removed");
 
             // Re-persist B; cascade=PERSIST should re-persist A
             em.persist(b1);
             em.flush();
 
-            assertTrue("B should be managed", em.contains(b1));
-            assertNotNull("B's ManyToOne A should not be null after re-persist", b1.getA1());
+            assertTrue(em.contains(b1), "B should be managed");
+            assertNotNull(b1.getA1(), "B's ManyToOne A should not be null after re-persist");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -137,6 +147,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * getReference(entity) for non-existing entity should throw EntityNotFoundException
      * when the proxy is accessed.
      */
+    @Test
     public void testGetReferenceForNonExistingEntity() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
@@ -159,6 +170,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * TCK: runWithConnectionTest
      * JPA 3.2 runWithConnection should provide a working JDBC connection.
      */
+    @Test
     public void testRunWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
@@ -179,7 +191,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
             // Verify the row was persisted
             SimpleOrderEntity found = em.find(SimpleOrderEntity.class, 50);
-            assertNotNull("Order should be found after runWithConnection insert", found);
+            assertNotNull(found, "Order should be found after runWithConnection insert");
             assertEquals(50, found.getId());
             assertEquals(5555, found.getTotal());
             assertEquals("desc55", found.getDescription());
@@ -195,6 +207,7 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
      * TCK: callWithConnectionTest
      * JPA 3.2 callWithConnection should provide a working JDBC connection and return a value.
      */
+    @Test
     public void testCallWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
@@ -227,14 +240,14 @@ public class TestCascadeManyToOneAndEM2 extends SingleEMFTestCase {
 
             em.getTransaction().commit();
 
-            assertNotNull("Selected order should not be null", selectedOrder);
+            assertNotNull(selectedOrder, "Selected order should not be null");
             assertEquals(60, selectedOrder.getId());
             assertEquals(6666, selectedOrder.getTotal());
             assertEquals("desc66", selectedOrder.getDescription());
 
             // Verify via EM find
             SimpleOrderEntity found = em.find(SimpleOrderEntity.class, 60);
-            assertNotNull("Order should be found after callWithConnection", found);
+            assertNotNull(found, "Order should be found after callWithConnection");
             assertEquals(selectedOrder.getId(), found.getId());
         } finally {
             if (em.getTransaction().isActive()) {

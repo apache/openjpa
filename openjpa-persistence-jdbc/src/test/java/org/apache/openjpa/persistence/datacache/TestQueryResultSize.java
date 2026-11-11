@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,19 +33,21 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryResultSize extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestQueryResultSize.class.getCanonicalName());
 
-    public TestQueryResultSize(String test) {
-        super(test, "datacachecactusapp");
+    public TestQueryResultSize() {
+        super("datacachecactusapp");
     }
 
     private EntityManagerFactory _pmf;
     private OpenJPAEntityManager pm;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         logger.fine("****Deleted Records " + deleteAll(CacheObjectE.class));
         deleteAll(CascadeParent.class);
@@ -55,6 +59,7 @@ public class TestQueryResultSize extends AbstractTestCase {
         _pmf = getEmf(propsMap);
     }
 
+    @Test
     public void test() {
         CacheObjectE pc1 = new CacheObjectE();
         pc1.setStr("pc1");
@@ -82,6 +87,7 @@ public class TestQueryResultSize extends AbstractTestCase {
             getCacheMap().size());
     }
 
+    @Test
     public void testCrossJoinQueryCache() {
         pm = (OpenJPAEntityManager) _pmf.createEntityManager();
         // create

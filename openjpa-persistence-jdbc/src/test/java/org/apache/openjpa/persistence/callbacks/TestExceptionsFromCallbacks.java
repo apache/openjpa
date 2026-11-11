@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import java.util.HashSet;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -29,44 +33,42 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.callbacks.ExceptionsFromCallbacksEntity.
         CallbackTestException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests against JPA section 3.5's description of callback exception handling.
  */
-public class TestExceptionsFromCallbacks
-    extends SingleEMFTestCase {
+public class TestExceptionsFromCallbacks extends SingleEMFTestCase {
 
     public static boolean testRunning = false;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(ExceptionsFromCallbacksEntity.class, CLEAR_TABLES);
-        Set needEnhancement = new HashSet();
-        needEnhancement.add(
-            "testPostUpdateExceptionDuringFlushWithNewInstance");
-        needEnhancement.add(
-            "testPreUpdateExceptionDuringFlushWithExistingFlushedInstance");
-        needEnhancement.add(
-            "testPreUpdateExceptionDuringCommitWithExistingFlushedInstance");
-        needEnhancement.add(
-            "testPostUpdateExceptionDuringFlushWithExistingFlushedInstance");
-        needEnhancement.add(
+        Set<String> needEnhancement = Set.of(
+            "testPostUpdateExceptionDuringFlushWithNewInstance",
+            "testPreUpdateExceptionDuringFlushWithExistingFlushedInstance",
+            "testPreUpdateExceptionDuringCommitWithExistingFlushedInstance",
+            "testPostUpdateExceptionDuringFlushWithExistingFlushedInstance",
             "testPostUpdateExceptionDuringCommitWithExistingFlushedInstance");
-        if (!PersistenceCapable.class.isAssignableFrom(
-            ExceptionsFromCallbacksEntity.class)
-            && needEnhancement.contains(getName())) {
+        if (!PersistenceCapable.class.isAssignableFrom(ExceptionsFromCallbacksEntity.class)
+            && needEnhancement.contains(getTestName()))
+        {
             // actually, we really only need redef
             fail("this test method does not work without enhancement");
         }
         testRunning = true;
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         testRunning = false;
         super.tearDown();
     }
 
+    @Test
     public void testPrePersistException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -86,6 +88,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPrePersistExceptionOnMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -105,6 +108,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPostPersistExceptionDuringFlush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -135,6 +139,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPostPersistExceptionDuringCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -167,6 +172,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPrePersistExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -181,6 +187,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPrePersistExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -194,6 +201,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostPersistExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -208,6 +216,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostPersistExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -221,6 +230,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPreUpdateExceptionWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -232,6 +242,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostUpdateExceptionDuringFlushWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -244,6 +255,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostUpdateExceptionDuringCommitWithNewInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -255,6 +267,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPreUpdateExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -265,6 +278,7 @@ public class TestExceptionsFromCallbacks
         mutateAndFlush(em, o);
     }
 
+    @Test
     public void testPreUpdateExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -275,6 +289,7 @@ public class TestExceptionsFromCallbacks
         mutateAndCommit(em, o);
     }
 
+    @Test
     public void testPostUpdateExceptionDuringFlushWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -285,6 +300,7 @@ public class TestExceptionsFromCallbacks
         mutateAndFlush(em, o);
     }
 
+    @Test
     public void testPostUpdateExceptionDuringCommitWithNewFlushedInstance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -295,6 +311,7 @@ public class TestExceptionsFromCallbacks
         mutateAndCommit(em, o);
     }
 
+    @Test
     public void testPreUpdateExceptionDuringFlushWithExistingInstance() {
         Object oid = insert("new instance");
 
@@ -317,6 +334,7 @@ public class TestExceptionsFromCallbacks
         return o.getId();
     }
 
+    @Test
     public void testPreUpdateExceptionDuringCommitWithExistingInstance() {
         Object oid = insert("new instance");
 
@@ -328,6 +346,7 @@ public class TestExceptionsFromCallbacks
         mutateAndCommit(em, o);
     }
 
+    @Test
     public void testPostUpdateExceptionDuringFlushWithExistingInstance() {
         Object oid = insert("new instance");
 
@@ -339,6 +358,7 @@ public class TestExceptionsFromCallbacks
         mutateAndFlush(em, o);
     }
 
+    @Test
     public void testPostUpdateExceptionDuringCommitWithExistingInstance() {
         Object oid = insert("new instance");
 
@@ -350,6 +370,7 @@ public class TestExceptionsFromCallbacks
         mutateAndCommit(em, o);
     }
 
+    @Test
     public void testPreUpdateExceptionDuringFlushWithExistingFlushedInstance() {
         Object oid = insert("new instance");
 
@@ -366,6 +387,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPreUpdateExceptionDuringCommitWithExistingFlushedInstance(){
         Object oid = insert("new instance");
 
@@ -381,6 +403,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostUpdateExceptionDuringFlushWithExistingFlushedInstance(){
         Object oid = insert("new instance");
 
@@ -397,6 +420,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostUpdateExceptionDuringCommitWithExistingFlushedInstance()
     {
         Object oid = insert("new instance");
@@ -413,6 +437,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostLoadException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -439,6 +464,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPreDeleteException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -459,6 +485,7 @@ public class TestExceptionsFromCallbacks
         }
     }
 
+    @Test
     public void testPostDeleteExceptionDuringFlush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -476,6 +503,7 @@ public class TestExceptionsFromCallbacks
         flush(em);
     }
 
+    @Test
     public void testPostDeleteExceptionDuringCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -493,6 +521,7 @@ public class TestExceptionsFromCallbacks
         commit(em);
     }
 
+    @Test
     public void testPreDeleteExceptionDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -509,6 +538,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostDeleteExceptionDuringFlushDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -526,6 +556,7 @@ public class TestExceptionsFromCallbacks
         em.close();
     }
 
+    @Test
     public void testPostDeleteExceptionDuringCommitDoubleDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

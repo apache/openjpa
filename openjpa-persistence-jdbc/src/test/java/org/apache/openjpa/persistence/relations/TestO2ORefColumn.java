@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test to verify the foreign key of a Join column in an association (aText), that is exposed as an
@@ -35,7 +41,7 @@ import org.junit.Assert;
  */
 public class TestO2ORefColumn extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp () {
         setUp(CLEAR_TABLES,
                 ACase.class, AText.class, AEvident.class,
@@ -43,6 +49,7 @@ public class TestO2ORefColumn extends SingleEMFTestCase {
                 );
     }
 
+    @Test
     public void testRefColumnJoinEntities () {
         AEvident aEvident = new AEvident();
         aEvident.setName("Evident_A");
@@ -77,28 +84,28 @@ public class TestO2ORefColumn extends SingleEMFTestCase {
     }
 
     private void verify(ACase aCase, AText aText, AEvident aEvident) {
-        Assert.assertNotNull(aCase);
-        Assert.assertNotNull(aText);
-        Assert.assertNotNull(aEvident);
+        assertNotNull(aCase);
+        assertNotNull(aText);
+        assertNotNull(aEvident);
 
-        Assert.assertTrue(aCase.getId() != 0);
-        Assert.assertTrue(aText.getId() != 0);
-        Assert.assertTrue(aEvident.getId() != 0);
+        assertTrue(aCase.getId() != 0);
+        assertTrue(aText.getId() != 0);
+        assertTrue(aEvident.getId() != 0);
 
-        Assert.assertEquals("Case_A", aCase.getName());
-        Assert.assertEquals("Text_A", aText.getName());
-        Assert.assertEquals("Evident_A", aEvident.getName());
+        assertEquals("Case_A", aCase.getName());
+        assertEquals("Text_A", aText.getName());
+        assertEquals("Evident_A", aEvident.getName());
 
-        Assert.assertNotNull(aCase.getAText());
-        Assert.assertSame(aCase.getAText(), aText);
-        Assert.assertNotNull(aText.getACase());
-        Assert.assertSame(aCase, aText.getACase());
+        assertNotNull(aCase.getAText());
+        assertSame(aCase.getAText(), aText);
+        assertNotNull(aText.getACase());
+        assertSame(aCase, aText.getACase());
 
-        Assert.assertEquals(aText.getACaseId(), aCase.getId());
-        Assert.assertNotNull(aText.getAEvidents());
-        Assert.assertTrue(aText.getAEvidents().iterator().hasNext());
-        Assert.assertSame(aEvident, aText.getAEvidents().iterator().next());
-        Assert.assertNotNull(aEvident.getAText());
-        Assert.assertSame(aText, aEvident.getAText());
+        assertEquals(aText.getACaseId(), aCase.getId());
+        assertNotNull(aText.getAEvidents());
+        assertTrue(aText.getAEvidents().iterator().hasNext());
+        assertSame(aEvident, aText.getAEvidents().iterator().next());
+        assertNotNull(aEvident.getAText());
+        assertSame(aText, aEvident.getAText());
     }
 }

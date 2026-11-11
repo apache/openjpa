@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -36,27 +39,20 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC2;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEagerDistinct
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-    /** Creates a new instance of TestEagerDistinct */
-    public TestEagerDistinct(String name)
-    {
-    	super(name);
-    }
+public class TestEagerDistinct extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
 
     public boolean skipTest() {
-        return ((JDBCConfiguration) getConfiguration()).
-                getDBDictionaryInstance().joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL;
+        return ((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance().joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL;
     }
 
     @Override
     public void setUpTestCase() {
-       deleteAll(EagerPC.class);
-       deleteAll(HelperPC.class);
-       deleteAll(HelperPC2.class);
+        deleteAll(EagerPC.class);
+        deleteAll(HelperPC.class);
+        deleteAll(HelperPC2.class);
 
         HelperPC shared = new HelperPC();
         shared.setStringField("shared");
@@ -91,13 +87,15 @@ public class TestEagerDistinct
         return pm;
     }
 
+    @Test
     public void testEagerParallelWithNonDistinctQuery()
-    throws Exception {
+        throws Exception {
         eagerParallelWithNonDistinctQuery(-1);
     }
 
+    @Test
     public void testPagingEagerParallelWithNonDistinctQuery()
-    throws Exception {
+        throws Exception {
         eagerParallelWithNonDistinctQuery(0);
     }
 
@@ -130,13 +128,15 @@ public class TestEagerDistinct
                 getStringField());
     }
 
+    @Test
     public void testEagerParallelWithDistinctQuery()
-    throws Exception {
+        throws Exception {
         eagerParallelWithDistinctQuery(-1);
     }
 
+    @Test
     public void testPagingEagerParallelWithDistinctQuery()
-    throws Exception {
+        throws Exception {
         eagerParallelWithDistinctQuery(0);
     }
 
@@ -162,13 +162,15 @@ public class TestEagerDistinct
         pm.close();
     }
 
+    @Test
     public void testNestedEagerParallel()
-    throws Exception {
+        throws Exception {
         nestedEagerParallel(-1);
     }
 
+    @Test
     public void testPagingNestedEagerParallel()
-    throws Exception {
+        throws Exception {
         nestedEagerParallel(0);
     }
 

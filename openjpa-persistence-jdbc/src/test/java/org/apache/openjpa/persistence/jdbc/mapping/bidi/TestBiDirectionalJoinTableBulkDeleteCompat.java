@@ -16,9 +16,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The rows of a bi-directional join table are maintained by the inverse side,
@@ -36,7 +40,7 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
     private static final long SSN = 123456789;
     private static final String[] PHONES = {"+1-23-456", "+2-34-567"};
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Person.class, Address.class,
             "openjpa.Compatibility", "CleanupOwnedTablesOnBulkDelete=false");
@@ -44,6 +48,7 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
         sql.clear();
     }
 
+    @Test
     public void testBulkDeleteFallsBackToTheInMemoryPath() {
         try (EntityManager em = emf.createEntityManager()) {
 	        em.getTransaction().begin();

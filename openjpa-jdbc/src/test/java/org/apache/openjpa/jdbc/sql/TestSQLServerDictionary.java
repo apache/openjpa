@@ -19,9 +19,9 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -42,7 +42,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestSQLServerDictionary {
 
@@ -140,14 +140,14 @@ public class TestSQLServerDictionary {
         Column col = table.addColumn(DBIdentifier.newColumn("id"));
         String[] sql = dict.getDropColumnSQL(col);
         assertEquals(1, sql.length);
-        assertTrue(sql[0], sql[0].contains("FROM sys.foreign_keys f"));
-        assertTrue(sql[0], sql[0].contains("FROM sys.indexes i"));
-        assertTrue(sql[0], sql[0].contains("FROM sys.default_constraints d"));
-        assertTrue(sql[0], sql[0].contains("COLUMNPROPERTY(OBJECT_ID(N'TPRODUCT'), N'id', 'ColumnId')"));
-        assertTrue(sql[0], sql[0].contains("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; "
-            + "ALTER TABLE TPRODUCT DROP COLUMN id; COMMIT TRANSACTION; END TRY"));
-        assertTrue(sql[0], sql[0].endsWith(
-            "BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH"));
+        assertTrue(sql[0].contains("FROM sys.foreign_keys f"), sql[0]);
+        assertTrue(sql[0].contains("FROM sys.indexes i"), sql[0]);
+        assertTrue(sql[0].contains("FROM sys.default_constraints d"), sql[0]);
+        assertTrue(sql[0].contains("COLUMNPROPERTY(OBJECT_ID(N'TPRODUCT'), N'id', 'ColumnId')"), sql[0]);
+        assertTrue(sql[0].contains("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; "
+            + "ALTER TABLE TPRODUCT DROP COLUMN id; COMMIT TRANSACTION; END TRY"), sql[0]);
+        assertTrue(sql[0].endsWith(
+            "BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH"), sql[0]);
 
         dict.supportsAlterTableWithDropColumn = false;
         assertEquals(0, dict.getDropColumnSQL(col).length);
@@ -162,7 +162,7 @@ public class TestSQLServerDictionary {
     public void testSequenceSupportFrom2012() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection(10));
-        assertNull("SQL Server 2008 has no sequence objects", dict.nextSequenceQuery);
+        assertNull(dict.nextSequenceQuery, "SQL Server 2008 has no sequence objects");
         assertNull(dict.getCreateSequenceSQL(sequence(10)));
 
         dict = newConfiguredDictionary(null);
@@ -201,14 +201,14 @@ public class TestSQLServerDictionary {
     @Test
     public void testSequencesSQL() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary(null);
-        assertNull("no sequence support, nothing to reflect",
-            dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL));
+        assertNull(dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL),
+            "no sequence support, nothing to reflect");
         dict.connectedConfiguration(connection(16));
         String sql = dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL);
-        assertTrue(sql, sql.contains("FROM sys.sequences WHERE schema_id = SCHEMA_ID()"));
-        assertEquals(sql, -1, sql.indexOf('?'));
+        assertTrue(sql.contains("FROM sys.sequences WHERE schema_id = SCHEMA_ID()"), sql);
+        assertEquals(-1, sql.indexOf('?'), sql);
         sql = dict.getSequencesSQL(DBIdentifier.newSchema("dbo"), DBIdentifier.newSequence("S"));
-        assertTrue(sql, sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"));
+        assertTrue(sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"), sql);
     }
 
     /**
@@ -221,12 +221,12 @@ public class TestSQLServerDictionary {
     public void testTimestampPrecisionOfDatetimeColumn() {
         SQLServerDictionary dict = new SQLServerDictionary();
         Column col = new Column();
-        assertEquals("unknown precision: the dictionary default", dict.datePrecision,
-            dict.getTimestampPrecision(col));
+        assertEquals(dict.datePrecision, dict.getTimestampPrecision(col),
+            "unknown precision: the dictionary default");
         col.setPrecision(3);
-        assertEquals("type unknown: three digits are milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        assertEquals(1_000_000, dict.getTimestampPrecision(col), "type unknown: three digits are milliseconds");
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime2"));
-        assertEquals("DATETIME2(3) keeps whole milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        assertEquals(1_000_000, dict.getTimestampPrecision(col), "DATETIME2(3) keeps whole milliseconds");
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime"));
         assertEquals(10_000_000, dict.getTimestampPrecision(col));
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("DATETIME"));

@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies the type names rendered as the target of a SQL CAST, see OPENJPA-2966.

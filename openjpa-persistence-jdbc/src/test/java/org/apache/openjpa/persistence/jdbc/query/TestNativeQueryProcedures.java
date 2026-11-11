@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -32,6 +35,9 @@ import org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList
 import org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Native queries use only 1-based positional parameters and
@@ -44,7 +50,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestNativeQueryProcedures extends SingleEMFTestCase {
     AbstractProcedureList procedureList = null;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(Applicant.class, Game.class, CLEAR_TABLES);
 
@@ -75,7 +81,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -97,6 +103,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testNoReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -168,7 +175,8 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
-    @AllowFailure(value=true, message="Waiting for resolution for JIRA DERBY-4558")
+    @AllowFailure(value = true, message = "Waiting for resolution for JIRA DERBY-4558")
+    @Test
     public void testNoReturnMultiParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -247,6 +255,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testOneReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -315,6 +324,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testOneReturnMultiParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();

@@ -22,14 +22,17 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEntityAsIdentityFields2 extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Attendance.class, Course.class, Person.class, Student.class);
     }
 
+    @Test
     public void testEntityAsIdentityField001() {
         EntityManager em = emf.createEntityManager();
 

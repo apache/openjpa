@@ -16,7 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The keys of the candidates are deleted in chunks of the size the database
@@ -29,7 +33,7 @@ public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
     /** Two keys per statement, so the chunking is exercised by a handful of rows. */
     private static final int CHUNK_SIZE = 2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteOwner.class, BulkDeleteDetails.class,
             BulkDeleteAddress.class, BulkDeleteItem.class,
@@ -40,6 +44,7 @@ public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
      * Five candidates do not divide by the chunk size, so the last statement
      * carries a shorter <code>IN</code> list.
      */
+    @Test
     public void testPartialLastChunk() {
         assertChunkedDelete(5);
     }
@@ -48,6 +53,7 @@ public class TestBulkDeleteChunked extends AbstractBulkDeleteTestCase {
      * An exact multiple of the chunk size must not issue a trailing statement
      * with an empty <code>IN</code> list.
      */
+    @Test
     public void testExactMultipleOfChunkSize() {
         assertChunkedDelete(2 * CHUNK_SIZE);
     }

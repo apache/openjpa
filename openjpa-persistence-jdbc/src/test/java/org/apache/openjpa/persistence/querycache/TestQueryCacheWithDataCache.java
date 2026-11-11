@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.querycache;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +29,12 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, QCEntityM2O.class, QCEntity.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", "openjpa.QueryCache", "true");
@@ -38,6 +43,7 @@ public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
     /*
      * Test for OPENJPA-2586
      */
+    @Test
     public void testWithFetchPlan() {
         populate();
 
@@ -64,9 +70,9 @@ public class TestQueryCacheWithDataCache extends SingleEMFTestCase {
 
         em.clear();
 
-        assertTrue("No results returned!", !results.isEmpty());
+        assertTrue(!results.isEmpty(), "No results returned!");
         for (QCEntityM2O e1 : results) {
-            assertNotNull("A 'QCEntity' should have been returned!", e1.getQc());
+            assertNotNull(e1.getQc(), "A 'QCEntity' should have been returned!");
         }
     }
 

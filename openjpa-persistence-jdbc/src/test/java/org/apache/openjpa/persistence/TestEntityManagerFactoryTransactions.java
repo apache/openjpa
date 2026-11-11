@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
@@ -32,7 +34,7 @@ public class TestEntityManagerFactoryTransactions {
 	
 	private EntityManagerFactory emf;
 	
-	@Before
+	@BeforeEach
 	public void before() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("test");
 		conf.provider(PersistenceProviderImpl.class.getCanonicalName());

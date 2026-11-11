@@ -20,6 +20,15 @@ package org.apache.openjpa.persistence.lock.extended;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.stream.Stream;
+
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 /**
  * LockScopeTestCase subclass to test entities:
  * - with Basic attributes
@@ -32,15 +41,13 @@ import jakarta.persistence.EntityManager;
 public class TestBasicLockScope extends LockScopeTestCase {
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(DerbyDictionary.class, OracleDictionary.class, DB2Dictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(LSEBase.class
             , LSESecTbl.class
             , LSESngTblCon.class
@@ -63,10 +70,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
         );
     }
 
+    @Test
     public void testNormalBasicLock() {
         commonBasicLock("testNormalBasicLock", 000, false);
     }
 
+    @Test
     public void testExtendedBasicLock() {
         commonBasicLock("testExtendedBasicLock", 010, true);
     }
@@ -229,10 +238,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
+    @Test
     public void testNormalSecTableLock() {
         commonSecTableLock("testNormalSecTableLock", 100, false);
     }
 
+    @Test
     public void testExtendedSecTableLock() {
         commonSecTableLock("testExtendedSecTableLock", 110, true);
     }
@@ -454,10 +465,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
+    @Test
     public void testNormalSingleTableLock() {
         commonSingleTableLock("testNormalSingleTableLock", 200, false);
     }
 
+    @Test
     public void testExtendedlSingleTableLock() {
         commonSingleTableLock("testExtendedlSingleTableLock", 210, true);
     }
@@ -636,10 +649,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
+    @Test
     public void testNormalJoinedLock() {
         commonJoinedLock("testNormalJoinedLock", 400, false);
     }
 
+    @Test
     public void testExtendedJoinedLock() {
         commonJoinedLock("testExtendedJoinedLock", 410, true);
     }
@@ -856,10 +871,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
+    @Test
     public void testNormalElementCollectionLock() {
         commonElementCollectionLock("testNormalElementCollectionLock", 500, false);
     }
 
+    @Test
     public void testExtendedElementCollectionLock() {
         commonElementCollectionLock("testExtendedElementCollectionLock", 510, true);
     }
@@ -1024,10 +1041,12 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
+    @Test
     public void testNormalElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testNormalElementCollectionEagerLock", 600, false);
     }
 
+    @Test
     public void testExtendedElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testExtendedElementCollectionEagerLock", 610, true);
     }

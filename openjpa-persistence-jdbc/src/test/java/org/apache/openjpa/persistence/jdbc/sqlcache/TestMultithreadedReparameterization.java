@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +35,8 @@ import jakarta.persistence.TypedQuery;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test reparameterization of cached query under heavy load.
@@ -41,15 +44,14 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestMultithreadedReparameterization extends TestCase {
+public class TestMultithreadedReparameterization {
 	private static final Logger logger = Logger.getLogger(TestMultithreadedReparameterization.class.getCanonicalName());
     private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -60,6 +62,7 @@ public class TestMultithreadedReparameterization extends TestCase {
         }
     }
 
+    @Test
     public void testReparameterizationUnderHeavyLoad() throws Exception {
         long baseId = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();
@@ -115,6 +118,7 @@ public class TestMultithreadedReparameterization extends TestCase {
      * @see OPENJPA-2646
      * @throws Exception
      */
+    @Test
     public void testCacheSwappingUnderHeavyLoad() throws Exception {
         final int nRuns = 10;
         final int nThreads = 20;
@@ -205,7 +209,7 @@ public class TestMultithreadedReparameterization extends TestCase {
                         q.setParameter(args[j].toString(), args[j+1]);
                     }
                     List<Person> result = q.getResultList();
-                    assertEquals(Thread.currentThread() + " failed", 1, result.size());
+                    assertEquals(1, result.size(), Thread.currentThread() + " failed");
                     Person p = result.get(0);
                     assertEquals(args[1], p.getId());
                     assertEquals(args[3], p.getFirstName());

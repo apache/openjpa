@@ -21,7 +21,9 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 
 /**
@@ -35,9 +37,8 @@ import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 public class TestInputStreamLob extends AbstractLobTest {
 
     @Override
-    public void setUp() throws Exception {
-        supportedDatabases.add(PostgresDictionary.class);
-        super.setUp();
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof PostgresDictionary || super.isSupported(dict);
     }
 
     @Override

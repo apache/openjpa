@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.xbean.asm9.ClassWriter;
 import org.apache.xbean.asm9.MethodVisitor;
 import org.apache.xbean.asm9.Opcodes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that {@link ImplHelper#getEntityClass} unwraps generated

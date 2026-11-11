@@ -19,14 +19,14 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies the types {@link HSQLDictionary} uses for columns and casts

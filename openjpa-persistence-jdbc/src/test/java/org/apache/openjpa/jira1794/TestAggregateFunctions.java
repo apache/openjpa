@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.jira1794;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -32,6 +36,8 @@ import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * OPENJPA-1794 Verifies the return value of aggregate functions when a query
@@ -54,7 +60,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
             "ae.intVal", "ae.plongVal", "ae.longVal", "ae.pfloatVal",
             "ae.floatVal", "ae.pdblVal", "ae.dblVal" };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, AggEntity.class);
     }
@@ -63,6 +69,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         return true;
     }
 
+    @Test
     public void testAggregateJPQL() {
         EntityManager em = emf.createEntityManager();
 
@@ -103,6 +110,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
     /**
      * if a SUM(CASE statement is used, then the effective type might be different
      */
+    @Test
     public void testAggregateWithCase() {
         EntityManager em = emf.createEntityManager();
 
@@ -132,6 +140,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testAggregateCriteria() {
         EntityManager em = emf.createEntityManager();
         Metamodel mm = emf.getMetamodel();
@@ -248,8 +257,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
         }
     }
 
-    private <T> void verifyResult(EntityManager em, String[] aggregates,
-                              String attr, Class<T> expectedType) {
+    private <T> void verifyResult(EntityManager em, String[] aggregates, String attr, Class<T> expectedType) {
         for (String func : aggregates) {
             // JPQL with aggregate and aggregate in subselect
             String sql = "SELECT " + func + "(" + attr + ")"
@@ -259,7 +267,7 @@ public class TestAggregateFunctions extends SingleEMFTestCase {
                     + ") FROM AggEntity ae2)";
             TypedQuery<T> q = em.createQuery(sql, expectedType);
             T intance = q.getSingleResult();
-            assertEquals(intance.getClass(), expectedType);
+            assertEquals(expectedType, intance.getClass());
         }
     }
 

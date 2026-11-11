@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -55,6 +58,8 @@ import org.apache.openjpa.persistence.proxy.entities.Person;
 import org.apache.openjpa.persistence.proxy.entities.Rider;
 import org.apache.openjpa.persistence.proxy.entities.RiderType;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /*
@@ -66,7 +71,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDetachMerge extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class,
@@ -76,6 +81,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /*
      * Test default 1.0 compatibility behavior, which should pass AS-IS
      */
+    @Test
     public void testAnnuity1Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -107,6 +113,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /*
      * Test default 2.0 compatibility behavior, which should PASS
      */
+    @Test
     public void testAnnuity2Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(

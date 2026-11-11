@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -49,6 +51,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.SeqB;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqC;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="This test only applies to run with Oracle. This test also is not functional; disable until fix")
 public class TestClassSequenceFactory extends BaseJDBCTest{
@@ -57,16 +61,9 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
 
     Broker _broker;
 
-    /** Creates a new instance of TestClassSequenceFactory */
-    public TestClassSequenceFactory() {
-    }
-    public TestClassSequenceFactory(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
-    throws Exception {
+        throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
         if (!adjustConfiguration(conf))
@@ -111,8 +108,9 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
     /**
      * Tests that all sequence numbers are unique and in order.
      */
+    @Test
     public void testSequence()
-    throws Exception {
+        throws Exception {
         Set set = new HashSet();
 
         JDBCConfiguration conf = new JDBCConfigurationImpl();
@@ -130,8 +128,9 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
         assertEquals(102, set.size());
     }
 
+    @Test
     public void testExtensions()
-    throws Exception {
+        throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.fromProperties(getProperties());
         if (!adjustConfiguration(conf))

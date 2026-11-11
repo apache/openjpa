@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -31,14 +31,15 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 
 public class TestDB2Dictionary {
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
     final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
     final Statement mockStatement = context.mock(Statement.class);

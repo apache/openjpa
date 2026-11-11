@@ -27,6 +27,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -44,17 +49,12 @@ import org.apache.openjpa.persistence.jdbc.common.apps.InverseKeyMapPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.JoinTableMapPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappedByMapPC;
 import org.apache.openjpa.util.AbstractLRSProxyMap;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMappedByKeyMaps
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-    /** Creates a new instance of TestMappedByKeyMaps */
-    public TestMappedByKeyMaps(String name)
-    {
-    	super(name);
-    }
-
+    @Test
     public void testInverseKeyMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
@@ -74,6 +74,7 @@ public class TestMappedByKeyMaps
                 str.getColumns()[0]);
     }
 
+    @Test
     public void testJoinTableMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
@@ -92,20 +93,24 @@ public class TestMappedByKeyMaps
                 str.getColumns()[0]);
     }
 
+    @Test
     public void testInverseKeyMap() {
         mappedByMap(new InverseKeyMapPC(), false);
         queryMap(new InverseKeyMapPC());
     }
 
+    @Test
     public void testInverseKeyLRSMap() {
         mappedByMap(new InverseKeyMapPC(), true);
     }
 
+    @Test
     public void testJoinTableMap() {
         mappedByMap(new JoinTableMapPC(), false);
         queryMap(new JoinTableMapPC());
     }
 
+    @Test
     public void testJoinTableLRSMap() {
         mappedByMap(new JoinTableMapPC(), true);
     }

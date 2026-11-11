@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.Inner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBNullValues extends AbstractTestCase {
 
-    public TestEJBNullValues(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBNullValues() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(Inner.class);
     }
 
+    @Test
     public void testException() {
         EntityManager pm = currentEntityManager();
         startTx(pm);

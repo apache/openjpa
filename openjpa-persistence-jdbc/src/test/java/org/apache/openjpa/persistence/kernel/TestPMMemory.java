@@ -38,20 +38,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPMMemory extends BaseKernelTest {
-	
+
 	private static final Logger logger = Logger.getLogger(TestPMMemory.class.getCanonicalName());
-
-    /**
-     * Creates a new instance of TestPMMemory
-     */
-    public TestPMMemory() {
-    }
-
-    public TestPMMemory(String s) {
-        super(s);
-    }
 
     public boolean skipTest() {
         return true;
@@ -62,14 +54,13 @@ public class TestPMMemory extends BaseKernelTest {
     private static final int NUM_FLUSHES = 5;
 
     // Hack to run stand alone.
-    public static void main(String[] args)
-        throws Exception {
-        TestPMMemory testpm = new TestPMMemory("testPMMemory");
+    public static void main(String[] args) throws Exception {
+        TestPMMemory testpm = new TestPMMemory();
         testpm.setUp();
         testpm.testMemoryUse();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         // About to delete all
         deleteAllStaged(getPM(), RuntimeTest1.class);
@@ -152,6 +143,7 @@ public class TestPMMemory extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testMemoryUse() throws Exception {
 
         // Baseline, starting memory for N objects of NUM_OBJECTS

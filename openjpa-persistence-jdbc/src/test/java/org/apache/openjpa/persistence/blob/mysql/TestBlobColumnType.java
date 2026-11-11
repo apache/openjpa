@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.blob.mysql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -26,6 +29,8 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for MySQL Blob types. OPENJPA-740 introduced intelligent column type for BLOBs, OPENJPA-1870 refined it a
@@ -36,7 +41,7 @@ public class TestBlobColumnType extends SingleEMFTestCase {
     private static boolean _firstRun=true;
     private boolean _runTest = false; // only test with MySQL
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
 
         // create EMF solely to obtain a DBDictionary.
@@ -69,36 +74,42 @@ public class TestBlobColumnType extends SingleEMFTestCase {
         return col;
     }
 
+    @Test
     public void testSmallLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.tinyBlobTypeName, getCol("smallLob").getTypeIdentifier().getName());
         }
     }
 
+    @Test
     public void testMedLob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.mediumBlobTypeName, getCol("medLob").getTypeIdentifier().getName());
         }
     }
 
+    @Test
     public void testLongBlob() {
         if (_runTest) {
             assertEquals(MySQLDictionary.longBlobTypeName, getCol("longLob").getTypeIdentifier().getName());
         }
     }
 
+    @Test
     public void testOldLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("oldLob").getTypeIdentifier().getName());
         }
     }
 
+    @Test
     public void testDefaultLob() {
         if (_runTest) {
             assertEquals(getDBDictionary().blobTypeName, getCol("defaultLob").getTypeIdentifier().getName());
         }
     }
 
+    @Test
     public void testDefinedLob() {
         if (_runTest) {
             assertEquals("BINARY", getCol("definedLob").getTypeIdentifier().getName());

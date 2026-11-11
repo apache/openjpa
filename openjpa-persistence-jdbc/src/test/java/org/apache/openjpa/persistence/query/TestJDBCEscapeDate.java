@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -35,15 +37,15 @@ import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JDBC escape syntax for date, time, and timestamp literals
  */
 public class TestJDBCEscapeDate extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Employee.class, DROP_TABLES);
     }
@@ -63,6 +65,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testJDBCEscape() {
         populate();
         EntityManager em = emf.createEntityManager();
@@ -137,7 +140,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         for (int i = 0; i < jpql.length; i++) {
             Query q = em.createQuery(jpql[i]);
             List results = q.getResultList();
-            Assert.assertEquals("For jpql["+i+"]", 1, results.size());
+            assertEquals(1, results.size(), "For jpql["+i+"]");
         }
 
         // Test support in HAVING clause.
@@ -150,7 +153,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         for (int j = 0; j < havingJpql.length; j++) {
             Query q = em.createQuery(havingJpql[j]);
             List results = q.getResultList();
-            Assert.assertEquals("For havingJpql["+j+"]", 1, results.size());
+            assertEquals(1, results.size(), "For havingJpql["+j+"]");
         }
         em.getTransaction().begin();
         String update;
@@ -163,7 +166,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         Query q = em.createQuery(update);
         int updateCnt = q.executeUpdate();
         em.getTransaction().commit();
-        Assert.assertEquals(1, updateCnt);
+        assertEquals(1, updateCnt);
         em.close();
     }
 
@@ -171,16 +174,17 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
      * Added for OJ-2286.  The test executes the same query multiple times.  Prior
      * to the JIRA fix, upon the second exception an exception would occur.
      */
+    @Test
     public void testMultipleQueryExecutionWithDateLiteral() {
         populate();
         EntityManager em = emf.createEntityManager();
 
         Query q = em.createQuery("SELECT e FROM Employee e WHERE e.hireTimestamp > {ts '2001-01-01 00:00:00'}");
-        Assert.assertEquals("First assertion", 1, q.getResultList().size());
+        assertEquals(1, q.getResultList().size(), "First assertion");
         // Prior to JIRA OJ-2286, an exception would occur here:
-        Assert.assertEquals("Second assertion", 1, q.getResultList().size());
+        assertEquals(1, q.getResultList().size(), "Second assertion");
         // For good measure execute it a couple more times.  :)
-        Assert.assertEquals("Third assertion", 1, q.getResultList().size());
-        Assert.assertEquals("Fourth assertion", 1, q.getResultList().size());
+        assertEquals(1, q.getResultList().size(), "Third assertion");
+        assertEquals(1, q.getResultList().size(), "Fourth assertion");
     }
 }

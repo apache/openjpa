@@ -28,6 +28,9 @@
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -40,17 +43,10 @@ import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBase;
 import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBaseSubFlat;
 import org.apache.openjpa.persistence.jdbc.common.apps.JoinSubclassBaseSubVert;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.Test;
 
 
-public class TestJoinSubclasses
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-    /** Creates a new instance of TestJoinSubclasses */
-    public TestJoinSubclasses(String name)
-    {
-    	super(name);
-    }
-
+public class TestJoinSubclasses extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
 
     private String _outer = "OUTER";
     private Object _base = null;
@@ -97,8 +93,9 @@ public class TestJoinSubclasses
         pm.close();
     }
 
+    @Test
     public void testBaseExtentNoSubs()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBase.class, false);
         Iterator itr = extent.iterator();
@@ -110,12 +107,13 @@ public class TestJoinSubclasses
         extent.closeAll();
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertNotSQL(_outer);
     }
 
+    @Test
     public void testBaseExtentWithSubs()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBase.class, true);
         Collection pcs = new TreeSet(((Extent) extent).list());
@@ -144,12 +142,13 @@ public class TestJoinSubclasses
         }
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertSQL(_outer);
     }
 
+    @Test
     public void testLeafExtent()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(JoinSubclassBaseSubFlat.class, false);
         Iterator itr = extent.iterator();
@@ -162,19 +161,20 @@ public class TestJoinSubclasses
         extent.closeAll();
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertNotSQL(_outer);
     }
 
+    @Test
     public void testBaseGetById()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         JoinSubclassBase pc = (JoinSubclassBase) pm.getObjectId(_base);
         assertEquals(1, pc.getBaseField());
         assertEquals(JoinSubclassBase.class, pc.getClass());
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertNotSQL(_outer);
         sql.clear();
 
@@ -185,12 +185,13 @@ public class TestJoinSubclasses
         assertEquals(1, pc.getBaseField());
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertSQL(_outer);
     }
 
+    @Test
     public void testLeafGetById()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         JoinSubclassBaseSubFlat pc = (JoinSubclassBaseSubFlat)
         pm.getObjectId(_baseSubFlat);
@@ -199,7 +200,7 @@ public class TestJoinSubclasses
         assertEquals(5, pc.getBaseSubFlatField());
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertNotSQL(_outer);
         sql.clear();
 
@@ -212,7 +213,7 @@ public class TestJoinSubclasses
         assertEquals(5, pc.getBaseSubFlatField());
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertSQL(_outer);
     }
 

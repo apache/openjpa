@@ -18,20 +18,27 @@
  */
 package org.apache.openjpa.persistence.fetchgroups;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFetchGroupStacks extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(FGManager.class, FGDepartment.class, FGEmployee.class,
             FGAddress.class);
     }
 
+    @Test
     public void testFetchGroupStacks() {
         assertFetchGroups();
         em.getFetchPlan().addFetchGroup("foo");

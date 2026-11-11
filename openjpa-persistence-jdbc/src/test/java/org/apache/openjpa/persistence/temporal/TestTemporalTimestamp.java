@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.temporal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,22 +32,24 @@ import jakarta.persistence.criteria.CriteriaQuery;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTemporalTimestamp extends SQLListenerTestCase {
     private OpenJPAEntityManager em;
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(CLEAR_TABLES, TemporalEntity.class, "openjpa.jdbc.DBDictionary",
             "DateMillisecondBehavior=" + DBDictionary.DateMillisecondBehaviors.DROP,
             "openjpa.Log", "SQL=TRACE,Tests=TRACE", "openjpa.ConnectionFactoryProperties"
@@ -76,6 +82,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         loadDB();
     }
 
+    @Test
     public void testNoRounding() {
         em = emf.createEntityManager();
         final List<TemporalEntity> temporalEntityList = findAll(em);
@@ -95,6 +102,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testNoRoundingNoMillisecondLoss() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -119,6 +127,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testRounding() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();

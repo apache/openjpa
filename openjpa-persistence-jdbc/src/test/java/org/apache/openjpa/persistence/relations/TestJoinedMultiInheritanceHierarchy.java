@@ -19,22 +19,27 @@
 
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJoinedMultiInheritanceHierarchy
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp( CLEAR_TABLES, ChildChildClass.class, ChildClass.class,
                      GrandChildClass.class, ParentClass.class,
                      "openjpa.BrokerImpl", "EvictFromDataCache=true" );
     }
 
+    @Test
     public void testCacheSqlGeneration() throws PersistenceException {
         OpenJPAEntityManager em = emf.createEntityManager();
 

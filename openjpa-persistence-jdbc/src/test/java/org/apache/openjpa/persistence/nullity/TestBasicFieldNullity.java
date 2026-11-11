@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -30,6 +34,8 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test @Basic(optional=true|false) and @Column(nullable=true|false)
@@ -42,80 +48,94 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     private DBDictionary dict = null;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, RETAIN_DATA, NullValues.class);
         dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
+    @Test
     public void testNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	pc.setOptional(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnNonOptionalFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptional(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
 
+    @Test
     public void testNotNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNotNullOnNonOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnNullableColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullable(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnNonNullableColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullable(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
 
+    @Test
     public void testNotNullOnNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNotNullOnNonNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnOptionalBlobFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	pc.setOptionalBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnNonOptionalBlobFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptionalBlob(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
 
+    @Test
     public void testNullOnNullableBlobColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullableBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testNullOnNonNullableBlobColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
 
+    @Test
     public void testX() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
@@ -126,6 +146,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
     }
 
 
+    @Test
     public void testUniqueStringColumnCanBeNull() {
         if (!isUniqueColumnNullable()) {
             return;
@@ -135,6 +156,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         assertCommitSucceeds(pc, NEW);
     }
 
+    @Test
     public void testUniqueStringColumnAsNull() {
         if (!isUniqueColumnNullable()) {
             return;
@@ -153,6 +175,7 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
             assertNull(n.getUniqueNullable());
     }
 
+    @Test
     public void testUniqueStringColumnAsEmpty() {
         String EMPTY_STRING = "";
         NullValues pc = new NullValues();

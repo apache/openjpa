@@ -27,23 +27,23 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.RawField;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestRawField extends BaseJDBCTest {
 
-    /** Creates a new instance of TestRawField */
-    public TestRawField(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(RawField.class);
     }
 
+    @Test
     public void testRaw() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getTransaction().begin();
@@ -61,7 +61,7 @@ public class TestRawField extends BaseJDBCTest {
 
         pm = (OpenJPAEntityManager)currentEntityManager();
         pc = (RawField) pm.getObjectId(oid);
-        assertEquals(pc.getString(), "BARFOO", pc.getString());
+        assertEquals("BARFOO", pc.getString(), pc.getString());
         pm.close();
     }
 }

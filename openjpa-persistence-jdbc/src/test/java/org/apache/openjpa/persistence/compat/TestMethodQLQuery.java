@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -32,6 +34,8 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
@@ -48,11 +52,12 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
  */
 public class TestMethodQLQuery extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class);
     }
 
+    @Test
     public void testMethodQLWithoutParametersDeclared() {
         try {
             OpenJPAQuery q = em.createQuery(QueryLanguages.LANG_METHODQL,

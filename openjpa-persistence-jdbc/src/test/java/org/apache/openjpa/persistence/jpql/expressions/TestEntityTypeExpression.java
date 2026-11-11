@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,16 +33,18 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEntityTypeExpression extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
 
-    public TestEntityTypeExpression(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEntityTypeExpression() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(CompUser.class);
         EntityManager em = currentEntityManager();
@@ -76,6 +82,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTypeOnNonPolymorphicEntity() {
         EntityManager em = currentEntityManager();
         String query = "select a from Address a where type(a) = ?1";
@@ -90,6 +97,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testTypeExpression() {
         EntityManager em = currentEntityManager();
 

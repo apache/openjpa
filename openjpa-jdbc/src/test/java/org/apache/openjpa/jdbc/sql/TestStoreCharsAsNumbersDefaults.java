@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 
@@ -28,7 +28,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the <code>StoreCharsAsNumbers</code> default of the Derby, H2,
@@ -37,6 +38,15 @@ import org.junit.Test;
  * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060, OPENJPA-3028).
  */
 public class TestStoreCharsAsNumbersDefaults {
+
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @AfterEach
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testDerbyStoresCharsAsCharByDefault() {

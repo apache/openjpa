@@ -18,13 +18,18 @@
  */
 package org.apache.openjpa.persistence.property;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCompatAccessMods extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.Compatibility", "PrivatePersistentProperties=true",
             DROP_TABLES, PrivAccessModsEntity.class);
@@ -38,6 +43,7 @@ public class TestCompatAccessMods extends SingleEMFTestCase {
      * option set to true.  This is currently handled in the test suite by
      * a separate enhancement task for PrivAccessModsEntity.
      */
+    @Test
     public void testAccessMods() {
         EntityManager em = emf.createEntityManager();
 

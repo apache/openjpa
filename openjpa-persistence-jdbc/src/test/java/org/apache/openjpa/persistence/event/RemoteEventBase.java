@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,23 +38,25 @@ import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class RemoteEventBase extends AbstractTestCase {
 
     public Id roid;
     public StoreCache datacatch;
 
-    public RemoteEventBase(String s) {
-        super(s, "eventcactusapp");
+    public RemoteEventBase() {
+        super("eventcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         datacatch.evictAll();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         ((OpenJPAEntityManagerSPI) OpenJPAPersistence
             .cast(currentEntityManager())).getConfiguration()
@@ -132,7 +138,7 @@ public class RemoteEventBase extends AbstractTestCase {
                 break;
             }
         }
-        assertTrue("pass = " + pass, pass);
+        assertTrue(pass, "pass = " + pass);
         assertTrue(listener2.updated.size() == 0);
         assertTrue(listener2.deleted.size() == 0);
 

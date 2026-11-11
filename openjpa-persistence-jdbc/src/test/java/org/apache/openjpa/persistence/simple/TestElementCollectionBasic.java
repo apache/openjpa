@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that @ElementCollection works with runtime subclass enhancement.
@@ -30,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestElementCollectionBasic extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedElementCollectionEntity.class,
@@ -41,6 +47,7 @@ public class TestElementCollectionBasic extends SingleEMFTestCase {
      * Mirrors TCK elementCollectionBasicType.
      * Persist entity with @ElementCollection List<String>, find, verify list is populated.
      */
+    @Test
     public void testElementCollectionBasicType() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -57,14 +64,14 @@ public class TestElementCollectionBasic extends SingleEMFTestCase {
         em.getTransaction().begin();
         UnenhancedElementCollectionEntity cust =
             em.find(UnenhancedElementCollectionEntity.class, "1");
-        assertNotNull("Entity should be found", cust);
+        assertNotNull(cust, "Entity should be found");
 
         // This mirrors TCK toString() which accesses this.phones directly
         // and would NPE if phones is null
         String str = cust.toString();
         assertNotNull(str);
 
-        assertNotNull("phones should not be null", cust.getPhones());
+        assertNotNull(cust.getPhones(), "phones should not be null");
         assertEquals(3, cust.getPhones().size());
         assertTrue(cust.getPhones().contains("781-442-2010"));
         assertTrue(cust.getPhones().contains("781-442-2011"));

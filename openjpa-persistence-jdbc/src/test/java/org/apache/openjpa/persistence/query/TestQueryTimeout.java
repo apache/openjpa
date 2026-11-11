@@ -13,12 +13,19 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -42,6 +49,8 @@ import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.QueryTimeoutException;
 import org.apache.openjpa.persistence.query.common.apps.QTimeout;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the new query timeout hint support in the JPA 2.0 spec.
@@ -87,6 +96,14 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         "stringField = ? WHERE mod(DELAY(2,id),2)=0");
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict.supportsQueryTimeout &&
+            Stream.of(DerbyDictionary.class, DB2Dictionary.class, SQLServerDictionary.class,
+                        OracleDictionary.class, InformixDictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
+
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, QTimeout.class);
         getLog().trace("setUp()");
@@ -132,7 +149,6 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             } else {
                 // unknown db, so skip all timeout tests
                 skipTests = skipExceptionTests = noSelectTimeouts = true;
-                setTestsDisabled(true);
                 getLog().info("TestQueryTimeout tests are being skipped, due " +
                     "to " + dict.platform + " not supporting Query Timeouts.");
             }
@@ -140,7 +156,6 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             getLog().info("TestQueryTimeout tests are being skipped, " +
                 "due to " + dict.platform + " not supporting Query Timeouts.");
             skipTests = skipExceptionTests = true;
-            setTestsDisabled(true);
         }
     }
 
@@ -149,6 +164,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query takes
      * 6000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout1a() {
         if (skipTests) {
             getLog().trace("testQueryTimeout1a - test is " +
@@ -173,9 +189,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace("testQueryTimeout1a() - NoHintList runTime" +
                     " msecs=" + runTime);
                 // Hack - Windows sometimes returns 5999 instead of 6000+
-                assertTrue("Should have taken 6+ secs, but was msecs=" +
-                    runTime, runTime > 5900);
-                assertEquals("Verify we found 2 results.", 2, results.size());
+                assertTrue(runTime > 5900, "Should have taken 6+ secs, but was msecs=" +
+                    runTime);
+                assertEquals(2, results.size(), "Verify we found 2 results.");
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout1a() exception = " + e);
             }
@@ -191,6 +207,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query takes
      * 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout1c() {
         if (skipTests) {
             getLog().trace("testQueryTimeout1c - test is " +
@@ -217,10 +234,10 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 long runTime = endTime - startTime;
                 getLog().trace("testQueryTimeout1c() - executeUpdate runTime " +
                     "msecs=" + runTime);
-                assertTrue("Verify we received one result.", (count == 1));
+                assertTrue((count == 1), "Verify we received one result.");
                 // Hack - Windows sometimes returns 1999 instead of 2000+
-                assertTrue("Should have taken 2+ secs, but was msecs=" +
-                    runTime, runTime > 1900);
+                assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
+                    runTime);
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout1c() exception = " + e);
             }
@@ -237,6 +254,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout21b() {
         if (skipTests) {
             getLog().trace("testQueryTimeout21b - test is " +
@@ -259,8 +277,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify Map properties updated the config
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Map provided query timeout", setTime.intValue(),
-                conf.getQueryTimeout());
+            assertEquals(setTime.intValue(), conf.getQueryTimeout(),
+                "Map provided query timeout");
             // verify no default jakarta.persistence.query.timeout is supplied
             // as the Map properties are not passed through as hints
             em = emf.createEntityManager();
@@ -269,8 +287,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             Map<String, Object> hints = q.getHints();
             assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify internal config values were updated
-            assertEquals("Map provided query timeout", setTime.intValue(),
-                q.getFetchPlan().getQueryTimeout());
+            assertEquals(setTime.intValue(), q.getFetchPlan().getQueryTimeout(),
+                "Map provided query timeout");
 
             try {
                 long startTime = System.currentTimeMillis();
@@ -280,9 +298,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace("testQueryTimeout21b() - NoHintSingle runTime " +
                     "msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
-                assertTrue("Should have taken 2+ secs, but was msecs=" +
-                    runTime, runTime > 1900);
-                assertNotNull("Verify we received a result.", result);
+                assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
+                    runTime);
+                assertNotNull(result, "Verify we received a result.");
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout21b() exception = " + e);
             }
@@ -299,6 +317,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 6000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout22a() {
         if (skipTests) {
             getLog().trace("testQueryTimeout22a - test is " +
@@ -328,9 +347,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace("testQueryTimeout22a() - Hint0msec runTime " +
                     "msecs=" + runTime);
                 // Hack - Windows sometimes returns 5999 instead of 6000+
-                assertTrue("Should have taken 6+ secs, but was msecs=" +
-                    runTime, runTime > 5900);
-                assertEquals("Verify we found 2 results.", 2, results.size());
+                assertTrue(runTime > 5900, "Should have taken 6+ secs, but was msecs=" +
+                    runTime);
+                assertEquals(2, results.size(), "Verify we found 2 results.");
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout22a() exception = " + e);
             }
@@ -347,6 +366,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout23b() {
         if (skipTests) {
             getLog().trace("testQueryTimeout23b - test is " +
@@ -385,9 +405,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace("testQueryTimeout23b() - NoHintSingle runTime " +
                     "msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
-                assertTrue("Should have taken 2+ secs, but was msecs=" +
-                    runTime, runTime > 1900);
-                assertNotNull("Verify we received a result.", result);
+                assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
+                    runTime);
+                assertNotNull(result, "Verify we received a result.");
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout23b() exception = " + e);
             }
@@ -404,6 +424,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout31c() {
         if (skipExceptionTests) {
             getLog().trace("testQueryTimeout31c - test is " +
@@ -425,8 +446,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify PU properties updated the config
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("PU provided query timeout", setTime.intValue(),
-                conf.getQueryTimeout());
+            assertEquals(setTime.intValue(), conf.getQueryTimeout(),
+                "PU provided query timeout");
             // create EM and Query
             em = emf.createEntityManager();
             assertNotNull(em);
@@ -436,8 +457,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             Map<String, Object> hints = q.getHints();
             assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify internal config values were updated
-            assertEquals("PU provided query timeout", setTime.intValue(),
-                q.getFetchPlan().getQueryTimeout());
+            assertEquals(setTime.intValue(), q.getFetchPlan().getQueryTimeout(),
+                "PU provided query timeout");
 
             // verify queryTimeout on EM find operations
             em.getTransaction().begin();
@@ -484,6 +505,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * and cause the query to timeout.
      * Expected Results: QueryTimeoutException or PersistenceException
      */
+    @Test
     public void testQueryTimeout32a() {
         if (skipExceptionTests || noSelectTimeouts) {
             getLog().trace("testQueryTimeout32a - test is " +
@@ -508,8 +530,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify Map properties overrode the PU properties in config
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Map provided query timeout", setTime.intValue(),
-                conf.getQueryTimeout());
+            assertEquals(setTime.intValue(), conf.getQueryTimeout(),
+                "Map provided query timeout");
             // create EM and named query
             em = emf.createEntityManager();
             assertNotNull(em);
@@ -522,11 +544,11 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             getLog().trace(
                 "testQueryTimeout32a() - Found jakarta.persistence.query.timeout="
                 + timeout);
-            assertTrue("Expected to find a jakarta.persistence.query.timeout="
-                + setTime, (timeout.intValue() == setTime.intValue()));
+            assertTrue((timeout.intValue() == setTime.intValue()), "Expected to find a jakarta.persistence.query.timeout="
+                + setTime);
             // verify internal config values were updated
-            assertEquals("QueryHint provided query timeout", setTime.intValue(),
-                q.getFetchPlan().getQueryTimeout());
+            assertEquals(setTime.intValue(), q.getFetchPlan().getQueryTimeout(),
+                "QueryHint provided query timeout");
 
             try {
                 long startTime = System.currentTimeMillis();
@@ -558,6 +580,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * will cause the query to timeout.
      * Expected Results: QueryTimeoutException or PersistenceException
      */
+    @Test
     public void testQueryTimeout33b() {
         if (skipExceptionTests || noSelectTimeouts) {
             getLog().trace("testQueryTimeout33b - test is " +
@@ -618,6 +641,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * executeUpdate to timeout.
      * Expected Results: QueryTimeoutException (Derby) or PersistenceException
      */
+    @Test
     public void testQueryTimeout33c() {
         if (skipExceptionTests) {
             getLog().trace("testQueryTimeout33c - test is " +
@@ -639,8 +663,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify PU properties updated the config
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("PU provided no query timeout", setTime.intValue(),
-                conf.getQueryTimeout());
+            assertEquals(setTime.intValue(), conf.getQueryTimeout(),
+                "PU provided no query timeout");
             // create EM and Query
             em = emf.createEntityManager();
             assertNotNull(em);
@@ -669,8 +693,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 "jakarta.persistence.query.timeout");
             assertEquals(timeout, setTime);
             // verify internal config values were updated
-            assertEquals("PU provided query timeout", setTime.intValue(),
-                q.getFetchPlan().getQueryTimeout());
+            assertEquals(setTime.intValue(), q.getFetchPlan().getQueryTimeout(),
+                "PU provided query timeout");
 
             em.getTransaction().begin();
             for (int i=0; i<=1 && bRetry; i++)
@@ -714,6 +738,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the query
      * takes 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout4() {
         if (skipTests) {
             getLog().trace("testQueryTimeout4 - test is " +
@@ -755,9 +780,9 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                     "testQueryTimeout4() - NoHintSingle runTime msecs="
                     + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
-                assertTrue("Should have taken 2+ secs, but was msecs=" +
-                    runTime, runTime > 1900);
-                assertNotNull("Verify we received a result.", result);
+                assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
+                    runTime);
+                assertNotNull(result, "Verify we received a result.");
             } catch (Exception e) {
                 fail("Unexpected testQueryTimeout4() exception = " + e);
             }
@@ -773,6 +798,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * IllegalArgumentExpection
      * Expected Results: IllegalArgumentException
      */
+    @Test
     public void testQueryTimeout5() {
         Integer setTime = -2000;
         getLog().trace("testQueryTimeout5() - setHint(" + setTime + ")");
@@ -810,6 +836,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      * Expected Results: The DELAY function is being called and the update
      * takes 2000+ msecs to complete.
      */
+    @Test
     public void testQueryTimeout6() {
         if (skipTests) {
             getLog().trace("testQueryTimeout6 - test is " +
@@ -829,8 +856,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             // verify PU properties updated the config
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("PU provided timeout", setTime.intValue(),
-                conf.getQueryTimeout());
+            assertEquals(setTime.intValue(), conf.getQueryTimeout(),
+                "PU provided timeout");
             // create EM
             em = emf.createEntityManager();
             assertNotNull(em);
@@ -847,12 +874,12 @@ public class TestQueryTimeout extends SQLListenerTestCase {
                 getLog().trace("testQueryTimeout6() - EM find/update runTime" +
                     " msecs=" + runTime);
                 // Hack - Windows sometimes returns 1999 instead of 2000+
-                assertTrue("Should have taken 2+ secs, but was msecs=" +
-                    runTime, runTime > 1900);
+                assertTrue(runTime > 1900, "Should have taken 2+ secs, but was msecs=" +
+                    runTime);
                 em.clear();
                 qt = em.find(QTimeout.class, 1);
-                assertEquals("Verify the entity was updated.",
-                    qt.getStringField(), "updated");
+                assertEquals(qt.getStringField(),
+                    "updated", "Verify the entity was updated.");
             } catch (Exception e) {
                 // setting a timeout property via PU or Map shouldn't cause a
                 // timeout exception
@@ -1059,8 +1086,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         boolean bLockFailed = matchesExpectedException(OptimisticLockException.class,
             e, "Unable to obtain an object lock");
         // no easy way to determine exact Exception type for all DBs
-        assertTrue(test + " - UNEXPECTED Exception = " + e,
-            (bRetry || bRollback || bLockFailed));
+        assertTrue((bRetry || bRollback || bLockFailed),
+            test + " - UNEXPECTED Exception = " + e);
         getLog().trace(test + " - Caught expected Exception = ", e);
         return bRetry;
     }
@@ -1076,8 +1103,8 @@ public class TestQueryTimeout extends SQLListenerTestCase {
      */
     private void checkException(String test, Exception tested,
         Class<?> expected, String eStr) {
-        assertTrue(test + " - UNEXPECTED Exception = " + tested,
-            matchesExpectedException(expected, tested, eStr));
+        assertTrue(matchesExpectedException(expected, tested, eStr),
+            test + " - UNEXPECTED Exception = " + tested);
         getLog().trace(test + " - Caught expected Exception = ", tested);
     }
 

@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Base class for tests that need to check generated SQL.
@@ -32,8 +35,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
  *
  * @author Patrick Linskey
  */
-public abstract class SQLListenerTestCase
-    extends SingleEMFTestCase {
+public abstract class SQLListenerTestCase extends SingleEMFTestCase {
     private static String _nl = System.getProperty("line.separator");
     protected List<String> sql = new ArrayList<>();
 
@@ -46,7 +48,7 @@ public abstract class SQLListenerTestCase
         super.setUp(copy);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         resetSQL();

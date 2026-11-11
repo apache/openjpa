@@ -30,17 +30,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.openjpa.kernel.Filters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryExpressionSplit extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestQueryExpressionSplit
-     */
-
-    public TestQueryExpressionSplit(String test) {
-        super(test);
-    }
-
+    @Test
     public void testSimple() {
         assertEquals(new String[]{ "foo() bar(boo)" },
             Filters.splitExpressions("foo() bar(boo)", ',', 3));
@@ -49,6 +43,7 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
                 ',', 3));
     }
 
+    @Test
     public void testCommaInString() {
         assertEquals(new String[]{ "foo \"bar(),biz)\"" },
             Filters.splitExpressions("foo \"bar(),biz)\"", ',', 3));
@@ -56,6 +51,7 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
             Filters.splitExpressions("foo 'bar(),\"biz)', boo", ',', 3));
     }
 
+    @Test
     public void testCommaInFunction() {
         assertEquals(new String[]{ "(foo(bar, biz))",
             "boo(biz, baz('xxx,yyy'))" },
@@ -63,6 +59,7 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
                 + "boo(biz, baz('xxx,yyy'))", ',', 3));
     }
 
+    @Test
     public void testEscapedString() {
         assertEquals(new String[]{ "foo \"bar\\\", biz(\"",
             "\"baz\\\", boo\"" },
@@ -72,6 +69,6 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
 
     private void assertEquals(String[] ans, List test) {
         List l = Arrays.asList(ans);
-        assertEquals(l + " != " + test, l, test);
+        Assertions.assertEquals(l, test, l + " != " + test);
     }
 }

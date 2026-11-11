@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +30,9 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.query.common.apps.Osoba;
 import org.apache.openjpa.persistence.query.common.apps.Projekt;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that managed, unmanaged or even transient Entity can be used as a
@@ -46,7 +53,7 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 	public static final int MEMBER_COUNT_PROJEKT2 = 4;
 	public static final int MEMBER_COUNT_TOTAL    = 8;
 
-	@Override
+    @BeforeEach
     public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, Osoba.class, Projekt.class);
 		createData();
@@ -77,12 +84,13 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 		em.clear();
 	}
 
-	@Override
+    @AfterEach
     public void tearDown() throws Exception {
 		super.tearDown();
 	}
 
-	public void testQueryWithTransientInstanceAsParameter() {
+    @Test
+    public void testQueryWithTransientInstanceAsParameter() {
 		Projekt projekt1 = new Projekt(ID_PROJEKT1);
 		Projekt projekt2 = new Projekt(ID_PROJEKT2);
 
@@ -90,7 +98,8 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 		queryWithParameter(em, projekt1, projekt2);
 	}
 
-	public void testQueryWithUnmanagedPersistentInstanceAsParameter() {
+    @Test
+    public void testQueryWithUnmanagedPersistentInstanceAsParameter() {
 		EntityManager em = emf.createEntityManager();
 		Projekt projekt1 = em.find(Projekt.class, ID_PROJEKT1);
 		Projekt projekt2 = em.find(Projekt.class, ID_PROJEKT2);
@@ -101,7 +110,8 @@ public class TestNewEntityAsQueryParameter extends SingleEMFTestCase {
 		queryWithParameter(em, projekt1, projekt2);
 	}
 
-	public void testQueryWithManagedPersistentInstanceAsParameter() {
+    @Test
+    public void testQueryWithManagedPersistentInstanceAsParameter() {
 		EntityManager em = emf.createEntityManager();
 		Projekt projekt1 = em.find(Projekt.class, ID_PROJEKT1);
 		Projekt projekt2 = em.find(Projekt.class, ID_PROJEKT2);

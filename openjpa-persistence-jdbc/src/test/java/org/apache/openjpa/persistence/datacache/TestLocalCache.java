@@ -27,8 +27,8 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 public class TestLocalCache
     extends CacheTest {
 
-    public TestLocalCache(String test) {
-        super(test);
+    public TestLocalCache() {
+        super();
     }
 
     @Override

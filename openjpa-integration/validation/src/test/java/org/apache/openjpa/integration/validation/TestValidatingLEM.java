@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +38,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the new Bean Validation Factory support in the JPA 2.0 spec by
@@ -49,10 +56,8 @@ public class TestValidatingLEM extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, SimpleEntity.class);
 
-        EntityManager em = null;
         // create some initial entities
-        try {
-            em = emf.createEntityManager();
+        try (EntityManager em = emf.createEntityManager()) {
             assertNotNull(em);
             getLog().trace("setup() - creating 1 SimpleEntity");
             em.getTransaction().begin();
@@ -61,10 +66,6 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             em.getTransaction().commit();
         } catch (Exception e) {
             fail("setup() - Unexpected Exception - " + e);
-        } finally {
-            if ((em != null) && em.isOpen()) {
-                em.close();
-            }
         }
     }
 
@@ -72,6 +73,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      * Scenario being tested:
      *   1) Mode of NONE will create a LifecycleEventManager
      */
+    @Test
     public void testValidatingLEM1() {
         getLog().trace("testValidatingLEM1() - NONE");
         // create our EMF
@@ -88,12 +90,12 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("NONE"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("NONE"),
+                "ValidationMode");
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertFalse("Expected a LifecycleEventManager instance",
-                ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
+            assertFalse(ValidatingLifecycleEventManager.class.isAssignableFrom(lem),
+                "Expected a LifecycleEventManager instance");
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM1() exception = " + e);
         } finally {
@@ -108,6 +110,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      * Scenario being tested:
      *   2) Mode of AUTO will create a ValidatingLifecycleEventManager
      */
+    @Test
     public void testValidatingLEM2() {
         getLog().trace("testValidatingLEM2() - AUTO");
         // create our EMF
@@ -124,12 +127,12 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance",
-                ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
+            assertTrue(ValidatingLifecycleEventManager.class.isAssignableFrom(lem),
+                "Expected a ValidatingLifecycleEventManager instance");
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM2() exception = " + e);
         } finally {
@@ -144,6 +147,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      * Scenario being tested:
      *   3) Map mode of CALLBACK will create a ValidatingLifecycleEventManager
      */
+    @Test
     public void testValidatingLEM3() {
         getLog().trace("testValidatingLEM3() - CALLBACK");
         // create the Map to test overrides
@@ -166,12 +170,12 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             // verify created LifecycleEventManager type
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("CALLBACK"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("CALLBACK"),
+                "ValidationMode");
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance",
-                ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
+            assertTrue(ValidatingLifecycleEventManager.class.isAssignableFrom(lem),
+                "Expected a ValidatingLifecycleEventManager instance");
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM3() exception = " + e);
         } finally {
@@ -186,6 +190,7 @@ public class TestValidatingLEM extends SingleEMFTestCase {
      * Scenario being tested:
      *   4) Verify a passed in ValidatorFactory is used
      */
+    @Test
     public void testValidatingLEM4() {
         getLog().trace("testValidatingLEM4() - provided ValidatorFactory");
         // create a default factory to pass in
@@ -214,15 +219,15 @@ public class TestValidatingLEM extends SingleEMFTestCase {
             // verify expected validation config items
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             Class<?> lem = conf.getLifecycleEventManagerInstance().getClass();
             assertNotNull(lem);
-            assertTrue("Expected a ValidatingLifecycleEventManager instance",
-                ValidatingLifecycleEventManager.class.isAssignableFrom(lem));
+            assertTrue(ValidatingLifecycleEventManager.class.isAssignableFrom(lem),
+                "Expected a ValidatingLifecycleEventManager instance");
             // verify factory matches
-            assertEquals("Expected same ValidatorFactory instance",
-                factory, conf.getValidationFactoryInstance());
+            assertEquals(factory,
+                conf.getValidationFactoryInstance(), "Expected same ValidatorFactory instance");
         } catch (Exception e) {
             fail("Unexpected testValidatingLEM4() exception = " + e);
         } finally {

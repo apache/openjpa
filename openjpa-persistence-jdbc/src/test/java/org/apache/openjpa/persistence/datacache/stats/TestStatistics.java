@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache.stats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -30,11 +34,13 @@ import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.jdbc.query.domain.Customer;
 import org.apache.openjpa.persistence.jdbc.query.domain.Order;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestStatistics extends SingleEMFTestCase {
 	private CacheStatistics stats;
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Customer.class, Order.class,
                 "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
@@ -53,11 +59,12 @@ public class TestStatistics extends SingleEMFTestCase {
 		meta.setDataCacheName(DataCache.NAME_DEFAULT);
 	}
 
-	/**
-	 * Tests that statistics captures correct data under perfect caching
-	 * condition.
-	 */
-	@SuppressWarnings("unchecked")
+    /**
+     * Tests that statistics captures correct data under perfect caching
+     * condition.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
     public void testPerfectCache() {
 		// populate a bunch of customer and order
 		int nCustomer = 20;

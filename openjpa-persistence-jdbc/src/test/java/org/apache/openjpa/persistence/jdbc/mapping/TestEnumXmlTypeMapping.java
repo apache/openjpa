@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEnumXmlTypeMapping extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Authority.class, DROP_TABLES);
     }
 
+    @Test
     public void testEnumXmlType() {
         ClassMapping mapping = getMapping(Authority.class);
         FieldMapping fm = mapping.getFieldMapping("authorityName");

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
@@ -26,6 +29,8 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests ordering of parameters as set by the parser and the ordering implicitly
@@ -44,7 +49,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     private static String UPDATED_NAME  = "Obama";
     private static int UPDATED_AGE      = 29;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, CompUser.class, MaleUser.class,
             FemaleUser.class, Address.class);
@@ -60,6 +65,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSetPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -78,6 +84,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         verifyUpdate();
     }
 
+    @Test
     public void testSetPositionalParameterInNonIntutiveOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -97,6 +104,7 @@ public class TestSetParameter extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testSetNamedParameter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -116,6 +124,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         verifyUpdate();
     }
 
+    @Test
     public void testNativeSQL() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -138,6 +147,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         assertEquals(1, count);
     }
 
+    @Test
     public void testMissingFirstPositionalParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= ?2, e.age = ?4 " + "WHERE e.userid = ?3";
@@ -150,6 +160,7 @@ public class TestSetParameter extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testMixedParameterTypesParameter() {
         EntityManager em = emf.createEntityManager();
         String query = "UPDATE CompUser e set e.name= :name, e.age = ?1 " + "WHERE e.userid = ?3";

@@ -18,17 +18,22 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMultiEmEntityListeners extends SingleEMFTestCase {
     private boolean skipped = false;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, ListenerInEntity.class, AddListenerEntity.class
 //                , "openjpa.Compatibility", "SingletonLifecycleEventManager=true"
@@ -40,6 +45,7 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testListenerInEntity1() {
         if (skipped) {
             return;
@@ -145,6 +151,7 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
         assertEquals(postLoad, l.postLoadCount);
     }
 
+    @Test
     public void testAddListenerEntity1() {
         if (skipped) {
             return;

@@ -23,6 +23,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the drop then add schema action for SynchronizeMappings when a
@@ -31,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDropAddSequence extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
 
         // Create a basic emf to determine whether sequences are supported.
@@ -63,6 +65,7 @@ public class TestDropAddSequence extends SingleEMFTestCase {
      * is enabled with drop then add schema action when an entity contains a
      * named native sequence suffixed with "_seq".
      */
+    @Test
     public void testDropAddSequence() {
 
         if (!supportsSequences(emf)) {

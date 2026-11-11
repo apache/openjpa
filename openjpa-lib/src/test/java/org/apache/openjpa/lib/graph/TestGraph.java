@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.lib.graph;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests the {@link Graph} type, and in so doing implicitly tests the
@@ -45,7 +46,7 @@ public class TestGraph
     private Edge _edge3 = new Edge(_node1, _node3, false);
     private Edge _edge4 = new Edge(_node2, _node2, false);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         _graph.addNode(_node1);
         _graph.addNode(_node2);

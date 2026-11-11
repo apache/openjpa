@@ -22,20 +22,25 @@ import jakarta.persistence.EntityManager;
 
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBLobs extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestEJBLobs.class.getCanonicalName());
 
     private EntityManager _pm = null;
     private EJBLobsInnerEntity _inner = null;
 
-    public TestEJBLobs(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBLobs() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(EJBLobsInnerEntity.class, EJBLobsInner2Entity.class);
 
@@ -69,19 +74,23 @@ public class TestEJBLobs extends AbstractTestCase {
         _inner = _pm.find(EJBLobsInnerEntity.class, "string");
     }
 
+    @Test
     public void testOtherFields() {
         assertEquals("string", _inner.getString());
     }
 
+    @Test
     public void testClob() {
         assertEquals("clobField", _inner.getClob());
     }
 
+    @Test
     public void testBlob() {
         assertNotNull(_inner.getBlob());
         assertEquals("inner2", _inner.getBlob().string);
     }
 
+    @Test
     public void testSetNull() {
         startTx(_pm);
         _inner.setClob(null);
@@ -92,10 +101,12 @@ public class TestEJBLobs extends AbstractTestCase {
         assertEquals(null, _inner.getClob());
     }
 
+    @Test
     public void testDelete() {
         deleteAll(EJBLobsInnerEntity.class);
     }
 
+    @Test
     public void testUpdate() {
         startTx(_pm);
         _inner.setClob("newvalue");

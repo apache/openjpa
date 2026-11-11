@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -25,6 +28,8 @@ import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -35,19 +40,20 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestSerializedLobs extends AnnotationTestCase
 {
 
-	public TestSerializedLobs(String name)
+	public TestSerializedLobs()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
     private static final Date DATE = new Date();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(AnnoTest1.class);
     }
 
     // Serialized fields not being read properly
+    @Test
     public void testSerialized() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -68,6 +74,7 @@ public class TestSerializedLobs extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testBlob()
         throws Exception {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
@@ -115,6 +122,7 @@ public class TestSerializedLobs extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testClob()
         throws Exception {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();

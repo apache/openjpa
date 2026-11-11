@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +50,9 @@ import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.util.OpenJPAException;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Test Pessimistic Lock and exception behavior against EntityManager and Query
@@ -63,25 +69,13 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     }
 
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // Disable tests for any DB that has supportsQueryTimeout==false, like Postgres
-        OpenJPAEntityManagerFactorySPI tempEMF = emf;
-        if (tempEMF == null) {
-            tempEMF = createEMF();
-        }
-        assertNotNull(tempEMF);
-        dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
-        assertNotNull(dict);
-        if (!dict.supportsQueryTimeout || dict instanceof OracleDictionary) {
-            setTestsDisabled(true);
-        }
-        if (emf == null) {
-            closeEMF(tempEMF);
-        }
+        return dict.supportsQueryTimeout && !(dict instanceof OracleDictionary);
+    }
 
-        if (isTestsDisabled())
-            return;
-
+    @BeforeEach
+    public void setUp() {
         setUp(CLEAR_TABLES, Employee.class, Department.class, VersionEntity.class, "openjpa.LockManager", "mixed");
 
         EntityManager em = null;
@@ -121,6 +115,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     /*
      * Test find with pessimistic lock after a query with pessimistic lock.
      */
+    @Test
     public void testFindAfterQueryWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
@@ -133,9 +128,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         List<Employee> employees = query.getResultList();
-        assertEquals("Expected 1 element with emplyee id=2", employees.size(), 1);
-        assertTrue("Test Employee first name = 'first.1' or 'first.2'", employees.get(0).getFirstName().equals("first.1")
-                || employees.get(0).getFirstName().equals("first.2"));
+        assertEquals(employees.size(), 1, "Expected 1 element with emplyee id=2");
+        assertTrue(employees.get(0).getFirstName().equals("first.1")
+                || employees.get(0).getFirstName().equals("first.2"), "Test Employee first name = 'first.1' or 'first.2'");
         int lockedId = employees.get(0).getId();
 
         em2.getTransaction().begin();
@@ -162,9 +157,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         List<Department> depts = query2.getResultList();
-        assertEquals("Expected 1 element with department id=20", depts.size(), 1);
-        assertTrue("Test department name = 'D20'", depts.get(0).getName().equals("D10")
-                || depts.get(0).getName().equals("D20"));
+        assertEquals(depts.size(), 1, "Expected 1 element with department id=20");
+        assertTrue(depts.get(0).getName().equals("D10")
+                || depts.get(0).getName().equals("D20"), "Test department name = 'D20'");
 
         em2.getTransaction().begin();
         Map<String, Object> map = new HashMap<>();
@@ -173,8 +168,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // locked
         try {
             Employee emp = em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
-            assertNotNull("Query locks department only, therefore should find Employee.", emp);
-            assertEquals("Test Employee first name = 'first.1'", emp.getFirstName(), "first.1");
+            assertNotNull(emp, "Query locks department only, therefore should find Employee.");
+            assertEquals(emp.getFirstName(), "first.1", "Test Employee first name = 'first.1'");
         } catch (Exception ex) {
             fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
         } finally {
@@ -190,6 +185,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     /*
      * Test find with pessimistic lock after a query with pessimistic lock.
      */
+    @Test
     public void testFindAfterQueryOrderByWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
@@ -200,8 +196,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         List<Employee> q = query.getResultList();
-        assertEquals("Expected 1 element with emplyee id=2", q.size(), 1);
-        assertEquals("Test Employee first name = 'first.2'", q.get(0).getFirstName(), "first.2");
+        assertEquals(q.size(), 1, "Expected 1 element with emplyee id=2");
+        assertEquals(q.get(0).getFirstName(), "first.2", "Test Employee first name = 'first.2'");
 
         em2.getTransaction().begin();
         Map<String, Object> map = new HashMap<>();
@@ -228,8 +224,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("jakarta.persistence.query.timeout", lockWaitTime);
         List<Department> result = query.getResultList();
-        assertEquals("Expected 1 element with department id=20", q.size(), 1);
-        assertEquals("Test department name = 'D20'", result.get(0).getName(), "D20");
+        assertEquals(q.size(), 1, "Expected 1 element with department id=20");
+        assertEquals(result.get(0).getName(), "D20", "Test department name = 'D20'");
 
         em2.getTransaction().begin();
         map.clear();
@@ -238,8 +234,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // locked
         try {
             Employee emp = em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
-            assertNotNull("Query locks department only, therefore should find Employee.", emp);
-            assertEquals("Test Employee first name = 'first.1'", emp.getFirstName(), "first.1");
+            assertNotNull(emp, "Query locks department only, therefore should find Employee.");
+            assertEquals(emp.getFirstName(), "first.1", "Test Employee first name = 'first.1'");
         } catch (Exception ex) {
             if (!dict.supportsLockingWithOrderClause)
                 fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
@@ -258,6 +254,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     /*
      * Test query with pessimistic lock after a find with pessimistic lock.
      */
+    @Test
     public void testQueryAfterFindWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
@@ -275,9 +272,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             // Lock all selected Department but skip the first, i.e. lock
             // Department(20), should query successfully.
             List<Department> q = query.getResultList();
-            assertEquals("Expected 1 element with department id=20", q.size(), 1);
-            assertTrue("Test department name = 'D20'", q.get(0).getName().equals("D10")
-                    || q.get(0).getName().equals("D20"));
+            assertEquals(q.size(), 1, "Expected 1 element with department id=20");
+            assertTrue(q.get(0).getName().equals("D10")
+                    || q.get(0).getName().equals("D20"), "Test department name = 'D20'");
         } catch (Exception ex) {
             assertError(ex, QueryTimeoutException.class);
         } finally {
@@ -319,6 +316,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     /*
      * Test query with pessimistic lock after a find with pessimistic lock.
      */
+    @Test
     public void testQueryOrderByAfterFindWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
@@ -337,8 +335,8 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // Department(20), should query successfully.
         try {
             List<Department> q = query.getResultList();
-            assertEquals("Expected 1 element with department id=20", q.size(), 1);
-            assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
+            assertEquals(q.size(), 1, "Expected 1 element with department id=20");
+            assertEquals(q.get(0).getName(), "D20", "Test department name = 'D20'");
         } catch (Exception ex) {
             assertError(ex, QueryTimeoutException.class);
         } finally {
@@ -379,6 +377,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     /*
      * Test multiple execution of the same query with pessimistic lock.
      */
+    @Test
     public void testRepeatedQueryWithPessimisticLocks() {
         EntityManager em = emf.createEntityManager();
         resetSQL();
@@ -411,6 +410,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
      * issues a refresh in the main thread with a lock timeout, and expects a
      * LockTimeoutException.
      */
+    @Test
     public void testRefreshLockTimeout() {
 
         // Only run this test on DB2 and Derby for now.  It could cause
@@ -515,7 +515,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
 		}
 
         Object failed = getFailedObject(actual);
-        assertNotNull("Failed object is null", failed);
+        assertNotNull(failed, "Failed object is null");
         assertNotEquals("null", failed);
     }
 

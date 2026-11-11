@@ -18,15 +18,20 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConcurrentMap extends SingleEMTestCase {
-	@Override
+    @BeforeEach
     public void setUp() {
         setUp(ConcurrentEntityLeft.class, ConcurrentEntityRight.class,
               CLEAR_TABLES);
     }
 
+    @Test
     public void testConcurrentMap001() {
         em.getTransaction().begin();
 

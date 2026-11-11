@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,6 +40,8 @@ import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.TypedQueryReferenceImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the JPA 3.2 {@code EntityManagerFactory.getNamedQueries(Class)} and the
@@ -40,7 +49,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestGetNamedQueries extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(NamedQueryRefEntity.class, CLEAR_TABLES);
     }
@@ -48,6 +57,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
     /**
      * Regression test for @NamedQuery.resultClass() being parsed at all.
      */
+    @Test
     public void testAnnotationResultClassParsed() {
         MetaDataRepository mdr = emf.getConfiguration().getMetaDataRepositoryInstance();
 
@@ -65,6 +75,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         assertNull(untyped.getResultType());
     }
 
+    @Test
     public void testEntityResultType() {
         Map<String, TypedQueryReference<NamedQueryRefEntity>> refs =
             emf.getNamedQueries(NamedQueryRefEntity.class);
@@ -78,6 +89,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         assertEquals(NamedQueryRefEntity.class, ref.getResultType());
     }
 
+    @Test
     public void testScalarResultType() {
         Map<String, TypedQueryReference<String>> refs = emf.getNamedQueries(String.class);
         assertTrue(refs.containsKey("NQRef.names"));
@@ -89,6 +101,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
     /**
      * Queries without a declared result type are never returned - not even for Object.class.
      */
+    @Test
     public void testSupertypeIsAssignable() {
         Map<String, TypedQueryReference<Object>> refs = emf.getNamedQueries(Object.class);
         assertTrue(refs.containsKey("NQRef.all"));
@@ -97,6 +110,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         assertFalse(refs.containsKey("NQRef.untyped"));
     }
 
+    @Test
     public void testHints() {
         Map<String, Object> hints = emf.getNamedQueries(NamedQueryRefEntity.class)
             .get("NQRef.all").getHints();
@@ -114,6 +128,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
      * metadata, because {@link jakarta.persistence.EntityManager#createQuery(TypedQueryReference)}
      * replays them in iteration order and OpenJPA has aliased hint keys writing the same setting.
      */
+    @Test
     public void testHintsKeepDeclarationOrder() {
         Map<String, Object> declared = new LinkedHashMap<>();
         declared.put("openjpa.FetchPlan.LockTimeout", "1000");
@@ -124,6 +139,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         assertEquals(new ArrayList<>(declared.keySet()), new ArrayList<>(hints.keySet()));
     }
 
+    @Test
     public void testReturnedMapIsACopy() {
         Map<String, TypedQueryReference<NamedQueryRefEntity>> refs =
             emf.getNamedQueries(NamedQueryRefEntity.class);
@@ -131,6 +147,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         assertTrue(emf.getNamedQueries(NamedQueryRefEntity.class).containsKey("NQRef.all"));
     }
 
+    @Test
     public void testNullResultTypeRejected() {
         try {
             emf.getNamedQueries(null);
@@ -144,6 +161,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
      * getNamedQueries() must work as the very first operation on a factory, i.e. before any
      * entity manager forced the metadata repository to load the persistent types.
      */
+    @Test
     public void testColdRepository() {
         OpenJPAEntityManagerFactorySPI emf2 = createEMF(NamedQueryRefEntity.class);
         try {
@@ -153,6 +171,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testDynamicallyAddedNamedQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -170,6 +189,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
      * be captured from the compiled query. Without it the registered query is
      * invisible to {@code getNamedQueries(Class)}, unlike a JPQL one.
      */
+    @Test
     public void testDynamicallyAddedCriteriaNamedQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -180,7 +200,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
 
             Map<String, TypedQueryReference<NamedQueryRefEntity>> refs =
                 emf.getNamedQueries(NamedQueryRefEntity.class);
-            assertTrue(refs.keySet().toString(), refs.containsKey("NQRef.dynCriteria"));
+            assertTrue(refs.containsKey("NQRef.dynCriteria"), refs.keySet().toString());
             assertEquals(NamedQueryRefEntity.class, refs.get("NQRef.dynCriteria").getResultType());
             assertNotNull(em.createQuery(refs.get("NQRef.dynCriteria")).getResultList());
         } finally {
@@ -191,6 +211,7 @@ public class TestGetNamedQueries extends SingleEMFTestCase {
     /**
      * The declared result class must not break execution of the named queries.
      */
+    @Test
     public void testCreateNamedQueryWithDeclaredResultClassStillWorks() {
         EntityManager em = emf.createEntityManager();
         try {

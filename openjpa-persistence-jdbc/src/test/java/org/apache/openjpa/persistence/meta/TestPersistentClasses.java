@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,12 +32,12 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.meta.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.Test;
 
-public class TestPersistentClasses
-    extends AbstractTestCase {
+public class TestPersistentClasses extends AbstractTestCase {
 
-    public TestPersistentClasses(String test) {
-        super(test, "metacactusapp");
+    public TestPersistentClasses() {
+        super("metacactusapp");
     }
 
     private void assertClass(Class cls, OpenJPAConfiguration conf,
@@ -49,13 +52,14 @@ public class TestPersistentClasses
             getPersistentTypeNames(false, null);
 
         if (shouldExist)
-            assertTrue("expected element " + clsName + " was not found in "
-                + names, names.contains(clsName));
+            assertTrue(names.contains(clsName), "expected element " + clsName + " was not found in "
+                + names);
         else
-            assertTrue("unexpected element " + clsName + " was found in "
-                + names, !names.contains(clsName));
+            assertTrue(!names.contains(clsName), "unexpected element " + clsName + " was found in "
+                + names);
     }
 
+    @Test
     public void testNoneConfigured() {
 
         Map map = new HashMap();
@@ -70,6 +74,7 @@ public class TestPersistentClasses
         pmf.close();
     }
 
+    @Test
     public void testJPAClasspathScanner() {
         Map map = new HashMap();
         map.put("openjpa.MetaDataFactory",
@@ -88,6 +93,7 @@ public class TestPersistentClasses
         pmf.close();
     }
 
+    @Test
     public void testTypes() {
 
         Map map = new HashMap();

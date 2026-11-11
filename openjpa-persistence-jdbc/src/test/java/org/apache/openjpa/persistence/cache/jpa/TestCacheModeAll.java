@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +30,7 @@ import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.Test;
 
 /*
  * When shared-cache-mode is set to ALL, all entities will be cached.
@@ -71,14 +75,17 @@ public class TestCacheModeAll extends AbstractCacheModeTestCase {
         return sql;
     }
 
+    @Test
     public void testCacheables() {
         assertCacheables(cache, true);
     }
 
+    @Test
     public void testUncacheables() {
         assertUncacheables(cache, true);
     }
 
+    @Test
     public void testUnspecified() {
         assertUnspecified(cache, true);
     }

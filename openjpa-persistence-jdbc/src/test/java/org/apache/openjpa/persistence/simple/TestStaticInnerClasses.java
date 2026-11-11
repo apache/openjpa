@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that JPA 3.2 allows entity and embeddable classes to be
@@ -28,12 +33,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestStaticInnerClasses extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, StaticInnerEntity.InnerEntity.class,
                 StaticInnerEntity.InnerEmbeddable.class);
     }
 
+    @Test
     public void testPersistAndFindInnerEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -56,6 +62,7 @@ public class TestStaticInnerClasses extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryInnerEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

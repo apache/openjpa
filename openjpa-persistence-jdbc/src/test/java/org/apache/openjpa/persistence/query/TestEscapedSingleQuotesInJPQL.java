@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
@@ -26,11 +28,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEscapedSingleQuotesInJPQL
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
 
@@ -43,6 +47,7 @@ public class TestEscapedSingleQuotesInJPQL
         em.close();
     }
 
+    @Test
     public void testEscapedSingleQuotesInJPQL() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAQuery q = em.createQuery("select count(o) " +

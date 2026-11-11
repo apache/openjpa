@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, XmlOverrideToOneEntity.class);
     }
@@ -33,6 +38,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
         return "to-one-xml-override";
     }
 
+    @Test
     public void testToManyLazyOverride() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -51,8 +57,8 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
             assertTrue(sql.size() == 1);
             String lastSql = sql.get(0);
             // Make sure we don't have any joins!
-            assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
-                + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
+            assertFalse(lastSql.contains("join") || lastSql.contains("JOIN"),
+                "Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = " + lastSql);
 
             // Make sure that we selected lazy join columns.
             assertTrue(lastSql.contains("o2o"));

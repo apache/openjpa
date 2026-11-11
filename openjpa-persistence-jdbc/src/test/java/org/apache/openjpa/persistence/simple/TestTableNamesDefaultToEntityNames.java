@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTableNamesDefaultToEntityNames
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(NamedEntity.class);
     }
 
+    @Test
     public void testEntityNames() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(
             emf, NamedEntity.class);

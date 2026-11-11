@@ -19,9 +19,16 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.CircularFKPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.CircularFKPC2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestCircularFK extends BaseJDBCTest{
@@ -29,15 +36,7 @@ public class TestCircularFK extends BaseJDBCTest{
     private Object _oid1 = null;
     private Object _oid2 = null;
 
-    public TestCircularFK(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestCircularFK */
-    public TestCircularFK() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         OpenJPAEntityManager pm = getPM();
 
@@ -64,6 +63,7 @@ public class TestCircularFK extends BaseJDBCTest{
         endEm(pm);
     }
 
+    @Test
     public void testInsert() {
         // inserts are tested in setup; just make sure the inserts
         // actually worked
@@ -79,6 +79,7 @@ public class TestCircularFK extends BaseJDBCTest{
         pm.close();
     }
 
+    @Test
     public void testDelete() {
         OpenJPAEntityManager pm = getPM();
         CircularFKPC pc1 = (CircularFKPC) pm.find(CircularFKPC.class,_oid1);
@@ -103,6 +104,7 @@ public class TestCircularFK extends BaseJDBCTest{
         endEm(pm);
     }
 
+    @Test
     public void testUpdate() {
         OpenJPAEntityManager pm = getPM();
         CircularFKPC pc1 = (CircularFKPC) pm.find(CircularFKPC.class,_oid1);

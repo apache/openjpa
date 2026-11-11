@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,14 +27,13 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import junit.textui.TestRunner;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestManyEagerSQL
     extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,
@@ -74,6 +75,7 @@ public class TestManyEagerSQL
         em.close();
     }
 
+    @Test
     public void testManyToOneEagerQuery() {
         sql.clear();
 
@@ -112,6 +114,7 @@ public class TestManyEagerSQL
         em.close();
     }
 
+    @Test
     public void testManyToOneLazyQuery() {
         sql.clear();
 
@@ -157,6 +160,7 @@ public class TestManyEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToManyEagerQuery() {
         sql.clear();
 
@@ -203,6 +207,7 @@ public class TestManyEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToOneParentQuery() {
         sql.clear();
 
@@ -230,6 +235,7 @@ public class TestManyEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToOneChildQuery() {
         sql.clear();
 
@@ -256,9 +262,4 @@ public class TestManyEagerSQL
         assertEquals(0, sql.size());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestManyEagerSQL.class);
-    }
 }
-

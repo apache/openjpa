@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.inheritance.entity.Admin;
 import org.apache.openjpa.persistence.inheritance.entity.ComputerUser;
 import org.apache.openjpa.persistence.inheritance.entity.RegularUser;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests entities obtained via find(), getReference() or navigated to via
@@ -42,7 +46,7 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	private Admin admin;
 	private RegularUser user;
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Admin.class, RegularUser.class,
 				ComputerUser.class);
@@ -59,7 +63,8 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testFindAndNaviagtedEntityIdential() {
+    @Test
+    public void testFindAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
@@ -69,7 +74,8 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 		em1.close();
 	}
 
-	public void testReferenceAndNaviagtedEntityIdential() {
+    @Test
+    public void testReferenceAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());

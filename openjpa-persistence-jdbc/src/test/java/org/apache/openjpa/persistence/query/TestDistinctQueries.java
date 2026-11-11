@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.models.company.fetchlazy.Address;
@@ -31,10 +33,12 @@ import org.apache.openjpa.persistence.models.company.fetchlazy.Person;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Product;
 import org.apache.openjpa.persistence.models.company.fetchlazy.ProductOrder;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDistinctQueries extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Address.class, Company.class, Customer.class, Employee.class,
             FullTimeEmployee.class, LineItem.class, PartTimeEmployee.class,
@@ -56,24 +60,28 @@ public class TestDistinctQueries extends SingleEMTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testDuplicateResultsInNonDistinctJoinFetchQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join fetch o.items").getResultList();
         assertEquals(3, l.size());
     }
 
+    @Test
     public void testDuplicateResultsInNonDistinctJoinQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(3, l.size());
     }
 
+    @Test
     public void testNoDuplicateResultsInDistinctQuery() {
         List l = em.createQuery("select distinct o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(1, l.size());
     }
 
+    @Test
     public void testDuplicateResultsInNonDistinctConstructorJoinQuery() {
         List l = em.createQuery("select new " +
             "org.apache.openjpa.persistence.query.TestDistinctQueries$Holder(" +
@@ -82,6 +90,7 @@ public class TestDistinctQueries extends SingleEMTestCase {
         assertEquals(3, l.size());
     }
 
+    @Test
     public void testNoDuplicateResultsInDistinctConstructorQuery()
         throws NoSuchMethodException {
         List l = em.createQuery("select distinct new " +

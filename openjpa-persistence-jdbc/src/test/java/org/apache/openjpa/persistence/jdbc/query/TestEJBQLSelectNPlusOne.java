@@ -18,20 +18,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBQLSelectNPlusOne
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-	public TestEJBQLSelectNPlusOne(String name)
-	{
-		super(name);
-	}
+public class TestEJBQLSelectNPlusOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-	@Override
+    @BeforeEach
     public void setUp()
 	{
 		deleteAll (RuntimeTest1.class);
@@ -42,7 +41,8 @@ public class TestEJBQLSelectNPlusOne
 		endEm(pm);
 	}
 
-	public void testSimpleEJBQLQuery() throws Exception
+    @Test
+    public void testSimpleEJBQLQuery() throws Exception
 	{
 		EntityManager pm = currentEntityManager();
         // run a JDOQL query first to take care of any class-loading issues

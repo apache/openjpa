@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.puconf;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestPersistenceUnitConfig extends PersistenceTestCase {
+public class TestPersistenceUnitConfig extends AbstractPersistenceTestCase {
     private String persistenceXmlResource;
 
     public TestPersistenceUnitConfig() {
@@ -35,11 +39,12 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
         return OpenJPAPersistence.createEntityManagerFactory(unitName, persistenceXmlResource);
     }
 
+    @Test
     public void testCreateEMFWithGoodPU() {
         EntityManagerFactory emf = null;
         try {
             emf = createEmf("PUTest-Good");
-            assertNotNull("Assert emf was successfully created.", emf);
+            assertNotNull(emf, "Assert emf was successfully created.");
         } finally {
             if (emf != null) {
                 try {
@@ -51,6 +56,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
         }
     }
 
+    @Test
     public void testCreateEMFWithBadJarFileElement() {
         EntityManagerFactory emf = null;
         try {
@@ -67,6 +73,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
         }
     }
 
+    @Test
     public void testCreateEMFWithNonOpenJPAProvider() {
         EntityManagerFactory emf = null;
         try {
@@ -87,6 +94,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
         }
     }
 
+    @Test
     public void testCreateEMFWithBadJarFileElementAndNonOpenJPAProvider() {
         EntityManagerFactory emf = null;
         try {
@@ -106,7 +114,8 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
             }
         }
     }
-    
+
+    @Test
     public void testCreateEMFWithCustomInjectScope() {
     	EntityManagerFactory emf = null;
     	try {
@@ -122,6 +131,7 @@ public class TestPersistenceUnitConfig extends PersistenceTestCase {
     	}
     }
 
+    @Test
     public void testCreateEMFWithCustomQualifiers() {
     	EntityManagerFactory emf = null;
     	try {

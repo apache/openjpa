@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.exception;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -31,11 +37,14 @@ import org.apache.openjpa.lib.log.AbstractLog;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class TestParameterLogging extends AbstractPersistenceTestCase implements LogFactory {
     String _regex = ".*params=.*1,.*]";
     private static final String ID = Integer.toString(Integer.MIN_VALUE);
-    @Override
+
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         messages.clear();
@@ -77,6 +86,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
     /*
      * Ensure that parameter values are not included in exception text by default.
      */
+    @Test
     public void testNoParamsByDefault() {
         RollbackException e = getRollbackException(PObject.class, CLEAR_TABLES);
 
@@ -94,6 +104,7 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
     /*
      * If the EMF is created with PrintParameters=true the parameter values will be logged in exception text.
      */
+    @Test
     public void testParamsEnabledByConfig() {
         RollbackException e =
             getRollbackException(PObject.class, CLEAR_TABLES, "openjpa.ConnectionFactoryProperties",
@@ -110,14 +121,17 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
         }
     }
 
+    @Test
     public void testDefaultPrintParameters() {
         queryCachePrintParametersLogic(null);
     }
 
+    @Test
     public void testPrintParametersTrue() {
         queryCachePrintParametersLogic(true);
     }
 
+    @Test
     public void testPrintParametersFalse() {
         queryCachePrintParametersLogic(false);
     }

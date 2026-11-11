@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +28,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that query pagination works properly.
@@ -33,7 +37,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestQueryPagination
     extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class, CLEAR_TABLES);
 
@@ -49,26 +53,32 @@ public class TestQueryPagination
         em.close();
     }
 
+    @Test
     public void testFirstThenMax() {
         helper(true, 2, 3, 3);
     }
 
+    @Test
     public void testMaxThenFirst() {
         helper(false, 2, 3, 3);
     }
 
+    @Test
     public void testNoResultsFirstFirst() {
         helper(true, 10, 3, 0);
     }
 
+    @Test
     public void testNoResultsFirstLast() {
         helper(false, 10, 3, 0);
     }
 
+    @Test
     public void testAllResultsFirstFirst() {
         helper(true, 0, 10, 6);
     }
 
+    @Test
     public void testAllResultsFirstLast() {
         helper(false, 0, 10, 6);
     }

@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -45,6 +52,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEmbeddable extends SQLListenerTestCase {
     private static final Calendar cal = new GregorianCalendar();
@@ -77,7 +86,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public Map<Integer, PhoneNumber> phones = new HashMap<>();
     public Map<Integer, Employee> employees = new HashMap<>();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Embed.class, Embed_Coll_Embed.class, Embed_Coll_Integer.class,
             Embed_Embed.class, Embed_Embed_ToMany.class, Embed_ToMany.class,
@@ -104,6 +113,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             sql.clear();
     }
 
+    @Test
     public void testGroupByEmbed() {
         EntityManager em = emf.createEntityManager();
         String query[] = {
@@ -123,6 +133,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testKeyEmbeddableCompare() {
         EntityManager em = emf.createEntityManager();
         String query[] = {
@@ -153,6 +164,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testEntityA_Embed_Coll_Map() {
         queryEntityA_Embed_Coll_Map();
     }
@@ -160,6 +172,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     /**
      * Test for OJ-1793.
      */
+    @Test
     public void testEntityA_Embed_Single_Coll() {
         EntityManager em = emf.createEntityManager();
 
@@ -190,6 +203,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     /**
      * Test for OJ-1890.
      */
+    @Test
     public void testSettingEmbeddableMultipleTimesOnManagedEntity() {
         createEntityA_Embed();
         EntityManager em = emf.createEntityManager();
@@ -215,100 +229,117 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testEntityA_Coll_String() {
         createEntityA_Coll_String();
         queryEntityA_Coll_String();
         findEntityA_Coll_String();
     }
 
+    @Test
     public void testEntityA_Embed_ToOne() {
         createEntityA_Embed_ToOne();
         queryEntityA_Embed_ToOne();
         findEntityA_Embed_ToOne();
     }
 
+    @Test
     public void testEntityA_Embed_MappedToOne() {
         createEntityA_Embed_MappedToOne();
         queryEntityA_Embed_MappedToOne();
         findEntityA_Embed_MappedToOne();
     }
 
+    @Test
     public void testEntityA_Coll_Embed_ToOne() {
         createEntityA_Coll_Embed_ToOne();
         queryEntityA_Coll_Embed_ToOne();
         findEntityA_Coll_Embed_ToOne();
     }
 
+    @Test
     public void testEntityA_Embed_ToMany() {
         createEntityA_Embed_ToMany();
         queryEntityA_Embed_ToMany();
         findEntityA_Embed_ToMany();
     }
 
+    @Test
     public void testEntityA_Embed_Embed_ToMany() {
         createEntityA_Embed_Embed_ToMany();
         queryEntityA_Embed_Embed_ToMany();
         findEntityA_Embed_Embed_ToMany();
     }
 
+    @Test
     public void testEntityA_Embed_Coll_Integer() {
         createEntityA_Embed_Coll_Integer();
         queryEntityA_Embed_Coll_Integer();
         findEntityA_Embed_Coll_Integer();
     }
 
+    @Test
     public void testEntityA_Embed_Embed() {
         createEntityA_Embed_Embed();
         queryEntityA_Embed_Embed();
         findEntityA_Embed_Embed();
     }
 
+    @Test
     public void testEntityA_Coll_Embed_Embed() {
         createEntityA_Coll_Embed_Embed();
         queryEntityA_Coll_Embed_Embed();
         findEntityA_Coll_Embed_Embed();
     }
 
+    @Test
     public void testEntityA_Embed_Coll_Embed() {
         createEntityA_Embed_Coll_Embed();
         queryEntityA_Embed_Coll_Embed();
         findEntityA_Embed_Coll_Embed();
     }
 
+    @Test
     public void testEmployee() {
         createEmployeeObj();
         queryEmployeeObj();
         findEmployeeObj();
     }
 
+    @Test
     public void testMapKey() {
         createObjMapKey();
         queryObjMapKey();
         findObjMapKey();
     }
 
+    @Test
     public void testMapKeyClass() {
         createObjMapKeyClass();
         queryObjMapKeyClass();
         findObjMapKeyClass();
     }
 
+    @Test
     public void testMapKeyEnumerated() {
         createObjMapKeyEnumerated();
         findObjMapKeyEnumerated();
     }
 
+    @Test
     public void testMapKeyTemporal() {
         createObjMapKeyTemporal();
         findObjMapKeyTemporal();
         queryObjMapKeyTemporal();
     }
 
+    @Test
     public void testEntityA_Embed_MappedToOneCascadeDelete() {
         createEntityA_Embed_MappedToOneCascadeDelete();
         updateEntityA_Embed_MappedToOneCascadeDelete();
     }
 
+    @Test
     public void testEmbeddableContainingRelationWithGeneratedKey()
         throws IOException, SQLException {
         createEmbeddableContainingRelationWithGeneratedKey();
@@ -989,6 +1020,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testLazyFetchEmbed() {
         EntityManager em = emf.createEntityManager();
         EntityA_Embed a = new EntityA_Embed();
@@ -2796,13 +2828,13 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.clear();
         Book b2 = em.find(Book.class, id);
         Set<Listing> listings = b2.getListings();
-        assertEquals("There should be exactly 3 listings", 3, listings.size());
+        assertEquals(3, listings.size(), "There should be exactly 3 listings");
         for (Listing listing : listings) {
             Seller seller = listing.getSeller();
             assertNotNull(seller);
             // In HSQL DB Id can be 0, so `seller.getId() != 0` will fail
-            assertTrue("Unknown seller: " + seller, BOB_NAME.equals(seller.getName()) ||
-                    JIM_NAME.equals(seller.getName()) || MIKE_NAME.equals(seller.getName()));
+            assertTrue(BOB_NAME.equals(seller.getName()) ||
+                    JIM_NAME.equals(seller.getName()) || MIKE_NAME.equals(seller.getName()), "Unknown seller: " + seller);
         }
         em.close();
     }
@@ -2810,6 +2842,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     /*
      * EntityA_Embed_Complex routines
      */
+    @Test
     public void testEntityA_Embed_Complex() {
         getLog().trace("testEntityA_Embed_Complex() - entered");
         createEntityA_Embed_Complex(null);
@@ -2817,6 +2850,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         findEntityA_Embed_Complex(null);
     }
 
+    @Test
     public void testEntityA_Embed_Complex2() {
         getLog().trace("testEntityA_Embed_Complex2() - entered");
         EntityManager em = emf.createEntityManager();
@@ -2968,7 +3002,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.getTransaction().commit();
         em.clear();
         a = em.find(EntityA_Embed_Complex.class, ID);
-        assertNull("Entity should no longer exist", a);
+        assertNull(a, "Entity should no longer exist");
         if (emClose) {
             em.close();
         }
@@ -3032,6 +3066,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     /*
      * EntityA_Embed_Complex routines
      */
+    @Test
     public void testEmbeddableCollUsingArraysAsList() {
         getLog().trace("testEmbeddableCollUsingArraysAsList() - entered");
         EntityManager em = emf.createEntityManager();
@@ -3071,6 +3106,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     /*
      * test the default name for element collection table
      */
+    @Test
     public void testDefaultNameForElementCollection() {
         getLog().trace("testDefaultNameForElementCollection() - entered");
         EntityManager em = emf.createEntityManager();

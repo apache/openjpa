@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.flush;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Asserts how <code>openjpa.IgnoreChanges=true</code> interacts with the flush mode.
@@ -47,7 +51,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
     private static final String JPQL =
         "SELECT o FROM UnenhancedFlushOrder o WHERE o.customer.name = 'Michael Bouschen'";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedFlushSpouse.class,
               UnenhancedFlushCustomer.class,
@@ -71,6 +75,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * With the flush mode inherited from the persistence context, IgnoreChanges keeps
      * its documented effect: the query runs against the datastore and nothing is flushed.
      */
+    @Test
     public void testIgnoreChangesSuppressesFlushForInheritedFlushMode() {
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals(FlushModeType.AUTO, em.getFlushMode());
@@ -92,6 +97,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * and IgnoreChanges opts out of the visibility guarantee for either trigger, so the
      * query still runs against the datastore.
      */
+    @Test
     public void testExplicitAutoOnQueryKeepsIgnoreChanges() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -115,6 +121,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * in particular the query must still be executed against the datastore rather than
      * in memory over the whole extent.
      */
+    @Test
     public void testAutoThenCommitBehavesLikeCommitAlone() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -140,6 +147,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * {@code addNamedQuery()} must not lose the option either: the registration replays
      * the source query's flush mode, which is never unset.
      */
+    @Test
     public void testIgnoreChangesSurvivesNamedQueryRoundTrip() {
         emf.addNamedQuery("TestQueryFlushIgnoreChanges.byName",
             emf.createEntityManager().createQuery(JPQL, UnenhancedFlushOrder.class));

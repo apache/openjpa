@@ -21,13 +21,15 @@ package org.apache.openjpa.persistence.generationtype;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * Test for JIRA OPENJPA-2650.
  */
 public class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Dog.class, "openjpa.jdbc.SchemaFactory",
             "native(ForeignKeys=true)", "openjpa.jdbc.DBDictionary",
@@ -38,6 +40,7 @@ public class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
      * This test verifies that when useSchemaName=false, and SchemaFactory is
      * set, the schema name is not added to the table sequence queries.
      */
+    @Test
     public void testNoSchemaAndSchemaFactory() {
 
         EntityManager em = emf.createEntityManager();

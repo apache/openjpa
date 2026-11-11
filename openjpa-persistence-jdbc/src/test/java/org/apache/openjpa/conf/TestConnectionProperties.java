@@ -20,9 +20,11 @@ package org.apache.openjpa.conf;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectionProperties extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(new Object[] { "openjpa.ConnectionProperties",
             "autoReconnect=true,MaxActive=10,MaxWait=6000,TestOnBorrow=true"
@@ -30,6 +32,7 @@ public class TestConnectionProperties extends SingleEMFTestCase {
         emf.createEntityManager().close();
     }
 
+    @Test
     public void testEmWithProps() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.close();

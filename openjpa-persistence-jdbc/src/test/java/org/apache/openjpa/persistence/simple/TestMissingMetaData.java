@@ -18,23 +18,25 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // This test case extends TestCase directly instead of SingleEMTestCase with the
 // corresponding setup() method because that scheme goes down a different code
 // path and doesn't test the intended code change.
-public class TestMissingMetaData extends TestCase {
+public class TestMissingMetaData {
     private OpenJPAEntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
@@ -56,6 +58,7 @@ public class TestMissingMetaData extends TestCase {
      * The skip is logged, so a forgotten annotation stays diagnosable; see
      * MetamodelImpl and JDBCBrokerFactory.
      */
+    @Test
     public void testMissingMetaData() {
         emf.createEntityManager().close();
     }
@@ -64,19 +67,14 @@ public class TestMissingMetaData extends TestCase {
      * The metamodel is built over the same class list, and must skip the
      * unmanaged class rather than fail.
      */
+    @Test
     public void testMissingMetaDataInMetamodel() {
         assertNotNull(emf.getMetamodel());
     }
 
-    @Override
+    @AfterEach
     public void tearDown() {
         emf.close();
         emf = null;
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestMissingMetaData.class);
-
-    }
-
 }

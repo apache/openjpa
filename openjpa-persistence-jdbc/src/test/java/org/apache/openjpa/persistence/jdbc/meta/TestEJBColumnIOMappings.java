@@ -18,24 +18,24 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.ColumnIOPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBColumnIOMappings
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-	public TestEJBColumnIOMappings(String name)
-	{
-		super(name);
-	}
-
-	@Override
+public class TestEJBColumnIOMappings extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+    @BeforeEach
     public void setUp()
 	{
 		deleteAll(ColumnIOPC.class);
 	}
 
-	public void testIgnoreInsert ()
+    @Test
+    public void testIgnoreInsert ()
 	{
 		ColumnIOPC pc = new ColumnIOPC (2);
 		pc.setName ("pc");
@@ -74,7 +74,8 @@ public class TestEJBColumnIOMappings
 		endEm(pm);
 	}
 
-	public void testIgnoreUpdate ()
+    @Test
+    public void testIgnoreUpdate ()
 	{
 		ColumnIOPC pc = new ColumnIOPC (3);
 		pc.setName ("pc");
@@ -112,7 +113,8 @@ public class TestEJBColumnIOMappings
 	}
 
 
-	public void testPrimitiveMappedToFieldOfForeignKey ()
+    @Test
+    public void testPrimitiveMappedToFieldOfForeignKey ()
 	{
         // have to make rel persistent before setting ident field b/c not
 		// insertable

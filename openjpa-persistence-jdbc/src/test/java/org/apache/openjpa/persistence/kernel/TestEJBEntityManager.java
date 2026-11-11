@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,16 +29,18 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBEntityManager extends AbstractTestCase {
 
     private Object _id = null;
 
-    public TestEJBEntityManager(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBEntityManager() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -85,6 +89,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
     // {
     // }
     // }
+    @Test
     public void testMultipleCloseThreaded() throws Throwable {
         final EntityManager em = currentEntityManager();
         final List result = new ArrayList();
@@ -122,6 +127,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
      * This method tries to perform operations that should lead to illegal
      * states, such as persisting instances outside of transactions, etc.
      */
+    @Test
     public void testIllegalState() {
         EntityManager em = currentEntityManager();
 

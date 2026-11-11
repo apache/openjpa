@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Types;
 import java.util.Locale;
 
@@ -40,6 +43,8 @@ import org.apache.openjpa.jdbc.schema.DynamicSchemaFactory;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappingTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestDynamicSchemaFactory
@@ -47,14 +52,7 @@ public class TestDynamicSchemaFactory
 
     private ClassMapping _mapping = null;
 
-    /** Creates a new instance of TestDynamicSchemaFactory */
-    public TestDynamicSchemaFactory() {
-    }
-    public TestDynamicSchemaFactory(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
@@ -63,14 +61,16 @@ public class TestDynamicSchemaFactory
         _mapping = repos.getMapping(MappingTest1.class, null, true);
     }
 
+    @Test
     public void testClassMapping() {
         Table table = _mapping.getTable();
         assertEquals("MAPPINGTEST1", table.getName().toUpperCase(Locale.ROOT));
         assertEquals(1, table.getPrimaryKey().getColumns().length);
         int type = table.getPrimaryKey().getColumns()[0].getType();
-        assertEquals(Schemas.getJDBCName(type), Types.INTEGER, type);
+        assertEquals(Types.INTEGER, type, Schemas.getJDBCName(type));
     }
 
+    @Test
     public void testIndicators() {
         Version vers = _mapping.getVersion();
         assertNotNull(vers);

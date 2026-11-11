@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -40,7 +42,7 @@ public class TestOptions {
         "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
         "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3" };
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Properties defs = new Properties();
         defs.setProperty("default", "value");

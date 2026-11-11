@@ -27,6 +27,8 @@ import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.jdbc.query.domain.IndoorGame;
 import org.apache.openjpa.persistence.jdbc.query.domain.Scrabble;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests GROUP BY in sub query does not get parsed by owning query.
@@ -38,7 +40,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestGroupByQuery extends SingleEMFTestCase {
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, Game.class, IndoorGame.class, Scrabble.class,
 				Chess.class);
@@ -64,7 +66,8 @@ public class TestGroupByQuery extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 
-	public void testGroupBy() {
+    @Test
+    public void testGroupBy() {
 		String jpql = "SELECT g.name, g.nTile FROM Scrabble g WHERE "
                 + "(g.name = ANY(SELECT g1.name FROM Scrabble g1 "
 				+ "GROUP BY g1.name )) ORDER BY g.name";

@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for 1-1
@@ -30,17 +35,18 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestOneToOne extends AnnotationTestCase
 {
 
-	public TestOneToOne(String name)
+	public TestOneToOne()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(AnnoTest1.class);
         deleteAll(AnnoTest2.class);
     }
 
+    @Test
     public void testOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -61,6 +67,7 @@ public class TestOneToOne extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testSelfOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -80,6 +87,7 @@ public class TestOneToOne extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testPKJoinSelfOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -99,6 +107,7 @@ public class TestOneToOne extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testOtherTableOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -119,6 +128,7 @@ public class TestOneToOne extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testInverseOneToOne() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

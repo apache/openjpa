@@ -18,14 +18,16 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.lib.conf.PluginListValue;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link Value}, {@link PluginValue}, and

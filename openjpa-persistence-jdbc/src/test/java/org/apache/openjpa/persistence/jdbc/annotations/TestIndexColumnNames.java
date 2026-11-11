@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,7 +31,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Regression test for the bug where the {@code columnNames} attribute of the
@@ -43,7 +47,7 @@ public class TestIndexColumnNames extends SingleEMFTestCase {
 
     private ClassMapping _mapping;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityWithIndexColumnNames.class, CLEAR_TABLES);
         emf.createEntityManager().close();
@@ -53,21 +57,21 @@ public class TestIndexColumnNames extends SingleEMFTestCase {
     @Test
     public void testFieldIndexColumnNamesAreApplied() {
         FieldMapping fm = _mapping.getFieldMapping("colA");
-        assertNotNull("Field mapping for 'colA' must exist", fm);
+        assertNotNull(fm, "Field mapping for 'colA' must exist");
 
         Index idx = fm.getValueIndex();
-        assertNotNull("@Index on field 'colA' must create a schema index", idx);
+        assertNotNull(idx, "@Index on field 'colA' must create a schema index");
 
         Column[] columns = idx.getColumns();
         assertTrue(
+                columns.length > 0,
                 "Index defined with columnNames must contain at least one explicit column; "
-                + "before the fix, columnNames was ignored and the column list was empty",
-                columns.length > 0);
+                + "before the fix, columnNames was ignored and the column list was empty");
 
         Set<String> colNames = Arrays.stream(columns)
                 .map(c -> c.getIdentifier().getName())
                 .collect(Collectors.toSet());
-        assertTrue("Index must contain COL_A (listed in columnNames)", colNames.contains("COL_A"));
-        assertTrue("Index must contain COL_B (listed in columnNames)", colNames.contains("COL_B"));
+        assertTrue(colNames.contains("COL_A"), "Index must contain COL_A (listed in columnNames)");
+        assertTrue(colNames.contains("COL_B"), "Index must contain COL_B (listed in columnNames)");
     }
 }

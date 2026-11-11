@@ -18,18 +18,25 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTableGeneratorMultithreadedInitialization extends AbstractPersistenceTestCase {
     Object[] props = new Object[] { Dog.class, CLEAR_TABLES };
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
     }
 
+    @Test
     public void test() throws Exception {
 
         EntityManagerFactory emf1 = createNamedEMF(getPersistenceUnitName(), props);
@@ -54,8 +61,8 @@ public class TestTableGeneratorMultithreadedInitialization extends AbstractPersi
         w1.join();
         w2.join();
 
-        assertNull("Caught an exception in worker 1" + w1.getException(), w1.getException());
-        assertNull("Caught an exception in worker 2" + w2.getException(), w2.getException());
+        assertNull(w1.getException(), "Caught an exception in worker 1" + w1.getException());
+        assertNull(w2.getException(), "Caught an exception in worker 2" + w2.getException());
 
         Dog d1 = w1.getDog();
         Dog d2 = w2.getDog();

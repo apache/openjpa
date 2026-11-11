@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,9 +36,8 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.Magazine;
 import org.apache.openjpa.persistence.query.Publisher;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import junit.textui.TestRunner;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestInverseEagerSQL
     extends SQLListenerTestCase {
@@ -45,7 +48,7 @@ public class TestInverseEagerSQL
     public int _nPeople = 3;
     public int _nPhones = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             EntityAInverseEager.class, EntityA1InverseEager.class,
@@ -159,6 +162,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToManyInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -185,6 +189,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToOneInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -209,6 +214,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToManyInheritanceQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -270,6 +276,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testOneToManyEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -301,6 +308,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testManyToManyEagerEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -331,6 +339,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testTargetOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -382,6 +391,7 @@ public class TestInverseEagerSQL
         em.close();
     }
 
+    @Test
     public void testSourceOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -402,9 +412,4 @@ public class TestInverseEagerSQL
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestInverseEagerSQL.class);
-    }
 }
-

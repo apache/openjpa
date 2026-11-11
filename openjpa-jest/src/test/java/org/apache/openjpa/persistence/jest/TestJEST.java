@@ -19,6 +19,11 @@
 
 package org.apache.openjpa.persistence.jest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
@@ -27,7 +32,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,8 +43,6 @@ import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-
-import junit.framework.TestCase;
 
 /**
  * Tests JEST Servlet using <A href="http://httpunit.sourceforge.net/doc/servletunit-intro.html">ServletUnit</A>.
@@ -55,7 +59,7 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestJEST extends TestCase {
+public class TestJEST {
     private static ServletRunner container;
     private static String baseURI;
     private static String DEFAULT_WEB_XML  = "WEB-INF/web.xml";
@@ -66,16 +70,15 @@ public class TestJEST extends TestCase {
     /**
      * Sets up a class-wide Servlet Engine.
      */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
         if (container == null) {
             String resource = System.getProperty("jest.web.xml", DEFAULT_WEB_XML);
             System.err.println("Starting Servlet Container from " + resource);
             InputStream wdesc = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-            assertNotNull(resource + " not loadable at thread context classpath", wdesc);
+            assertNotNull(wdesc, resource + " not loadable at thread context classpath");
             container = new ServletRunner(wdesc);
-            assertNotNull("Servlet engine could not be started", container);
+            assertNotNull(container, "Servlet engine could not be started");
 
             baseURI = System.getProperty("jest.base.uri", DEFAULT_BASE_URI);
             System.err.println("Base URI  " + baseURI);
@@ -88,10 +91,12 @@ public class TestJEST extends TestCase {
         HttpUnitOptions.setExceptionsThrownOnScriptError(false);
     }
 
+    @Test
     public void testBadURL() throws Exception {
         assertError(HttpURLConnection.HTTP_NOT_FOUND, uri("some+bad+url"));
     }
 
+    @Test
     public void testDomain() throws Exception {
         WebResponse response = getResponse(uri("domain"));
         assertNotNull(response);
@@ -137,7 +142,7 @@ public class TestJEST extends TestCase {
             client.getResponse(url);
             fail("expected HTTP error " + error + " on " + url);
         } catch (HttpException e) {
-            assertEquals("Unexpected HTTP Error code for " + url, error, e.getResponseCode());
+            assertEquals(error, e.getResponseCode(), "Unexpected HTTP Error code for " + url);
         }
     }
 

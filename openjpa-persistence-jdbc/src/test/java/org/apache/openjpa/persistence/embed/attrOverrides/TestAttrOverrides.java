@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -26,6 +29,8 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAttrOverrides  extends SQLListenerTestCase {
     public int numPersons = 4;
@@ -33,7 +38,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     public int eId = 1;
     public int pId = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, Customer.class,
             PropertyInfo.class, PropertyOwner.class, PropertyRecord.class,
@@ -44,6 +49,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.4 Example 2
      * Test AttributeOverride on embeddable fields
      */
+    @Test
     public void testAttrOverride1() {
         sql.clear();
         createObj1();
@@ -56,6 +62,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.4. Example 3
      * Test AttributeOverrides on embeddable Map field
      */
+    @Test
     public void testAttrOverride2() {
         sql.clear();
         createObj2();
@@ -68,6 +75,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.35. Example 3
      * Test OrderBy on embeddable field
      */
+    @Test
     public void testEmbeddableOrderBy() {
         sql.clear();
         createObj3();

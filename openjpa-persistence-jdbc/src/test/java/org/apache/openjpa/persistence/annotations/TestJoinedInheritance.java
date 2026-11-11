@@ -18,10 +18,14 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -32,12 +36,12 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestJoinedInheritance extends AnnotationTestCase
 {
 
-	public TestJoinedInheritance(String name)
+	public TestJoinedInheritance()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp()
     {
         new AnnoTest1();
@@ -48,6 +52,7 @@ public class TestJoinedInheritance extends AnnotationTestCase
         deleteAll(AnnoTest2.class);
     }
 
+    @Test
     public void testInheritance() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

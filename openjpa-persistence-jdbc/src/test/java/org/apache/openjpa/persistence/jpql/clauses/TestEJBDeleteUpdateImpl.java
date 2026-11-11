@@ -18,23 +18,26 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
 
     public TestEJBDeleteUpdateImpl() {
+        super("jpqlclausescactusapp");
     }
 
-    public TestEJBDeleteUpdateImpl(String name) {
-        super(name, "jpqlclausescactusapp");
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
 
@@ -54,6 +57,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testUpdate1() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -84,6 +88,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         em.close();
     }
 
+    @Test
     public void testUpdate2() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -116,6 +121,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testDelete1() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -142,6 +148,7 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testDelete2() {
         EntityManager em = currentEntityManager();
         startTx(em);

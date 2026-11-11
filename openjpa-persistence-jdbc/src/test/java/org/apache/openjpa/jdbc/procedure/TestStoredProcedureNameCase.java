@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,9 +38,12 @@ import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
 import org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Procedures created with an unquoted mixed case name are stored by Derby in upper case.
@@ -44,13 +52,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 public class TestStoredProcedureNameCase extends SingleEMFTestCase {
-
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
               "openjpa.DynamicEnhancementAgent", "false",
               EntityWithStoredProcedure.class, EntityWithStoredProcedure.Mapping2.class, CLEAR_TABLES);
-        setSupportedDatabases(DerbyDictionary.class);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -61,6 +72,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testOutParameter() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -76,6 +88,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testInOutParameter() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -90,6 +103,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testResultSet() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -106,6 +120,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTemporalParameter() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -130,6 +145,7 @@ public class TestStoredProcedureNameCase extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUnknownProcedure() {
         EntityManager em = emf.createEntityManager();
         try {

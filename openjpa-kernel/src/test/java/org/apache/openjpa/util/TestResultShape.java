@@ -17,6 +17,10 @@
  * under the License.
  */
 package org.apache.openjpa.util;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,10 +31,7 @@ import java.util.Map;
 
 import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
-import org.junit.Test;
-
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 public class TestResultShape {
 
@@ -188,23 +189,23 @@ public class TestResultShape {
 
     void assertCategory(ResultShape<?> s, boolean primitive, boolean compound, boolean nesting) {
         if (primitive)
-            assertTrue(s + " is not primitive", s.isPrimitive());
+            assertTrue(s.isPrimitive(), s + " is not primitive");
         else
-            assertFalse(s + " is primitive", s.isPrimitive());
+            assertFalse(s.isPrimitive(), s + " is primitive");
         if (compound)
-            assertTrue(s + " is not compound", s.isCompound());
+            assertTrue(s.isCompound(), s + " is not compound");
         else
-            assertFalse(s + " is compound", s.isCompound());
+            assertFalse(s.isCompound(), s + " is compound");
         if (nesting)
-            assertTrue(s + " is not nesting", s.isNesting());
+            assertTrue(s.isNesting(), s + " is not nesting");
         else
-            assertFalse(s + " is nesting", s.isNesting());
+            assertFalse(s.isNesting(), s + " is nesting");
     }
 
     void arrayEquals(Object[] a, Object[] b) {
         assertEquals(a.length, b.length);
         for (int i = 0; i < a.length; i++) {
-            assertEquals(i+"-th element not equal", a[i], b[i]);
+            assertEquals(a[i], b[i], i+"-th element not equal");
         }
     }
 

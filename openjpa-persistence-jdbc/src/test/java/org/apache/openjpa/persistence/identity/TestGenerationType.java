@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,8 +32,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to test the GenerationType for
@@ -43,9 +47,9 @@ import junit.textui.TestRunner;
 public class TestGenerationType
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
-        if (getName().endsWith("WithoutGetGeneratedKeys")) {
+        if (getTestName().endsWith("WithoutGetGeneratedKeys")) {
             setUp(IdentityGenerationType.class,
                 "openjpa.jdbc.DBDictionary",
                 "supportsGetGeneratedKeys=false");
@@ -62,6 +66,7 @@ public class TestGenerationType
             .getDBDictionaryInstance().supportsAutoAssign;
     }
 
+    @Test
     public void testCreateEntityManager() {
         if (!supportsAutoAssign()) {
             return;
@@ -82,6 +87,7 @@ public class TestGenerationType
         em.close();
     }
 
+    @Test
     public void testPersist() {
         if (!supportsAutoAssign()) {
             return;
@@ -93,6 +99,7 @@ public class TestGenerationType
         em.close();
     }
 
+    @Test
     public void testQuery() {
         if (!supportsAutoAssign()) {
             return;
@@ -113,10 +120,12 @@ public class TestGenerationType
         em.close();
     }
 
+    @Test
     public void testPersistWithoutGetGeneratedKeys() {
         testPersist();
     }
 
+    @Test
     public void testQueryWithoutGetGeneratedKeys() {
         if (getDBDictionary() instanceof OracleDictionary) {
             // Oracle now always has JDBC4 driver.
@@ -124,9 +133,4 @@ public class TestGenerationType
         }
         testQuery();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestGenerationType.class);
-    }
 }
-

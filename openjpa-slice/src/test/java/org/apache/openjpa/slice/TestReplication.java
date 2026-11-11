@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that parent-child relation both replicated are stored in all replicated
@@ -34,7 +39,7 @@ import jakarta.persistence.EntityManager;
 public class TestReplication extends SingleEMFTestCase {
     private static int CHILD_COUNT = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES);
         createData();
@@ -60,6 +65,7 @@ public class TestReplication extends SingleEMFTestCase {
         em.clear();
     }
 
+    @Test
     public void testPersistInReplicatedSlices() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -93,6 +99,7 @@ public class TestReplication extends SingleEMFTestCase {
         assertNotNull(cTwo);
     }
 
+    @Test
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select p from ReplicatedParent p where p.name=:name";
@@ -106,6 +113,7 @@ public class TestReplication extends SingleEMFTestCase {
         assertEquals(CHILD_COUNT, children.size());
     }
 
+    @Test
     public void testAggregateQuery() {
         EntityManager em = emf.createEntityManager();
         String jpql = "select count(p) from ReplicatedParent p";

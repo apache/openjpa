@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.lib.identifier;
 
-import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.*;
+import org.apache.openjpa.lib.test.AbstractTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestIdentifiers extends AbstractTestCase {
 

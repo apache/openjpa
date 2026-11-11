@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for InheritanceType.JOINED
@@ -29,12 +33,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJoinedInheritance extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
             CLEAR_TABLES);
     }
 
+    @Test
     public void testInheritance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

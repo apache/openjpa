@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case and domain classes were originally part of the reported issue
@@ -39,7 +45,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMappedSuperClass extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CashBaseEntity.class,
               SituationDA.class, ValuableItemDA.class,
@@ -47,6 +53,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
               CLEAR_TABLES);
     }
 
+    @Test
     public void testMappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -84,6 +91,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
      * Tests that new entity can be merged when the entity is derived from a mapped
      * super class that does not declare an identity field.
      */
+    @Test
     public void testMergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

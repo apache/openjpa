@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
@@ -44,7 +44,7 @@ import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the gate in {@link SequenceMapping#instantiate(ClassLoader)} that
@@ -105,9 +105,9 @@ public class TestSequenceMappingFallback {
             Seq seq = generator(conf).getInstance(null);
             fail("expected the connect failure to surface, got " + seq);
         } catch (MetaDataException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("no connection could be obtained"));
-            assertTrue("the real cause has to be reachable: " + e.getCause(),
-                causeChain(e).contains(UnreachableDataSource.MESSAGE));
+            assertTrue(e.getMessage().contains("no connection could be obtained"), e.getMessage());
+            assertTrue(causeChain(e).contains(UnreachableDataSource.MESSAGE),
+                "the real cause has to be reachable: " + e.getCause());
         }
     }
 
@@ -121,8 +121,8 @@ public class TestSequenceMappingFallback {
             StubDataSource.class);
         Seq seq = generator(conf).getInstance(null);
         assertEquals(NativeJDBCSeq.class, seq.getClass());
-        assertTrue("the dictionary has to have been connected",
-            conf.getDBDictionaryInstance().isConnected());
+        assertTrue(conf.getDBDictionaryInstance().isConnected(),
+            "the dictionary has to have been connected");
     }
 
     /**
@@ -160,8 +160,8 @@ public class TestSequenceMappingFallback {
             UnreachableDataSource.class);
         Seq seq = generator(conf).getInstance(null);
         assertEquals(NativeJDBCSeq.class, seq.getClass());
-        assertTrue("no connection may have been attempted",
-            !conf.getDBDictionaryInstance().isConnected());
+        assertTrue(!conf.getDBDictionaryInstance().isConnected(),
+            "no connection may have been attempted");
     }
 
     /**
@@ -175,7 +175,7 @@ public class TestSequenceMappingFallback {
             Seq seq = generator(conf).getInstance(null);
             fail("expected the historical failure, got " + seq);
         } catch (MetaDataException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("does not support native sequences"));
+            assertTrue(e.getMessage().contains("does not support native sequences"), e.getMessage());
         }
     }
 

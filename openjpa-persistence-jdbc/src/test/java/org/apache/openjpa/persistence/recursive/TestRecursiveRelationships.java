@@ -18,19 +18,25 @@
  */
 package org.apache.openjpa.persistence.recursive;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRecursiveRelationships extends SingleEMFTestCase {
     private int _l1Nodes = 3;
     private int _l2Nodes = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Node.class);
     }
 
+    @Test
     public void testRecursiveNodes() {
         EntityManager em = emf.createEntityManager();
 

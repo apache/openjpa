@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests entity lifecycle callbacks with runtime enhancement.
@@ -34,7 +40,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedCallbackEntity.class,
@@ -46,6 +52,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * Test that prePersist and postPersist callbacks fire and
      * the entity (not a PC wrapper) is passed to the listener.
      */
+    @Test
     public void testPrePersistAndPostPersistCallbacks() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -54,10 +61,10 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
         em.persist(e);
         em.getTransaction().commit();
 
-        assertTrue("prePersist should have been called",
-            e.getCallbackLog().contains("prePersist"));
-        assertTrue("postPersist should have been called",
-            e.getCallbackLog().contains("postPersist"));
+        assertTrue(e.getCallbackLog().contains("prePersist"),
+            "prePersist should have been called");
+        assertTrue(e.getCallbackLog().contains("postPersist"),
+            "postPersist should have been called");
 
         em.close();
     }
@@ -68,6 +75,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * This specifically tests the fix for BrokerImpl.fireLifecycleEvent
      * using getManagedInstance() instead of getPersistenceCapable().
      */
+    @Test
     public void testPreRemoveAndPostRemoveCallbacks() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -83,10 +91,10 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
         em.remove(found);
         em.getTransaction().commit();
 
-        assertTrue("preRemove should have been called",
-            found.getCallbackLog().contains("preRemove"));
-        assertTrue("postRemove should have been called",
-            found.getCallbackLog().contains("postRemove"));
+        assertTrue(found.getCallbackLog().contains("preRemove"),
+            "preRemove should have been called");
+        assertTrue(found.getCallbackLog().contains("postRemove"),
+            "postRemove should have been called");
 
         em.close();
     }
@@ -96,6 +104,7 @@ public class TestCallbackWithRuntimeEnhancement extends SingleEMFTestCase {
      * The listener casts to CallbackTracker — if a ReflectingPersistenceCapable
      * is passed, it will throw ClassCastException.
      */
+    @Test
     public void testListenerReceivesEntityNotWrapper() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

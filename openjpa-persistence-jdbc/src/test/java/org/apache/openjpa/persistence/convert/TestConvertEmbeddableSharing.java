@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.convert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A <code>@Convert(attributeName=...)</code> override is declared by a
@@ -33,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             ConvertEmbedEntity.class,
@@ -53,6 +57,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * The converting entity still converts: DotConverter turns "." into "#"
      * on the way to the database and "#" into "_" on the way back.
      */
+    @Test
     public void testOverrideAppliesToDeclaringEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -78,6 +83,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * attributes verbatim, no matter which entity's metadata was resolved
      * first.
      */
+    @Test
     public void testOverrideDoesNotLeakToOtherEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -110,6 +116,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * override of a single embedding, so it must still apply to every
      * entity embedding that embeddable.
      */
+    @Test
     public void testEmbeddableOwnConverterAppliesEverywhere() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -139,6 +146,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * declared on one of the two embeddings only. The second embedding
      * must store its attributes verbatim.
      */
+    @Test
     public void testOverrideDoesNotLeakToSecondEmbedding() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -161,6 +169,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * For an element collection of embeddables the override addresses an
      * attribute of the collection's elements.
      */
+    @Test
     public void testOverrideAppliesToCollectionElements() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -183,6 +192,7 @@ public class TestConvertEmbeddableSharing extends SingleEMFTestCase {
      * MappedSuperclass must not reach the sibling entities, which share
      * the superclass' field metadata.
      */
+    @Test
     public void testInheritedOverrideDoesNotLeakToSibling() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

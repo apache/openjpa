@@ -19,10 +19,19 @@
 package org.apache.openjpa.persistence.entityoperation;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.entityoperation.common.apps.
         CascadesEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test EJB persistence cascade options.</p>
@@ -31,15 +40,16 @@ import org.apache.openjpa.persistence.entityoperation.common.apps.
  */
 public class TestCascades extends AbstractTestCase {
 
-    public TestCascades(String name) {
-        super(name, "entityopcactusapp");
+    public TestCascades() {
+        super("entityopcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(CascadesEntity.class);
     }
 
+    @Test
     public void testNoCascadePersist ()
      {
          CascadesEntity ent = new CascadesEntity ();
@@ -57,7 +67,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistIsImmediate ()
+    @Test
+    public void testCascadePersistIsImmediate ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -76,7 +87,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadePersistFlushWithDeletedCausesException ()
+    @Test
+    public void testNoCascadePersistFlushWithDeletedCausesException ()
      {
          CascadesEntity rel = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -130,7 +142,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistFlushWithDeleted ()
+    @Test
+    public void testCascadePersistFlushWithDeleted ()
      {
          CascadesEntity rel = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -172,7 +185,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadePersistFlushWithTransientCausesException ()
+    @Test
+    public void testNoCascadePersistFlushWithTransientCausesException ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -216,7 +230,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadePersistFlushWithPersistent ()
+    @Test
+    public void testNoCascadePersistFlushWithPersistent ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -251,7 +266,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistFlushWithTransient ()
+    @Test
+    public void testCascadePersistFlushWithTransient ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -284,7 +300,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistFlushWithPersistent ()
+    @Test
+    public void testCascadePersistFlushWithPersistent ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -317,7 +334,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeCircleThroughPersistent ()
+    @Test
+    public void testCascadeCircleThroughPersistent ()
      {
          CascadesEntity ent = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -345,7 +363,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeDelete ()
+    @Test
+    public void testNoCascadeDelete ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -392,7 +411,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testDeepCascadeDelete ()
+    @Test
+    public void testDeepCascadeDelete ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -469,7 +489,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCircularCascadeDelete ()
+    @Test
+    public void testCircularCascadeDelete ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -509,7 +530,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeRefresh ()
+    @Test
+    public void testNoCascadeRefresh ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -549,7 +571,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCircularCascadeRefresh ()
+    @Test
+    public void testCircularCascadeRefresh ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -653,7 +676,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachClean ()
+    @Test
+    public void testNoCascadeAttachClean ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -696,7 +720,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachClean ()
+    @Test
+    public void testCascadeAttachClean ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -746,7 +771,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachDirtyFields ()
+    @Test
+    public void testNoCascadeAttachDirtyFields ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -791,7 +817,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachDirtyFields ()
+    @Test
+    public void testCascadeAttachDirtyFields ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -843,7 +870,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachDirtyRelations ()
+    @Test
+    public void testNoCascadeAttachDirtyRelations ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -897,7 +925,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachDirtyRelations ()
+    @Test
+    public void testCascadeAttachDirtyRelations ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -961,7 +990,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeReferenceIsPreLoadedReference ()
+    @Test
+    public void testNoCascadeReferenceIsPreLoadedReference ()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -993,6 +1023,7 @@ public class TestCascades extends AbstractTestCase {
          endEm(em);
      }
 
+    @Test
     public void testNoCascadeNewCausesException() {
         CascadesEntity ent = new CascadesEntity();
         CascadesEntity rel = new CascadesEntity();
@@ -1043,7 +1074,8 @@ public class TestCascades extends AbstractTestCase {
         endEm(em);
     }
 
-	public void testCascadeNewPersisted ()
+    @Test
+    public void testCascadeNewPersisted ()
 	{
 		CascadesEntity ent = new CascadesEntity ();
 		CascadesEntity rel1 = new CascadesEntity ();
@@ -1087,7 +1119,8 @@ public class TestCascades extends AbstractTestCase {
 	}
 
 
-	public void testCascadesDeleteNonPersistent ()
+    @Test
+    public void testCascadesDeleteNonPersistent ()
 	{
 		CascadesEntity all = new CascadesEntity ();
 		CascadesEntity none = new CascadesEntity ();

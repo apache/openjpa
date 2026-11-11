@@ -18,19 +18,25 @@
  */
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the merge of a new object that has an Entity as
  * part of its Id
  */
 public class TestMergeNew extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Parent.class,
             Child.class, GrandChild.class);
@@ -38,6 +44,7 @@ public class TestMergeNew extends SQLListenerTestCase {
         populate();
     }
 
+    @Test
     public void testMergeNewParent() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -85,7 +92,8 @@ public class TestMergeNew extends SQLListenerTestCase {
         }
     }
 
-    public void testMergeParentRoundTrip()throws ClassNotFoundException, IOException {
+    @Test
+    public void testMergeParentRoundTrip() throws ClassNotFoundException, IOException {
         Parent p3;
         Child child = new Child();
         GrandChild grandChild = new GrandChild();

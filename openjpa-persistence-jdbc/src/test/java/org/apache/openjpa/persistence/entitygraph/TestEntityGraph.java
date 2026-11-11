@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.entitygraph;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +35,8 @@ import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for EntityGraph API (JPA 2.1 / 3.2).
@@ -36,7 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntityGraph extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EGEmployee.class, EGEmployee2.class, EGEmployee3.class,
               EGDepartment.class, CLEAR_TABLES);
@@ -46,6 +54,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test addAttributeNodes(String...) and getAttributeNodes().
      * Mirrors TCK addAttributeNodesStringArrayTest.
      */
+    @Test
     public void testAddAttributeNodesString() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -70,6 +79,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test that addAttributeNodes with invalid name throws IAE.
      * Mirrors TCK addAttributeNodesStringArrayIllegalArgumentExceptionTest.
      */
+    @Test
     public void testAddAttributeNodesStringIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -90,6 +100,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Mirrors TCK addAttributeNodesAttributeArrayTest.
      */
     @SuppressWarnings("unchecked")
+    @Test
     public void testAddAttributeNodesAttribute() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -120,16 +131,17 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test createEntityGraph(String) for named graph and unknown name.
      * Mirrors TCK createEntityGraphStringTest.
      */
+    @Test
     public void testCreateEntityGraphString() {
         EntityManager em = emf.createEntityManager();
         try {
             // known named graph should return non-null
             EntityGraph<?> eg = em.createEntityGraph("first_last_graph");
-            assertNotNull("Expected non-null EntityGraph for known name", eg);
+            assertNotNull(eg, "Expected non-null EntityGraph for known name");
 
             // unknown name should return null
             EntityGraph<?> eg2 = em.createEntityGraph("doesnotexist");
-            assertNull("Expected null for unknown graph name", eg2);
+            assertNull(eg2, "Expected null for unknown graph name");
         } finally {
             em.close();
         }
@@ -139,6 +151,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test getEntityGraph(String).
      * Mirrors TCK getEntityGraphStringTest and entityGraphGetNameTest.
      */
+    @Test
     public void testGetEntityGraphString() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -154,6 +167,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test getEntityGraph with unknown name throws IAE.
      * Mirrors TCK getEntityGraphStringIllegalArgumentExceptionTest.
      */
+    @Test
     public void testGetEntityGraphStringIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -172,12 +186,13 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test unnamed @NamedEntityGraph defaults to entity name.
      * Mirrors TCK entityGraphGetNameNoNameExistsTest.
      */
+    @Test
     public void testNameDefaultsToEntityName() {
         EntityManager em = emf.createEntityManager();
         try {
             List<EntityGraph<? super EGEmployee2>> egs =
                 em.getEntityGraphs(EGEmployee2.class);
-            assertEquals("Expected 1 named entity graph", 1, egs.size());
+            assertEquals(1, egs.size(), "Expected 1 named entity graph");
             assertEquals("EGEmployee2", egs.get(0).getName());
         } finally {
             em.close();
@@ -188,12 +203,13 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test createEntityGraph(Class) returns graph with null name.
      * Mirrors TCK getNameTest.
      */
+    @Test
     public void testCreateEntityGraphClassName() {
         EntityManager em = emf.createEntityManager();
         try {
             EntityGraph<EGEmployee2> eg = em.createEntityGraph(EGEmployee2.class);
-            assertNull("Name should be null for dynamically created graph",
-                eg.getName());
+            assertNull(eg.getName(),
+                "Name should be null for dynamically created graph");
         } finally {
             em.close();
         }
@@ -203,6 +219,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test getEntityGraphs(Class) returns all named graphs.
      * Mirrors TCK getEntityGraphsClassTest.
      */
+    @Test
     public void testGetEntityGraphsClass() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -227,6 +244,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test getEntityGraphs with non-entity class throws IAE.
      * Mirrors TCK getEntityGraphsClassIllegalArgumentExceptionTest.
      */
+    @Test
     public void testGetEntityGraphsClassIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -245,6 +263,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test addNamedEntityGraph via EMF, then retrieve, then override.
      * Mirrors TCK addNamedEntityGraphStringEntityGraphTest.
      */
+    @Test
     public void testAddNamedEntityGraph() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -284,6 +303,7 @@ public class TestEntityGraph extends SingleEMFTestCase {
      * Test annotation-parsed graph nodes.
      * Mirrors TCK annotationsTest.
      */
+    @Test
     public void testAnnotationAttributeNodes() {
         EntityManager em = emf.createEntityManager();
         try {

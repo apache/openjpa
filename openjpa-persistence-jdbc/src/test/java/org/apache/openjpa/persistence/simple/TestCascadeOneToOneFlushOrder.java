@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -26,10 +29,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Reproduces the TCK createCustomerData flush ordering failure.
@@ -176,16 +176,16 @@ public class TestCascadeOneToOneFlushOrder {
             // Verify the data was persisted correctly
             UnenhancedTCKCustomer found = em.find(
                 UnenhancedTCKCustomer.class, "1");
-            assertNotNull("Customer should be found", found);
+            assertNotNull(found, "Customer should be found");
             assertEquals("Alan E. Frechette", found.getName());
-            assertNotNull("Home address should be loaded",
-                found.getHome());
+            assertNotNull(found.getHome(),
+                "Home address should be loaded");
             assertEquals("1", found.getHome().getId());
-            assertNotNull("Work address should be loaded",
-                found.getWork());
+            assertNotNull(found.getWork(),
+                "Work address should be loaded");
             assertEquals("2", found.getWork().getId());
-            assertNotNull("Country should be loaded",
-                found.getCountry());
+            assertNotNull(found.getCountry(),
+                "Country should be loaded");
             assertEquals("USA", found.getCountry().getCode());
         } finally {
             if (em.getTransaction().isActive()) {
@@ -243,12 +243,12 @@ public class TestCascadeOneToOneFlushOrder {
                 UnenhancedTCKCustomer found = em.find(
                     UnenhancedTCKCustomer.class,
                     String.valueOf(i));
-                assertNotNull("Customer " + i + " should exist",
-                    found);
-                assertNotNull("Customer " + i + " home address",
-                    found.getHome());
-                assertNotNull("Customer " + i + " work address",
-                    found.getWork());
+                assertNotNull(found,
+                    "Customer " + i + " should exist");
+                assertNotNull(found.getHome(),
+                    "Customer " + i + " home address");
+                assertNotNull(found.getWork(),
+                    "Customer " + i + " work address");
             }
         } finally {
             if (em.getTransaction().isActive()) {

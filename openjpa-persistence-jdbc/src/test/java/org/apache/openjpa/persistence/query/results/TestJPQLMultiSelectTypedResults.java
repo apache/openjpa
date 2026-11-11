@@ -19,6 +19,10 @@
 
 package org.apache.openjpa.persistence.query.results;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.HashSet;
@@ -37,6 +41,9 @@ import org.apache.openjpa.persistence.criteria.results.Order;
 import org.apache.openjpa.persistence.criteria.results.Producer;
 import org.apache.openjpa.persistence.criteria.results.Shop;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
 
@@ -49,7 +56,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
 
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
               Person.class, Foo.class, Bar.class,
@@ -100,11 +107,12 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
+    @Test
     public void testMultipleConstructor() {
         String query = "SELECT NEW Foo(f.fid,f.fint), b, NEW FooBar(f.fid, b.bid) " +
                     "from Foo f JOIN f.bar b WHERE f.bar=b";
@@ -115,12 +123,14 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
         assertFalse(result.isEmpty());
         for (Object[] row : result) {
             assertEquals(3, row.length);
-            assertTrue("0-th element " + row[0].getClass() + " is not Foo", row[0] instanceof Foo);
-            assertTrue("1-st element " + row[1].getClass() + " is not Bar", row[1] instanceof Bar);
-            assertTrue("2-nd element " + row[2].getClass() + " is not FooBar", row[2] instanceof FooBar);
+            assertTrue(row[0] instanceof Foo, "0-th element " + row[0].getClass() + " is not Foo");
+            assertTrue(row[1] instanceof Bar, "1-st element " + row[1].getClass() + " is not Bar");
+            assertTrue(row[2] instanceof FooBar, "2-nd element " + row[2].getClass() + " is not FooBar");
         }
 
     }
+
+    @Test
     public void testMultipleConstructorMixWithMultiSelect() {
         String query = "SELECT NEW Person(p.name), p.id, NEW Person(p.name), p.name FROM Person p ORDER BY p.name";
         EntityManager em = emf.createEntityManager();
@@ -139,12 +149,14 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
             assertEquals(((Person)row[0]).getName(), row[3]);
         }
     }
+
     /**
      * Testcase to verify that selecting multiple results in a variety of ways returns the same results. Results are
      * returned via a normal Object [] (JPQL).
      *
      * @throws Exception
      */
+    @Test
     public void testMultiSelect() throws Exception {
         // get results from traditional JPQL
         EntityManager em = emf.createEntityManager();

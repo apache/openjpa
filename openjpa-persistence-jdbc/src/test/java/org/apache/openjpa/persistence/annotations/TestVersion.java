@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -31,6 +36,8 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest3;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedOwner;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
    Test for opt-lock
@@ -46,12 +53,12 @@ public class TestVersion extends AnnotationTestCase
 
 	private Object oid2;
 
-	public TestVersion(String name)
+	public TestVersion()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-	@Override
+    @BeforeEach
     public void setUp()
 	{
 		new AnnoTest1();
@@ -87,11 +94,12 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em);
 	}
 
-/*
- * Fix Me aokeke -- Testcases causes deadlock during runtime CR307216 is used to
- * track this issue.
- */
- public void testVersionNumeric()
+    /*
+     * Fix Me aokeke -- Testcases causes deadlock during runtime CR307216 is used to
+     * track this issue.
+     */
+    @Test
+    public void testVersionNumeric()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -126,7 +134,8 @@ public class TestVersion extends AnnotationTestCase
 		}
 	}
 
-	public void testVersionTimestamp()
+    @Test
+    public void testVersionTimestamp()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -161,7 +170,8 @@ public class TestVersion extends AnnotationTestCase
 		}
 	}
 
-	public void testVersionSubclass()
+    @Test
+    public void testVersionSubclass()
 	{
 		OpenJPAEntityManager em1 = currentEntityManager();
 		startTx(em1);
@@ -198,7 +208,8 @@ public class TestVersion extends AnnotationTestCase
 		}
 	}
 
-	public void testVersionNoChange()
+    @Test
+    public void testVersionNoChange()
 	{
 		OpenJPAEntityManager em = currentEntityManager();
 		startTx(em);
@@ -217,7 +228,8 @@ public class TestVersion extends AnnotationTestCase
 		endEm(em);
 	}
 
-	   public void testNoDefaultVersionWithoutFieldOrColumn()
+    @Test
+    public void testNoDefaultVersionWithoutFieldOrColumn()
 	   {
            OpenJPAEntityManager pm =
                (OpenJPAEntityManager) currentEntityManager();
@@ -232,7 +244,8 @@ public class TestVersion extends AnnotationTestCase
 			endEm(pm);
 	   }
 
-	   public void testVersionWithField()
+    @Test
+    public void testVersionWithField()
 	   {
            OpenJPAEntityManager pm =
                (OpenJPAEntityManager) currentEntityManager();

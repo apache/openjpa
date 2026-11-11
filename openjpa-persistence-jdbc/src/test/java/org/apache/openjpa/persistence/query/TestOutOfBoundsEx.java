@@ -28,12 +28,14 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestOutOfBoundsEx extends SingleEMFTestCase {
     private EntityManager em = null;
     private Lookup lookup;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Lookup.class, Case.class, Role.class,
                 ScheduledAssignment.class, ScheduleDay.class,
@@ -42,6 +44,7 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
         insertLookups();
     }
 
+    @Test
     public void testOutOfBounds() throws Exception {
         Calendar cal = Calendar.getInstance();
         final Date date = cal.getTime();

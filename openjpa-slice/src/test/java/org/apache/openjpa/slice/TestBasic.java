@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +33,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests basic create, read, update and delete operations.
@@ -46,7 +53,7 @@ public class TestBasic extends SliceTestCase {
     }
 
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
         	CLEAR_TABLES);
@@ -80,6 +87,7 @@ public class TestBasic extends SliceTestCase {
     /**
      * Delete a single object by EntityManager.remove()
      */
+    @Test
     public void testDelete() {
         int N = 10;
         createIndependentObjects(N);
@@ -98,6 +106,7 @@ public class TestBasic extends SliceTestCase {
     /**
      * Delete in bulk by query.
      */
+    @Test
     public void testBulkDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -113,6 +122,7 @@ public class TestBasic extends SliceTestCase {
     /**
      * Store and find the same object.
      */
+    @Test
     public void testFind() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
@@ -129,6 +139,7 @@ public class TestBasic extends SliceTestCase {
     /**
      * Store and find the same object via reference.
      */
+    @Test
     public void testReference() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
@@ -152,6 +163,7 @@ public class TestBasic extends SliceTestCase {
     }
 
 
+    @Test
     public void testPersistIndependentObjects() {
         int before = count(PObject.class);
         EntityManager em = emf.createEntityManager();
@@ -165,6 +177,7 @@ public class TestBasic extends SliceTestCase {
         assertEquals(before + N, after);
     }
 
+    @Test
     public void testPersistConnectedObjectGraph() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -214,6 +227,7 @@ public class TestBasic extends SliceTestCase {
      * Merge only works if the distribution policy assigns the correct slice
      * from which the instance was fetched.
      */
+    @Test
     public void testMerge() {
         PObject pc = createIndependentObjects(1).get(0);
         int value = pc.getValue();
@@ -231,6 +245,7 @@ public class TestBasic extends SliceTestCase {
         assertEquals(value + 1, pc2.getValue());
     }
 
+    @Test
     public void testPersistReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -256,6 +271,7 @@ public class TestBasic extends SliceTestCase {
      * Disable this test temporarily as we undergo changes in internal slice
      * information structure.
      */
+    @Test
     public void testUpdateReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -296,6 +312,7 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testQuerySingleObject() {
     	PObject pc = createIndependentObject();
     	long pid = pc.getId();
@@ -312,12 +329,14 @@ public class TestBasic extends SliceTestCase {
         assertEquals(value, pc2.getValue());
     }
 
+    @Test
     public void testGetConnection() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Object con = em.getConnection();
         assertTrue(con instanceof Connection);
     }
 
+    @Test
     public void testDynamicSlice() {
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {

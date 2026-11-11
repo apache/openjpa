@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,8 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * New test case.
@@ -41,14 +45,14 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 @AllowFailure(message="surefire excluded")
 public class TestPCParametersInQueries extends AbstractTestCase {
 
-    public TestPCParametersInQueries(String test) {
-        super(test, "datacachecactusapp");
+    public TestPCParametersInQueries() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
     private Object _eId;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(CacheObjectA.class);
 
@@ -70,6 +74,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
         broker.close();
     }
 
+    @Test
     public void testPCParameter() {
         Broker broker = _factory.newBroker();
         broker.begin();

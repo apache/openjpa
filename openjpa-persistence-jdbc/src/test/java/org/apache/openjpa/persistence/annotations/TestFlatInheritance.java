@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -31,17 +35,18 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestFlatInheritance extends AnnotationTestCase
 {
 
-	public TestFlatInheritance(String name)
+	public TestFlatInheritance()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp()
     {
         deleteAll(Flat1.class);
     }
 
+    @Test
     public void testInheritance() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 inline result set mapping on @NamedNativeQuery
@@ -30,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, NativeQueryResultEntity.class);
 
@@ -48,6 +54,7 @@ public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testEntityResultMapping() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")
@@ -63,6 +70,7 @@ public class TestNamedNativeQueryResultMapping extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testColumnResultMapping() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")

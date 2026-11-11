@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -33,12 +39,14 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // -ea -Dopenjpa.ConnectionDriverName=com.mysql.jdbc.Driver -Dopenjpa.ConnectionPassword=openjpatst
 // -Dopenjpa.ConnectionURL=jdbc:mysql://localhost:3306/openjpatst -Dopenjpa.ConnectionUserName=openjpatst
 public class TestExplicitAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
@@ -67,6 +75,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
+    @Test
     public void testClassSpecifiedFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -97,6 +106,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
+    @Test
     public void testClassSpecifiedPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -127,6 +137,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * defined at the class level and field access defined
      * on specific methods.
      */
+    @Test
     public void testClassSpecifiedMixedSinglePCFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -175,6 +186,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * defined at the class level and property access defined
      * on specific methods.
      */
+    @Test
     public void testClassSpecifiedMixedSinglePCPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -219,6 +231,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using field access and an entity
      * subclass using property access get mapped properly.
      */
+    @Test
     public void testAbstractMappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -268,6 +281,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using property access and an entity
      * subclass using field access get mapped properly.
      */
+    @Test
     public void testAbstractMappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -318,6 +332,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
+    @Test
     public void testMappedSuperField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -368,6 +383,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
+    @Test
     public void testMappedSuperProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -418,6 +434,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * persistent classes within an inheritance hierarchy that uses
      * MappedSuperclass.
      */
+    @Test
     public void testMixedMappedSuper() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -471,6 +488,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
+    @Test
     public void testEntityFieldDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -551,6 +569,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
+    @Test
     public void testEntityPropertyDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -628,6 +647,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with field access can be used within an
      * entity with property access
      */
+    @Test
     public void testEmbeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -675,6 +695,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with property access can be used within an
      * entity with field access
      */
+    @Test
     public void testEmbeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -722,6 +743,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with mixed access can be used within an
      * entity with mixed access
      */
+    @Test
     public void testMixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -772,6 +794,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mix of access types can be used within
      * an embeddable stack.
      */
+    @Test
     public void testNestedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -822,6 +845,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Validates that a mix of access types can be used by an
      * an entity with mulitple embeddables.
      */
+    @Test
     public void testMultipleEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -892,6 +916,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * strategies from within an entity with explicit field access (except for
      * the id field, which is field default)
      */
+    @Test
     public void testPropertyAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -984,6 +1009,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * strategies from within an entity with explicit property access (except
      * for the id field, which is property default)
      */
+    @Test
     public void testFieldAccessStrategies() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -1075,6 +1101,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
      * Verifies the use of a map of embeddables containing a nested
      * mixed access embeddable.
      */
+    @Test
     public void testMapWithNestedEmbeddable() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 

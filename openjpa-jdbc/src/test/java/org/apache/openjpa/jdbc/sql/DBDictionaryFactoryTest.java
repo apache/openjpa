@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.junit.jupiter.api.Test;
 
 public class DBDictionaryFactoryTest {
 

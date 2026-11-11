@@ -31,14 +31,6 @@ package org.apache.openjpa.persistence.kernel;
 
 
 public class TestSavepointEmbeddedPreFlush extends TestSavepointEmbedded {
-
-    /**
-     * Creates a new instance of TestSavepointEmbeddedPreFlush
-     */
-    public TestSavepointEmbeddedPreFlush(String name) {
-        super(name);
-    }
-
     @Override
     protected String getSavepointPlugin() {
         return "in-mem(PreFlush=true)";

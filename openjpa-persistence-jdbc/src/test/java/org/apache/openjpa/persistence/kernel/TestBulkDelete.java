@@ -21,6 +21,8 @@ import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * OPENJPA-2789 connection didn't get closed properly
@@ -28,11 +30,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
 public class TestBulkDelete extends AbstractTestCase {
 
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CalendarFields.class);
     }
 
+    @Test
     public void testConnectionClosing() throws Exception {
         for (int i = 0; i < 30; i++) {
             EntityManager em = getEmf().createEntityManager();

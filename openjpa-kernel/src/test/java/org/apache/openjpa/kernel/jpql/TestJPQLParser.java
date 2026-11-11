@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.kernel.jpql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder.JPQLNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestJPQLParser {
 
@@ -651,7 +651,7 @@ public class TestJPQLParser {
         };
         for (String query : queries) {
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
-            assertNotNull(query, node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+            assertNotNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true), query);
         }
     }
 
@@ -666,7 +666,7 @@ public class TestJPQLParser {
         };
         for (String query : queries) {
             JPQLNode node = (JPQLNode) new JPQL(query).parseQuery();
-            assertNull(query, node.findChildByID(JPQLTreeConstants.JJTNEGATE, true));
+            assertNull(node.findChildByID(JPQLTreeConstants.JJTNEGATE, true), query);
         }
     }
 

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,22 +30,23 @@ import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestEntityManagerFactory extends TestCase {
+public class TestEntityManagerFactory {
 
     /*
      * This test uses a mis-configured persistence unit to verify that we will
      * not connect to the database when an unused emf is closed.
      */
+    @Test
     public void testCloseUnusedEMF() {
         EntityManagerFactory emf =
                 Persistence.createEntityManagerFactory("invalid");
         emf.close();
     }
-	
-	public void testEMFCreation() {
+
+    @Test
+    public void testEMFCreation() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -69,7 +73,8 @@ public class TestEntityManagerFactory extends TestCase {
 		emf.close();
 	}
 
-	public void testEMFCreationDoesNotMutateConfiguration() {
+    @Test
+    public void testEMFCreationDoesNotMutateConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -81,7 +86,8 @@ public class TestEntityManagerFactory extends TestCase {
 		assertEquals(before, conf.properties());
 	}
 
-	public void testRepeatedEMFCreationFromSameConfiguration() {
+    @Test
+    public void testRepeatedEMFCreationFromSameConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -97,7 +103,8 @@ public class TestEntityManagerFactory extends TestCase {
 		assertEquals(mdf1, mdf2);
 	}
 
-	public void testEMFCreationMergesUserMetaDataFactory() {
+    @Test
+    public void testEMFCreationMergesUserMetaDataFactory() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property("openjpa.MetaDataFactory", "jpa");
@@ -110,7 +117,8 @@ public class TestEntityManagerFactory extends TestCase {
 		emf.close();
 	}
 
-	public void testEMFCreationHonoursMappingFiles() {
+    @Test
+    public void testEMFCreationHonoursMappingFiles() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.mappingFile("org/apache/openjpa/persistence/simple/persistence-configuration-orm.xml");

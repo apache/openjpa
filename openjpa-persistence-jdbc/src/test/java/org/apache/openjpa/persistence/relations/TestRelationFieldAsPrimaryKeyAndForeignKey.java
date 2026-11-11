@@ -18,35 +18,39 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestRelationFieldAsPrimaryKeyAndForeignKey
-        extends SingleEMFTestCase {
+public class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(C.class, CM.class, D.class, E.class, VC.class,
                 VCS.class, CLEAR_TABLES);
 
-        try {
-            EntityManager em = emf.createEntityManager();
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             List<E> es = (List<E>) em.createQuery(
                     "Select e from E e").getResultList();
-            for (E e : es)
+            for (E e : es) {
                 em.remove(e);
+            }
 
             em.getTransaction().commit();
-            em.close();
+        }
 
-            em = emf.createEntityManager();
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
 
             E e = new E();
@@ -83,17 +87,11 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
             em.persist(d);
 
             em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-            if (e.getMessage().contains("max key length")) {
-                // on MariaDB the keys are too long
-                setTestsDisabled(true);
-            }
         }
     }
 
 
-
+    @Test
     public void testUnboundEntities() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -103,7 +101,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         try {
             em.persist(vcSet);
             em.getTransaction().commit();
-            Assert.fail("didn't throw expected PersistenceException");
+            fail("didn't throw expected PersistenceException");
         } catch (Exception e) {
             // test pass
         } finally {
@@ -117,7 +115,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         try {
             em.persist(vc);
             em.getTransaction().commit();
-            Assert.fail("didn't throw expected PersistenceException");
+            fail("didn't throw expected PersistenceException");
         } catch (Exception e) {
             // test pass
         } finally {
@@ -131,7 +129,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         try {
             em.persist(cm);
             em.getTransaction().commit();
-            Assert.fail("didn't throw expected PersistenceException");
+            fail("didn't throw expected PersistenceException");
         } catch (Exception e) {
             // test pass
         } finally {
@@ -145,7 +143,7 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         try {
             em.persist(c);
             em.getTransaction().commit();
-            Assert.fail("didn't throw expected PersistenceException");
+            fail("didn't throw expected PersistenceException");
         } catch (Exception e) {
             // test pass
         } finally {
@@ -156,27 +154,29 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         em.close();
     }
 
+    @Test
     public void testQuery() {
         EntityManager em = emf.createEntityManager();
         List<E> es = (List<E>) em.createQuery(
                 "Select e from E e where e.name='E1'").getResultList();
-        Assert.assertEquals(1, es.size());
+        assertEquals(1, es.size());
         E e = (E) es.get(0);
-        Assert.assertEquals("E1", e.getName());
-        Assert.assertEquals(1, e.getVcss().size());
-        Assert.assertEquals(1, e.getCms().size());
-        Assert.assertEquals(1, e.getVcss().size());
+        assertEquals("E1", e.getName());
+        assertEquals(1, e.getVcss().size());
+        assertEquals(1, e.getCms().size());
+        assertEquals(1, e.getVcss().size());
 
         // Get virtual container set and check that it has a reference to the
         // ensemble
         List<VCS> vcss = (List<VCS>) em.createQuery(
                 "Select vcset from VCS vcset where vcset.vcsId='VCS1'")
                 .getResultList();
-        Assert.assertEquals(1, vcss.size());
-        Assert.assertEquals(e, ((VCS) vcss.get(0)).getE());
+        assertEquals(1, vcss.size());
+        assertEquals(e, ((VCS) vcss.get(0)).getE());
         em.close();
     }
 
+    @Test
     public void testDeletes() {
         // Remove VC set and check that all VCs belonging to that set are
         // deleted but not the ensemble itself
@@ -192,15 +192,15 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
         List<VC> vcs = (List<VC>) em.createQuery(
                 "Select vc from VC vc where vc.vcId='VC1'")
                 .getResultList();
-        Assert.assertEquals(0, vcs.size());
+        assertEquals(0, vcs.size());
 
         // Make sure E and I are still there
         List<E> es = (List<E>) em.createQuery(
                 "Select e from E e").getResultList();
-        Assert.assertEquals(1, es.size());
+        assertEquals(1, es.size());
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (!isTestsDisabled()) {
             EntityManager em = emf.createEntityManager();

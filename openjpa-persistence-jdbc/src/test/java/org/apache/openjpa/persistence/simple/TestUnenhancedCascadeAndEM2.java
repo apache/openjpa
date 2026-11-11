@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +32,8 @@ import jakarta.persistence.EntityNotFoundException;
 
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Runtime-enhanced (unenhanced) versions of tests for TCK failures:
@@ -37,7 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedCascadeAEntity.class, UnenhancedCascadeBAllEntity.class,
               UnenhancedCascadeBPersistEntity.class, UnenhancedSimpleOrderEntity.class,
@@ -48,6 +55,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
     /**
      * TCK: cascadeAllMX1Test2
      */
+    @Test
     public void testCascadeAllMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -59,20 +67,20 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
             em.flush();
 
             UnenhancedCascadeAEntity newA1 = b1.getA1();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             em.remove(newA1);
             em.remove(b1);
             em.flush();
 
             UnenhancedCascadeBAllEntity found = em.find(UnenhancedCascadeBAllEntity.class, "2");
-            assertNull("B should be removed", found);
+            assertNull(found, "B should be removed");
 
             em.persist(b1);
             em.flush();
 
-            assertTrue("B should be managed", em.contains(b1));
-            assertNotNull("B's ManyToOne A should not be null after re-persist", b1.getA1());
+            assertTrue(em.contains(b1), "B should be managed");
+            assertNotNull(b1.getA1(), "B's ManyToOne A should not be null after re-persist");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -88,6 +96,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
     /**
      * TCK: persistMX1Test2
      */
+    @Test
     public void testPersistMX1RePersistRemoved() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -99,20 +108,20 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
             em.flush();
 
             UnenhancedCascadeAEntity newA1 = b1.getA1();
-            assertNotNull("A should be persisted via cascade", newA1);
+            assertNotNull(newA1, "A should be persisted via cascade");
 
             em.remove(newA1);
             em.remove(em.find(UnenhancedCascadeBPersistEntity.class, "2"));
             em.flush();
 
             UnenhancedCascadeBPersistEntity found = em.find(UnenhancedCascadeBPersistEntity.class, "2");
-            assertNull("B should be removed", found);
+            assertNull(found, "B should be removed");
 
             em.persist(b1);
             em.flush();
 
-            assertTrue("B should be managed", em.contains(b1));
-            assertNotNull("B's ManyToOne A should not be null after re-persist", b1.getA1());
+            assertTrue(em.contains(b1), "B should be managed");
+            assertNotNull(b1.getA1(), "B's ManyToOne A should not be null after re-persist");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -128,12 +137,13 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
     /**
      * TCK: getReferenceForNonExistingEntityTest
      */
+    @Test
     public void testGetReferenceForNonExistingEntity() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
             UnenhancedSimpleOrderEntity order = new UnenhancedSimpleOrderEntity(99999, 0, "nonexistent");
             UnenhancedSimpleOrderEntity ref = em.getReference(order);
-            assertNotNull("getReference should return a non-null reference", ref);
+            assertNotNull(ref, "getReference should return a non-null reference");
             try {
                 String desc = ref.getDescription();
                 fail("Expected EntityNotFoundException when accessing non-existing entity reference"
@@ -152,6 +162,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * TCK: runWithConnectionTest - mirrors the exact TCK test logic:
      * insert via JDBC, commit, find via JPA, check equals
      */
+    @Test
     public void testRunWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
@@ -174,9 +185,10 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
 
             UnenhancedSimpleOrderEntity found =
                 em.find(UnenhancedSimpleOrderEntity.class, order.getId());
-            assertNotNull("Order should be found after runWithConnection insert",
-                found);
-            assertTrue("Found entity should equal original order"
+            assertNotNull(found,
+                "Order should be found after runWithConnection insert");
+            assertTrue(found.equals(order),
+                "Found entity should equal original order"
                 + " (found.id=" + found.getId()
                 + ", found.total=" + found.getTotal()
                 + ", found.desc=" + found.getDescription()
@@ -185,8 +197,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
                 + ", order.desc=" + order.getDescription()
                 + ", found.class=" + found.getClass().getName()
                 + ", order.class=" + order.getClass().getName()
-                + ")",
-                found.equals(order));
+                + ")");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -199,6 +210,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
      * TCK: callWithConnectionTest - mirrors the exact TCK test logic:
      * insert + read via JDBC, commit, find via JPA, check equals
      */
+    @Test
     public void testCallWithConnection() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         try {
@@ -239,9 +251,10 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
 
             UnenhancedSimpleOrderEntity found =
                 em.find(UnenhancedSimpleOrderEntity.class, order.getId());
-            assertNotNull("Order should be found after callWithConnection",
-                found);
-            assertTrue("Found entity should equal selected order"
+            assertNotNull(found,
+                "Order should be found after callWithConnection");
+            assertTrue(found.equals(selectedOrder),
+                "Found entity should equal selected order"
                 + " (found.id=" + found.getId()
                 + ", found.total=" + found.getTotal()
                 + ", found.desc=" + found.getDescription()
@@ -250,8 +263,7 @@ public class TestUnenhancedCascadeAndEM2 extends SingleEMFTestCase {
                 + ", selected.desc=" + selectedOrder.getDescription()
                 + ", found.class=" + found.getClass().getName()
                 + ", selected.class=" + selectedOrder.getClass().getName()
-                + ")",
-                found.equals(selectedOrder));
+                + ")");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

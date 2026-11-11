@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,6 +41,8 @@ import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.persistence.query.QueryDefinition;
 import org.apache.openjpa.persistence.query.SelectItem;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -63,7 +68,7 @@ public class TestCriteria extends SingleEMFTestCase {
     protected OpenJPAQueryBuilder qb;
     protected StringComparison comparator = new StringComparison();
 
-    @Override
+    @BeforeEach
     public void setUp() {
             super.setUp(CLEAR_TABLES,
                     "openjpa.DynamicEnhancementAgent", "false",
@@ -109,6 +114,7 @@ public class TestCriteria extends SingleEMFTestCase {
         emf.createEntityManager();
     }
 
+    @Test
     public void testLogicalPredicateAssociativity() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         Predicate p1 = e.get("salary").greaterThan(100);
@@ -128,6 +134,7 @@ public class TestCriteria extends SingleEMFTestCase {
         emf.createEntityManager().createDynamicQuery(q2).getResultList();
     }
 
+    @Test
     public void testMultipleDomainOfSameClass() {
         DomainObject o1 = qb.createQueryDefinition(Order.class);
         DomainObject o2 = o1.addRoot(Order.class);
@@ -143,6 +150,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, o1);
     }
 
+    @Test
     public void testFetchJoin() {
         DomainObject d = qb.createQueryDefinition(Department.class);
         d.leftJoinFetch("employees");
@@ -155,6 +163,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, d);
     }
 
+    @Test
     public void testMultipartNavigation() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         DomainObject p = e.join("contactInfo").join("phones");
@@ -168,6 +177,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, e);
     }
 
+    @Test
     public void testOperatorPath() {
         QueryDefinition qdef = qb.createQueryDefinition();
         DomainObject item = qdef.addRoot(Item.class);
@@ -182,6 +192,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, qdef);
     }
 
+    @Test
     public void testLiteral() {
         DomainObject c = qb.createQueryDefinition(Customer.class);
         DomainObject o = c.join("orders");
@@ -198,6 +209,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, c);
     }
 
+    @Test
     public void testTypeExpression() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         e.select(e.type())
@@ -209,6 +221,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, e);
     }
 
+    @Test
     public void testIndex() {
         DomainObject c = qb.createQueryDefinition(Course.class);
         DomainObject w = c.join("studentWaitList");
@@ -221,6 +234,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, c);
     }
 
+    @Test
     public void testSum() {
         DomainObject o = qb.createQueryDefinition(Order.class);
         DomainObject l = o.join("lineItems");
@@ -234,6 +248,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, c);
     }
 
+    @Test
     public void testSize() {
         DomainObject d = qb.createQueryDefinition(Department.class);
         d.where(d.get("name").equal("Sales"))
@@ -245,6 +260,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, d);
     }
 
+    @Test
     public void testCount() {
 
         EntityManager em = emf.createEntityManager();
@@ -267,6 +283,7 @@ public class TestCriteria extends SingleEMFTestCase {
         assertEquals(size, count);
     }
 
+    @Test
     public void testGeneralCase() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         e.where(e.get("department").get("name").equal("Engineering"));
@@ -289,6 +306,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, e);
     }
 
+    @Test
     public void testMemberOf() {
         DomainObject p = qb.createQueryDefinition(Person.class);
         p.where(p.literal("Joe").member(p.get("nicknames")));
@@ -298,6 +316,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, p);
     }
 
+    @Test
     public void testParamater() {
         QueryDefinition qdef = qb.createQueryDefinition();
         DomainObject customer = qdef.addRoot(Customer.class);
@@ -308,6 +327,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, qdef, "status", 1);
     }
 
+    @Test
     public void testBetween() {
         DomainObject c = qb.createQueryDefinition(CreditCard.class);
         DomainObject t = c.join("transactionHistory");
@@ -322,6 +342,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, c);
     }
 
+    @Test
     public void testIsEmpty() {
         DomainObject o = qb.createQueryDefinition(Order.class);
         o.where(o.get("lineItems").isEmpty());
@@ -332,6 +353,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, o);
     }
 
+    @Test
     public void testNonCorrelatedSubQuery() {
         QueryDefinition q1 = qb.createQueryDefinition();
         DomainObject goodCustomer = q1.addRoot(Customer.class);
@@ -348,6 +370,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q1);
     }
 
+    @Test
     public void testNew() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject customer = q.addRoot(Customer.class);
@@ -365,6 +388,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testKeyValueOperatorPath() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject v = q.addRoot(VideoStore.class);
@@ -381,6 +405,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testGroupByHaving() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject customer = q.addRoot(Customer.class);
@@ -397,6 +422,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testGroupByHaving2() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject customer = q.addRoot(Customer.class);
@@ -411,6 +437,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testOrderBy() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject customer = q.addRoot(Customer.class);
@@ -426,6 +453,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testOrderBy2() {
         QueryDefinition q = qb.createQueryDefinition();
         DomainObject customer = q.addRoot(Customer.class);
@@ -441,6 +469,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testOrderByExpression() {
         DomainObject o = qb.createQueryDefinition(Order.class);
         DomainObject a = o.join("customer").join("address");
@@ -458,6 +487,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, o);
     }
 
+    @Test
     public void testCorrelatedSubquery() {
         QueryDefinition q1 = qb.createQueryDefinition();
         DomainObject emp = q1.addRoot(Employee.class);
@@ -478,6 +508,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q1);
     }
 
+    @Test
     public void testCreateSubquery() {
         DomainObject customer = qb.createQueryDefinition(Customer.class);
         DomainObject order =
@@ -491,6 +522,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, customer);
     }
 
+    @Test
     public void testTypeList() {
         DomainObject q = qb.createQueryDefinition(Employee.class);
         q.where(q.type().in(Exempt.class, Contractor.class));
@@ -502,6 +534,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testStringList() {
         DomainObject q = qb.createQueryDefinition(Customer.class);
         q.where(q.get("country").in("USA", "UK", "France"));
@@ -512,6 +545,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, q);
     }
 
+    @Test
     public void testConcat() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         DomainObject f = e.join("frequentFlierPlan");
@@ -531,6 +565,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, e);
     }
 
+    @Test
     public void testCorrelatedSubquerySpecialCase1() {
         DomainObject o = qb.createQueryDefinition(Order.class);
         DomainObject a = qb.createSubqueryDefinition(o.get("customer").
@@ -546,6 +581,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, o);
     }
 
+    @Test
     public void testCorrelatedSubquerySpecialCase2() {
         DomainObject o = qb.createQueryDefinition(Order.class);
         DomainObject c = o.join("customer");
@@ -560,6 +596,7 @@ public class TestCriteria extends SingleEMFTestCase {
         compare(jpql, o);
     }
 
+    @Test
     public void testRecursiveDefinitionIsNotAllowed() {
         DomainObject q = qb.createQueryDefinition(Customer.class);
         q.where(q.exists().and(q.get("name").equal("wrong")));

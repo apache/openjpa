@@ -18,10 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import org.junit.jupiter.api.BeforeEach;
+
 public class TestUpdateSingleValuedAssociationXML extends
     TestUpdateSingleValuedAssociation {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
     }

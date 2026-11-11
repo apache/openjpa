@@ -18,25 +18,34 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestXA extends SliceTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, CLEAR_TABLES);
     }
+
+    @Test
     public void testEmptyCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.getTransaction().commit();
     }
+
+    @Test
     public void testEmptyRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.getTransaction().rollback();
     }
 
-	public void testPersistIndependentObjects() {
+    @Test
+    public void testPersistIndependentObjects() {
 		EntityManager em = emf.createEntityManager();
         int before = count(PObject.class);
 		int N = 2;

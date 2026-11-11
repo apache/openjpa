@@ -18,8 +18,12 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddableSuperSub;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test embeddable superclasses.</p>
@@ -29,12 +33,12 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestEmbeddableSuperclass extends AnnotationTestCase
 {
 
-	public TestEmbeddableSuperclass(String name)
+	public TestEmbeddableSuperclass()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(EmbeddableSuperSub.class);
     }
@@ -102,6 +106,7 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
     }
 */
+    @Test
     public void testPersistAndFind() {
         EmbeddableSuperSub parent = new EmbeddableSuperSub();
         parent.setClob("parent");

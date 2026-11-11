@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.cache.jpa;
 /*
  * When both shared-cache-mode and dataCache are not set, caching will be off.
  */
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import jakarta.persistence.Cache;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.Test;
 
 public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
 
@@ -64,14 +68,17 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
         return sql;
     }
 
+    @Test
     public void testCacheables() {
         assertCacheables(cache, false);
     }
 
+    @Test
     public void testUncacheables() {
         assertUncacheables(cache, false);
     }
 
+    @Test
     public void testUnspecified() {
         assertUnspecified(cache, false);
     }

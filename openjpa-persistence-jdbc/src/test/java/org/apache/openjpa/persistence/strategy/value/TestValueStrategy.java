@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestValueStrategy extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp(){
         setUp(ValueStrategyEntity.class, DROP_TABLES,
                 "openjpa.RuntimeUnenhancedClasses", "supported");
@@ -32,6 +37,7 @@ public class TestValueStrategy extends SQLListenerTestCase {
         create();
     }
 
+    @Test
     public void testIt() {
         EntityManager em = emf.createEntityManager();
         ValueStrategyEntity se = em.find(ValueStrategyEntity.class, "id1");

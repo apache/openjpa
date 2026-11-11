@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,6 +28,8 @@ import org.apache.openjpa.datacache.ClearableScheduler;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestClearableScheduler extends SingleEMFTestCase {
 
@@ -38,7 +42,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
         return buf.toString();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
             "openjpa.DataCache", "true(EvictionSchedule=+1)"
@@ -48,6 +52,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
             );
     }
 
+    @Test
     public void testBasic() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();

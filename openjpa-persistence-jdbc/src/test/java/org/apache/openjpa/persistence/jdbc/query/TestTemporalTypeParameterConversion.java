@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +33,8 @@ import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.jdbc.query.domain.HireDateEmployee;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that setParameter with Calendar/Date and TemporalType correctly converts
@@ -51,7 +55,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
 
     private Date targetDate;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, HireDateEmployee.class);
 
@@ -80,6 +84,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Tests query.setParameter(int, Calendar, TemporalType.DATE) with positional parameter.
      * Mirrors TCK setParameterIntCalendarTemporalTypeTest.
      */
+    @Test
     public void testSetParameterIntCalendarTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -90,7 +95,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         // Test Query version
         Query query = em.createQuery(JPQL_POSITIONAL);
         List<?> results = query.setParameter(1, cal, TemporalType.DATE).getResultList();
-        assertEquals("Query with positional Calendar param should find 1 result", 1, results.size());
+        assertEquals(1, results.size(), "Query with positional Calendar param should find 1 result");
         assertEquals("John", ((HireDateEmployee) results.get(0)).getName());
 
         em.getTransaction().commit();
@@ -99,7 +104,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         em.getTransaction().begin();
         TypedQuery<HireDateEmployee> tquery = em.createQuery(JPQL_POSITIONAL, HireDateEmployee.class);
         List<HireDateEmployee> tresults = tquery.setParameter(1, cal, TemporalType.DATE).getResultList();
-        assertEquals("TypedQuery with positional Calendar param should find 1 result", 1, tresults.size());
+        assertEquals(1, tresults.size(), "TypedQuery with positional Calendar param should find 1 result");
         assertEquals("John", tresults.get(0).getName());
 
         em.getTransaction().commit();
@@ -110,6 +115,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Tests query.setParameter(String, Calendar, TemporalType.DATE) with named parameter.
      * Mirrors TCK setParameterStringCalendarTemporalTypeTest.
      */
+    @Test
     public void testSetParameterStringCalendarTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -120,7 +126,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         // Test Query version
         Query query = em.createQuery(JPQL_NAMED);
         List<?> results = query.setParameter("hDate", cal, TemporalType.DATE).getResultList();
-        assertEquals("Query with named Calendar param should find 1 result", 1, results.size());
+        assertEquals(1, results.size(), "Query with named Calendar param should find 1 result");
         assertEquals("John", ((HireDateEmployee) results.get(0)).getName());
 
         em.getTransaction().commit();
@@ -129,7 +135,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         em.getTransaction().begin();
         TypedQuery<HireDateEmployee> tquery = em.createQuery(JPQL_NAMED, HireDateEmployee.class);
         List<HireDateEmployee> tresults = tquery.setParameter("hDate", cal, TemporalType.DATE).getResultList();
-        assertEquals("TypedQuery with named Calendar param should find 1 result", 1, tresults.size());
+        assertEquals(1, tresults.size(), "TypedQuery with named Calendar param should find 1 result");
         assertEquals("John", tresults.get(0).getName());
 
         em.getTransaction().commit();
@@ -140,6 +146,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Tests query.setParameter(int, Date, TemporalType.DATE) with positional parameter.
      * Mirrors TCK setParameter8Test.
      */
+    @Test
     public void testSetParameterIntDateTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -150,7 +157,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         // Test Query version
         Query query = em.createQuery(JPQL_POSITIONAL);
         List<?> results = query.setParameter(1, utilDate, TemporalType.DATE).getResultList();
-        assertEquals("Query with positional Date param should find 1 result", 1, results.size());
+        assertEquals(1, results.size(), "Query with positional Date param should find 1 result");
         assertEquals("John", ((HireDateEmployee) results.get(0)).getName());
 
         em.getTransaction().commit();
@@ -159,7 +166,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         em.getTransaction().begin();
         TypedQuery<HireDateEmployee> tquery = em.createQuery(JPQL_POSITIONAL, HireDateEmployee.class);
         List<HireDateEmployee> tresults = tquery.setParameter(1, utilDate, TemporalType.DATE).getResultList();
-        assertEquals("TypedQuery with positional Date param should find 1 result", 1, tresults.size());
+        assertEquals(1, tresults.size(), "TypedQuery with positional Date param should find 1 result");
         assertEquals("John", tresults.get(0).getName());
 
         em.getTransaction().commit();
@@ -170,6 +177,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
      * Tests query.setParameter(Parameter, Date, TemporalType.DATE) with Parameter object.
      * Mirrors TCK setParameterParameterDateTemporalTypeTest.
      */
+    @Test
     public void testSetParameterParameterDateTemporalTypeDate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -182,7 +190,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         Parameter<Date> p = (Parameter<Date>) query.getParameter(1);
         query.setParameter(p, utilDate, TemporalType.DATE);
         List<?> results = query.getResultList();
-        assertEquals("Query with Parameter<Date> param should find 1 result", 1, results.size());
+        assertEquals(1, results.size(), "Query with Parameter<Date> param should find 1 result");
         assertEquals("John", ((HireDateEmployee) results.get(0)).getName());
 
         em.getTransaction().commit();
@@ -194,7 +202,7 @@ public class TestTemporalTypeParameterConversion extends SingleEMFTestCase {
         Parameter<Date> tp = (Parameter<Date>) tquery.getParameter(1);
         tquery.setParameter(tp, utilDate, TemporalType.DATE);
         List<HireDateEmployee> tresults = tquery.getResultList();
-        assertEquals("TypedQuery with Parameter<Date> param should find 1 result", 1, tresults.size());
+        assertEquals(1, tresults.size(), "TypedQuery with Parameter<Date> param should find 1 result");
         assertEquals("John", tresults.get(0).getName());
 
         em.getTransaction().commit();

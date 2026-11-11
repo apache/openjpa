@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,16 +29,18 @@ import jakarta.persistence.NamedQuery;
 import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @NamedQuery(name = "setParam1",
     query = "SELECT o FROM Entity1 o WHERE o.pk LIKE :pk")
 public class TestEJBQueryInterface extends AbstractTestCase {
 
-    public TestEJBQueryInterface(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBQueryInterface() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
 
         int instNum = 10;
@@ -61,6 +66,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testResultList() {
         EntityManager em = currentEntityManager();
         List list = em.createQuery("Select object(o) from Entity1 o")
@@ -71,6 +77,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testGetSingleList() {
         EntityManager em = currentEntityManager();
         String curr = 2 + "";
@@ -86,6 +93,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExecuteUpdate() {
 
         EntityManager em = currentEntityManager();
@@ -104,6 +112,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testSetMaxResults() {
         EntityManager em = currentEntityManager();
 
@@ -117,6 +126,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testSetFirstResults() {
         EntityManager em = currentEntityManager();
 

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +34,13 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     private List<String> _sql = new ArrayList<>();
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
@@ -43,6 +49,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
                 "openjpa.jdbc.JDBCListeners",new JDBCListener[] { new FilteringJDBCListener(_sql) });
     }
 
+    @Test
     public void testEmptyResultTimeout() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
@@ -79,12 +86,14 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
      * Verify that the persistent unit property configuration is enabling
      * the TIMESTAMP Eviction Policy.
      */
+    @Test
     public void testTimestampEvictionEnablement() {
         ConcurrentQueryCache qc = getQueryCache();
         EvictPolicy ep = qc.getEvictPolicy();
         assertTrue(ep == EvictPolicy.TIMESTAMP);
     }
 
+    @Test
     public void testLoadQueries() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -113,6 +122,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
      *
      * @throws Exception
      */
+    @Test
     public void testWriteLock() throws Exception {
         final QueryCache qc = emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
         Thread t2 = new Thread() {

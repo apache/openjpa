@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.criteria.results;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Array;
 import java.util.List;
 
@@ -31,6 +35,9 @@ import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.persistence.criteria.CriteriaTest;
 import org.apache.openjpa.persistence.criteria.Person;
 import org.apache.openjpa.persistence.criteria.Person_;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -42,7 +49,7 @@ import org.apache.openjpa.persistence.criteria.Person_;
 
 public class TestMultiselect extends CriteriaTest {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         clearData();
@@ -71,15 +78,16 @@ public class TestMultiselect extends CriteriaTest {
     }
 
     /**
-    * If the type of the criteria query is CriteriaQuery<Tuple>
-    * (i.e., a criteria query object created by either the
-    * createTupleQuery method or by passing a Tuple class argument
-    * to the createQuery method), a Tuple object corresponding to
-    * the elements of the list passed to the multiselect method
-    * will be instantiated and returned for each row that results
-    * from the query execution.
-    * */
+     * If the type of the criteria query is CriteriaQuery<Tuple>
+     * (i.e., a criteria query object created by either the
+     * createTupleQuery method or by passing a Tuple class argument
+     * to the createQuery method), a Tuple object corresponding to
+     * the elements of the list passed to the multiselect method
+     * will be instantiated and returned for each row that results
+     * from the query execution.
+     * */
 
+    @Test
     public void testTupleQuery() {
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Person> p = q.from(Person.class);
@@ -88,6 +96,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Tuple.class, String.class, Integer.class);
     }
 
+    @Test
     public void testTupleQueryExplicit() {
         CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
         Root<Person> p = q.from(Person.class);
@@ -106,6 +115,7 @@ public class TestMultiselect extends CriteriaTest {
      * multiselect method will be passed to the X constructor and
      * an instance of type X will be returned for each row.
      */
+    @Test
     public void testUserResultQueryWithExplictProjectionOfConstructorArguments() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         Root<Person> p = q.from(Person.class);
@@ -114,6 +124,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Person.class);
     }
 
+    @Test
     public void testUserResultQueryWithImplicitProjection() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         q.from(Person.class);
@@ -121,6 +132,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Person.class);
     }
 
+    @Test
     public void testUserResultQueryWithMismatchProjectionOfConstructorArguments() {
         CriteriaQuery<Person> q = cb.createQuery(Person.class);
         Root<Person> p = q.from(Person.class);
@@ -129,6 +141,7 @@ public class TestMultiselect extends CriteriaTest {
         fail("Person has no constrcutor with (name,id)", q);
     }
 
+    @Test
     public void testMultipleConstructorWithAliasRepeatedAndInOrderingClause() {
         // SELECT NEW(p.name), p.id, NEW(p.name), p.name FROM Person p ORDER BY p.name
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -163,6 +176,7 @@ public class TestMultiselect extends CriteriaTest {
      * elements of the list passed to the multiselect method.
      */
 
+    @Test
     public void testUserClassArray() {
         CriteriaQuery<Person[]> q = cb.createQuery(Person[].class);
         Root<Person> p = q.from(Person.class);
@@ -171,6 +185,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Person[].class, Person.class, Person.class);
     }
 
+    @Test
     public void testBasicClassArray() {
         CriteriaQuery<String[]> q = cb.createQuery(String[].class);
         Root<Person> p = q.from(Person.class);
@@ -179,6 +194,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, String[].class);
     }
 
+    @Test
     public void testTupleArray() {
         CriteriaQuery<Tuple[]> q = cb.createQuery(Tuple[].class);
         Root<Person> p = q.from(Person.class);
@@ -186,6 +202,7 @@ public class TestMultiselect extends CriteriaTest {
 
         assertResult(q, Tuple[].class, String.class, Integer.class, String.class);
     }
+
 // =================================================================
     /**
      * If the type of the criteria query is CriteriaQuery<Object>
@@ -194,6 +211,7 @@ public class TestMultiselect extends CriteriaTest {
      * only a single element, an instance of type Object will be
      * returned for each row.
      */
+    @Test
     public void testSingleObject() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -202,6 +220,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object.class);
     }
 
+    @Test
     public void testSingleObjectViaConstructor() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -210,6 +229,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object.class);
     }
 
+    @Test
     public void testSingleObjectAsProperty() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -218,6 +238,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object.class);
     }
 
+    @Test
     public void testSingleObjectImplicit() {
         CriteriaQuery<?> q = cb.createQuery();
         Root<Person> p = q.from(Person.class);
@@ -226,6 +247,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object.class);
     }
 
+    @Test
     public void testSingleObjectViaConstructorImplicit() {
         CriteriaQuery<?> q = cb.createQuery();
         Root<Person> p = q.from(Person.class);
@@ -234,6 +256,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object.class);
     }
 
+    @Test
     public void testSingleObjectAsPropertyImplicit() {
         CriteriaQuery<?> q = cb.createQuery();
         Root<Person> p = q.from(Person.class);
@@ -252,6 +275,7 @@ public class TestMultiselect extends CriteriaTest {
      * array will correspond to the elements of the list passed to
      * the multiselect method.
      */
+    @Test
     public void testSingleObjectMultipleProjections() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -260,6 +284,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object[].class, String.class, Integer.class);
     }
 
+    @Test
     public void testSingleObjectMultipleProjectionsAndConstructor() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Person> p = q.from(Person.class);
@@ -273,6 +298,7 @@ public class TestMultiselect extends CriteriaTest {
      * must not be a tuple- or array-valued compound selection item.
      * Verify that nesting tuples throws IllegalArgumentException.
      */
+    @Test
     public void testTupleCanNotBeNested() {
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
         Root<Person> p = q.from(Person.class);
@@ -282,12 +308,13 @@ public class TestMultiselect extends CriteriaTest {
 
         try {
             cb.tuple(tuple1, tuple2);
-            fail("Expected IllegalArgumentException when nesting tuple compound selections");
+            Assertions.fail("Expected IllegalArgumentException when nesting tuple compound selections");
         } catch (IllegalArgumentException e) {
             // expected per JPA 3.2 spec
         }
     }
 
+    @Test
     public void testMultiConstructor() {
         // SELECT NEW Foo(f.fid,f.fint), b, NEW FooBar(f.fid, b.bid) from Foo f JOIN f.bar b WHERE f.b=b
         CriteriaQuery<Object[]> q = cb.createQuery(Object[].class);
@@ -302,12 +329,13 @@ public class TestMultiselect extends CriteriaTest {
         assertFalse(result.isEmpty());
         for (Object[] row : result) {
             assertEquals(3, row.length);
-            assertTrue("0-th element " + row[0].getClass() + " is not Foo", row[0] instanceof Foo);
-            assertTrue("1-st element " + row[1].getClass() + " is not Bar", row[1] instanceof Bar);
-            assertTrue("2-nd element " + row[2].getClass() + " is not FooBar", row[2] instanceof FooBar);
+            assertTrue(row[0] instanceof Foo, "0-th element " + row[0].getClass() + " is not Foo");
+            assertTrue(row[1] instanceof Bar, "1-st element " + row[1].getClass() + " is not Bar");
+            assertTrue(row[2] instanceof FooBar, "2-nd element " + row[2].getClass() + " is not FooBar");
         }
     }
 
+    @Test
     public void testSelectSingleTermWithMultiselectObjectArray() {
         CriteriaQuery<Object[]> q = cb.createQuery(Object[].class);
         Root<Foo> f = q.from(Foo.class);
@@ -316,6 +344,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Object[].class, Foo.class);
     }
 
+    @Test
     public void testSelectSingleTermWithMultiselectObject() {
         CriteriaQuery<Object> q = cb.createQuery(Object.class);
         Root<Foo> f = q.from(Foo.class);
@@ -324,6 +353,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Foo.class);
     }
 
+    @Test
     public void testSelectSingleTermWithMultiselectTuple() {
         CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
         Root<Foo> f = q.from(Foo.class);
@@ -332,6 +362,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Tuple.class, Foo.class);
     }
 
+    @Test
     public void testSelectSingleTermWithMultiselectTupleArray() {
         CriteriaQuery<Tuple[]> q = cb.createQuery(Tuple[].class);
         Root<Foo> f = q.from(Foo.class);
@@ -340,6 +371,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Tuple[].class, Foo.class);
     }
 
+    @Test
     public void testSanity() {
         CriteriaQuery<Foo> q = cb.createQuery(Foo.class);
         Root<Foo> f = q.from(Foo.class);
@@ -347,6 +379,7 @@ public class TestMultiselect extends CriteriaTest {
         assertResult(q, Foo.class);
     }
 
+    @Test
     public void testSanity2() {
         CriteriaQuery<Foo> q = cb.createQuery(Foo.class);
         Root<Foo> f = q.from(Foo.class);
@@ -359,13 +392,14 @@ public class TestMultiselect extends CriteriaTest {
      * contain other compound selections. Nesting cb.tuple() inside cb.array()
      * must throw IllegalArgumentException.
      */
+    @Test
     public void testDeeplyNestedShape() {
         CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
         Root<Foo> foo = q.from(Foo.class);
 
         try {
             cb.array(foo.get(Foo_.fint), cb.tuple(foo.get(Foo_.fstring)));
-            fail("Expected IllegalArgumentException when nesting tuple inside array");
+            Assertions.fail("Expected IllegalArgumentException when nesting tuple inside array");
         } catch (IllegalArgumentException e) {
             // expected per JPA 3.2 spec - compound selections cannot contain
             // other compound selections
@@ -377,6 +411,7 @@ public class TestMultiselect extends CriteriaTest {
      * OpenJPA's historic extension supporting arbitrarily nested tuple and array selections
      * is available again.
      */
+    @Test
     public void testDeeplyNestedShapeWithCompatibilityOption() {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         boolean allowed = compat.getAllowNestedCompoundSelection();
@@ -405,19 +440,20 @@ public class TestMultiselect extends CriteriaTest {
         }
     }
 
+    @Test
     public void testConstructorFailsFast() {
         CriteriaQuery<Tuple> q = cb.createQuery(Tuple.class);
         Root<Foo> foo = q.from(Foo.class);
         try {
             q.multiselect(cb.construct(Foo.class, foo.get(Foo_.flong)));
-            fail("Expected IllegalArgumentException becuase Foo(long) is not a valid constructor");
+            Assertions.fail("Expected IllegalArgumentException becuase Foo(long) is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
             e.printStackTrace();
         }
         try {
             q.multiselect(cb.construct(Foo.class));
-            fail("Expected IllegalArgumentException becuase Foo() is not a valid constructor");
+            Assertions.fail("Expected IllegalArgumentException becuase Foo() is not a valid constructor");
         } catch (IllegalArgumentException e) {
             // good -- but print the error message to check it is informative enough
             e.printStackTrace();
@@ -437,16 +473,16 @@ public class TestMultiselect extends CriteriaTest {
         List<?> result = em.createQuery(q).getResultList();
         assertFalse(result.isEmpty());
         for (Object row : result) {
-            assertTrue(toClass(row) + " does not match actual result " + toString(resultClass),
-                resultClass.isInstance(row));
+            assertTrue(resultClass.isInstance(row),
+                toClass(row) + " does not match actual result " + toString(resultClass));
             if (resultClass.isArray() && arrayElementClasses != null) {
                 for (int i = 0; i < arrayElementClasses.length; i++) {
                     Object element = Array.get(row, i);
                     if (Tuple.class.isInstance(element)) {
                         assertEquals(arrayElementClasses[i], Tuple.class.cast(element).get(0).getClass());
                     } else {
-                    assertTrue(i + "-th array element " + toString(arrayElementClasses[i]) +
-                       " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
+                    assertTrue(arrayElementClasses[i].isInstance(element), i + "-th array element " + toString(arrayElementClasses[i]) +
+                       " does not match actual result " + toClass(element));
                     }
                 }
             }
@@ -454,8 +490,8 @@ public class TestMultiselect extends CriteriaTest {
                 Tuple tuple = (Tuple)row;
                 for (int i = 0; i < arrayElementClasses.length; i++) {
                     Object element = tuple.get(i);
-                    assertTrue(i + "-th tuple element " + toString(arrayElementClasses[i]) +
-                       " does not match actual result " + toClass(element), arrayElementClasses[i].isInstance(element));
+                    assertTrue(arrayElementClasses[i].isInstance(element), i + "-th tuple element " + toString(arrayElementClasses[i]) +
+                       " does not match actual result " + toClass(element));
                 }
             }
         }
@@ -465,7 +501,7 @@ public class TestMultiselect extends CriteriaTest {
     void fail(String msg, CriteriaQuery<?> q) {
         try {
             em.createQuery(q).getResultList();
-            fail("Expected to fail " + msg);
+            Assertions.fail("Expected to fail " + msg);
         } catch (Exception e) {
             // this is an expected exception
         }

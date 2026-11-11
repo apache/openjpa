@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.mapkey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that @OneToMany(mappedBy="department") resolves correctly
@@ -31,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestUnenhancedMappedBy extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             UnenhancedMBEmployee.class,
@@ -43,6 +48,7 @@ public class TestUnenhancedMappedBy extends SingleEMFTestCase {
      * Simple persist + find with @OneToMany(mappedBy) as List.
      * Verifies mappedBy="department" resolves to the @ManyToOne getter.
      */
+    @Test
     public void testMappedByWithDualAnnotatedId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -63,7 +69,7 @@ public class TestUnenhancedMappedBy extends SingleEMFTestCase {
         em = emf.createEntityManager();
         UnenhancedMBDepartment found =
             em.find(UnenhancedMBDepartment.class, 1);
-        assertNotNull("Department should be found", found);
+        assertNotNull(found, "Department should be found");
         assertEquals("Engineering", found.getName());
         em.close();
     }

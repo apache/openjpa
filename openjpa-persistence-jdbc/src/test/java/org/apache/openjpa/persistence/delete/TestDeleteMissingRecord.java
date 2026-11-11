@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.delete;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.OptimisticLockException;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Deleting an entity whose database row has already been removed (e.g. by a
@@ -48,26 +52,32 @@ public class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
             CLEAR_TABLES);
     }
 
+    @Test
     public void testUnversionedDeleteMissingRecordUnbatched() {
         assertUnversionedDeleteTolerated(0, 1);
     }
 
+    @Test
     public void testVersionedDeleteMissingRecordUnbatched() {
         assertVersionedDeleteThrows(0, 1);
     }
 
+    @Test
     public void testUnversionedDeleteMissingRecordSingleRowBatch() {
         assertUnversionedDeleteTolerated(100, 1);
     }
 
+    @Test
     public void testVersionedDeleteMissingRecordSingleRowBatch() {
         assertVersionedDeleteThrows(100, 1);
     }
 
+    @Test
     public void testUnversionedDeleteMissingRecordMultiRowBatch() {
         assertUnversionedDeleteTolerated(100, 2);
     }
 
+    @Test
     public void testVersionedDeleteMissingRecordMultiRowBatch() {
         assertVersionedDeleteThrows(100, 2);
     }

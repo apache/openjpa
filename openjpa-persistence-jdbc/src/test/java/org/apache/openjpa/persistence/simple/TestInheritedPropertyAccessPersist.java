@@ -18,14 +18,19 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that unenhanced entities with PROPERTY access and inheritance
@@ -33,11 +38,11 @@ import junit.framework.TestCase;
  * HardwareProduct (subclass) inherits @Id from Product (parent) and
  * the enhancer fails to map the inherited property to its backing field.
  */
-public class TestInheritedPropertyAccessPersist extends TestCase {
+public class TestInheritedPropertyAccessPersist {
 
     private EntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
@@ -51,7 +56,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
         emf = Persistence.createEntityManagerFactory("test", props);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
@@ -64,6 +69,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
      * ReflectingPersistenceCapable.pcNewObjectIdInstance() fails because
      * pcAttributeIndexToFieldName() returns null for inherited PK field.
      */
+    @Test
     public void testPersistSubclassWithInheritedId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -92,7 +98,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
         try {
             UnenhancedTCKHardwareProduct found = em.find(
                 UnenhancedTCKHardwareProduct.class, "1");
-            assertNotNull("Should find persisted HardwareProduct", found);
+            assertNotNull(found, "Should find persisted HardwareProduct");
             assertEquals("1", found.getId());
             assertEquals("Test Product", found.getName());
             assertEquals(5000, found.getModelNumber());
@@ -104,6 +110,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
     /**
      * Test persisting the parent class directly works too.
      */
+    @Test
     public void testPersistParentClassDirectly() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

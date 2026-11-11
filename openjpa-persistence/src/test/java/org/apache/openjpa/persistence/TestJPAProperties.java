@@ -24,14 +24,13 @@ import jakarta.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the conversion of user supplied property values to values consumable by the kernel.
@@ -83,10 +82,10 @@ public class TestJPAProperties {
             fail("Expected an IllegalArgumentException for an invalid cache retrieve mode");
         } catch (IllegalArgumentException iae) {
             String message = iae.getMessage();
-            assertTrue(message, message.contains(JPAProperties.CACHE_RETRIEVE_MODE));
-            assertTrue(message, message.contains("NOPE"));
-            assertTrue(message, message.contains("USE"));
-            assertTrue(message, message.contains("BYPASS"));
+            assertTrue(message.contains(JPAProperties.CACHE_RETRIEVE_MODE), message);
+            assertTrue(message.contains("NOPE"), message);
+            assertTrue(message.contains("USE"), message);
+            assertTrue(message.contains("BYPASS"), message);
         }
     }
 

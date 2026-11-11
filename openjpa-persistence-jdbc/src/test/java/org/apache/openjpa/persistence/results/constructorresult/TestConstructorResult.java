@@ -18,25 +18,32 @@
  */
 package org.apache.openjpa.persistence.results.constructorresult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 2.1 ConstructorResult support in @SqlResultSetMapping.
  */
 public class TestConstructorResult extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CrEntity.class, DROP_TABLES);
         assertNotNull(emf);
         populate();
     }
 
+    @Test
     public void testConstructorResultWithNamedNativeQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -58,6 +65,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testConstructorResultWithInlineNativeQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -76,6 +84,7 @@ public class TestConstructorResult extends SQLListenerTestCase {
         }
     }
 
+    @Test
     public void testConstructorResultSingleRow() {
         EntityManager em = emf.createEntityManager();
         try {

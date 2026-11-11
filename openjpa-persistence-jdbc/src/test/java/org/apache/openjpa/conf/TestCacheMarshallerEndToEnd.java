@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.NamedQueryEntity;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestCacheMarshallerEndToEnd
     extends AbstractCachedEMFTestCase  {
@@ -67,6 +71,7 @@ public class TestCacheMarshallerEndToEnd
     };
 
 
+    @Test
     public void testCacheMarshallerEndToEnd()
         throws IOException {
         OpenJPAEntityManagerFactorySPI emf = createEMF(STORE_PROPS);

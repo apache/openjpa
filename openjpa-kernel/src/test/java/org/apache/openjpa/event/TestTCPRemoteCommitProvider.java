@@ -18,6 +18,14 @@
  */
 package org.apache.openjpa.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -37,8 +45,8 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.util.UserException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 public class TestTCPRemoteCommitProvider {
     /**
@@ -86,8 +94,8 @@ public class TestTCPRemoteCommitProvider {
 
         provider.setBindAddress(localAddress.getHostAddress());
 
-        Assert.assertEquals(localAddress, getPrivateField(provider, "_bindAddress"));
-        Assert.assertArrayEquals(localAddress.getAddress(), (byte[]) getPrivateField(provider, "_localhost"));
+        assertEquals(localAddress, getPrivateField(provider, "_bindAddress"));
+        assertArrayEquals(localAddress.getAddress(), (byte[]) getPrivateField(provider, "_localhost"));
     }
 
     @Test
@@ -99,12 +107,12 @@ public class TestTCPRemoteCommitProvider {
         provider.setBindAddress("localhost");
 
         Object bindAddress = getPrivateField(provider, "_bindAddress");
-        Assert.assertNotNull(bindAddress);
+        assertNotNull(bindAddress);
         // The resolved address must be one of this host's addresses.
         boolean isLocal = NetworkInterface.networkInterfaces()
             .flatMap(NetworkInterface::inetAddresses)
             .anyMatch(bindAddress::equals);
-        Assert.assertTrue("Bind address " + bindAddress + " is not a local address", isLocal);
+        assertTrue(isLocal, "Bind address " + bindAddress + " is not a local address");
     }
 
     @Test
@@ -113,11 +121,11 @@ public class TestTCPRemoteCommitProvider {
 
         try {
             provider.setBindAddress(NON_LOCAL_ADDRESS);
-            Assert.fail("Expected UserException for a non-local bind address");
+            fail("Expected UserException for a non-local bind address");
         } catch (UserException ue) {
-            Assert.assertTrue("Unexpected message: " + ue.getMessage(), ue.getMessage().contains(NON_LOCAL_ADDRESS));
+            assertTrue(ue.getMessage().contains(NON_LOCAL_ADDRESS), "Unexpected message: " + ue.getMessage());
             // Nothing must have been set.
-            Assert.assertNull(getPrivateField(provider, "_bindAddress"));
+            assertNull(getPrivateField(provider, "_bindAddress"));
         }
     }
 
@@ -127,15 +135,15 @@ public class TestTCPRemoteCommitProvider {
         try {
             provider = new TCPRemoteCommitProvider();
         } catch (UnknownHostException uhe) {
-            Assert.fail("Could not construct TCPRemoteCommitProvider: " + uhe);
+            fail("Could not construct TCPRemoteCommitProvider: " + uhe);
         }
 
         try {
             provider.setBindAddress(UNRESOLVABLE_HOST);
-            Assert.fail("Expected UnknownHostException for an unresolvable host name");
+            fail("Expected UnknownHostException for an unresolvable host name");
         } catch (UnknownHostException uhe) {
-            Assert.assertTrue("Unexpected message: " + uhe.getMessage(), uhe.getMessage().contains(UNRESOLVABLE_HOST));
-            Assert.assertNull(getPrivateField(provider, "_bindAddress"));
+            assertTrue(uhe.getMessage().contains(UNRESOLVABLE_HOST), "Unexpected message: " + uhe.getMessage());
+            assertNull(getPrivateField(provider, "_bindAddress"));
         }
     }
 
@@ -165,7 +173,7 @@ public class TestTCPRemoteCommitProvider {
 
         provider.setAddresses("192.0.2.1:5671;198.51.100.2:5672");
 
-        Assert.assertEquals(List.of("192.0.2.1:5671", "198.51.100.2:5672"), addressStrings(provider));
+        assertEquals(List.of("192.0.2.1:5671", "198.51.100.2:5672"), addressStrings(provider));
     }
 
     @Test
@@ -174,7 +182,7 @@ public class TestTCPRemoteCommitProvider {
 
         provider.setAddresses(NON_LOCAL_ADDRESS);
 
-        Assert.assertEquals(List.of(NON_LOCAL_ADDRESS + ":5636"), addressStrings(provider));
+        assertEquals(List.of(NON_LOCAL_ADDRESS + ":5636"), addressStrings(provider));
     }
 
     @Test
@@ -185,7 +193,7 @@ public class TestTCPRemoteCommitProvider {
         // the provider's default port, so it must be excluded.
         provider.setAddresses("127.0.0.1:5636;" + NON_LOCAL_ADDRESS + ":5636");
 
-        Assert.assertEquals(List.of(NON_LOCAL_ADDRESS + ":5636"), addressStrings(provider));
+        assertEquals(List.of(NON_LOCAL_ADDRESS + ":5636"), addressStrings(provider));
     }
 
     @Test
@@ -195,7 +203,7 @@ public class TestTCPRemoteCommitProvider {
         // Same host as above, but a different port, so it must be kept.
         provider.setAddresses("127.0.0.1:5671");
 
-        Assert.assertEquals(List.of("127.0.0.1:5671"), addressStrings(provider));
+        assertEquals(List.of("127.0.0.1:5671"), addressStrings(provider));
     }
 
     @Test
@@ -205,7 +213,7 @@ public class TestTCPRemoteCommitProvider {
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
         provider.setAddresses("198.51.100.9:5673");
 
-        Assert.assertEquals(List.of("198.51.100.9:5673"), addressStrings(provider));
+        assertEquals(List.of("198.51.100.9:5673"), addressStrings(provider));
     }
 
     @Test
@@ -214,9 +222,9 @@ public class TestTCPRemoteCommitProvider {
 
         try {
             provider.setAddresses(UNRESOLVABLE_HOST + ":5671");
-            Assert.fail("Expected UnknownHostException for an unresolvable host name");
+            fail("Expected UnknownHostException for an unresolvable host name");
         } catch (UnknownHostException uhe) {
-            Assert.assertTrue("Unexpected message: " + uhe.getMessage(), uhe.getMessage().contains(UNRESOLVABLE_HOST));
+            assertTrue(uhe.getMessage().contains(UNRESOLVABLE_HOST), "Unexpected message: " + uhe.getMessage());
         }
     }
 
@@ -224,8 +232,8 @@ public class TestTCPRemoteCommitProvider {
     public void testAcceptsConnectionFromThisHost() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
 
-        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getLoopbackAddress()));
-        Assert.assertTrue(provider.acceptsConnectionFrom(findLocalAddress()));
+        assertTrue(provider.acceptsConnectionFrom(InetAddress.getLoopbackAddress()));
+        assertTrue(provider.acceptsConnectionFrom(findLocalAddress()));
     }
 
     @Test
@@ -234,8 +242,8 @@ public class TestTCPRemoteCommitProvider {
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
 
         // the port of the peer is not relevant, peers connect from arbitrary ports
-        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
-        Assert.assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+        assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
+        assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
     }
 
     @Test
@@ -243,7 +251,7 @@ public class TestTCPRemoteCommitProvider {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setRestrictToPeers(false);
 
-        Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+        assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
     }
 
     @Test
@@ -253,15 +261,16 @@ public class TestTCPRemoteCommitProvider {
         InetAddress second = InetAddress.getByName("198.51.100.2");
 
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
-        Assert.assertTrue(provider.acceptsConnectionFrom(first));
-        Assert.assertFalse(provider.acceptsConnectionFrom(second));
+        assertTrue(provider.acceptsConnectionFrom(first));
+        assertFalse(provider.acceptsConnectionFrom(second));
 
         provider.setAddresses("198.51.100.2:5671");
-        Assert.assertFalse(provider.acceptsConnectionFrom(first));
-        Assert.assertTrue(provider.acceptsConnectionFrom(second));
+        assertFalse(provider.acceptsConnectionFrom(first));
+        assertTrue(provider.acceptsConnectionFrom(second));
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10)
     public void testAcceptsConnectionDoesNotWaitForSending() throws Exception {
         TCPRemoteCommitProvider provider = createProvider();
         provider.setAddresses(NON_LOCAL_ADDRESS + ":5671");
@@ -284,8 +293,8 @@ public class TestTCPRemoteCommitProvider {
         sender.start();
         locked.await();
         try {
-            Assert.assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
-            Assert.assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
+            assertTrue(provider.acceptsConnectionFrom(InetAddress.getByName(NON_LOCAL_ADDRESS)));
+            assertFalse(provider.acceptsConnectionFrom(InetAddress.getByName("198.51.100.2")));
         } finally {
             release.countDown();
             sender.join();
@@ -365,15 +374,15 @@ public class TestTCPRemoteCommitProvider {
         while (receiverThreads(provider).size() != expected && System.currentTimeMillis() < end) {
             Thread.sleep(20);
         }
-        Assert.assertEquals(expected, receiverThreads(provider).size());
+        assertEquals(expected, receiverThreads(provider).size());
     }
 
     @Test
     public void testConnectionFromNonPeerIsRejected() throws Exception {
         TCPRemoteCommitProvider provider = startProvider(new NonPeerProvider());
         try (Socket s = connect(provider)) {
-            Assert.assertTrue(isClosedByRemote(s));
-            Assert.assertEquals(0, receiverThreads(provider).size());
+            assertTrue(isClosedByRemote(s));
+            assertEquals(0, receiverThreads(provider).size());
         } finally {
             provider.close();
         }
@@ -385,7 +394,7 @@ public class TestTCPRemoteCommitProvider {
         provider.setRestrictToPeers(false);
         startProvider(provider);
         try (Socket s = connect(provider)) {
-            Assert.assertTrue(isKeptOpen(s));
+            assertTrue(isKeptOpen(s));
             awaitReceivers(provider, 1);
         } finally {
             provider.close();
@@ -402,21 +411,21 @@ public class TestTCPRemoteCommitProvider {
             sockets.add(connect(provider));
             sockets.add(connect(provider));
             awaitReceivers(provider, 2);
-            Assert.assertTrue(isKeptOpen(sockets.get(0)));
-            Assert.assertTrue(isKeptOpen(sockets.get(1)));
+            assertTrue(isKeptOpen(sockets.get(0)));
+            assertTrue(isKeptOpen(sockets.get(1)));
 
             // over the limit
             try (Socket s = connect(provider)) {
-                Assert.assertTrue(isClosedByRemote(s));
+                assertTrue(isClosedByRemote(s));
             }
-            Assert.assertEquals(2, receiverThreads(provider).size());
+            assertEquals(2, receiverThreads(provider).size());
 
             // a finished receiver removes itself, which makes room for a new connection
             sockets.remove(0).close();
             awaitReceivers(provider, 1);
             sockets.add(connect(provider));
             awaitReceivers(provider, 2);
-            Assert.assertTrue(isKeptOpen(sockets.get(1)));
+            assertTrue(isKeptOpen(sockets.get(1)));
         } finally {
             for (Socket s : sockets) {
                 s.close();
@@ -462,7 +471,7 @@ public class TestTCPRemoteCommitProvider {
         while (provider._fetchThreads.size() < 2 && System.currentTimeMillis() < end) {
             Thread.sleep(20);
         }
-        Assert.assertEquals(2, provider._fetchThreads.size());
+        assertEquals(2, provider._fetchThreads.size());
         return provider;
     }
 
@@ -470,15 +479,15 @@ public class TestTCPRemoteCommitProvider {
         throws Exception {
         Object listener = getPrivateField(provider, "_listener");
         Thread acceptThread = (Thread) getPrivateField(listener, "_acceptThread");
-        Assert.assertFalse(fetchThreads.contains(acceptThread));
+        assertFalse(fetchThreads.contains(acceptThread));
     }
 
     @Test
     public void testDynamicProviderRefreshesAddressesBeforeRejectingUnknownHost() throws Exception {
         DynamicNonPeerProvider provider = startDynamicProvider();
         try (Socket s = connect(provider)) {
-            Assert.assertTrue(isClosedByRemote(s));
-            Assert.assertEquals(3, provider._fetchThreads.size());
+            assertTrue(isClosedByRemote(s));
+            assertEquals(3, provider._fetchThreads.size());
             assertNotRefreshedOnAcceptThread(provider, provider._fetchThreads);
             awaitReceivers(provider, 0);
         } finally {
@@ -491,9 +500,9 @@ public class TestTCPRemoteCommitProvider {
         DynamicNonPeerProvider provider = startDynamicProvider();
         provider._peerAppears = true;
         try (Socket s = connect(provider)) {
-            Assert.assertTrue(isKeptOpen(s));
+            assertTrue(isKeptOpen(s));
             awaitReceivers(provider, 1);
-            Assert.assertEquals(3, provider._fetchThreads.size());
+            assertEquals(3, provider._fetchThreads.size());
             assertNotRefreshedOnAcceptThread(provider, provider._fetchThreads);
         } finally {
             provider.close();
@@ -504,6 +513,6 @@ public class TestTCPRemoteCommitProvider {
     public void testDynamicProviderDoesNotRefreshWhenNotRestricted() throws Exception {
         DynamicNonPeerProvider provider = new DynamicNonPeerProvider();
         provider.setRestrictToPeers(false);
-        Assert.assertFalse(provider.refreshesAddressesOnDemand());
+        assertFalse(provider.refreshesAddressesOnDemand());
     }
 }

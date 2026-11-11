@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +29,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Metamodel;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that non-entity classes (exceptions, ID classes, listeners) listed
@@ -38,11 +42,11 @@ import junit.framework.TestCase;
  * and causes MetaDataException in MetamodelImpl when getCriteriaBuilder()
  * or getMetamodel() is called.
  */
-public class TestNonEntityInPersistenceUnit extends TestCase {
+public class TestNonEntityInPersistenceUnit {
 
     private EntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
@@ -57,7 +61,7 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
         emf = Persistence.createEntityManagerFactory("test", props);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
@@ -68,10 +72,11 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that getMetamodel() does not throw when a non-entity class
      * is listed in the persistence unit types.
      */
+    @Test
     public void testGetMetamodelWithNonEntityClass() {
         try {
             Metamodel metamodel = emf.getMetamodel();
-            assertNotNull("Metamodel should not be null", metamodel);
+            assertNotNull(metamodel, "Metamodel should not be null");
         } catch (Exception e) {
             fail("getMetamodel() should not throw when non-entity classes "
                 + "are in the persistence unit: " + e.getMessage());
@@ -82,10 +87,11 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that getCriteriaBuilder() does not throw when a non-entity
      * class is listed in the persistence unit types.
      */
+    @Test
     public void testGetCriteriaBuilderWithNonEntityClass() {
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
-            assertNotNull("CriteriaBuilder should not be null", cb);
+            assertNotNull(cb, "CriteriaBuilder should not be null");
         } catch (Exception e) {
             fail("getCriteriaBuilder() should not throw when non-entity "
                 + "classes are in the persistence unit: " + e.getMessage());
@@ -96,6 +102,7 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that creating an EntityManager and persisting a real entity
      * works fine even when a non-entity class is in the persistence unit.
      */
+    @Test
     public void testPersistRealEntityWithNonEntityInUnit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

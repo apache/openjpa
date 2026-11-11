@@ -39,27 +39,21 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
-public class BaseJDBCTest
-        extends org.apache.openjpa.persistence.common.utils.AbstractTestCase {
+public class BaseJDBCTest extends AbstractTestCase {
 
 
     private static Map _sysprops = new HashMap();
 
-
-    /** Creates a new instance of BaseJDBCTest */
-    public BaseJDBCTest() {
-    }
-
-    public BaseJDBCTest(String name)
+    public BaseJDBCTest()
     {
-        super(name, "jdbccactusapp");
+        super("jdbccactusapp");
     }
 
     @Override
     protected String defaultPersistenceXmlResource() {
-        return "org/apache/openjpa/persistence/jdbc/common" +
-            "/apps/META-INF/persistence.xml";
+        return "org/apache/openjpa/persistence/jdbc/common/apps/META-INF/persistence.xml";
     }
 
     protected OpenJPAEntityManager getPM() {

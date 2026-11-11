@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -27,14 +30,17 @@ import java.util.TimeZone;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.util.proxy.ProxyCalendar;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCalendarField extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TemporalFieldTypes.class);
     }
 
+    @Test
     public void testCalendarField() throws IOException, SQLException {
         TimeZone tz = TimeZone.getTimeZone("Europe/Budapest");
 
@@ -56,6 +62,7 @@ public class TestCalendarField extends SingleEMTestCase {
     }
 
 
+    @Test
     public void testCalendarQuery() throws Exception {
         persist(new TemporalFieldTypes());
         persist(new TemporalFieldTypes());

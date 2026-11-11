@@ -46,8 +46,8 @@ public abstract class BaseQueryTest
     /**
      * Creates a new instance of BaseQueryTest
      */
-    public BaseQueryTest(String name) {
-        super(name, "querycactusapp");
+    public BaseQueryTest() {
+        super("querycactusapp");
     }
 
     protected OpenJPAEntityManager getEM() {

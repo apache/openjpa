@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,20 +39,12 @@ import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestExtents extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestExtents
-     */
-    public TestExtents() {
-    }
-
-    public TestExtents(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class);
 
@@ -65,6 +60,7 @@ public class TestExtents extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testExtent1() {
 
         OpenJPAEntityManager pm = getPM();
@@ -76,6 +72,7 @@ public class TestExtents extends BaseKernelTest {
         assertTrue(!ext.hasSubclasses());
     }
 
+    @Test
     public void testExtent2() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, false);
@@ -86,6 +83,7 @@ public class TestExtents extends BaseKernelTest {
         assertTrue(found);
     }
 
+    @Test
     public void testExtent3() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, true);
@@ -97,6 +95,7 @@ public class TestExtents extends BaseKernelTest {
         assertTrue(foundB);
     }
 
+    @Test
     public void testExtent4() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, true);

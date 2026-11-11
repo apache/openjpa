@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +31,11 @@ import org.apache.openjpa.jdbc.kernel.EntityC;
 import org.apache.openjpa.jdbc.kernel.EntityD;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSuppressBatchOLE extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, org.apache.openjpa.jdbc.kernel.EntityA.class, org.apache.openjpa.jdbc.kernel.EntityB.class,
             org.apache.openjpa.jdbc.kernel.EntityC.class, org.apache.openjpa.jdbc.kernel.EntityD.class,
@@ -39,6 +43,7 @@ public class TestSuppressBatchOLE extends SingleEMFTestCase {
             "openjpa.DataCache", "false");
     }
 
+    @Test
     public void test() throws Exception {
         OpenJPAEntityManagerSPI em1 = emf.createEntityManager();
         OpenJPAEntityManagerSPI em2 = emf.createEntityManager();

@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test ordering a one-many field on the primary key of the related entity.
@@ -34,7 +37,7 @@ public class TestIdOrderedOneMany
 
     private long id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(IdOrderedOneManyParent.class, IdOrderedOneManyChild.class);
 
@@ -66,6 +69,7 @@ public class TestIdOrderedOneMany
         em.close();
     }
 
+    @Test
     public void testExplicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
@@ -81,6 +85,7 @@ public class TestIdOrderedOneMany
         em.close();
     }
 
+    @Test
     public void testImplicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
@@ -95,9 +100,4 @@ public class TestIdOrderedOneMany
         }
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestIdOrderedOneMany.class);
-    }
 }
-

@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.event;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests that MethodLifecycleCallbacks and BeanLifecycleCallbacks

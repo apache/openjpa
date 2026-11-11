@@ -18,11 +18,19 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDelimIdSeqGen extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -33,14 +41,12 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
     EntityB entityB;
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(EntityB.class, DROP_TABLES);
         assertNotNull(emf);
 
@@ -54,7 +60,7 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -72,6 +78,7 @@ public class TestDelimIdSeqGen extends SQLListenerTestCase {
         entityB = new EntityB("b name");
     }
 
+    @Test
     public void testSeqGen() {
         if (!supportsNativeSequence) {
             return;

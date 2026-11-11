@@ -18,10 +18,13 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TablePerClass1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TablePerClass2;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -34,40 +37,41 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestTablePerClassInheritance extends AnnotationTestCase
 {
 
-	public TestTablePerClassInheritance(String name)
+	public TestTablePerClassInheritance()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-   /** public void testMapping() {
-        ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
-            getMappingRepositoryInstance().getMapping(TablePerClass2.class,
-            null, true);
-        assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
-        assertTrue(mapping.getDiscriminator().getStrategy()
-            instanceof NoneDiscriminatorStrategy);
-        assertNull(mapping.getJoinForeignKey());
-        assertNull(mapping.getJoinablePCSuperclassMapping());
-        assertEquals("TPC_BASIC", mapping.getFieldMapping("basic").
-            getColumns()[0].getName());
-        ClassMapping embed = mapping.getFieldMapping("embed").
-            currentEntityManager()beddedMapping();
-        assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
-            getColumns()[0].getName());
+    /** public void testMapping() {
+             ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
+                 getMappingRepositoryInstance().getMapping(TablePerClass2.class,
+                 null, true);
+             assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
+             assertTrue(mapping.getDiscriminator().getStrategy()
+                 instanceof NoneDiscriminatorStrategy);
+             assertNull(mapping.getJoinForeignKey());
+             assertNull(mapping.getJoinablePCSuperclassMapping());
+             assertEquals("TPC_BASIC", mapping.getFieldMapping("basic").
+                 getColumns()[0].getName());
+             ClassMapping embed = mapping.getFieldMapping("embed").
+                 currentEntityManager()beddedMapping();
+             assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
+                 getColumns()[0].getName());
 
-        ClassMapping sup = mapping.getPCSuperclassMapping();
-        assertEquals(TablePerClass1.class, sup.getDescribedType());
-        assertTrue(sup.getStrategy() instanceof FullClassStrategy);
-        assertTrue(sup.getDiscriminator().getStrategy()
-            instanceof NoneDiscriminatorStrategy);
-        assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
-            getColumns()[0].getName());
-        embed = sup.getFieldMapping("embed")
-            .currentEntityManager()beddedMapping();
-        assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
-            getColumns()[0].getName());
-    }**/
+             ClassMapping sup = mapping.getPCSuperclassMapping();
+             assertEquals(TablePerClass1.class, sup.getDescribedType());
+             assertTrue(sup.getStrategy() instanceof FullClassStrategy);
+             assertTrue(sup.getDiscriminator().getStrategy()
+                 instanceof NoneDiscriminatorStrategy);
+             assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
+                 getColumns()[0].getName());
+             embed = sup.getFieldMapping("embed")
+                 .currentEntityManager()beddedMapping();
+             assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
+                 getColumns()[0].getName());
+         }**/
 
+    @Test
     public void testInsertAndRetrieve() {
         deleteAll(TablePerClass1.class);
 

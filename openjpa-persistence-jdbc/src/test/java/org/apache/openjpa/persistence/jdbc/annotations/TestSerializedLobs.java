@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,6 +35,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for serialized, clob, and lob types.
@@ -41,12 +47,13 @@ public class TestSerializedLobs extends SingleEMFTestCase {
 
     private static final Date DATE = new Date();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
     // Serialized fields not being read properly
+    @Test
     public void testSerialized() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -67,6 +74,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testBlob()
         throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -114,6 +122,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testClob()
         throws Exception {
         EntityManager em = emf.createEntityManager();
@@ -137,6 +146,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testNullableClob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -153,6 +163,7 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testNullableBlob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPropertyCacheModeInvalid extends AbstractCacheTestCase {
 
 
-    @Override
+    @BeforeEach
     public void setUp() {}
 
+    @Test
     public void testInvalidPropertyValue() {
         boolean exceptionCaught = false;
         try {

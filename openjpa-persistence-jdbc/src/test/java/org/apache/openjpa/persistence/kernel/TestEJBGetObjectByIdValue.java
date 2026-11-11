@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -25,14 +27,16 @@ import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBGetObjectByIdValue extends AbstractTestCase {
 
-    public TestEJBGetObjectByIdValue(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBGetObjectByIdValue() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class, AImplB.class);
 
@@ -43,6 +47,7 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testDatastore() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -65,6 +70,7 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testAppId() {
         EntityManager em = currentEntityManager();
         startTx(em);

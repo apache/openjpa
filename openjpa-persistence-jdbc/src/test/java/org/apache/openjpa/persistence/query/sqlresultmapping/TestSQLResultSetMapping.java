@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query.sqlresultmapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -25,13 +27,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * Test for OPENJPA-2651.
  */
 public class TestSQLResultSetMapping extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, CrtOperacaoEntity.class,
             CrtRequisicaoEntity.class, CrtRequisicaoChequePersEntity.class);
@@ -71,6 +75,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
      *   .....
      *   Caused by: java.sql.SQLException: Column '0' not found.
      */
+    @Test
     public void testMappingNoException() {
 
         String sql = "SELECT t0.ID, t2.DATA_HORA as opRecepcaoServCentraisDataHora, t2.ID as opRecepcaoServCentraisId"
@@ -95,6 +100,7 @@ public class TestSQLResultSetMapping extends SingleEMFTestCase {
      * CrtOperacaoEntity.  Specifically, the ID in CrtOperacaoEntity would contain
      * '500006164', which is the ID for the CrtRequisicaoEntity.
      */
+    @Test
     public void testMappingCorrectID() {
 
         String sql =

@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.event.kubernetes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodBuilder;
@@ -39,10 +39,11 @@ import org.apache.openjpa.event.TCPRemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class KubernetesTCPRemoteCommitProviderTest {
 
@@ -53,8 +54,8 @@ public class KubernetesTCPRemoteCommitProviderTest {
     private static final int REFRESH_MILLIS = 100;
 
     private static List<String> getAddresses(final KubernetesTCPRemoteCommitProvider rcp)
-            throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-
+            throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException
+    {
         Field _addresses = TCPRemoteCommitProvider.class.getDeclaredField("_addresses");
         _addresses.setAccessible(true);
         // copy original list to avoid ConcurrentModificationException
@@ -70,10 +71,9 @@ public class KubernetesTCPRemoteCommitProviderTest {
         return result;
     }
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
-    @Rule
     public KubernetesServer server = new KubernetesServer(true, true);
 
     private Pod pod1;
@@ -84,7 +84,7 @@ public class KubernetesTCPRemoteCommitProviderTest {
 
     private Pod pod4;
 
-    @Before
+    @BeforeEach
     public void setupKubernetes() {
         KubernetesClient client = server.getClient();
 

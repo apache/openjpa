@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.ee;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,7 +38,8 @@ import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.util.InternalException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -46,10 +51,6 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-
-import junit.framework.AssertionFailedError;
-
-import static org.junit.Assert.*;
 
 /**
  * Test jakarta.transaction.TransactionManager OSGi service discovery.

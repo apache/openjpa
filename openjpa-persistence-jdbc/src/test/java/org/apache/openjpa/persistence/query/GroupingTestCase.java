@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +33,8 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests grouping and having capabilities.</p>
@@ -41,7 +46,7 @@ public abstract class GroupingTestCase
 
     protected abstract void prepareQuery(Query q);
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(AllFieldTypes.class, CLEAR_TABLES,
             "openjpa.Compatibility", "JPQL=warn");
@@ -86,7 +91,7 @@ public abstract class GroupingTestCase
         pc4.setSelfOneOne(pc1);
 
         // if variable testing, set up some 1-Ms instead of the 1-1s above
-        if (getName().startsWith("testVariable")) {
+        if (getTestName().startsWith("testVariable")) {
             pc1.setSelfOneOne(pc1);
             pc2.setSelfOneOne(pc1);
             pc1.getSelfOneMany().add(pc1);
@@ -108,6 +113,7 @@ public abstract class GroupingTestCase
         em.close();
     }
 
+    @Test
     public void testSimpleGroup() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField order by o.intField asc");
@@ -120,6 +126,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testOrderByAggregate() {
         // this is an extension of JPQL
         Query q = em.createQuery("select sum(o.shortField) " +
@@ -135,6 +142,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testCompoundGroupSame() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.shortField order by o.shortField asc");
@@ -147,6 +155,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testCompoundGroupDifferent() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.byteField order by o.intField asc");
@@ -161,6 +170,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testDifferentGroupLengths() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o"
             + " group by o.byteField order by o.byteField asc");
@@ -174,6 +184,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testGroupRelationField() {
         Query q = em.createQuery("select o.selfOneOne.intField " +
             "from AllFieldTypes o group by o.selfOneOne.intField " +
@@ -187,6 +198,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testSubstringInGroupBy() {
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof SolidDBDictionary)
@@ -207,6 +219,7 @@ public abstract class GroupingTestCase
         assertEquals(4, res.size());
     }
 
+    @Test
     public void testGroupedAggregate() {
         Query q = em.createQuery("select count(o) from AllFieldTypes o " +
             "group by o.byteField order by o.byteField asc");
@@ -220,6 +233,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testGroupedRelationAggregate() {
         Query q = em.createQuery("select count(o), max(o.selfOneOne.longField)"
             + " from AllFieldTypes o group by o.intField"
@@ -236,6 +250,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testGroupedMixedProjection() {
         Query q = em.createQuery("select count(o), o.shortField " +
             "from AllFieldTypes o group by o.intField, o.shortField " +
@@ -253,6 +268,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testSimpleHaving() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField having o.intField < 2");
@@ -260,6 +276,7 @@ public abstract class GroupingTestCase
         assertEquals(1, q.getSingleResult());
     }
 
+    @Test
     public void testAggregateHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1");
@@ -267,6 +284,7 @@ public abstract class GroupingTestCase
         assertEquals((byte) 1, q.getSingleResult());
     }
 
+    @Test
     public void testMixedHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1 or o.byteField = 0 " +
@@ -280,6 +298,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testVariableGroup() {
         Query q = em.createQuery("select max(other.longField) " +
             "from AllFieldTypes o, AllFieldTypes other " +
@@ -294,6 +313,7 @@ public abstract class GroupingTestCase
         assertTrue(!itr.hasNext());
     }
 
+    @Test
     public void testVariableHaving() {
         JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();

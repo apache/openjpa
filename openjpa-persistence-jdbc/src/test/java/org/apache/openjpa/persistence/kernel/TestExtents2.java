@@ -27,6 +27,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 
 import org.apache.openjpa.persistence.Extent;
@@ -34,6 +38,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestExtents2 extends BaseKernelTest {
 
@@ -41,17 +47,7 @@ public class TestExtents2 extends BaseKernelTest {
     private Object _oid2 = null;
     private Object _oid3 = null;
 
-    public TestExtents2(String name) {
-        super(name);
-    }
-
-    /**
-     * Creates a new instance of TestExtents2
-     */
-    public TestExtents2() {
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -76,6 +72,7 @@ public class TestExtents2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testProperties() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest2.class, false);
@@ -89,6 +86,7 @@ public class TestExtents2 extends BaseKernelTest {
         assertTrue(ext.hasSubclasses());
     }
 
+    @Test
     public void testNoSubclasses() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, false);
@@ -99,6 +97,7 @@ public class TestExtents2 extends BaseKernelTest {
         ext.closeAll();
     }
 
+    @Test
     public void testSubclasses() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, true);
@@ -122,6 +121,7 @@ public class TestExtents2 extends BaseKernelTest {
         assertEquals(1, test3Count);
     }
 
+    @Test
     public void testContainsNewlyPersisted() {
         RuntimeTest1 test1 = new RuntimeTest1();
         RuntimeTest1 test2 = new RuntimeTest2();
@@ -159,6 +159,7 @@ public class TestExtents2 extends BaseKernelTest {
         }
     }
 
+    @Test
     public void testNotContainsNewlyDeleted() {
         OpenJPAEntityManager pm = getPM();
 

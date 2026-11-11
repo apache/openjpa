@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,14 +29,17 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestIsolationFecthHint extends SQLListenerTestCase{
 
-    @Override
+    @BeforeEach
     public void setUp(){
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testFetchPlanIsolationURHint(){
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {

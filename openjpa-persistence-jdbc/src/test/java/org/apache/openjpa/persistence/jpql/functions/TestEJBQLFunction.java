@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -42,7 +46,9 @@ import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.DatabaseHelper;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 
 public class TestEJBQLFunction extends AbstractTestCase {
@@ -55,11 +61,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
      */
     private String expectedShannonName = "Shannon ";
 
-    public TestEJBQLFunction(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBQLFunction() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, CompUser.class, CompVerUser.class, MaleUser.class,
                 FemaleUser.class, Address.class
@@ -110,7 +116,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
 
@@ -122,67 +128,69 @@ public class TestEJBQLFunction extends AbstractTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testConcatSubStringFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         CompUser user = em.find(CompUser.class, userid1);
-        assertNotNull("user is null", user);
-        assertEquals("the name is not seetha", "Seetha", user.getName());
+        assertNotNull(user, "user is null");
+        assertEquals("Seetha", user.getName(), "the name is not seetha");
 
         String query = "UPDATE CompUser e SET e.name = " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) " +
             "WHERE e.name='Seetha'";
         int result = em.createQuery(query).executeUpdate();
 
-        assertEquals("the result is not 1", 1, result);
+        assertEquals(1, result, "the result is not 1");
 
         user = em.find(CompUser.class, userid1);
         em.refresh(user);
 
-        assertNotNull("the user is null", user);
-        assertEquals("the users name is not Ablahumeeth", "Ablahumeeth",
-            user.getName());
+        assertNotNull(user, "the user is null");
+        assertEquals("Ablahumeeth", user.getName(),
+            "the users name is not Ablahumeeth");
 
         query = "UPDATE CompUser e SET e.name = " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) " +
             "WHERE e.name='Ablahumeeth'";
         result = em.createQuery(query).executeUpdate();
 
-        assertEquals("the result is not 1", 1, result);
+        assertEquals(1, result, "the result is not 1");
 
         user = em.find(CompUser.class, userid1);
         em.refresh(user);
 
-        assertNotNull("the user is null", user);
-        assertEquals("the users name is not XYZeeth", "XYZeeth",
-            user.getName());
+        assertNotNull(user, "the user is null");
+        assertEquals("XYZeeth", user.getName(),
+            "the users name is not XYZeeth");
 
         query = "UPDATE CompUser e SET e.name = " +
             "CONCAT('CAD', SUBSTRING(e.name, LOCATE('e', e.name, 5))) " +
             "WHERE e.name='XYZeeth'";
         result = em.createQuery(query).executeUpdate();
 
-        assertEquals("the result is not 1", 1, result);
+        assertEquals(1, result, "the result is not 1");
 
         user = em.find(CompUser.class, userid1);
         em.refresh(user);
 
-        assertNotNull("the user is null", user);
-        assertEquals("the users name is not CADeth", "CADeth",
-            user.getName());
+        assertNotNull(user, "the user is null");
+        assertEquals("CADeth", user.getName(),
+            "the users name is not CADeth");
 
         endTx(em);
         endEm(em);
     }
 
+    @Test
     public void testConcatFunc2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         CompUser user = em.find(CompUser.class, userid1);
-        assertNotNull("the user is null", user);
-        assertEquals("the users name is not seetha", user.getName(), "Seetha");
+        assertNotNull(user, "the user is null");
+        assertEquals(user.getName(), "Seetha", "the users name is not seetha");
 
         String query = "UPDATE CompUser e " +
             "SET e.name = " +
@@ -216,6 +224,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTrimFunc3() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -238,6 +247,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLowerFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -260,6 +270,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLowerClobFunc() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         // some databases do not support case conversion on LOBs,
@@ -287,6 +298,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testUpperFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -309,6 +321,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testUpperClobFunc() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         // some databases do not support case conversion on LOBs,
@@ -336,6 +349,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLengthFunc() {
         EntityManager em = currentEntityManager();
 
@@ -352,6 +366,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeft() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, 3) FROM CompUser AS u WHERE LEFT(u.address.streetAd, 2) = '43'";
@@ -363,6 +378,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testRight() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, 3) FROM CompUser AS u WHERE right(u.address.streetAd, 4) = 'some'";
@@ -374,6 +390,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeftWithParameterLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -388,6 +405,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeftLongerThanString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -402,6 +420,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeftAndRightWithExpressionLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT LEFT(u.name, LENGTH(u.computerName)), RIGHT(u.name, LENGTH(u.computerName))"
@@ -414,6 +433,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testRightWithParameterLength() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, :len) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -428,6 +448,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testRightLongerThanString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT RIGHT(u.name, 10) FROM CompUser AS u WHERE u.name = 'Seetha'";
@@ -446,6 +467,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * SUBSTRING from a position behind the end of the string is the empty string, which Oracle
      * cannot tell apart from NULL.
      */
+    @Test
     public void testSubstringBeyondString() {
         EntityManager em = currentEntityManager();
         String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
@@ -464,6 +486,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     /**
      * RIGHT(s, 0) is the empty string, which Oracle cannot tell apart from NULL.
      */
+    @Test
     public void testRightWithZeroLength() {
         EntityManager em = currentEntityManager();
         String expected = getDbDictionary(getEmf()) instanceof OracleDictionary ? null : "";
@@ -479,6 +502,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeftAndRightOnStringLiteral() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT('Seetha', 2) = LEFT(u.name, 2)"
@@ -490,6 +514,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLeftAndRightOnStringParameter() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u.name FROM CompUser AS u WHERE LEFT(:s, :len) = LEFT(u.name, 2)"
@@ -501,6 +526,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testArithmFunc() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -565,6 +591,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testGroupByHavingClause() {
         EntityManager em = currentEntityManager();
 
@@ -582,6 +609,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testOrderByClause() {
         EntityManager em = currentEntityManager();
 
@@ -599,6 +627,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testAVGAggregFunc() {
         /**
          * To be Tested: AVG, COUNT, MAX, MIN, SUM
@@ -617,6 +646,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testCOUNTAggregFunc() {
         EntityManager em = currentEntityManager();
 
@@ -631,6 +661,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testMAXAggregFunc() {
         EntityManager em = currentEntityManager();
 
@@ -645,6 +676,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testMINAggregFunc() {
         EntityManager em = currentEntityManager();
 
@@ -659,6 +691,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testSUMAggregFunc() {
         EntityManager em = currentEntityManager();
 
@@ -673,6 +706,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testCEILINGFunc() {
         EntityManager em = currentEntityManager();
 
@@ -687,6 +721,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testCEILINGFuncNegative() {
         EntityManager em = currentEntityManager();
 
@@ -701,6 +736,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testEXPFunc() {
         EntityManager em = currentEntityManager();
 
@@ -715,6 +751,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testFLOORFunc() {
         EntityManager em = currentEntityManager();
 
@@ -729,6 +766,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testFLOORFuncNegative() {
         EntityManager em = currentEntityManager();
 
@@ -743,6 +781,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testPOWERFunc() {
         EntityManager em = currentEntityManager();
 
@@ -757,6 +796,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testROUNDFunc() {
         EntityManager em = currentEntityManager();
 
@@ -771,6 +811,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testSIGNFunc() {
         EntityManager em = currentEntityManager();
 
@@ -785,6 +826,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testLNFunc() {
         EntityManager em = currentEntityManager();
 
@@ -799,6 +841,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractDateFromInstant() {
         EntityManager em = currentEntityManager();
 
@@ -811,6 +854,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractTimeFromInstant() {
         EntityManager em = currentEntityManager();
 
@@ -823,6 +867,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractDateFromLocalDateTime() {
         EntityManager em = currentEntityManager();
 
@@ -835,6 +880,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractTimeFromLocalTime() {
         EntityManager em = currentEntityManager();
 
@@ -847,6 +893,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractYear() {
         EntityManager em = currentEntityManager();
 
@@ -859,6 +906,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractBirthYear() {
         EntityManager em = currentEntityManager();
 
@@ -877,6 +925,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractQUARTER() {
         EntityManager em = currentEntityManager();
 
@@ -889,6 +938,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractMONTH() {
         EntityManager em = currentEntityManager();
 
@@ -901,6 +951,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractWEEK() {
         EntityManager em = currentEntityManager();
 
@@ -913,6 +964,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractDAY() {
         EntityManager em = currentEntityManager();
 
@@ -925,6 +977,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractHOUR() {
         EntityManager em = currentEntityManager();
 
@@ -937,6 +990,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractMINUTE() {
         EntityManager em = currentEntityManager();
 
@@ -949,6 +1003,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractSECOND() {
         EntityManager em = currentEntityManager();
 
@@ -967,6 +1022,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractSecondKeepsFractionFromTimestamp() {
         EntityManager em = currentEntityManager();
 
@@ -982,6 +1038,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractSecondKeepsFractionFromTime() {
         DBDictionary dict = getDbDictionary(getEmf());
         if (dict instanceof DerbyDictionary || dict instanceof OracleDictionary) {
@@ -1000,6 +1057,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testExtractHourFromLocalTime() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CURRENT_TIME, (EXTRACT(HOUR FROM LOCAL TIME) - c.age) FROM CompUser as c WHERE c.age = 23";
@@ -1018,6 +1076,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTypecastAsString() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support CAST from integer to VARCHAR
@@ -1033,6 +1092,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTypecastStringAsString() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CAST(u.name AS STRING) FROM CompUser AS u WHERE CAST(u.name AS STRING) = 'Seetha'";
@@ -1043,6 +1103,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTypecastAsStringOnSelect() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support CAST from integer to VARCHAR
@@ -1059,6 +1120,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testTypecastAsInteger() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as integer) = :value";
@@ -1072,6 +1134,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     }
 
+    @Test
     public void testTypecastAsLong() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.address.zipcode as LONG) = :value";
@@ -1085,6 +1148,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     }
 
+    @Test
     public void testTypecastAsFloat() {
         EntityManager em = currentEntityManager();
         String query = "SELECT u FROM CompUser AS u WHERE CAST(u.age as float) = :value";
@@ -1098,6 +1162,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     }
 
+    @Test
     public void testTypecastAsDouble() {
         EntityManager em = currentEntityManager();
         String query = "SELECT CAST(u.age as double) FROM CompUser AS u WHERE CAST(u.age as double) = :value";
@@ -1111,6 +1176,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
     }
 
+    @Test
     public void testReplace() {
         if (getDbDictionary(getEmf()) instanceof DerbyDictionary) {
             // Derby does not support REPLACE function
@@ -1127,6 +1193,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testStringConcatOperator() {
         EntityManager em = currentEntityManager();
 
@@ -1141,6 +1208,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testStringConcatOperatorInWhere() {
         EntityManager em = currentEntityManager();
 
@@ -1155,6 +1223,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testStringConcatOperatorInUpdate() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -1172,6 +1241,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testOrderByNullsFirst() {
         EntityManager em = currentEntityManager();
 
@@ -1185,13 +1255,14 @@ public class TestEJBQLFunction extends AbstractTestCase {
         // The exact order between the two nulls is undefined, but they should come first
         String first = (String) result.get(0);
         String second = (String) result.get(1);
-        assertTrue("Expected null-country users first, got: " + first + ", " + second,
-            (first.equals("Famzy") || first.equals("Shade")) &&
-            (second.equals("Famzy") || second.equals("Shade")));
+        assertTrue((first.equals("Famzy") || first.equals("Shade")) &&
+            (second.equals("Famzy") || second.equals("Shade")),
+            "Expected null-country users first, got: " + first + ", " + second);
 
         endEm(em);
     }
 
+    @Test
     public void testOrderByNullsLast() {
         EntityManager em = currentEntityManager();
 
@@ -1204,13 +1275,14 @@ public class TestEJBQLFunction extends AbstractTestCase {
         // last two results should be users with null country
         String fifth = (String) result.get(4);
         String sixth = (String) result.get(5);
-        assertTrue("Expected null-country users last, got: " + fifth + ", " + sixth,
-            (fifth.equals("Famzy") || fifth.equals("Shade")) &&
-            (sixth.equals("Famzy") || sixth.equals("Shade")));
+        assertTrue((fifth.equals("Famzy") || fifth.equals("Shade")) &&
+            (sixth.equals("Famzy") || sixth.equals("Shade")),
+            "Expected null-country users last, got: " + fifth + ", " + sixth);
 
         endEm(em);
     }
 
+    @Test
     public void testOrderByNullsLastCOALESCE() {
         EntityManager em = currentEntityManager();
 
@@ -1225,12 +1297,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
         String first = (String) result.get(0);
         String second = (String) result.get(1);
         Set<String> firsts = Set.of(first, second);
-        assertTrue("Expected null-age users first, got: " + first + ", " + second,
-            firsts.contains("Alice") && firsts.contains("Bob"));
+        assertTrue(firsts.contains("Alice") && firsts.contains("Bob"),
+            "Expected null-age users first, got: " + first + ", " + second);
 
         endEm(em);
     }
 
+    @Test
     public void testIdFunction() {
         EntityManager em = currentEntityManager();
 
@@ -1244,6 +1317,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testIdFunctionOnWhere() {
         EntityManager em = currentEntityManager();
 
@@ -1257,6 +1331,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testVersionFunction() {
         EntityManager em = currentEntityManager();
 
@@ -1283,6 +1358,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testVersionFunctionOnOrderBy() {
         // give the three CompVerUser rows distinct versions, in an order that
         // deliberately differs from the order of their primary keys. They are
@@ -1306,6 +1382,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testVersionFunctionOnOrderByDescending() {
         bumpVersion("Alice", 2);
         bumpVersion("Bob", 1);
@@ -1325,6 +1402,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testVersionFunctionOnOrderByAmongOtherOrderings() {
         // Alice and Bob end up on the same version, so the secondary ordering
         // by name decides between them
@@ -1344,6 +1422,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testVersionFunctionOnUnversionedEntity() {
         EntityManager em = currentEntityManager();
 
@@ -1356,13 +1435,13 @@ public class TestEJBQLFunction extends AbstractTestCase {
             fail("Did not get ArgumentException for VERSION() on an unversioned type");
         } catch (ArgumentException ae) {
             String msg = String.valueOf(ae.getMessage());
-            assertTrue("the message does not name the unversioned type: " + msg,
-                msg.contains(CompUser.class.getName()));
-            assertTrue("the message does not mention the missing version: " + msg,
-                msg.contains("version"));
+            assertTrue(msg.contains(CompUser.class.getName()),
+                "the message does not name the unversioned type: " + msg);
+            assertTrue(msg.contains("version"),
+                "the message does not mention the missing version: " + msg);
             for (Throwable c = ae; c != null && c != c.getCause(); c = c.getCause()) {
-                assertFalse("VERSION() on an unversioned type must not fail with a "
-                    + "NullPointerException: " + c, c instanceof NullPointerException);
+                assertFalse(c instanceof NullPointerException, "VERSION() on an unversioned type must not fail with a "
+                    + "NullPointerException: " + c);
             }
         }
 
@@ -1397,15 +1476,16 @@ public class TestEJBQLFunction extends AbstractTestCase {
             int previous = ((Number) ((Object[]) result.get(i - 1))[1]).intValue();
             int current = ((Number) ((Object[]) result.get(i))[1]).intValue();
             if (asc) {
-                assertTrue("versions are not ascending: " + previous + ", " + current,
-                    previous < current);
+                assertTrue(previous < current,
+                    "versions are not ascending: " + previous + ", " + current);
             } else {
-                assertTrue("versions are not descending: " + previous + ", " + current,
-                    previous > current);
+                assertTrue(previous > current,
+                    "versions are not descending: " + previous + ", " + current);
             }
         }
     }
 
+    @Test
     public void testUnionProjection() {
         EntityManager em = currentEntityManager();
 
@@ -1430,14 +1510,15 @@ public class TestEJBQLFunction extends AbstractTestCase {
                 names.add(String.valueOf(o));
             }
         }
-        assertTrue("Expected Seetha: " + names,
-            names.contains("Seetha"));
-        assertTrue("Expected Ugo: " + names,
-            names.contains("Ugo"));
+        assertTrue(names.contains("Seetha"),
+            "Expected Seetha: " + names);
+        assertTrue(names.contains("Ugo"),
+            "Expected Ugo: " + names);
 
         endEm(em);
     }
 
+    @Test
     public void testUnionAllProjection() {
         EntityManager em = currentEntityManager();
 
@@ -1452,11 +1533,12 @@ public class TestEJBQLFunction extends AbstractTestCase {
         // age>25: Seetha(36), Shannon(36), Famzy(29) = 3
         // age>30: Seetha(36), Shannon(36) = 2
         // UNION ALL keeps duplicates = 5 total
-        assertEquals("UNION ALL result count", 5, result.size());
+        assertEquals(5, result.size(), "UNION ALL result count");
 
         endEm(em);
     }
 
+    @Test
     public void testExceptProjection() {
         EntityManager em = currentEntityManager();
 
@@ -1471,7 +1553,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
-        assertEquals("EXCEPT result count", 2, result.size());
+        assertEquals(2, result.size(), "EXCEPT result count");
 
         java.util.Set<String> names = new java.util.HashSet<>();
         for (Object o : result) {
@@ -1481,14 +1563,15 @@ public class TestEJBQLFunction extends AbstractTestCase {
                 names.add(String.valueOf(o));
             }
         }
-        assertTrue("Expected Famzy: " + names,
-            names.contains("Famzy"));
-        assertTrue("Expected Shade: " + names,
-            names.contains("Shade"));
+        assertTrue(names.contains("Famzy"),
+            "Expected Famzy: " + names);
+        assertTrue(names.contains("Shade"),
+            "Expected Shade: " + names);
 
         endEm(em);
     }
 
+    @Test
     public void testIntersectProjection() {
         EntityManager em = currentEntityManager();
 
@@ -1503,7 +1586,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull(result);
-        assertEquals("INTERSECT result count", 2, result.size());
+        assertEquals(2, result.size(), "INTERSECT result count");
 
         endEm(em);
     }
@@ -1582,6 +1665,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * broken by the prepared query SQL cache - an unrelated, pre-existing
      * defect that has nothing to do with the range.
      */
+    @Test
     public void testSetOperatorRange() {
         EntityManager em = currentEntityManager();
 
@@ -1640,6 +1724,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testScalarOrderBy() {
         EntityManager em = currentEntityManager();
 
@@ -1661,16 +1746,17 @@ public class TestEJBQLFunction extends AbstractTestCase {
             else
                 name = String.valueOf(o);
             assertTrue(
+                name.length() <= prevLen,
                 "Expected descending length order but '"
                 + name + "' (len=" + name.length()
-                + ") came after length " + prevLen,
-                name.length() <= prevLen);
+                + ") came after length " + prevLen);
             prevLen = name.length();
         }
 
         endEm(em);
     }
 
+    @Test
     public void testOptionalSelectClause() {
         EntityManager em = currentEntityManager();
 
@@ -1686,6 +1772,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testOptionalIdentificationVariable() {
         EntityManager em = currentEntityManager();
 
@@ -1704,6 +1791,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testOptionalSelectAndIdentificationVariable() {
         EntityManager em = currentEntityManager();
 

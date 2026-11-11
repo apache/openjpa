@@ -24,6 +24,10 @@ import jakarta.persistence.Query;
 
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -32,6 +36,8 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.TransactionRequiredException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the lock mode on named query emits a FOR UPDATE clause in target SQL
@@ -47,7 +53,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, LockEmployee.class,
             "openjpa.LockManager", "pessimistic",
@@ -55,6 +61,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
             );
     }
 
+    @Test
     public void testForUpdateClausePresentInNamedQueryWithLockMode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -70,6 +77,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
     }
 
     @AllowFailure
+    @Test
     public void testNamedQueryWithLockModeMustExecuteInTransaction() {
         EntityManager em = emf.createEntityManager();
         // execute without a transaction
@@ -81,6 +89,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
          }
     }
 
+    @Test
     public void testForUpdateClausePresentInQueryWithDefault() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -100,6 +109,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testForUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -118,6 +128,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
     }
 
     @AllowFailure
+    @Test
     public void testForUpdateClauseAbsentInQueryWithExplictNoLock() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -129,19 +140,19 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
 
     String getLastSQL() {
         String last = sql.get(getSQLCount() - 1);
-        assertNotNull("No last sql found", last);
+        assertNotNull(last, "No last sql found");
         return last;
     }
 
     void assertClausePresentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not present in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) != -1);
+        assertTrue(last.toUpperCase(Locale.ROOT).indexOf(clause) != -1, clause + " is not present in " + last);
     }
 
     void assertClauseAbsentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not absent in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) == -1);
+        assertTrue(last.toUpperCase(Locale.ROOT).indexOf(clause) == -1, clause + " is not absent in " + last);
     }
 }

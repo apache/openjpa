@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -31,6 +33,8 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Compares JPQL parameters with each other. The parser can not tell the type
@@ -41,7 +45,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
 
     private static final String EQUAL = "SELECT s FROM simple s WHERE :a = :b";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 
@@ -52,41 +56,49 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEqualStrings() {
         assertMatches(true, EQUAL, "abc", "abc");
         assertMatches(false, EQUAL, "abc", "xyz");
     }
 
+    @Test
     public void testEqualIntegers() {
         assertMatches(true, EQUAL, 42, 42);
         assertMatches(false, EQUAL, 42, 7);
     }
 
+    @Test
     public void testEqualLongs() {
         assertMatches(true, EQUAL, 42L, 42L);
         assertMatches(false, EQUAL, 42L, 7L);
     }
 
+    @Test
     public void testEqualDoubles() {
         assertMatches(true, EQUAL, 1.5d, 1.5d);
         assertMatches(false, EQUAL, 1.5d, 2.5d);
     }
 
+    @Test
     public void testEqualBigDecimals() {
         assertMatches(true, EQUAL, new BigDecimal("1.25"), new BigDecimal("1.25"));
         assertMatches(false, EQUAL, new BigDecimal("1.25"), new BigDecimal("2.5"));
     }
 
+    @Test
     public void testEqualDates() {
         assertMatches(true, EQUAL, LocalDate.of(2024, 3, 1), LocalDate.of(2024, 3, 1));
         assertMatches(false, EQUAL, LocalDate.of(2024, 3, 1), LocalDate.of(2024, 3, 2));
     }
 
+    @Test
     public void testEqualBooleans() {
         assertMatches(true, EQUAL, true, true);
         assertMatches(false, EQUAL, true, false);
     }
 
+    @Test
     public void testNotEqual() {
         String jpql = "SELECT s FROM simple s WHERE :a <> :b";
         assertMatches(true, jpql, "abc", "xyz");
@@ -95,6 +107,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
         assertMatches(false, jpql, 1, 1);
     }
 
+    @Test
     public void testLessAndGreater() {
         assertMatches(true, "SELECT s FROM simple s WHERE :a < :b", 9, 10);
         assertMatches(false, "SELECT s FROM simple s WHERE :a < :b", 10, 9);
@@ -106,6 +119,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             LocalDate.of(2024, 3, 1), LocalDate.of(2024, 3, 2));
     }
 
+    @Test
     public void testBetween() {
         String jpql = "SELECT s FROM simple s WHERE :a BETWEEN :b AND :c";
         assertMatches(true, jpql, 5, 1, 10);
@@ -120,6 +134,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * later execution. Databases that cast the parameters do not cache this
      * query, see TestSQLBuffer for the positions on every database.
      */
+    @Test
     public void testParameterBetweenParameterAndPath() {
         String jpql = "SELECT s FROM simple s WHERE :a BETWEEN :b AND s.name";
         for (int i = 0; i < 2; i++) {
@@ -133,6 +148,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * JPQL does not accept a parameter on the left of IN, so build the
      * comparison with untyped criteria parameters instead.
      */
+    @Test
     public void testIn() {
         assertInMatches(true, "abc", "xyz", "abc");
         assertInMatches(false, "abc", "xyz", "uvw");
@@ -140,6 +156,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
         assertInMatches(false, 3, 2, 4);
     }
 
+    @Test
     public void testEqualUntypedCriteriaParameters() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -163,6 +180,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * Executes the same query object with values of another type, so a cast
      * chosen for the first values must not be reused for the second.
      */
+    @Test
     public void testReexecuteWithOtherType() {
         String jpql = "SELECT s FROM simple s WHERE :a < :b";
         try (EntityManager em = emf.createEntityManager()) {
@@ -185,6 +203,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * Executes the same JPQL string in new queries with values of another
      * type, which goes through the prepared query cache.
      */
+    @Test
     public void testRecreateWithOtherType() {
         String jpql = "SELECT s FROM simple s WHERE :a < :b";
         for (int i = 0; i < 2; i++) {
@@ -200,6 +219,7 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
      * select list in new queries with values of another type, so the cast of
      * the first execution must not be reused from the prepared query cache.
      */
+    @Test
     public void testCaseInSelectWithOtherType() {
         String jpql = "SELECT CASE WHEN :a < :b THEN s.name ELSE s.value END FROM simple s";
         for (int i = 0; i < 2; i++) {
@@ -224,8 +244,8 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             query.setParameter(a, value);
             query.setParameter(b, first);
             query.setParameter(c, second);
-            assertEquals(value + " IN (" + first + ", " + second + ")",
-                expected ? 1 : 0, query.getResultList().size());
+            assertEquals(expected ? 1 : 0,
+                query.getResultList().size(), value + " IN (" + first + ", " + second + ")");
         }
     }
 
@@ -234,8 +254,8 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             Query q = em.createQuery(jpql);
             q.setParameter("a", a);
             q.setParameter("b", b);
-            assertEquals(jpql + " with [" + a + ", " + b + "]",
-                expected, q.getSingleResult());
+            assertEquals(expected,
+                q.getSingleResult(), jpql + " with [" + a + ", " + b + "]");
         }
     }
 
@@ -245,8 +265,8 @@ public class TestUntypedParameterComparison extends SingleEMFTestCase {
             for (int i = 0; i < values.length; i++) {
                 q.setParameter(String.valueOf((char) ('a' + i)), values[i]);
             }
-            assertEquals(jpql + " with " + Arrays.toString(values),
-                expected ? 1 : 0, q.getResultList().size());
+            assertEquals(expected ? 1 : 0,
+                q.getResultList().size(), jpql + " with " + Arrays.toString(values));
         }
     }
 }

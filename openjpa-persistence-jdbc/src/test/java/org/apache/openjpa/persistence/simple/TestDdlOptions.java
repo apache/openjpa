@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -26,17 +30,20 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 options member on DDL annotations.
  */
 public class TestDdlOptions extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, OptionsEntity.class);
     }
 
+    @Test
     public void testColumnOptionsInMetadata() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
@@ -49,6 +56,7 @@ public class TestDdlOptions extends SingleEMFTestCase {
         assertEquals("CHECK (name IS NOT NULL)", cols[0].getOptions());
     }
 
+    @Test
     public void testColumnOptionsInDdl() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
@@ -62,10 +70,11 @@ public class TestDdlOptions extends SingleEMFTestCase {
         assertEquals(1, ddl.length);
 
         // The column DDL should contain the options string
-        assertTrue("DDL should contain column options: " + ddl[0],
-            ddl[0].contains("CHECK (name IS NOT NULL)"));
+        assertTrue(ddl[0].contains("CHECK (name IS NOT NULL)"),
+            "DDL should contain column options: " + ddl[0]);
     }
 
+    @Test
     public void testPersistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -27,6 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -35,22 +41,17 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import org.junit.jupiter.api.Test;
 
 
 public class TestSchema extends BaseJDBCTest {
 
     private Schema _schema = new SchemaGroup().addSchema("schema");
 
-    /** Creates a new instance of TestSchema */
-    public TestSchema() {
-    }
-    public TestSchema(String test) {
-        super(test);
-    }
-
     /**
      * Test the {@link Schema} class.
      */
+    @Test
     public void testSchema() {
         assertEquals("schema", _schema.getName());
         assertTrue(_schema.getSchemaGroup().isNameTaken("schema"));
@@ -82,6 +83,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Test the {@link Table} class.
      */
+    @Test
     public void testTable() {
         Table table = _schema.addTable("table");
         assertEquals(_schema, table.getSchema());
@@ -151,6 +153,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Test the {@link Index} class.
      */
+    @Test
     public void testIndex() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
@@ -191,6 +194,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Test the {@link ForeignKey} class.
      */
+    @Test
     public void testForeignKey() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
@@ -246,6 +250,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Tests the {@link SchemaGroup} class.
      */
+    @Test
     public void testSchemaGroup() {
         SchemaGroup group = _schema.getSchemaGroup();
         assertEquals(_schema, group.getSchema("schema"));
@@ -264,6 +269,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Test primary key removal.
      */
+    @Test
     public void testPrimaryKeyRemoval() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");
@@ -287,6 +293,7 @@ public class TestSchema extends BaseJDBCTest {
     /**
      * Test column removal.
      */
+    @Test
     public void testColumnRemoval() {
         Table table = _schema.addTable("table");
         Column c1 = table.addColumn("c1");

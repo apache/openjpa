@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Types;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +28,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Converted attributes declared as LOBs in a mapping file, with the
@@ -34,7 +38,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestLobConvertedXml extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(XmlLobConvertedEntity.class, DROP_TABLES);
     }
@@ -53,18 +57,22 @@ public class TestLobConvertedXml extends SingleEMFTestCase {
         return fm.getColumns()[0].getType();
     }
 
+    @Test
     public void testListConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("items"));
     }
 
+    @Test
     public void testItemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("item"));
     }
 
+    @Test
     public void testStringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, columnType("bytes"));
     }
 
+    @Test
     public void testRoundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

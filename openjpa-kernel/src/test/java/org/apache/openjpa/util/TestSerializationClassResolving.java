@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.util;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +36,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the class resolution of
@@ -78,8 +78,8 @@ public class TestSerializationClassResolving {
         RedefiningClassLoader loader =
             new RedefiningClassLoader(getClass().getClassLoader());
         Class<?> redefined = loader.loadClass(Payload.class.getName());
-        assertNotSame("the loader must define its own copy",
-            Payload.class, redefined);
+        assertNotSame(Payload.class,
+            redefined, "the loader must define its own copy");
 
         Object payload = redefined.getConstructor().newInstance();
         byte[] bytes = serialize((Serializable) payload);
@@ -119,7 +119,7 @@ public class TestSerializationClassResolving {
             deserialize(bytes);
             fail("a proxy of a blacklisted interface must not be deserialized");
         } catch (StoreException e) {
-            assertTrue(String.valueOf(e.getCause()), e.getCause() instanceof SecurityException);
+            assertTrue(e.getCause() instanceof SecurityException, String.valueOf(e.getCause()));
             assertTrue(e.getCause().getMessage().contains(blocked));
         }
     }

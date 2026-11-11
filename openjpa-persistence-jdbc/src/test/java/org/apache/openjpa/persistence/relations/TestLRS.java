@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
@@ -27,8 +31,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityA;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityB;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test LRS relations.
@@ -40,7 +44,7 @@ public class TestLRS
 
     private long id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LrsEntityA.class, LrsEntityB.class, LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "default(copyOnDetach=true," +
@@ -63,6 +67,7 @@ public class TestLRS
         em.close();
     }
 
+    @Test
     public void testEMClear() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
@@ -73,6 +78,7 @@ public class TestLRS
         em.close();
     }
 
+    @Test
     public void testEMClose() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
@@ -82,6 +88,7 @@ public class TestLRS
         assertMerge(lrs);
     }
 
+    @Test
     public void testDetachCopy() {
         OpenJPAEntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
@@ -93,6 +100,7 @@ public class TestLRS
         assertMerge(lrs);
     }
 
+    @Test
     public void testRelationships(){
         OpenJPAEntityManager em = emf.createEntityManager();
         LrsEntityA a = new LrsEntityA("name");
@@ -131,10 +139,4 @@ public class TestLRS
         assertLRS(em.find(LRSEntity.class, id), "changed");
         em.close();
     }
-
-
-    public static void main(String[] args) {
-        TestRunner.run(TestLRS.class);
-    }
 }
-

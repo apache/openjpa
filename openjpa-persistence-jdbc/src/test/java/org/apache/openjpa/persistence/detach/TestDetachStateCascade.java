@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.detach;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,6 +33,8 @@ import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.persistence.DetachStateType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the various options for openjpa.DetachState with the new DETACH
@@ -51,7 +59,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
 
     Collection<Object> allEntities = new HashSet<>();
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(org.apache.openjpa.persistence.detach.EntityA.class,
             org.apache.openjpa.persistence.detach.EntityB.class,
@@ -88,7 +96,6 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
     }
 
 
-
     /**
      * The default DetachState of LOADED is tested. In this scenario:
      * A is the main entity to be detached
@@ -97,6 +104,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * D is not loaded and DETACH cascade is specified
      * E is not loaded but DETACH cascade is NOT specified
      */
+    @Test
     public void testLoaded() {
         em.getTransaction().begin();
         // Clear the persistence context so we start fresh
@@ -131,6 +139,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * DETACH cascade is specified for B and D
      * DETACH cascade is NOT specified for C and E
      */
+    @Test
     public void testDetachStateAll() {
         em.setDetachState(DetachStateType.ALL);
         em.getTransaction().begin();
@@ -163,6 +172,7 @@ public class TestDetachStateCascade extends SingleEMFTestCase {
      * D is loaded by fetch plan and DETACH cascade is specified
      * E is not loaded but DETACH cascade is NOT specified
      */
+    @Test
     public void testDetachStateFetchGroup() {
         em.setDetachState(DetachStateType.FETCH_GROUPS);
         em.getFetchPlan().addFetchGroup("loadD");

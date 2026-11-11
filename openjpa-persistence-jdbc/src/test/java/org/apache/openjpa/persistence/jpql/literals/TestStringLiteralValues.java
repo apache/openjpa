@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jpql.literals;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +35,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * String and character values which contain a quote or a backslash have to
@@ -69,6 +72,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEqualsLiteralInJPQL() {
         try (EntityManager em = emf.createEntityManager()) {
             for (Object[] row : ROWS) {
@@ -80,6 +84,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEqualsValueInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -94,6 +99,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEqualsCharacterInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -108,6 +114,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testLikeLiteralInJPQL() {
         assertLikeInJPQL("'100\\%' ESCAPE '\\'", 8);
         assertLikeInJPQL("'a\\_c' ESCAPE '\\'", 10);
@@ -118,6 +125,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         assertLikeInJPQL("'a_c'", 1, 10);
     }
 
+    @Test
     public void testLikeValueInCriteria() {
         assertLikeInCriteria("100\\%", '\\', 8);
         assertLikeInCriteria("a\\_c", '\\', 10);
@@ -128,17 +136,19 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
         assertLikeInCriteria("a_c", null, 1, 10);
     }
 
+    @Test
     public void testCaseLiteralInJPQL() {
         try (EntityManager em = emf.createEntityManager()) {
             for (Object[] row : ROWS) {
                 String jpql = "SELECT CASE WHEN e.id = 1 THEN " + toJPQLLiteral((String) row[1])
                     + " ELSE e.name END FROM StringValue e WHERE e.id = 1";
                 List<String> result = em.createQuery(jpql, String.class).getResultList();
-                assertEquals(jpql, Collections.singletonList(row[1]), result);
+                assertEquals(Collections.singletonList(row[1]), result, jpql);
             }
         }
     }
 
+    @Test
     public void testCaseCoalesceAndNullIfValuesInCriteria() {
         try (EntityManager em = emf.createEntityManager()) {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -150,13 +160,13 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
                 Expression<String> name = e.get("name");
                 cq.select(cb.<String> selectCase().when(cb.equal(e.get("id"), 1), value).otherwise(name))
                     .where(cb.equal(e.get("id"), 1));
-                assertEquals("case " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
+                assertEquals(Collections.singletonList(value), em.createQuery(cq).getResultList(), "case " + value);
 
                 cq = cb.createQuery(String.class);
                 e = cq.from(StringValue.class);
                 Expression<String> missing = e.get("missing");
                 cq.select(cb.coalesce(missing, value)).where(cb.equal(e.get("id"), 1));
-                assertEquals("coalesce " + value, Collections.singletonList(value), em.createQuery(cq).getResultList());
+                assertEquals(Collections.singletonList(value), em.createQuery(cq).getResultList(), "coalesce " + value);
 
                 CriteriaQuery<Integer> iq = cb.createQuery(Integer.class);
                 Root<StringValue> r = iq.from(StringValue.class);
@@ -193,7 +203,7 @@ public class TestStringLiteralValues extends SingleEMFTestCase {
     private static void assertIds(String message, List<Integer> actual, Integer... expected) {
         List<Integer> sorted = new ArrayList<>(actual);
         Collections.sort(sorted);
-        assertEquals(message, Arrays.asList(expected), sorted);
+        assertEquals(Arrays.asList(expected), sorted, message);
     }
 
     private static String toJPQLLiteral(String value) {

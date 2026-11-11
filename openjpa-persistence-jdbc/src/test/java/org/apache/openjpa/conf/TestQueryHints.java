@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
@@ -30,6 +36,8 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.IsolationLevel;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 2.0 API methods {@link Query#getSupportedHints()} and
@@ -42,7 +50,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     EntityManager em;
     OpenJPAQuery<?> query;
 
-    @Override
+    @BeforeEach
     public void setUp() {
        super.setUp((Object[])null);
        em = emf.createEntityManager();
@@ -50,32 +58,39 @@ public class TestQueryHints extends SingleEMFTestCase {
        query = OpenJPAPersistence.cast(em.createNativeQuery(sql));
     }
 
+    @Test
     public void testSupportedHintsContainProductDerivationHints() {
         assertSupportedHint(OracleDictionary.SELECT_HINT, true);
         assertSupportedHint(MySQLDictionary.SELECT_HINT, true);
         assertSupportedHint(MariaDBDictionary.SELECT_HINT, true);
     }
 
+    @Test
     public void testSupportedHintsContainFetchPlanHints() {
         assertSupportedHint("openjpa.FetchPlan.LockTimeout", true);
     }
 
+    @Test
     public void testSupportedHintsIgnoresSomeFetchPlanBeanStyleProperty() {
         assertSupportedHint("openjpa.FetchPlan.QueryResultCache", false);
     }
 
+    @Test
     public void testSupportedHintsContainQueryProperty() {
         assertSupportedHint("openjpa.Subclasses", true);
     }
 
+    @Test
     public void testSupportedHintsContainKernelQueryHints() {
         assertSupportedHint(QueryHints.HINT_IGNORE_PREPARED_QUERY, true);
     }
 
+    @Test
     public void testSupportedHintsContainJPAQueryHints() {
         assertSupportedHint("jakarta.persistence.query.timeout", true);
     }
 
+    @Test
     public void testUnrecognizedKeyIsIgnored() {
         String unrecognizedKey = "acme.org.hint.SomeThingUnknown";
         query.setHint(unrecognizedKey, "xyz");
@@ -83,6 +98,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertNull(query.getFetchPlan().getDelegate().getHint(unrecognizedKey));
      }
 
+    @Test
     public void testRecognizedKeyIsNotRecordedButAvailable() {
         String recognizedKey = "openjpa.some.derivation.hint";
         query.setHint(recognizedKey, "abc");
@@ -91,6 +107,7 @@ public class TestQueryHints extends SingleEMFTestCase {
                 recognizedKey));
     }
 
+    @Test
     public void testSupportedKeyIsRecordedAndAvailable() {
         String supportedKey = "openjpa.FetchPlan.FetchBatchSize";
         query.setHint(supportedKey, 42);
@@ -98,6 +115,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertEquals(42, query.getFetchPlan().getFetchBatchSize());
     }
 
+    @Test
     public void testSupportedKeyWrongValue() {
         String supportedKey = "openjpa.FetchPlan.FetchBatchSize";
         short goodValue = (short)42;
@@ -115,6 +133,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSupportedKeyIntegerValueConversion() {
         String supportedKey = "openjpa.hint.OptimizeResultCount";
         String goodValue = "57";
@@ -133,6 +152,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSupportedKeyBooleanValueConversion() {
         String supportedKey = QueryHints.HINT_IGNORE_PREPARED_QUERY;
         String goodValue = "true";
@@ -148,6 +168,7 @@ public class TestQueryHints extends SingleEMFTestCase {
                 supportedKey));
     }
 
+    @Test
     public void testJPAHintSetsFetchPlan() {
         query.setHint("jakarta.persistence.lock.timeout", 5671);
         query.setHint("jakarta.persistence.query.timeout", 7500);
@@ -155,6 +176,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         assertEquals(7500, query.getFetchPlan().getQueryTimeout());
     }
 
+    @Test
     public void testInvalidLockTimeoutHint() {
         try {
             query.setHint("jakarta.persistence.lock.timeout", -5671);
@@ -164,6 +186,7 @@ public class TestQueryHints extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testInvalidQueryTimeoutHint() {
         try {
             query.setHint("jakarta.persistence.query.timeout", -7500);
@@ -176,6 +199,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     /**
      * Verifies a valid fetchplan isolation level hint can be set and retrieved.
      */
+    @Test
     public void testFetchPlanIsolation() {
         query.setHint("openjpa.FetchPlan.Isolation", "SERIALIZABLE");
         assertTrue(query.getHints().containsKey("openjpa.FetchPlan.Isolation"));
@@ -185,6 +209,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     /**
      * Verifies an invalid fetchplan isolation level hint is ignored.
      */
+    @Test
     public void testInvalidFetchPlanIsolation() {
         query.setHint("openjpa.FetchPlan.TransactionIsolation", "SERIALIZABLE");
         assertFalse(query.getHints().containsKey("openjpa.FetchPlan.TransactionIsolation"));
@@ -193,11 +218,11 @@ public class TestQueryHints extends SingleEMFTestCase {
 
     void assertSupportedHint(String hint, boolean contains) {
         if (contains)
-            assertTrue("Expected supported hint [" + hint + "]",
-                query.getSupportedHints().contains(hint));
+            assertTrue(query.getSupportedHints().contains(hint),
+                "Expected supported hint [" + hint + "]");
         else
-            assertFalse("Unexpected supported hint [" + hint + "]",
-                query.getSupportedHints().contains(hint));
+            assertFalse(query.getSupportedHints().contains(hint),
+                "Unexpected supported hint [" + hint + "]");
     }
 
 

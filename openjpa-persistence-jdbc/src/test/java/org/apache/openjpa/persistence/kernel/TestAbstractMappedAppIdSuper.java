@@ -33,12 +33,6 @@ package org.apache.openjpa.persistence.kernel;
 
 public class TestAbstractMappedAppIdSuper extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestAbstractMappedAppIdSuper
-     */
-    public TestAbstractMappedAppIdSuper(String name) {
-        super(name);
-    }
 
     /* Fix Me - aokeke - Takes so much time to run */
 //    public void testQuerySubclassWithDifferentIdClass()

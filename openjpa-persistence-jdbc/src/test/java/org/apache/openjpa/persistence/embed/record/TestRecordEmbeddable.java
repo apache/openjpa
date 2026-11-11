@@ -18,21 +18,29 @@
  */
 package org.apache.openjpa.persistence.embed.record;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 support for Java record types as embeddable classes.
  */
 public class TestRecordEmbeddable extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(PersonWithRecordAddress.class, AddressRecord.class,
                 CLEAR_TABLES);
     }
 
+    @Test
     public void testPersistAndLoadRecordEmbeddable() {
         final AddressRecord addr =
                 new AddressRecord("123 Main St", "Springfield", "62704");
@@ -54,13 +62,14 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         assertNotNull(loaded);
         assertEquals("John Doe", loaded.getName());
         final AddressRecord loadedAddr = loaded.getAddress();
-        assertNotNull("Address should not be null", loadedAddr);
+        assertNotNull(loadedAddr, "Address should not be null");
         assertEquals("123 Main St", loadedAddr.street());
         assertEquals("Springfield", loadedAddr.city());
         assertEquals("62704", loadedAddr.zip());
         em2.close();
     }
 
+    @Test
     public void testNullRecordEmbeddable() {
         final PersonWithRecordAddress person =
                 new PersonWithRecordAddress("Jane Doe", null);
@@ -82,6 +91,7 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em2.close();
     }
 
+    @Test
     public void testUpdateRecordEmbeddable() {
         final AddressRecord addr =
                 new AddressRecord("789 Elm St", "Denver", "80201");
@@ -116,6 +126,7 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em3.close();
     }
 
+    @Test
     public void testDeleteEntityWithRecordEmbeddable() {
         final PersonWithRecordAddress person = new PersonWithRecordAddress(
                 "DeleteMe", new AddressRecord("X St", "Y City", "00000"));
@@ -144,6 +155,7 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em3.close();
     }
 
+    @Test
     public void testMergeRecordEmbeddable() {
         final PersonWithRecordAddress person = new PersonWithRecordAddress(
                 "MergeTest", new AddressRecord("100 First Ave", "Seattle", "98101"));
@@ -181,6 +193,7 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em4.close();
     }
 
+    @Test
     public void testRemoveRecordEmbeddable() {
         final PersonWithRecordAddress person = new PersonWithRecordAddress(
                 "RemoveTest", new AddressRecord("Del St", "DelCity", "11111"));
@@ -207,8 +220,9 @@ public class TestRecordEmbeddable extends SingleEMFTestCase {
         em3.close();
     }
 
+    @Test
     public void testRecordIsEmbeddableType() {
-        assertTrue("AddressRecord should be recognized as a record",
-                AddressRecord.class.isRecord());
+        assertTrue(AddressRecord.class.isRecord(),
+                "AddressRecord should be recognized as a record");
     }
 }

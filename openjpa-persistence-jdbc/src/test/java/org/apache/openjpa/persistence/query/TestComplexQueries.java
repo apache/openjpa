@@ -39,18 +39,12 @@ import org.apache.openjpa.persistence.query.common.apps.ComplexD;
 import org.apache.openjpa.persistence.query.common.apps.ComplexE;
 import org.apache.openjpa.persistence.query.common.apps.ComplexF;
 import org.apache.openjpa.persistence.query.common.apps.ComplexG;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestComplexQueries extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestComplexQueries
-     */
-
-    public TestComplexQueries(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         clear();
     }
@@ -99,6 +93,7 @@ public class TestComplexQueries extends BaseQueryTest {
         broker.close();
     }
 
+    @Test
     public void testComplex1() {
         complexQuery(1,
             new ComplexA("test", 0, null, null),
@@ -106,6 +101,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexA.class);
     }
 
+    @Test
     public void testComplex2() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -119,6 +115,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex3() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -132,6 +129,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex4() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -146,6 +144,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex5() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -161,6 +160,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex6() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -177,6 +177,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex7() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -194,6 +195,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex8() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -212,6 +214,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex9() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -232,6 +235,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex10() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -245,6 +249,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex11() {
         complexQuery(1,
             new ComplexG("testg", 0, null,
@@ -258,6 +263,7 @@ public class TestComplexQueries extends BaseQueryTest {
             ComplexG.class);
     }
 
+    @Test
     public void testComplex12() {
         try {
             complexQuery(1,
@@ -271,11 +277,12 @@ public class TestComplexQueries extends BaseQueryTest {
                                             null))))))),
                 "f.stringF = \'testf\'OR o.stringG = \'testg\'",
                 ComplexG.class);
-        } catch (junit.framework.AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             bug(449, afe, "ORs and relational queries");
         }
     }
 
+    @Test
     public void testComplex13() {
         complexQuery(0,
             new ComplexG("testg", 0, null,

@@ -22,10 +22,10 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test UUID generation.
@@ -77,7 +77,7 @@ public class TestUUIDGenerator {
         long time = 0;
         for (int i = 0; i < 10000; i++) {
             long newTime = UUIDGenerator.getTime();
-            assertNotEquals("[" + i + "] time should change", time, newTime);
+            assertNotEquals(time, newTime, "[" + i + "] time should change");
             time = newTime;
         }
     }

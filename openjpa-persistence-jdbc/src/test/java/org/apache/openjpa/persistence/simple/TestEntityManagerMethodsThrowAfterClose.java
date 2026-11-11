@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Negative test case to verify that EntityManager throws required exceptions
@@ -36,12 +38,13 @@ public class TestEntityManagerMethodsThrowAfterClose
 
     private AllFieldTypes aft = new AllFieldTypes();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
         close();
     }
 
+    @Test
     public void testPersistAfterClose() {
         try {
             em.persist(aft);
@@ -53,6 +56,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testMergeAfterClose() {
         try {
             em.merge(aft);
@@ -64,6 +68,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testRemoveAfterClose() {
         try {
             em.remove(aft);
@@ -75,6 +80,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testFindAfterClose() {
         try {
             em.find(AllFieldTypes.class, 1);
@@ -86,6 +92,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testGetReferenceAfterClose() {
         try {
             em.getReference(AllFieldTypes.class, 1);
@@ -97,6 +104,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testFlushAfterClose() {
         try {
             em.flush();
@@ -108,6 +116,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testSetFlushModeAfterClose() {
         try {
             em.setFlushMode(FlushModeType.AUTO);
@@ -119,6 +128,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testGetFlushModeAfterClose() {
         try {
             em.getFlushMode();
@@ -130,6 +140,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testLockAfterClose() {
         try {
             em.lock(aft, LockModeType.WRITE);
@@ -141,6 +152,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testRefreshAfterClose() {
         try {
             em.refresh(aft);
@@ -152,6 +164,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testClearAfterClose() {
         try {
             em.clear();
@@ -163,6 +176,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testContainsAfterClose() {
         try {
             em.contains(aft);
@@ -174,6 +188,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testCreateQueryAfterClose() {
         try {
             em.createQuery("SELECT Object(aft) FROM AllFieldTypes aft");
@@ -185,6 +200,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testCreateNamedQueryAfterClose() {
         try {
             em.createNamedQuery("NamedQuery");
@@ -196,6 +212,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testCreateNativeQueryAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ");
@@ -207,6 +224,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testCreateNativeQueryWithMappingAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ",
@@ -219,6 +237,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testJoinTransactionAfterClose() {
         try {
             em.joinTransaction();
@@ -230,6 +249,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testGetDelegateAfterClose() {
         try {
             em.getDelegate();
@@ -241,6 +261,7 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
+    @Test
     public void testCloseAfterClose() {
         try {
             em.close();
@@ -250,9 +271,4 @@ public class TestEntityManagerMethodsThrowAfterClose
             // expected
         }
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestEntityManagerMethodsThrowAfterClose.class);
-    }
 }
-

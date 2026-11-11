@@ -37,6 +37,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.common.apps.UnknownSubclassParent;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestUnknownSubclass  extends JDBCTestCase {
@@ -46,14 +48,7 @@ public class TestUnknownSubclass  extends JDBCTestCase {
     private String childName =
         "openjpa.jdbc.kernel.UnknownSubclassChild";
 
-    /** Creates a new instance of TestUnknownSubclass */
-    public TestUnknownSubclass() {
-    }
-
-    public TestUnknownSubclass(String name) {
-        super(name);
-    }
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         // pcl: in the new (registration-less) system, this should not
@@ -101,7 +96,8 @@ public class TestUnknownSubclass  extends JDBCTestCase {
         kem.close();
     }
 
-        public void testUnknownSubclass()
+    @Test
+    public void testUnknownSubclass()
         throws Exception {
         // assertNotRegistered (parentName);
         // assertNotRegistered (childName);

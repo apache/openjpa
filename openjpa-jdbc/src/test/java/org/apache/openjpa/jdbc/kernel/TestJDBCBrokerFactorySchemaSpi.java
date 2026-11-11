@@ -24,11 +24,11 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.kernel.BrokerImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies that the {@code BrokerFactory} schema management operations do not
@@ -82,7 +82,7 @@ public class TestJDBCBrokerFactorySchemaSpi {
 
     private CapturingFactory factory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         JDBCConfigurationImpl conf = new JDBCConfigurationImpl();
         conf.setBrokerImpl(CountingBroker.class.getName());
@@ -91,7 +91,7 @@ public class TestJDBCBrokerFactorySchemaSpi {
     }
 
     private void assertNoBroker(String expectedAction) {
-        assertEquals("schema management must not instantiate a Broker", 0, CLONES.get());
+        assertEquals(0, CLONES.get(), "schema management must not instantiate a Broker");
         assertEquals(1, factory.calls);
         assertSame(Thread.currentThread().getContextClassLoader(), factory.loader);
         assertEquals(expectedAction, factory.action);

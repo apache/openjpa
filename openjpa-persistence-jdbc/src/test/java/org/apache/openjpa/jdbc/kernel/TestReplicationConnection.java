@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,6 +34,7 @@ import jakarta.persistence.LockModeType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * A replication connection, whose driver sends the statements of a read-only
@@ -62,6 +68,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testReadOnlyOutsideOfTransaction() throws Exception {
         if (emf == null) {
             return;
@@ -78,6 +85,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testWritesInTransaction() {
         if (emf == null) {
             return;
@@ -97,6 +105,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
      * A connection retained from outside of a transaction is read-only until
      * the transaction begins.
      */
+    @Test
     public void testWritesInTransactionOnRetainedConnection() throws Exception {
         if (emf == null) {
             return;

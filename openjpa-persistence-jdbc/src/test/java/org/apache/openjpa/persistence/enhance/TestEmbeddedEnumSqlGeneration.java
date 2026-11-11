@@ -29,22 +29,25 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEmbeddedEnumSqlGeneration
     extends AbstractTestCase {
 
     private PCEnhancer.Flags flags = new PCEnhancer.Flags();
 
-    public TestEmbeddedEnumSqlGeneration(String s) {
-        super(s, "org.apache.openjpa.persistence.enhance.EntityWithEnum");
+    public TestEmbeddedEnumSqlGeneration() {
+        super("org.apache.openjpa.persistence.enhance.EntityWithEnum");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
+    @Test
     public void testEnumEnhancement()
-    throws IOException {
+        throws IOException {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 

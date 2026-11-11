@@ -26,6 +26,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Collection;
 
 import jakarta.persistence.TypedQuery;
@@ -36,18 +39,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.EntityInterface;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNamedQueries extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestNamedQueries
-     */
-
-    public TestNamedQueries(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(QueryTest1.class);
 
@@ -66,6 +62,7 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testNamedClassQuery() {
         OpenJPAEntityManager pm = getEM();
 
@@ -93,6 +90,7 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testNamespace() {
         OpenJPAEntityManager pm = getEM();
         OpenJPAQuery query = (OpenJPAQuery) pm.createNamedQuery("named");
@@ -101,6 +99,7 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testSystemJDOQL() {
         // make sure local query metadata is parsed
         OpenJPAEntityManager pm = getEM();
@@ -113,6 +112,7 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
+    @Test
     public void testInterfaceResultClass() {
         OpenJPAEntityManager pm = getEM();
 

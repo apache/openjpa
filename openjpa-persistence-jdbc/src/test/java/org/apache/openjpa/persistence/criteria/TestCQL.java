@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test logical predicates precedence is preserved and rendered correctly in CQL.
@@ -28,6 +31,7 @@ import jakarta.persistence.criteria.Root;
  *
  */
 public class TestCQL extends CriteriaTest {
+    @Test
     public void testLogicalPrecedence() {
         OpenJPACriteriaQuery<Person> q = cb.createQuery(Person.class);
         Root<Person> p = q.from(Person.class);

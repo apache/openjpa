@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,11 +34,11 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import org.apache.openjpa.lib.util.Options;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
+public class TestAnchorParsing {
 
-public class TestAnchorParsing extends TestCase {
-
+    @Test
     public void testFQAnchor() {
         String fqLoc = "META-INF/persistence.xml#test";
         Options opts = new Options();
@@ -44,10 +50,12 @@ public class TestAnchorParsing extends TestCase {
         assertEquals(fqLoc, locs.get(0));
     }
 
+    @Test
     public void testNoResource() {
         allHelper(null);
     }
 
+    @Test
     public void testNoAnchor() {
         allHelper("META-INF/persistence.xml");
     }
@@ -69,6 +77,7 @@ public class TestAnchorParsing extends TestCase {
         assertTrue(locs.contains("META-INF/persistence.xml#invalid"));
     }
 
+    @Test
     public void testProductDerivationsLoadResource() {
         ProductDerivations.load(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml",
@@ -97,6 +106,7 @@ public class TestAnchorParsing extends TestCase {
         }
     }
 
+    @Test
     public void testNonexistantResourceLoad() {
         try {
             ProductDerivations.load("nonexistant-resource", null, null);
@@ -106,6 +116,7 @@ public class TestAnchorParsing extends TestCase {
         }
     }
 
+    @Test
     public void testProductDerivationsLoadFile() throws IOException {
         File validFile = resourceToTemporaryFile(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml");
@@ -130,6 +141,7 @@ public class TestAnchorParsing extends TestCase {
         validFile = null;
     }
 
+    @Test
     public void testNonexistantFileLoad() {
         File f = new File("this-should-not-exist");
         assertFalse(f.exists());

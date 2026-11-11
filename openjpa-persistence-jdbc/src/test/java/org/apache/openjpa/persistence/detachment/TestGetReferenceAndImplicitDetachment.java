@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestGetReferenceAndImplicitDetachment
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DetachState", "fetch-groups",
             DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
+    @Test
     public void testNonexistentGetReferenceDetachmentInTxWithCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -50,6 +55,7 @@ public class TestGetReferenceAndImplicitDetachment
         // assertFalse(((PersistenceCapable) o).pcIsDetached());
     }
 
+    @Test
     public void testNonexistentGetReferenceDetachmentOutsideTx() {
         EntityManager em = emf.createEntityManager();
         DetachmentOneManyParent o =
@@ -64,6 +70,7 @@ public class TestGetReferenceAndImplicitDetachment
         // assertFalse(((PersistenceCapable) o).pcIsDetached());
     }
 
+    @Test
     public void testNonexistentGetReferenceDetachmentInTxWithRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -80,6 +87,7 @@ public class TestGetReferenceAndImplicitDetachment
         em.close();
     }
 
+    @Test
     public void testNonexistentGetReferenceDetachmentInTxWithFailedCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

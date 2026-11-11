@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.jdbc.persistence.classcriteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.logging.Logger;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQuerySubclass extends SingleEMFTestCase {
 	
@@ -30,7 +34,7 @@ public class TestQuerySubclass extends SingleEMFTestCase {
 
     private OpenJPAEntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.Compatibility",
             "superclassDiscriminatorStrategyByDefault=true", CLEAR_TABLES,
@@ -49,6 +53,7 @@ public class TestQuerySubclass extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testQuery() {
         Collection<Book> books = null;
         Collection<Movie> movies = null;

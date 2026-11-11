@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 
 import jakarta.persistence.EntityManager;
@@ -30,6 +34,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestArrayFieldsInDataCache
     extends SingleEMFTestCase {
@@ -40,7 +46,7 @@ public class TestArrayFieldsInDataCache
     private Object jpaOid;
     private Object internalOid;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -62,6 +68,7 @@ public class TestArrayFieldsInDataCache
         em.close();
     }
 
+    @Test
     public void testArrayOfStrings() {
         // check that the data cache contains an efficient representation
         StoreCacheImpl storeCache = (StoreCacheImpl)
@@ -84,6 +91,7 @@ public class TestArrayFieldsInDataCache
         em.close();
     }
 
+    @Test
     public void testArrayOfInts() {
         // check that the data cache contains an efficient representation
         StoreCacheImpl storeCache = (StoreCacheImpl)

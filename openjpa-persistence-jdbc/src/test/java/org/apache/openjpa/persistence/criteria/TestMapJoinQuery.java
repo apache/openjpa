@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests MapJoin queries with @OneToMany(mappedBy=...) @MapKey(name=...)
@@ -107,7 +111,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
         public void setDepartment(MJDepartment d) { this.department = d; }
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MJDepartment.class, MJEmployee.class,
             CLEAR_TABLES,
@@ -149,6 +153,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
     /**
      * Test: SELECT d FROM MJDepartment d JOIN d.lastNameEmployees e WHERE (e.id = 1)
      */
+    @Test
     public void testJoinMapAttribute() {
         EntityManager em = emf.createEntityManager();
 
@@ -156,7 +161,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
         List<?> jpqlResults = em.createQuery(
             "SELECT d FROM TestMapJoinQuery$MJDepartment d JOIN d.lastNameEmployees e WHERE e.id = 1")
             .getResultList();
-        assertEquals("JPQL should return 1 result", 1, jpqlResults.size());
+        assertEquals(1, jpqlResults.size(), "JPQL should return 1 result");
 
         // Criteria API with MapJoin
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -166,7 +171,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
         cq.where(cb.equal(emp.get("id"), "1")).select(dept);
 
         List<MJDepartment> results = em.createQuery(cq).getResultList();
-        assertEquals("MapJoin criteria should return 1 result", 1, results.size());
+        assertEquals(1, results.size(), "MapJoin criteria should return 1 result");
         assertEquals(1, results.get(0).getId());
 
         em.close();
@@ -175,6 +180,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
     /**
      * Test: SELECT d.id, d.name, e.lastName FROM MJDepartment d JOIN d.lastNameEmployees e WHERE (e.id = 1)
      */
+    @Test
     public void testJoinMapString() {
         EntityManager em = emf.createEntityManager();
 
@@ -187,7 +193,7 @@ public class TestMapJoinQuery extends SingleEMFTestCase {
             emp.value().<String>get("lastName"));
 
         List<Tuple> results = em.createQuery(cq).getResultList();
-        assertEquals("Should return 1 result", 1, results.size());
+        assertEquals(1, results.size(), "Should return 1 result");
         Tuple t = results.get(0);
         assertEquals(1, t.get(0));
         assertEquals("Marketing", t.get(1));

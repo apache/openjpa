@@ -19,6 +19,11 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -26,6 +31,8 @@ import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.jdbc.common.apps.EntityWithFailedExternalizer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * when there is a metadata exception during the flushing for a batch job, the AbstractUpdateManager
@@ -33,11 +40,12 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(DROP_TABLES, EntityWithFailedExternalizer.class);
     }
 
+    @Test
     public void testCreate(){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();

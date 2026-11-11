@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.FlatClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
@@ -29,6 +33,9 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests metadata-complete tag switches off any annotation processing.
@@ -48,7 +55,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	private static ClassMetaData entityA, entityB, derivedA, derivedB;
 	private static int currentTest = 0;
 
-	@Override
+    @BeforeEach
     public void setUp() throws Exception {
         currentTest++;
 		if (oemf == null) {
@@ -66,7 +73,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 		}
 	}
 
-	@Override
+    @AfterEach
     public void tearDown() throws Exception {
 	    // only cleanup after the last test has run
 	    if (currentTest >= 6) {
@@ -85,7 +92,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 		return "test-metadata-complete";
 	}
 
-	public void testIgnoresClassAnnotationIfMetaDataComplete() {
+    @Test
+    public void testIgnoresClassAnnotationIfMetaDataComplete() {
 		// inheritance strategy of EntityA by annotation is SINGLE_TABLE
         // inheritance strategy of EntityA in xml descriptor is JOINED
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityA)
@@ -94,7 +102,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 				.getStrategy().getClass());
 	}
 
-	public void testProcessesClassAnnotationIfMetaDataIsNotComplete() {
+    @Test
+    public void testProcessesClassAnnotationIfMetaDataIsNotComplete() {
 		// inheritance strategy of EntityB by annotation is SINGLE_TABLE
         // inheritance strategy of EntityB in xml descriptor is not specified
 		assertEquals(FullClassStrategy.class, ((ClassMapping) entityB)
@@ -103,21 +112,24 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 				.getStrategy().getClass());
 	}
 
-	public void testIgnoresFieldAnnotationIfMetaDataComplete() {
+    @Test
+    public void testIgnoresFieldAnnotationIfMetaDataComplete() {
 		// generation strategy of EntityA.id by annotation is IDENTITY
 		// inheritance strategy of EntityA in xml descriptor is SEQUENCE
 		int valueStrategyA = entityA.getField("id").getValueStrategy();
 		assertEquals(ValueStrategies.SEQUENCE, valueStrategyA);
 	}
 
-	public void testProcessesFieldAnnotationIfMetaDataIsNotComplete() {
+    @Test
+    public void testProcessesFieldAnnotationIfMetaDataIsNotComplete() {
 		// generation strategy of EntityB.id by annotation is IDENTITY
         // inheritance strategy of EntityA in xml descriptor is not specified
 		int valueStrategyB = entityB.getField("id").getValueStrategy();
 		assertEquals(ValueStrategies.AUTOASSIGN, valueStrategyB);
 	}
 
-	public void testIgnoresNamedQueryIfMetaDataComplete() {
+    @Test
+    public void testIgnoresNamedQueryIfMetaDataComplete() {
 		// DerivedA has annotated NamedQuery
 		String namedQuery = "DerivedA.SelectAll";
 		try {
@@ -128,7 +140,8 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 		}
 	}
 
-	public void testProcessesNamedQueryIfMetaDataIsNotComplete() {
+    @Test
+    public void testProcessesNamedQueryIfMetaDataIsNotComplete() {
 		// EntityB has annotated NamedQuery
 		// EntityB has a Named Query in xml descriptor
         oemf.createEntityManager().createNamedQuery("EntityB.SelectOne");

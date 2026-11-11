@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -27,6 +29,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.util.OpenJPAException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNoNoArgs
     extends AbstractTestCase {
@@ -36,11 +40,11 @@ public class TestNoNoArgs
     ClassLoader loader;
     private PCEnhancer.Flags flags = new PCEnhancer.Flags();
 
-    public TestNoNoArgs(String s) {
-        super(s, "enhancecactusapp");
+    public TestNoNoArgs() {
+        super("enhancecactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
@@ -50,6 +54,7 @@ public class TestNoNoArgs
         endEm(em);
     }
 
+    @Test
     public void testNoNoArgs()
         throws IOException {
         PCEnhancer.run((OpenJPAConfiguration) conf,
@@ -57,6 +62,7 @@ public class TestNoNoArgs
             flags, repos, null, loader);
     }
 
+    @Test
     public void testNo2NoArgs()
         throws IOException {
         flags.addDefaultConstructor = false;
@@ -70,6 +76,7 @@ public class TestNoNoArgs
         assertTrue(caughtException);
     }
 
+    @Test
     public void testNo3NoArgs()
         throws IOException {
         PCEnhancer.run((OpenJPAConfiguration) conf,

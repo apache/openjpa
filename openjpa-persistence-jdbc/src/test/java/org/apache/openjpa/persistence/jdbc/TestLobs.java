@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.RollbackException;
@@ -26,8 +30,9 @@ import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.kernel.common.apps.Blobs;
 import org.apache.openjpa.persistence.kernel.common.apps.Lobs;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestLobs extends SingleEMFTestCase {
     /**
@@ -37,12 +42,13 @@ public class TestLobs extends SingleEMFTestCase {
         return (byte) (Math.random() * Byte.MAX_VALUE);
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Lobs.class, Blobs.class);
     }
 
     // blob tests
+    @Test
     public void testBlobSetToNull() {
 
         EntityManager em = emf.createEntityManager();
@@ -60,6 +66,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testBlobPersistQuery() {
         // test with null
         EntityManager em = emf.createEntityManager();
@@ -85,6 +92,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testBlobZeroLengthByteArray() throws Exception {
         // test with 0 length bytes
         byte[] bytes = new byte[0];
@@ -121,6 +129,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testBlobLargeData() {
         // test with large data
         byte[] bytes = new byte[5000];
@@ -151,6 +160,7 @@ public class TestLobs extends SingleEMFTestCase {
 
     // lob tests
 
+    @Test
     public void testLobPersistQuery() {
         // test with null
         EntityManager em = emf.createEntityManager();
@@ -173,6 +183,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLobSetToNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -189,6 +200,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLobEmptyString() {
         // test with ""
         EntityManager em = emf.createEntityManager();
@@ -226,6 +238,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLobLargeData() {
         // test with large data
         String temp = "";

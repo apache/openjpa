@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,10 +33,12 @@ import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest2;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest4;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryResultClassAPI extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(QueryTest1.class, QueryTest2.class, QueryTest4.class,
             "openjpa.jdbc.QuerySQLCache", "true",
@@ -55,6 +61,7 @@ public class TestQueryResultClassAPI extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testQueryWithResultClass() {
         EntityManager em = emf.createEntityManager();
         String jpql = "SELECT o FROM QueryTest1 o";

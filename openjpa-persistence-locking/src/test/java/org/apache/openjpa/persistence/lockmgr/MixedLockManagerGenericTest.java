@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.lockmgr;
 
 import jakarta.persistence.LockModeType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 em.lock(LockMode) behaviors with "mixed" lock manager.
  */
 public class MixedLockManagerGenericTest extends SequencedActionsTest {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -32,41 +34,49 @@ public class MixedLockManagerGenericTest extends SequencedActionsTest {
         commonSetUp();
     }
 
+    @Test
     public void testRefreshRead() {
         testCommon("testRefreshRead",
             LockModeType.READ, 0, 1);
     }
 
+    @Test
     public void testRefreshWrite() {
         testCommon("testRefreshWrite",
             LockModeType.WRITE, 1, 1);
     }
 
+    @Test
     public void testRefreshOptimistic() {
         testCommon("testRefreshOptimistic",
             LockModeType.OPTIMISTIC, 0, 1);
     }
 
+    @Test
     public void testRefreshOptimisticForceInc() {
         testCommon("testRefreshOptimisticForceInc",
             LockModeType.OPTIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
+    @Test
     public void testRefreshPessimisticRead() {
         testCommon("testRefreshPessimisticRead",
             LockModeType.PESSIMISTIC_READ, 0, 1);
     }
 
+    @Test
     public void testRefreshPessimisticWrite() {
         testCommon("testRefreshPessimisticWrite",
             LockModeType.PESSIMISTIC_WRITE, 0, 1);
     }
 
+    @Test
     public void testRefreshPessimisticForceInc() {
         testCommon("testRefreshPessimisticForceInc",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
+    @Test
     public void testCommon(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
 

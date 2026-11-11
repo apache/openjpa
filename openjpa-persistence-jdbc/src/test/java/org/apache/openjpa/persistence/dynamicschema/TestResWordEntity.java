@@ -24,6 +24,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>TestResWordEntity</b> is used to test the case where reserved words are
@@ -34,10 +36,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestResWordEntity extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
+    @Test
     public void testMultipleSchemafactories1() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
@@ -63,6 +66,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
+    @Test
     public void testMultipleSchemafactories2() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
@@ -88,6 +92,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
+    @Test
     public void testMultipleSchemafactories3() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
@@ -112,6 +117,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
+    @Test
     public void testMultipleSchemafactories4() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,

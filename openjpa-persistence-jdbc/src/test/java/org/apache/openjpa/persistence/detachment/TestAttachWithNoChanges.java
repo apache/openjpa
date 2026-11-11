@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.OptimisticLockException;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that attaching an instance without having changed it still overwrites
@@ -34,11 +36,12 @@ import junit.textui.TestRunner;
 public class TestAttachWithNoChanges
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
+    @Test
     public void testAttachWithNoChangesChecksVersion() {
         DetachmentOneManyChild e = new DetachmentOneManyChild();
         DetachmentOneManyParent p = new DetachmentOneManyParent();
@@ -69,9 +72,4 @@ public class TestAttachWithNoChanges
             em.close();
         }
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestAttachWithNoChanges.class);
-    }
 }
-

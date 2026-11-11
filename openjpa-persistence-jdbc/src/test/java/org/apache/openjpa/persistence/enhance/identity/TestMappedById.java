@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +36,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ObjectId;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMappedById extends SingleEMFTestCase {
     public int numEmployees = 4;
@@ -77,7 +83,7 @@ public class TestMappedById extends SingleEMFTestCase {
     public int pId4 = 1;
     public int mId4 = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class,
             DependentId1.class, Dependent2.class, Employee2.class,
@@ -94,6 +100,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 1, case(b)
      */
+    @Test
     public void testMapsId1() {
         createObj1();
         findObj1();
@@ -103,6 +110,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 3, case(b)
      */
+    @Test
     public void testMapsId2() {
         createObj2();
         findObj2();
@@ -112,6 +120,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(b)
      */
+    @Test
     public void testMapsId3() {
         createObj3();
         findObj3();
@@ -121,6 +130,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
+    @Test
     public void testMapsId4() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -136,6 +146,7 @@ public class TestMappedById extends SingleEMFTestCase {
      * two MapsId annotations in Dependent3 and both parent
      * classes use generated key
      */
+    @Test
     public void testMapsId5() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -150,6 +161,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(a)
      */
+    @Test
     public void testMapsId6() {
         createObj6();
         findObj6();
@@ -159,12 +171,14 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 6, case(a)
      */
+    @Test
     public void testMapsId7() {
         createObj7();
         findObj7();
         queryObj7();
     }
 
+    @Test
     public void testEnumIdClass() {
         EntityManager em = emf.createEntityManager();
         Employee e = new Employee();
@@ -187,6 +201,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testEmbeddedIdNestedInIdClass() {
         EntityManager em = emf.createEntityManager();
         EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
@@ -212,6 +227,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCountDistinctMultiCols() {
         EntityManager em = emf.createEntityManager();
 
@@ -789,6 +805,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * Derived Identity with IdClass and generatedKey
      */
+    @Test
     public void testPersistDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -808,6 +825,7 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * Derived Identity with IdClass and generatedKey
      */
+    @Test
     public void testMergeDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -858,6 +876,7 @@ public class TestMappedById extends SingleEMFTestCase {
         return e;
     }
 
+    @Test
     public void testEnumInEmbeddedId() {
         EntityManager em = emf.createEntityManager();
         Beneficiary b = new Beneficiary();

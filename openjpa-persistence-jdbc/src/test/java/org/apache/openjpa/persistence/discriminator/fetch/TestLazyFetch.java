@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.discriminator.fetch;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,17 +30,19 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestLazyFetch extends AbstractPersistenceTestCase {
     private static int N_EMPS = 3;
 
     public EntityManagerFactory newEmf() {
         EntityManagerFactory emf = createEMF(Person.class, Employee.class, Manager.class);
-        assertNotNull("Unable to create EntityManagerFactory", emf);
+        assertNotNull(emf, "Unable to create EntityManagerFactory");
         return emf;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
@@ -70,6 +76,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testFetchOneSideFirst() {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
@@ -91,6 +98,7 @@ public class TestLazyFetch extends AbstractPersistenceTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
     public void testFetchManySideFirst() {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();

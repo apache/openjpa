@@ -46,24 +46,25 @@ import java.util.List;
  *
  */
 public class CombinationGenerator {
-	private List<List> dimensions = new ArrayList();
+	private List<List<?>> dimensions = new ArrayList<>();
 
 	/**
 	 * Adds a dimension. null or empty argument has no effect.
 	 */
 	public void addDimension(List dim) {
-		if (dim == null || dim.isEmpty())
+		if (dim == null || dim.isEmpty()) {
 			return;
+        }
 		dimensions.add(dim);
-
 	}
 
 	/**
 	 * Adds a dimension. null or empty argument has no effect.
 	 */
 	public void addDimension(Object[] dim) {
-		if (dim == null || dim.length == 0)
+		if (dim == null || dim.length == 0) {
 			return;
+        }
 		dimensions.add(Arrays.asList(dim));
 	}
 
@@ -72,14 +73,15 @@ public class CombinationGenerator {
 	 * Each array element is a list which has elements in the same order as
 	 * the dimensions were added.
 	 */
-	public List[] generate() {
+	public List<?>[] generate() {
 		int comboSize = getSize();
 		int dimsSize = dimensions.size();
 		List[] result = new ArrayList[comboSize];
 		for (int i = 0; i < comboSize; i++) {
-			ArrayList elem = new ArrayList(dimsSize);
-			for (int j=0; j < dimsSize; j++)
+			List elem = new ArrayList<>(dimsSize);
+			for (int j=0; j < dimsSize; j++) {
 				elem.add(null);
+            }
 			result[i] = elem;
 		}
 		int dimRepeatingStep = 1;
@@ -87,8 +89,7 @@ public class CombinationGenerator {
 			List dimValueList = dimensions.get(dimIndex);
 			int valuListSize = dimValueList.size();
 			for (int j = 0; j < comboSize; j++) {
-                result[j].set(dimIndex, dimValueList.get((j / dimRepeatingStep)
-					% valuListSize));
+                result[j].set(dimIndex, dimValueList.get((j / dimRepeatingStep) % valuListSize));
 			}
 			dimRepeatingStep *= valuListSize;
 		}
@@ -102,8 +103,9 @@ public class CombinationGenerator {
 	 */
 	public int getSize() {
 		int size = 1;
-		for (List d : dimensions)
+		for (List d : dimensions) {
 			size *= d.size();
+        }
 		return size;
 	}
 }

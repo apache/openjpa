@@ -18,14 +18,16 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
@@ -33,11 +35,12 @@ import junit.textui.TestRunner;
 public class TestSQLBigIntegerId
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SQLBigIntegerIdEntity.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testPersist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
         BigInteger integer = new BigDecimal(time).toBigInteger();
@@ -57,9 +60,5 @@ public class TestSQLBigIntegerId
         e = em.find(SQLBigIntegerIdEntity.class, integer);
         assertEquals(1, e.getData());
         em.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestSQLBigIntegerId.class);
     }
 }

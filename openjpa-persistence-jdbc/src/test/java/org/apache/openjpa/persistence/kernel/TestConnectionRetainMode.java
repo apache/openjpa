@@ -27,34 +27,30 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectionRetainMode extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestConnectionRetainMode
-     */
-    public TestConnectionRetainMode() {
-    }
-
-    public TestConnectionRetainMode(String str) {
-        super(str);
-    }
-
+    @Test
     public void testOnDemand()
         throws Exception {
         doTest("on-demand");
     }
 
+    @Test
     public void testTransaction()
         throws Exception {
         doTest("transaction");
     }
 
+    @Test
     public void testPersistenceManager()
         throws Exception {
         doTest("persistence-manager");

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.models.company;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.beans.ExceptionListener;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -32,8 +35,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Generic test case that will be extended by a concrete company
@@ -47,7 +52,7 @@ public abstract class CompanyModelTest
     private static Map<Class,Class> factoryClasses;
     private Map<Class,Class> impls;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         // make a map of the implementations based on the class names in
         // the current package of the test subclass
@@ -67,7 +72,7 @@ public abstract class CompanyModelTest
         checkModel();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         impls.clear();
         impls = null;
@@ -90,6 +95,7 @@ public abstract class CompanyModelTest
      * make sure the queries can be executed without problem. Queries
      * should always return all known instances in the database.
      */
+    @Test
     public void testBasicQueries() throws Exception {
         for (Class c : impls.values()) {
             for (PropertyDescriptor pd :

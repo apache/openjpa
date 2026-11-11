@@ -29,12 +29,14 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFlushBeforeDetach extends SQLListenerTestCase {
 
     private int _id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
       setUp(Item.class,"openjpa.Compatibility",
                 "default(flushBeforeDetach=false,copyOnDetach=true)");
@@ -52,6 +54,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testClear() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -66,6 +69,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testDetach() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -80,6 +84,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testDetachAll() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -94,6 +99,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testDetachAllCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -110,6 +116,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testSerialize() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

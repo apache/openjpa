@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link Column#copy} carries the JPA 3.2 <code>secondPrecision</code> of a

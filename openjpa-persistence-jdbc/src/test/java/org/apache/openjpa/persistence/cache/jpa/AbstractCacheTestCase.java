@@ -36,6 +36,8 @@ import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase {
     protected final String RETRIEVE_MODE_PROP = "jakarta.persistence.cache.retrieveMode";
@@ -80,14 +82,13 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
         return emf;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         cleanDatabase();
         populate();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         if (emf != null) {

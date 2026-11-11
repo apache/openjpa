@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unique constraints specified via annotations for primary/secondary
@@ -43,7 +46,8 @@ public class TestUniqueConstraint extends SQLListenerTestCase {
         super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);
     }
 
-	public void testMapping() {
+    @Test
+    public void testMapping() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.getTransaction().commit();

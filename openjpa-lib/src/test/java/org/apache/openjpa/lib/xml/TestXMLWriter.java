@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.lib.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
@@ -27,9 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.openjpa.lib.util.StringUtil;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 
 /**

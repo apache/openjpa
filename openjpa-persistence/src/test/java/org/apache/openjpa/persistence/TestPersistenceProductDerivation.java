@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,11 +42,9 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.encryption.EncryptionProvider;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPersistenceProductDerivation {
 	private static final Logger logger = Logger.getLogger(TestPersistenceProductDerivation.class.getCanonicalName());
@@ -54,7 +54,7 @@ public class TestPersistenceProductDerivation {
     ClassLoader originalLoader = null;
     ClassLoader tempLoader = null;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         String currentDir = System.getProperty("user.dir");
 
@@ -83,7 +83,7 @@ public class TestPersistenceProductDerivation {
         Thread.currentThread().setContextClassLoader(tempLoader);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         // Restore the original classloader.
         Thread.currentThread().setContextClassLoader(originalLoader);

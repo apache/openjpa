@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,8 +32,8 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that when both sides of a mapped-by relation are eager fetched,
@@ -45,7 +49,7 @@ public class TestEagerBidiSQL
     private long id1;
     private long id2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class);
 
@@ -90,6 +94,7 @@ public class TestEagerBidiSQL
         em.close();
     }
 
+    @Test
     public void testEagerOwnerOneToManyFind() {
         sql.clear();
 
@@ -111,6 +116,7 @@ public class TestEagerBidiSQL
         em.close();
     }
 
+    @Test
     public void testEagerOwnerOneToOneFind() {
         sql.clear();
 
@@ -128,6 +134,7 @@ public class TestEagerBidiSQL
         em.close();
     }
 
+    @Test
     public void testEagerOwnerOneToManyQuery() {
         sql.clear();
 
@@ -139,7 +146,7 @@ public class TestEagerBidiSQL
         List<BidiParent> res = (List<BidiParent>) q.getResultList();
 
         assertEquals(2, res.size());
-        assertEquals(sql.toString(), 2, sql.size());
+        assertEquals(2, sql.size(), sql.toString());
         assertNotSQL(".* LEFT OUTER JOIN BidiParent .*");
 
         for (int i = 0; i < res.size(); i++) {
@@ -156,6 +163,7 @@ public class TestEagerBidiSQL
         em.close();
     }
 
+    @Test
     public void testEagerOwnerOneToOneQuery() {
         sql.clear();
 
@@ -182,6 +190,7 @@ public class TestEagerBidiSQL
         em.close();
     }
 
+    @Test
     public void testEagerNonOwnerOneToOneQuery() {
         sql.clear();
 
@@ -206,9 +215,4 @@ public class TestEagerBidiSQL
         assertEquals(1, sql.size());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestEagerBidiSQL.class);
-    }
 }
-

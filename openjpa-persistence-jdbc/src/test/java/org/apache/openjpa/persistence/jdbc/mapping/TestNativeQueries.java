@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +34,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity1;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNativeQueries extends SingleEMFTestCase {
     private static final String TABLE_NAME = "entity_1";
@@ -38,7 +46,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
 
     private EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Entity1.class, Entity2.class);
 
@@ -51,17 +59,20 @@ public class TestNativeQueries extends SingleEMFTestCase {
         em.getTransaction().begin();
     }
 
+    @Test
     public void testNoParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME;
         assertSize(3, em.createNativeQuery(sql, Entity1.class).getResultList());
     }
 
+    @Test
     public void testLiteral() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = " + CONST_INT;
         assertSize(1, em.createNativeQuery(sql, Entity1.class).getResultList());
     }
 
+    @Test
     public void testParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1";
@@ -70,6 +81,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testOutOfOrderParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?2 AND STRINGFIELD = ?1";
@@ -79,6 +91,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testDuplicateParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 AND INTFIELD = ?1";
@@ -87,6 +100,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testDifferentParameterToSameField() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 OR INTFIELD = ?2";
@@ -96,6 +110,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testQuoteParameterIgnored() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 OR STRINGFIELD = '?2'";
@@ -104,6 +119,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testParameterMarkerWithoutSpaces() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD=?1";
@@ -112,6 +128,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
+    @Test
     public void testZeroBasedParameterSettingFails() {
         try {
             String sql = "SELECT * FROM " + TABLE_NAME
@@ -124,6 +141,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testNamedParameterFails() {
         /*
          * Named parameters are not supported according to Section 3.6.8 of
@@ -142,6 +160,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testHintsAreProcessed() {
         Query q = em.createNamedQuery("SQLWithHints");
         assertEquals(QueryLanguages.LANG_SQL,
@@ -152,6 +171,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testNullResult(){
         String sql = "SELECT max(pk) FROM " + TABLE_NAME_2+ "";
         assertNull(em.createNativeQuery(sql, Long.class).getSingleResult());

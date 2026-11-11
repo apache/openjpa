@@ -27,26 +27,24 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.DFGTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-
-public class TestDFG
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestDFG extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object oid;
-    /** Creates a new instance of TestDFG */
-    public TestDFG(String name)
-    {
-    	super(name);
-    }
 
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(DFGTest.class);
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
@@ -67,6 +65,7 @@ public class TestDFG
         pm.close();
     }
 
+    @Test
     public void testDFG() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
 
@@ -76,16 +75,16 @@ public class TestDFG
 
         OpenJPAStateManager sm = getStateManager(a,pm);
         FieldMetaData fmd = sm.getMetaData().getField("nonDFGField");
-        assertTrue("nonDFGField should not be loaded",
-                !sm.getLoaded().get(fmd.getIndex()));
+        assertTrue(!sm.getLoaded().get(fmd.getIndex()),
+                "nonDFGField should not be loaded");
 
         fmd = sm.getMetaData().getField("dfgField");
-        assertTrue("dfgField should be loaded",
-                sm.getLoaded().get(fmd.getIndex()));
+        assertTrue(sm.getLoaded().get(fmd.getIndex()),
+                "dfgField should be loaded");
 
         int val = a.getNonDFGField();
-        assertTrue("nonDFGField should be loaded",
-                sm.getLoaded().get(fmd.getIndex()));
+        assertTrue(sm.getLoaded().get(fmd.getIndex()),
+                "nonDFGField should be loaded");
         assertEquals(2, val);
 
         pm.close();
@@ -94,6 +93,7 @@ public class TestDFG
     // it'd be nice if we could actually automate this test. As it
     // stands, this is just here so that there's an easy place to look
     // at the SQL.
+    @Test
     public void testDFGWrites() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
         startTx(pm);

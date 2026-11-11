@@ -18,13 +18,18 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
-
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that if any of the slices fail then none of the slices are committed.
@@ -45,7 +50,7 @@ public class TestTransaction extends SliceTestCase {
     }
 
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
                 Car.class, Manufacturer.class,
@@ -56,6 +61,7 @@ public class TestTransaction extends SliceTestCase {
         manufacturers = persistManufacturers(slices);
     }
 
+    @Test
     public void testCommitsAreAtomic() {
         int nCarStart = count(Car.class);
         persistCars(false);
@@ -143,7 +149,7 @@ public class TestTransaction extends SliceTestCase {
      * @author Pinaki Poddar
      *
      */
-    @Ignore
+    @Disabled
     public static class CarDistributorPolicy implements DistributionPolicy {
         @Override
         public String distribute(Object pc, List<String> slices, Object context) {

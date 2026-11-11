@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,28 +27,25 @@ import java.util.List;
 
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Test case that provides access to all the SQL that is executed.
  *
  */
-public abstract class TestSQLListenerTestCase
-    extends BaseJDBCTest {
+public abstract class TestSQLListenerTestCase extends BaseJDBCTest {
 
     protected static final Collection brokers = new HashSet();
     public static List sql = new ArrayList();
 
     public TestSQLListenerTestCase() {
+        super();
     }
 
-    public TestSQLListenerTestCase(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
-        super.setUp();
         setUpTestCase();
         sql.clear();
     }
@@ -57,7 +56,7 @@ public abstract class TestSQLListenerTestCase
     public void setUpTestCase() {
     }
 
-    @Override
+    @AfterEach
     public final void tearDown()
         throws Exception {
         super.tearDown();

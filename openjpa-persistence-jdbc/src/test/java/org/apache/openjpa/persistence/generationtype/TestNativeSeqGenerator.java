@@ -18,10 +18,16 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNativeSeqGenerator extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -31,26 +37,25 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
     EntityE2 entityE2;
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict.nextSequenceQuery != null;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(EntityE2.class,DROP_TABLES);
         assertNotNull(emf);
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        boolean supportsNativeSequence = dict.nextSequenceQuery != null;
-        setTestsDisabled(!supportsNativeSequence);
-        if (supportsNativeSequence) {
-            em = emf.createEntityManager();
-            assertNotNull(em);
-        } else {
-            getLog().trace(this + " is disabled because " + dict.getClass().getSimpleName() +
-                " does not support native sequences.");
-        }
+        em = emf.createEntityManager();
+        assertNotNull(em);
     }
 
     public void createEntityE2() {
         entityE2 = new EntityE2("e name");
     }
 
+    @Test
     public void testGetIdGeneratorSeqGen() {
         createEntityE2();
         em.getTransaction().begin();
@@ -58,7 +63,7 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         em.getTransaction().commit();
         int genId = entityE2.getId();
         int nextId = (int)((Long)em.getIdGenerator(EntityE2.class).next()).longValue();
-        assertTrue("Next value should depend on previous genid", nextId >= genId + 1);
+        assertTrue(nextId >= genId + 1, "Next value should depend on previous genid");
         em.close();
     }
 
@@ -67,6 +72,7 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
      * and requests sequence values from database only when necessary.
      * @since 2.2.0
      */
+    @Test
     public void testAllocationSize() {
         // Turn off statement batching for easier INSERT counting.
         dict.setBatchLimit(0);
@@ -79,7 +85,7 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         em.getTransaction().commit();
 
         // Since allocationSize has a default of 50, we expect 2 sequence fetches and 51 INSERTs.
-        assertEquals("54 statements should be executed.", 54, getSQLCount());
+        assertEquals(54, getSQLCount(), "54 statements should be executed.");
         String[] statements = new String[54];
         statements[0] = "ALTER .*";
         statements[1] = ".*";

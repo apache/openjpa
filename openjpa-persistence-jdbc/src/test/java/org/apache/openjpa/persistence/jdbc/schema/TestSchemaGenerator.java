@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.StringWriter;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -25,6 +27,7 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.Test;
 
 public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
@@ -33,11 +36,7 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
         return "TestConv";
     }
 
-    /** Creates a new instance of TestSchemaGenerator */
-    public TestSchemaGenerator(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSchemaGen() throws Exception {
         OpenJPAEntityManagerFactory pmf = getEmf();
         OpenJPAEntityManager pm = pmf.createEntityManager();

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 
 import jakarta.persistence.EntityManager;
@@ -30,6 +32,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.QueryResultCache;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeKeeper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A query whose Calendar parameter is bound with setParameter(Parameter, Calendar, TemporalType) is cached under the
@@ -38,12 +42,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestQueryCacheTemporalTypeParameter extends SingleEMFTestCase {
     private static final String JPQL = "SELECT p FROM TimeKeeper p WHERE p.date = :d";
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, "openjpa.DataCache", "true", "openjpa.QueryCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", TimeKeeper.class);
     }
 
+    @Test
     public void testEvictFindsResultOfCalendarParameterWithTemporalType() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<TimeKeeper> q = em.createQuery(JPQL, TimeKeeper.class);

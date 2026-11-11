@@ -26,24 +26,22 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigInteger;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.RestoreStateType;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRestoreValues extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestRestoreValues
-     */
-    public TestRestoreValues(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(FetchGroupTestObject.class);
 
@@ -74,12 +72,13 @@ public class TestRestoreValues extends BaseKernelTest {
         return pm;
     }
 
+    @Test
     public void testUnloadedFieldDirtiedBeforeLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
 
-        assertNotNull("fetch object is null", pc);
+        assertNotNull(pc, "fetch object is null");
 
         startTx(pm);
         pc.setB("3");
@@ -92,6 +91,7 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testUnloadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
@@ -108,6 +108,7 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testLoadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
@@ -125,6 +126,7 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testNewInstanceUnmodifiedInTransaction() {
         FetchGroupTestObject pc = new FetchGroupTestObject();
         pc.setA(2);

@@ -25,14 +25,17 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestBooleanValue extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(EntityBool.class);
     }
 
+    @Test
     public void testBooleanValue() {
         EntityManager em = emf.createEntityManager();
         EntityBool t0 = new EntityBool();

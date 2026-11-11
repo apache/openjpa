@@ -18,20 +18,21 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.apache.openjpa.persistence.query.common.apps.Entity2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBQueryInterface extends BaseQueryTest {
-
-    public TestEJBQueryInterface(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
 
@@ -58,6 +59,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testResultList() {
         EntityManager em = currentEntityManager();
         List list = em.createQuery("Select object(o) from Entity1 o")
@@ -68,6 +70,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testGetSingleList() {
         EntityManager em = currentEntityManager();
 
@@ -82,6 +85,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testExecuteUpdate() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -99,6 +103,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testSetMaxResults() {
         EntityManager em = currentEntityManager();
 
@@ -112,6 +117,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testSetFirstResults() {
         EntityManager em = currentEntityManager();
 
@@ -130,6 +136,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
 
     // Tests Binding an argument to a named parameter.
     // pk, the named parameter --Not working yet--
+    @Test
     public void testSetParameter1() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -153,6 +160,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testOrderBy() {
         EntityManager em = currentEntityManager();
         startTx(em);

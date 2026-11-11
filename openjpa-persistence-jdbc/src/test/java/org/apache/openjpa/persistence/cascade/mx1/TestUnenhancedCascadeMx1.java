@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.cascade.mx1;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests cascade ALL on ManyToOne with unenhanced (runtime enhanced)
@@ -29,7 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             UnenhancedCascadeA.class,
@@ -41,6 +47,7 @@ public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
      * Persist B(cascade=ALL, ref to A), remove both, re-persist B.
      * Verify B is managed and b.getA1() != null.
      */
+    @Test
     public void testCascadeAllRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -52,7 +59,7 @@ public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
         em.flush();
 
         UnenhancedCascadeA newA1 = b1.getA1Info();
-        assertNotNull("A should have been cascade-persisted", newA1);
+        assertNotNull(newA1, "A should have been cascade-persisted");
 
         // Remove A first, then B
         em.remove(newA1);
@@ -62,16 +69,16 @@ public class TestUnenhancedCascadeMx1 extends SingleEMFTestCase {
         // Verify B is removed
         UnenhancedCascadeB foundB =
             em.find(UnenhancedCascadeB.class, "2");
-        assertNull("B should be removed", foundB);
+        assertNull(foundB, "B should be removed");
 
         // Re-persist removed B (still has A reference)
         em.persist(b1);
         em.flush();
 
-        assertTrue("B should be managed",
-            em.contains(b1));
-        assertNotNull("B's A ref should not be null",
-            b1.getA1());
+        assertTrue(em.contains(b1),
+            "B should be managed");
+        assertNotNull(b1.getA1(),
+            "B's A ref should not be null");
 
         em.getTransaction().commit();
         em.close();

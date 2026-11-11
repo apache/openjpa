@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.mapkey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +37,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for @MapKeyEnumerated and @MapKeyTemporal annotations.
@@ -41,7 +47,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
               CLEAR_TABLES,
@@ -55,6 +61,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Tests @MapKeyEnumerated(EnumType.STRING) on a OneToMany map.
      * Mirrors TCK mapKeyEnumeratedTest.
      */
+    @Test
     public void testMapKeyEnumerated() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -88,13 +95,13 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         MKEEmployee foundEmp = em.find(MKEEmployee.class, 1);
-        assertNotNull("Employee should be found", foundEmp);
+        assertNotNull(foundEmp, "Employee should be found");
         MKEDepartment foundDept = foundEmp.getDepartment();
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<MKEOffices, MKEEmployee> emps = foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 3 entries", 3, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(3, emps.size(), "Map should have 3 entries");
 
         Set<MKEOffices> expectedKeys = new HashSet<>();
         expectedKeys.add(MKEOffices.OFF000);
@@ -102,9 +109,9 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         expectedKeys.add(MKEOffices.OFF004);
 
         Set<MKEOffices> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -116,6 +123,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * (mixed access pattern). Mirrors TCK elementCollectionTest for
      * mapkeyenumerated.
      */
+    @Test
     public void testMapKeyEnumeratedElementCollection() {
 
         EntityManager em = emf.createEntityManager();
@@ -138,19 +146,19 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         MKEDepartment4 foundDept = em.find(MKEDepartment4.class, 7);
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
         Map<MKENumbers, MKEmbeddedEmployee> emps = foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 2 entries", 2, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(2, emps.size(), "Map should have 2 entries");
 
         Set<MKENumbers> expectedKeys = new HashSet<>();
         expectedKeys.add(MKENumbers.one);
         expectedKeys.add(MKENumbers.two);
 
         Set<MKENumbers> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -160,6 +168,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Tests @MapKeyTemporal(TemporalType.DATE) on a OneToMany map.
      * Mirrors TCK mapKeyTemporalTest.
      */
+    @Test
     public void testMapKeyTemporal() throws Exception {
         Date d1 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-02-14");
         Date d2 = new SimpleDateFormat("yyyy-MM-dd").parse("2001-06-27");
@@ -197,13 +206,13 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         MKTEmployee foundEmp = em.find(MKTEmployee.class, 1);
-        assertNotNull("Employee should be found", foundEmp);
+        assertNotNull(foundEmp, "Employee should be found");
         MKTDepartment foundDept = foundEmp.getDepartment();
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<Date, MKTEmployee> emps = foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 3 entries", 3, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(3, emps.size(), "Map should have 3 entries");
 
         Set<Date> expectedKeys = new HashSet<>();
         expectedKeys.add(d1);
@@ -211,9 +220,9 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         expectedKeys.add(d3);
 
         Set<Date> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -225,6 +234,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * (mixed access pattern). Mirrors TCK elementCollectionTest for
      * mapkeytemporal.
      */
+    @Test
     public void testMapKeyTemporalElementCollection() throws Exception {
         Date d6 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-10-14");
         Date d7 = new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-27");
@@ -249,20 +259,20 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         MKTDepartment4 foundDept = em.find(MKTDepartment4.class, 5);
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<Date, MKTEmbeddedEmployee> emps = foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 2 entries", 2, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(2, emps.size(), "Map should have 2 entries");
 
         Set<Date> expectedKeys = new HashSet<>();
         expectedKeys.add(d6);
         expectedKeys.add(d7);
 
         Set<Date> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -274,6 +284,7 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * &lt;collection_attribute_name&gt;_KEY (e.g. "lastNameEmployees_KEY"),
      * not just "KEY" or "KEY0" or "KEY2".
      */
+    @Test
     public void testDefaultMapKeyColumnName() {
         // Force metadata resolution by opening an EM
         EntityManager em = emf.createEntityManager();
@@ -282,28 +293,28 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
         ClassMapping mapping4 = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, MKEDepartment4.class);
         FieldMapping fm4 = mapping4.getFieldMapping("lastNameEmployees");
-        assertNotNull("Field mapping for lastNameEmployees should exist", fm4);
-        assertEquals("Default map key column should be lastNameEmployees_KEY",
-            "lastNameEmployees_KEY",
-            fm4.getKeyMapping().getColumns()[0].getName());
+        assertNotNull(fm4, "Field mapping for lastNameEmployees should exist");
+        assertEquals("lastNameEmployees_KEY",
+            fm4.getKeyMapping().getColumns()[0].getName(),
+            "Default map key column should be lastNameEmployees_KEY");
 
         // Check MKTDepartment4 (ElementCollection with explicit @MapKeyColumn(name="THEDATE"))
         ClassMapping mappingT4 = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, MKTDepartment4.class);
         FieldMapping fmT4 = mappingT4.getFieldMapping("lastNameEmployees");
-        assertNotNull("Field mapping for lastNameEmployees should exist", fmT4);
-        assertEquals("Explicit @MapKeyColumn name should be preserved",
-            "THEDATE",
-            fmT4.getKeyMapping().getColumns()[0].getName());
+        assertNotNull(fmT4, "Field mapping for lastNameEmployees should exist");
+        assertEquals("THEDATE",
+            fmT4.getKeyMapping().getColumns()[0].getName(),
+            "Explicit @MapKeyColumn name should be preserved");
 
         // Check MKEDepartment (OneToMany with explicit @MapKeyColumn(name="OFFICE_ID"))
         ClassMapping mapping = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, MKEDepartment.class);
         FieldMapping fm = mapping.getFieldMapping("lastNameEmployees");
-        assertNotNull("Field mapping for lastNameEmployees should exist", fm);
-        assertEquals("Explicit @MapKeyColumn name should be preserved",
-            "OFFICE_ID",
-            fm.getKeyMapping().getColumns()[0].getName());
+        assertNotNull(fm, "Field mapping for lastNameEmployees should exist");
+        assertEquals("OFFICE_ID",
+            fm.getKeyMapping().getColumns()[0].getName(),
+            "Explicit @MapKeyColumn name should be preserved");
 
         em.close();
     }

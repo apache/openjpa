@@ -26,6 +26,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,14 +38,12 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
 
-    public TestQuotedNumbersInFilters2(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         OpenJPAEntityManager pm = getEM();
@@ -66,6 +67,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
         assertEquals(1, helper("stringField = \'bar\'"));
     }
 
+    @Test
     public void testUnquotedNumbersWithExtraPrecision() {
         assertEquals(1, helper("intField = 15"));
         assertEquals(1, helper("intField = -8"));
@@ -84,11 +86,13 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
 //    }
     }
 
+    @Test
     public void testSingleQuotedStrings() {
         assertEquals(1, helper("stringField = 'foo'"));
         assertEquals(1, helper("stringField = '3'"));
     }
 
+    @Test
     public void testDoubleQuotedStrings() {
         assertEquals(1, helper("stringField = \'foo\'"));
         assertEquals(1, helper("stringField = \'3\'"));
@@ -100,6 +104,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
      * Only the first digit of multiple-digit single-quoted numbers was used.
      * FIX ME: aokeke - commenting this --> applies to kodo 3.1 and prior
      */
+    @Test
     public void testKodo31SingleQuotedMultipleCharacterBehavior() {
         assertEquals(0, helper31("intField = '15'", true)); // looks like '1'
         assertEquals(0, helper31("intField = '52'", true)); // looks like '5'
@@ -114,6 +119,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
      * Kodo 3.1 and prior did not match negative numbers of different types
      * in in-mem queries.
      */
+    @Test
     public void testKodo31UnquotedInMemBehavior() {
         assertEquals(1, helper31("intField = 3", false));
         assertEquals(1, helper31("intField = -8", false));
@@ -121,6 +127,7 @@ public class TestQuotedNumbersInFilters2 extends BaseQueryTest {
         assertEquals(1, helper31("intField = 45", false));
     }
 
+    @Test
     public void testKodo31UnquotedDatastoreBehavior() {
         assertEquals(1, helper31("intField = 3", false));
         assertEquals(1, helper31("intField = -8", false));

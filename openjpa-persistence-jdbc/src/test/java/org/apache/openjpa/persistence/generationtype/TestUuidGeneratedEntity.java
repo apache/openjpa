@@ -21,6 +21,13 @@ package org.apache.openjpa.persistence.generationtype;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.UUID;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -29,17 +36,20 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestUuidGeneratedEntity extends SingleEMFTestCase {
     
     DBDictionary _dict;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UuidGeneratedEntity.class, CLEAR_TABLES);
         _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
+    @Test
     public void testMapping() {
         ClassMapping cm = getMapping(UuidGeneratedEntity.class);
         Column[] cols = cm.getPrimaryKeyColumns();
@@ -49,6 +59,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         assertEquals(_dict.supportsUuidType ? JavaTypes.UUID_OBJ : JavaTypes.STRING, col.getJavaType());
     }
 
+    @Test
     public void testDefaultValues() {
         EntityManager em = emf.createEntityManager();
 
@@ -74,6 +85,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testMergeBeforePersist() {
         EntityManager em = emf.createEntityManager();
 
@@ -90,6 +102,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testDetachAndMerge() {
         EntityManager em = emf.createEntityManager();
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -116,6 +129,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testGetByReference() {
         EntityManager em = emf.createEntityManager();
         UuidGeneratedEntity gv = new UuidGeneratedEntity();
@@ -137,6 +151,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testFindByUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
@@ -161,6 +176,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testUpdateUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
@@ -199,6 +215,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testFindByStringUUIDProperty() {
         EntityManager em = emf.createEntityManager();
 
@@ -224,6 +241,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testFindByUUID() {
         EntityManager em = emf.createEntityManager();
 
@@ -245,6 +263,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testRemoveById() {
         EntityManager em = emf.createEntityManager();
 
@@ -268,6 +287,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testParentRelationshipById() {
         EntityManager em = emf.createEntityManager();
 
@@ -298,6 +318,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testParentRelationshipByEntity() {
         EntityManager em = emf.createEntityManager();
 
@@ -324,6 +345,7 @@ public class TestUuidGeneratedEntity extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testSetPreviouslyNullProperty() {
         EntityManager em = emf.createEntityManager();
 

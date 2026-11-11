@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex0;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,8 +35,9 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_26 extends SQLListenerTestCase {
 
@@ -49,7 +52,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public List<Department2> rsAllDepartment2 = null;
     public List<Department3> rsAllDepartment3 = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES,
             Department1.class,
@@ -66,6 +69,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         rsAllDepartment3 = getAll(Department3.class);
     }
 
+    @Test
     public void testHavingClauseWithEntityExpression() throws Exception {
         EntityManager em = emf.createEntityManager();
         Employee1 e1 = em.find(Employee1.class, 1);
@@ -105,10 +109,12 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     }
 
     @AllowFailure
+    @Test
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
+    @Test
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
@@ -163,7 +169,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
             setCandidate(q, Department1.class);
         rs = q.getResultList();
         Integer deptId = (Integer) rs.get(0);
-        assertEquals("dept id is not 2", 2, deptId.intValue());
+        assertEquals(2, deptId.intValue(), "dept id is not 2");
 
         query = "select KEY(e).lName from Department3 d, " + "in (d.emps) e " + "group by KEY(e).lName "
                 + "having KEY(e).lName like 'l%'";
@@ -171,12 +177,13 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, Department1.class);
         rs = q.getResultList();
-        assertEquals("number of employees is not equal to numDepartments*numEmployeesPerDept", numDepartments
-                * numEmployeesPerDept, rs.size());
+        assertEquals(numDepartments
+                * numEmployeesPerDept, rs.size(), "number of employees is not equal to numDepartments*numEmployeesPerDept");
 
         em.close();
     }
 
+    @Test
     public void testQueryObject() {
         queryObj();
     }
@@ -287,34 +294,34 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public void assertDepartment1(Department1 d) {
         int id = d.getDeptId();
         Map<Integer, Employee1> es = d.getEmpMap();
-        Assert.assertEquals(2,es.size());
+        Assertions.assertEquals(2,es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             Integer empId = (Integer) obj;
             Employee1 e = es.get(empId);
-            Assert.assertEquals(empId.intValue(), e.getEmpId());
+            Assertions.assertEquals(empId.intValue(), e.getEmpId());
         }
     }
 
     public void assertDepartment2(Department2 d) {
         int id = d.getDeptId();
         Map<EmployeePK2, Employee2> es = d.getEmpMap();
-        Assert.assertEquals(2,es.size());
+        Assertions.assertEquals(2,es.size());
         Set<EmployeePK2> keys = es.keySet();
         for (EmployeePK2 pk : keys) {
             Employee2 e = es.get(pk);
-            Assert.assertEquals(pk, e.getEmpPK());
+            Assertions.assertEquals(pk, e.getEmpPK());
         }
     }
 
     public void assertDepartment3(Department3 d) {
         int id = d.getDeptId();
         Map<EmployeeName3, Employee3> es = d.getEmployees();
-        Assert.assertEquals(2,es.size());
+        Assertions.assertEquals(2,es.size());
         Set<EmployeeName3> keys = es.keySet();
         for (EmployeeName3 key : keys) {
             Employee3 e = es.get(key);
-            Assert.assertEquals(key, e.getName());
+            Assertions.assertEquals(key, e.getName());
         }
     }
 

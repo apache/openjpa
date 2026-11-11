@@ -18,13 +18,19 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSimpleXmlEntity
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
@@ -36,6 +42,7 @@ public class TestSimpleXmlEntity
         return "xml-persistence-unit";
     }
 
+    @Test
     public void testId() {
         em.getTransaction().begin();
         SimpleXmlEntity e = new SimpleXmlEntity();
@@ -51,10 +58,12 @@ public class TestSimpleXmlEntity
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testNamedQueryInXmlNamedEntity() {
         em.createNamedQuery("SimpleXml.findAll").getResultList();
     }
 
+    @Test
     public void testNamedQueryInXmlUsingShortClassName() {
         try {
             em.createNamedQuery("SimpleXmlEntity.findAll").getResultList();
@@ -65,10 +74,12 @@ public class TestSimpleXmlEntity
         }
     }
 
+    @Test
     public void testNamedEntityInDynamicQuery() {
         em.createQuery("select o from SimpleXml o").getResultList();
     }
 
+    @Test
     public void testShortClassNameInDynamicQuery() {
         try {
             em.createQuery("select o from SimpleXmlEntity o").getResultList();
@@ -85,6 +96,6 @@ public class TestSimpleXmlEntity
      */
     void assertMarkerInErrorMessage(Exception ex, String marker) {
         String message = ex.getMessage();
-        assertTrue("Can not find [" + marker + "] in the message [" + message + "]", message.indexOf(marker) != -1);
+        assertTrue(message.indexOf(marker) != -1, "Can not find [" + marker + "] in the message [" + message + "]");
     }
 }

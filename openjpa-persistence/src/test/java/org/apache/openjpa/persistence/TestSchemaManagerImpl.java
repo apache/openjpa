@@ -18,17 +18,16 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.StoreManager;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 
@@ -105,8 +104,8 @@ public class TestSchemaManagerImpl {
 
         UnsupportedOperationException uoe =
                 assertThrows(UnsupportedOperationException.class, schemaManager::validate);
-        assertNotNull("the unsupported operation must carry a message", uoe.getMessage());
-        assertTrue(uoe.getMessage(), uoe.getMessage().contains("schema validation"));
+        assertNotNull(uoe.getMessage(), "the unsupported operation must carry a message");
+        assertTrue(uoe.getMessage().contains("schema validation"), uoe.getMessage());
     }
 
     @Test

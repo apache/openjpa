@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +41,8 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for embedded
@@ -53,13 +60,14 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         CLOB = buf.toString();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
 //        ,"openjpa.Log","SQL=trace"
         );
     }
 
+    @Test
     public void testEmbedded() {
 
         EntityManager em = emf.createEntityManager();
@@ -92,6 +100,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testEmbeddedMetaData() {
         ClassMetaData ownerMeta =
             JPAFacadeHelper.getMetaData(emf, EmbedOwner.class);
@@ -149,13 +158,18 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
             }
         }
     }
+
+    @Test
     public void testNullNoCache() {
         nullTestLogic(false);
     }
+
+    @Test
     public void testNullCacheEnabled() {
         nullTestLogic(true);
     }
 
+    @Test
     public void testMappingTransferAndOverride() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().getMapping

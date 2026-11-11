@@ -18,10 +18,15 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Native queries use only 1-based positional parameters and
@@ -36,27 +41,31 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 	private static Class<? extends Exception> NO_ERROR = null;
 
-	@Override
-	public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES);
 	}
 
-	public void testNamedParameterInNativeQueryIsNotValid() {
+    @Test
+    public void testNamedParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=:id";
 		verifyParams(sql, IllegalArgumentException.class, "id", 10);
 	}
 
-	public void testPositionalParameterInNativeQueryIsValid() {
+    @Test
+    public void testPositionalParameterInNativeQueryIsValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, NO_ERROR, 1, 10);
 	}
 
-	public void testZeroPositionalParameterInNativeQueryIsNotValid() {
+    @Test
+    public void testZeroPositionalParameterInNativeQueryIsNotValid() {
 		String sql = "SELECT * FROM Application WHERE id=?1";
 		verifyParams(sql, IllegalArgumentException.class, 0, 10);
 	}
 
-	public void testNativeQueryDeclaredParameters() {
+    @Test
+    public void testNativeQueryDeclaredParameters() {
         String sql = "SELECT * FROM Application WHERE id=?1 AND name=?2";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

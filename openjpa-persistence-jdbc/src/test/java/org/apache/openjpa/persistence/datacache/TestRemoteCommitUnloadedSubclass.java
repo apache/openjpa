@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,6 +37,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Without a list of persistent types, a remote commit event can name a
@@ -53,9 +59,10 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryCacheInvalidatesSuperclassOfUnloadedType() {
         for (Class<?> cls : PCRegistry.getRegisteredTypes()) {
-            assertFalse("the subclass must not be loaded yet", DOG.equals(cls.getName()));
+            assertFalse(DOG.equals(cls.getName()), "the subclass must not be loaded yet");
         }
 
         // no persistent types are listed, so types are found when used

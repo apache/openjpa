@@ -29,28 +29,22 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFieldState extends BaseKernelTest {
 
     private Object oid;
 
-    /**
-     * Creates a new instance of TestFieldState
-     */
-    public TestFieldState() {
-    }
-
-    public TestFieldState(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -67,6 +61,7 @@ public class TestFieldState extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testNotDirtyAfterSameChange() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);

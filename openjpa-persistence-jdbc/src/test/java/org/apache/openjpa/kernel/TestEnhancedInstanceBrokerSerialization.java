@@ -20,13 +20,15 @@ package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.query.SimpleEntity;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 
 public class TestEnhancedInstanceBrokerSerialization
     extends AbstractBrokerSerializationTest<SimpleEntity> {
 
-    @Override
+    @BeforeEach
     public void setUp() {
-        assertTrue(
+        Assertions.assertTrue(
             PersistenceCapable.class.isAssignableFrom(SimpleEntity.class));
         super.setUp();
     }

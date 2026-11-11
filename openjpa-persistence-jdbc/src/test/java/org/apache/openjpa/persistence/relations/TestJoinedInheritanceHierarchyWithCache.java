@@ -26,11 +26,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.datacache.common.apps.FlushDataCacheObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJoinedInheritanceHierarchyWithCache
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     	super.setUp(CLEAR_TABLES, InheritanceHierarchyConcrete.class,
     			InheritanceHierarchyAbstract.class, FlushDataCacheObject.class,
@@ -38,6 +40,7 @@ public class TestJoinedInheritanceHierarchyWithCache
     			"openjpa.RemoteCommitProvider", "sjvm");
     }
 
+    @Test
     public void testCacheSqlGeneration() throws PersistenceException {
 
 		InheritanceHierarchyConcrete parent = new InheritanceHierarchyConcrete();

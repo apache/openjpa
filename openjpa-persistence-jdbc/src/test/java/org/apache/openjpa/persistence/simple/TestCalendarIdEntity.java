@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Calendar;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that java.util.Calendar can be used as a primary key type.
@@ -30,11 +35,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCalendarIdEntity extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, CalendarIdEntity.class);
     }
 
+    @Test
     public void testPersistAndFindWithCalendarId() {
         Calendar now = Calendar.getInstance();
         // truncate to seconds to avoid DB precision issues
@@ -49,13 +55,14 @@ public class TestCalendarIdEntity extends SingleEMFTestCase {
         em.clear();
 
         CalendarIdEntity found = em.find(CalendarIdEntity.class, now);
-        assertNotNull("Entity should be found by Calendar id", found);
+        assertNotNull(found, "Entity should be found by Calendar id");
         assertEquals("test", found.getName());
         assertEquals(now.getTimeInMillis(), found.getId().getTimeInMillis());
 
         em.close();
     }
 
+    @Test
     public void testCalendarIdEntityCreatesEMF() {
         // Just verify that creating the EMF with a Calendar @Id doesn't throw
         EntityManager em = emf.createEntityManager();

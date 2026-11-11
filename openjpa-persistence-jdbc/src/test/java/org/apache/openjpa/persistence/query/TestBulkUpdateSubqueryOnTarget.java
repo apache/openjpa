@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -25,6 +27,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Bulk updates and deletes whose WHERE clause has a subquery over the
@@ -40,7 +44,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
     private static final String PART = "BulkSubqueryPart";
     private static final String ENGINE = "BulkSubqueryEngine";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, BulkSubqueryItem.class, BulkSubqueryProduct.class,
             BulkSubquerySoftware.class, BulkSubqueryPart.class,
@@ -63,15 +67,17 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUpdateExistsCorrelatedToTarget() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 1, execute("UPDATE " + entity
+            assertEquals(1, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity * 10 WHERE EXISTS (SELECT s FROM "
-                + entity + " s WHERE e.id = :id)", 1L));
-            assertEquals(entity, "1=10,2=2,3=3,4=4", quantities(entity));
+                + entity + " s WHERE e.id = :id)", 1L), entity);
+            assertEquals("1=10,2=2,3=3,4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testUpdateParametersInSetAndSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
             try (EntityManager em = emf.createEntityManager()) {
@@ -86,39 +92,43 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
                     .setParameter("sub", 3)
                     .executeUpdate();
                 em.getTransaction().commit();
-                assertEquals(entity, 1, count);
+                assertEquals(1, count, entity);
             }
-            assertEquals(entity, "1=1,2=2,3=21,4=4", quantities(entity));
+            assertEquals("1=1,2=2,3=21,4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testUpdateExistsCorrelated() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 3, execute("UPDATE " + entity
+            assertEquals(3, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity + 10 WHERE EXISTS (SELECT s FROM "
-                + entity + " s WHERE s.quantity > e.quantity)"));
-            assertEquals(entity, "1=11,2=12,3=13,4=4", quantities(entity));
+                + entity + " s WHERE s.quantity > e.quantity)"), entity);
+            assertEquals("1=11,2=12,3=13,4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testUpdateInSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 2, execute("UPDATE " + entity
+            assertEquals(2, execute("UPDATE " + entity
                 + " e SET e.quantity = 0 WHERE e.id IN (SELECT s.id FROM "
-                + entity + " s WHERE s.quantity > 2)"));
-            assertEquals(entity, "1=1,2=2,3=0,4=0", quantities(entity));
+                + entity + " s WHERE s.quantity > 2)"), entity);
+            assertEquals("1=1,2=2,3=0,4=0", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testUpdateSubquerySeesStateBeforeUpdate() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 3, execute("UPDATE " + entity
+            assertEquals(3, execute("UPDATE " + entity
                 + " e SET e.quantity = e.quantity + 3 WHERE e.quantity < "
-                + "(SELECT MAX(s.quantity) FROM " + entity + " s)"));
-            assertEquals(entity, "1=4,2=5,3=6,4=4", quantities(entity));
+                + "(SELECT MAX(s.quantity) FROM " + entity + " s)"), entity);
+            assertEquals("1=4,2=5,3=6,4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testUpdateSubclass() {
         assertEquals(1, execute("UPDATE " + SOFTWARE
             + " e SET e.quantity = e.quantity + 3 WHERE e.quantity < "
@@ -127,6 +137,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
         assertEquals("1=1,2=2,3=6,4=4", quantities(PRODUCT));
     }
 
+    @Test
     public void testUpdateSubclassTable() {
         assertEquals(1, execute("UPDATE " + ENGINE
             + " e SET e.power = e.power + 1 WHERE e.quantity > 3"));
@@ -138,6 +149,7 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
         assertEquals("3=0,4=41", powers());
     }
 
+    @Test
     public void testCompositePrimaryKey() {
         assertEquals(3, execute("UPDATE BulkSubqueryLine e"
             + " SET e.quantity = e.quantity + 3 WHERE e.quantity < "
@@ -150,39 +162,43 @@ public class TestBulkUpdateSubqueryOnTarget extends SingleEMFTestCase {
         assertEquals("1/2=5,2/3=6", lines());
     }
 
+    @Test
     public void testDeleteExistsCorrelatedToTarget() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 1, execute("DELETE FROM " + entity
+            assertEquals(1, execute("DELETE FROM " + entity
                 + " e WHERE EXISTS (SELECT s FROM " + entity
-                + " s WHERE e.id = :id)", 1L));
-            assertEquals(entity, "2=2,3=3,4=4", quantities(entity));
+                + " s WHERE e.id = :id)", 1L), entity);
+            assertEquals("2=2,3=3,4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testDeleteInSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 2, execute("DELETE FROM " + entity
+            assertEquals(2, execute("DELETE FROM " + entity
                 + " e WHERE e.id IN (SELECT s.id FROM " + entity
-                + " s WHERE s.quantity > 2)"));
-            assertEquals(entity, "1=1,2=2", quantities(entity));
+                + " s WHERE s.quantity > 2)"), entity);
+            assertEquals("1=1,2=2", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testDeleteScalarSubquery() {
         for (String entity : new String[] { ITEM, PRODUCT, PART }) {
-            assertEquals(entity, 3, execute("DELETE FROM " + entity
+            assertEquals(3, execute("DELETE FROM " + entity
                 + " e WHERE e.quantity < (SELECT MAX(s.quantity) FROM "
-                + entity + " s)"));
-            assertEquals(entity, "4=4", quantities(entity));
+                + entity + " s)"), entity);
+            assertEquals("4=4", quantities(entity), entity);
         }
     }
 
+    @Test
     public void testDeleteSubclass() {
         for (String entity : new String[] { SOFTWARE, ENGINE }) {
-            assertEquals(entity, 1, execute("DELETE FROM " + entity
+            assertEquals(1, execute("DELETE FROM " + entity
                 + " e WHERE e.id IN (SELECT s.id FROM " + entity
-                + " s WHERE s.quantity > 3)"));
-            assertEquals(entity, "3=3", quantities(entity));
+                + " s WHERE s.quantity > 3)"), entity);
+            assertEquals("3=3", quantities(entity), entity);
         }
     }
 

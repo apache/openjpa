@@ -28,6 +28,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,21 +47,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject3;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqD;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqE;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestClassDBSequenceFactory
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-
-    /** Creates a new instance of TestClassDBSequenceFactory */
-    public TestClassDBSequenceFactory() {
-    }
-
-    public TestClassDBSequenceFactory(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(SeqE.class);
     }
@@ -70,6 +65,7 @@ public class TestClassDBSequenceFactory
                 supportsSelectForUpdate;
     }
 
+    @Test
     public void testVirtualSuperclass() {
 
         OpenJPAEntityManagerFactory pmf =(OpenJPAEntityManagerFactory)
@@ -87,6 +83,7 @@ public class TestClassDBSequenceFactory
         pmf.close();
     }
 
+    @Test
     public void testIgnoreVirtualSuperclass() {
 
         Map props=new HashMap();
@@ -114,6 +111,7 @@ public class TestClassDBSequenceFactory
     /**
      * Based on reported bug case.
      */
+    @Test
     public void testNoSequenceHolesOnAttach() {
         PerClassTestObject3 pc = new PerClassTestObject3();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -145,8 +143,9 @@ public class TestClassDBSequenceFactory
      * Tests that all sequence numbers are unique and in order.
      * Will fail for dbs without pessimistic locking.
      */
+    @Test
     public void testSequence()
-    throws Exception {
+        throws Exception {
         if (!(supportsPessimisticLocking()))
             return;
 
@@ -171,6 +170,7 @@ public class TestClassDBSequenceFactory
         assertEquals(102, set.size());
     }
 
+    @Test
     public void testSequenceGenerator() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
 

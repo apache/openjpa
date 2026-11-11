@@ -19,13 +19,13 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies the DDL type names of decimal columns on H2. H2 2.x reads an

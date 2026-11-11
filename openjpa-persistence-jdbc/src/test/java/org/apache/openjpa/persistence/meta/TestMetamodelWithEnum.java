@@ -19,14 +19,18 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMetamodelWithEnum extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
@@ -34,6 +38,7 @@ public class TestMetamodelWithEnum extends SingleEMFTestCase {
                 MetamodelWithEnumEntity.class, AttributeConverterImpl.class);
     }
 
+    @Test
     public void testEnsureEnumDontFail() { // OPENJPA-2743
         assertNotNull(emf.getMetamodel());
     }

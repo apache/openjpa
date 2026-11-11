@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.polymorphic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +28,8 @@ import java.util.List;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a domain model with following characteristics:
@@ -57,7 +62,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 			FrenchParagraph.class,
 			GermanParagraph.class};
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
         		Translation.class, BaseEntity.class,
@@ -106,7 +111,8 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         em.close();
     }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
+    @Test
     public void testConsistency() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -166,6 +172,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		return total;
 	}
 
+    @Test
     public void testEntityTypeForTablePerClassInheritance() {
         populate();
         OpenJPAEntityManager em = emf.createEntityManager();

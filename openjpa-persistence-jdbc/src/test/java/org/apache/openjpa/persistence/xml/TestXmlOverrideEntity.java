@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PCRegistry;
@@ -30,10 +34,12 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestXmlOverrideEntity extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws ClassNotFoundException {
         setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
@@ -49,6 +55,7 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
         return "xml-persistence-unit";
     }
 
+    @Test
     public void testOverrideHappenedDuringEnhancement()
         throws ClassNotFoundException {
         // this mostly tests our test harness. Since XmlOverrideEntity
@@ -60,6 +67,7 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
             PCRegistry.getTypeAlias(XmlOverrideEntity.class));
     }
 
+    @Test
     public void testOverriddenEntityName() {
         emf.createEntityManager().close();
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
@@ -80,6 +88,7 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
      *
      * The optional attributes are reversed in orm.xml.
      */
+    @Test
     public void testOptionalAttributeOverride() {
         EntityManager em = emf.createEntityManager();
 
@@ -109,6 +118,7 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testColumnOverride() {
         EntityManager em = emf.createEntityManager();
 

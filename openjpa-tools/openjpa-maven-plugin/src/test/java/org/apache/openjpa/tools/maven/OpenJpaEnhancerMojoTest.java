@@ -18,10 +18,13 @@
  */
 package org.apache.openjpa.tools.maven;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * @version $Id: OpenJpaEnhancerMojoTest.java 9348 2009-04-03 22:59:47Z struberg $
@@ -29,12 +32,7 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
  */
 public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
-
+    @Test
     public void testExecution() throws Exception {
       File testPom = new File( getBasedir(), "target/test-classes/projects/project-01/plugin-config.xml" );
 

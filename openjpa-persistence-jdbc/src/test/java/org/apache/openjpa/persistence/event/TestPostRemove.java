@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
-import org.apache.openjpa.jta.ContainerTest;
+import org.apache.openjpa.jta.TransactionWrapper;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * Tests PostRemove callback within a pseudo-container environment.
@@ -41,8 +49,11 @@ import org.apache.openjpa.jta.ContainerTest;
  * @author Pinaki Poddar
  *
  */
-public class TestPostRemove extends ContainerTest {
-    @Override
+public class TestPostRemove extends SingleEMFTestCase {
+    @RegisterExtension
+    TransactionWrapper wrapper = new TransactionWrapper();
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PostRemoveCallbackEntity.class);
     }
@@ -52,6 +63,7 @@ public class TestPostRemove extends ContainerTest {
         return "post-remove";
     }
 
+    @Test
     public void testPostRemoveInvokedOnlyAfterDatabaseDeleteWithLogicalFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
@@ -59,56 +71,60 @@ public class TestPostRemove extends ContainerTest {
         em.persist(pc);
         em.flush();
         em.remove(pc);
-        commit();
-        assertTrue("PostRemove not called after commit", isPostRemovedInvoked(pc)
-                && pc.getPostRemoveTime() <= System.nanoTime());
+        wrapper.commit();
+        assertTrue(isPostRemovedInvoked(pc)
+                && pc.getPostRemoveTime() <= System.nanoTime(), "PostRemove not called after commit");
         em.close();
     }
 
+    @Test
     public void testPostRemoveInvokedAfterDatabaseDeleteWithoutFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
         em.persist(pc);
         em.remove(pc);
-        assertFalse("PostRemove called before commit", isPostRemovedInvoked(pc));
-        commit();
-        assertTrue("PostRemove not called after commit", pc.getPostRemoveTime() <= System.nanoTime());
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called before commit");
+        wrapper.commit();
+        assertTrue(pc.getPostRemoveTime() <= System.nanoTime(), "PostRemove not called after commit");
         em.close();
     }
 
+    @Test
     public void testPostRemoveNotInvokedAfterRollback() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
         em.persist(pc);
         em.remove(pc);
-        assertFalse("PostRemove called before rollback", isPostRemovedInvoked(pc));
-        rollback();
-        assertTrue("PostRemove called after rollback", pc.getPostRemoveTime() <= System.nanoTime());
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called before rollback");
+        wrapper.rollback();
+        assertTrue(pc.getPostRemoveTime() <= System.nanoTime(), "PostRemove called after rollback");
         em.close();
     }
 
+    @Test
     public void testPostRemoveNotInvokedAfterRollbackWithIntermediateFlush() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
         em.persist(pc);
         em.flush();
-        assertFalse("PostRemove called after flush", isPostRemovedInvoked(pc));
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called after flush");
         em.remove(pc);
-        assertFalse("PostRemove called before rollback", isPostRemovedInvoked(pc));
-        rollback();
-        assertTrue("PostRemove called after rollback", pc.getPostRemoveTime() <= System.nanoTime());
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called before rollback");
+        wrapper.rollback();
+        assertTrue(pc.getPostRemoveTime() <= System.nanoTime(), "PostRemove called after rollback");
         em.close();
     }
 
+    @Test
     public void testPostRemoveInvokedOnFlushThatIssuesDatabaseDelete() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
         em.persist(pc);
-        commit();
+        wrapper.commit();
         em.close();
 
         em = emf.createEntityManager();
@@ -116,23 +132,24 @@ public class TestPostRemove extends ContainerTest {
         pc = em.find(PostRemoveCallbackEntity.class, pc.getId());
         assertNotNull(pc);
         em.remove(pc);
-        assertFalse("PostRemove called after logical remove", isPostRemovedInvoked(pc));
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called after logical remove");
         em.flush();
-        assertTrue("PostRemove not called after delete flush", isPostRemovedInvoked(pc));
-        commit();
-        assertTrue("PostRemove not called after commit", pc.getPostRemoveTime() <= System.nanoTime());
+        assertTrue(isPostRemovedInvoked(pc), "PostRemove not called after delete flush");
+        wrapper.commit();
+        assertTrue(pc.getPostRemoveTime() <= System.nanoTime(), "PostRemove not called after commit");
         em.close();
     }
 
 
+    @Test
     public void testPostRemoveNotInvokedAfterDatabaseInsert() {
         EntityManager em = emf.createEntityManager();
         em.joinTransaction();
         PostRemoveCallbackEntity pc = new PostRemoveCallbackEntity();
         em.persist(pc);
-        assertFalse("PostRemove called before commit", isPostRemovedInvoked(pc));
-        commit();
-        assertFalse("PostRemove called after commit", isPostRemovedInvoked(pc));
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called before commit");
+        wrapper.commit();
+        assertFalse(isPostRemovedInvoked(pc), "PostRemove called after commit");
         em.close();
     }
 

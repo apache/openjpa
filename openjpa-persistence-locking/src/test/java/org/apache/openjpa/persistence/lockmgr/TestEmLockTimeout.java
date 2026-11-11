@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +28,15 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test hints using EntityManager interface.
  */
 public class TestEmLockTimeout extends SequencedActionsTest {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -44,6 +48,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
     /*
      * Test setting lock.timeout at the createEntityManagerFactory.
      */
+    @Test
     public void testSetJavaxLockTimeoutAtProviderCreateEmf() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -65,8 +70,9 @@ public class TestEmLockTimeout extends SequencedActionsTest {
      * Test setting lock.timeout at the createEntityManagerFactory,
      * with multiple equivalent entries.
      */
-    @AllowFailure(message="OPENJPA-??? - Provider.createEntityManagerFactory" +
+    @AllowFailure(message = "OPENJPA-??? - Provider.createEntityManagerFactory" +
         " does not suppport multiple equivalent properties.")
+    @Test
     public void testSetLockTimeoutsAtProviderCreateEmf() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -89,6 +95,7 @@ public class TestEmLockTimeout extends SequencedActionsTest {
      * Test setting lock.timeout at the em.find(), overriding
      * value set at createEntityManagerFactory and createEm.
      */
+    @Test
     public void testSetJavaxLockTimeoutAtFind() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

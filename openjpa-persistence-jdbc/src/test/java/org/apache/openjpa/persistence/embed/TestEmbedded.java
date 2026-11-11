@@ -18,20 +18,26 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEmbedded extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(BaseEntity.class, Address.class, Geocode.class,
                 CLEAR_TABLES);
     }
 
+    @Test
     public void testInsertEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -59,6 +65,7 @@ public class TestEmbedded extends SQLListenerTestCase {
      * JIRA Ref: OPENJPA-733
      * Authors: Chris Tillman, Jeremy Bauer
      */
+    @Test
     public void testDetachedQueryEmbedded() {
         Address a = new Address();
         a.setStreetAddress("456 Main St");
@@ -79,6 +86,7 @@ public class TestEmbedded extends SQLListenerTestCase {
         assertEquals(a2.getGeocode().getLatitude(),1.0f);
     }
 
+    @Test
     public void testDeleteEmbeddedDoesNotSelectBeforeDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

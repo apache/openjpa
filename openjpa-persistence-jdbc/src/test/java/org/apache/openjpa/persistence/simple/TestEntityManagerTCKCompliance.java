@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for EntityManager behavior required by the JPA TCK.
@@ -33,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, DROP_TABLES);
     }
@@ -41,17 +47,18 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * isJoinedToTransaction() should return true when a transaction is active.
      */
+    @Test
     public void testIsJoinedToTransaction() {
         EntityManager em = emf.createEntityManager();
         try {
-            assertFalse("Should be false when no tx active",
-                em.isJoinedToTransaction());
+            assertFalse(em.isJoinedToTransaction(),
+                "Should be false when no tx active");
             em.getTransaction().begin();
-            assertTrue("Should be true when tx active",
-                em.isJoinedToTransaction());
+            assertTrue(em.isJoinedToTransaction(),
+                "Should be true when tx active");
             em.getTransaction().commit();
-            assertFalse("Should be false after commit",
-                em.isJoinedToTransaction());
+            assertFalse(em.isJoinedToTransaction(),
+                "Should be false after commit");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -63,14 +70,15 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * isJoinedToTransaction should return false after rollback.
      */
+    @Test
     public void testIsJoinedToTransactionAfterRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             assertTrue(em.isJoinedToTransaction());
             em.getTransaction().rollback();
-            assertFalse("Should be false after rollback",
-                em.isJoinedToTransaction());
+            assertFalse(em.isJoinedToTransaction(),
+                "Should be false after rollback");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -82,6 +90,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * detach(non-entity) should throw IllegalArgumentException.
      */
+    @Test
     public void testDetachNonEntityThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -101,6 +110,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * detach(non-entity) with active tx should mark tx for rollback.
      */
+    @Test
     public void testDetachNonEntityMarksRollback() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -109,8 +119,8 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
                 em.detach(TestEntityManagerTCKCompliance.class);
                 fail("Expected IllegalArgumentException");
             } catch (RuntimeException e) {
-                assertTrue("Tx should be marked for rollback",
-                    em.getTransaction().getRollbackOnly());
+                assertTrue(em.getTransaction().getRollbackOnly(),
+                    "Tx should be marked for rollback");
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -123,6 +133,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * createQuery(CriteriaQuery) with no root should throw IAE.
      */
+    @Test
     public void testCreateQueryInvalidCriteriaThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -143,6 +154,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * find(Entity.class, null, map) should throw IAE.
      */
+    @Test
     public void testFindWithNullPKThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -163,6 +175,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * getCriteriaBuilder() on closed EM should throw and mark tx for rollback.
      */
+    @Test
     public void testGetCriteriaBuilderOnClosedEMMarksRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -183,6 +196,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * getCriteriaBuilder on closed EM throws RuntimeException.
      */
+    @Test
     public void testGetCriteriaBuilderOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -197,6 +211,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * getDelegate on closed EM throws RuntimeException.
      */
+    @Test
     public void testGetDelegateOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -211,6 +226,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
     /**
      * getMetamodel on closed EM throws RuntimeException.
      */
+    @Test
     public void testGetMetamodelOnClosedEMThrows() {
         EntityManager em = emf.createEntityManager();
         em.close();
@@ -226,6 +242,7 @@ public class TestEntityManagerTCKCompliance extends SingleEMFTestCase {
      * createStoredProcedureQuery with nonexistent procedure should throw IAE
      * (or PersistenceException on execute).
      */
+    @Test
     public void testCreateStoredProcedureQueryNonExistentThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,6 +34,8 @@ import org.apache.openjpa.persistence.datacache.common.apps.EmbeddedEntity;
 import org.apache.openjpa.persistence.datacache.common.apps.
         EmbeddingOwnerEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test removing members of embedded collection with active DataCache.
@@ -43,11 +50,11 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 
 	private static final int SIZE = 4;
 
-	/**
-	 * Sets up EntityManagerFactory: with DataCache.
-	 */
-	@Override
-	public void setUp() throws Exception {
+    /**
+     * Sets up EntityManagerFactory: with DataCache.
+     */
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp("openjpa.jdbc.SynchronizeMappings", "buildSchema",
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
                 "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
@@ -90,7 +97,8 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
 			members.get(i).getMarker().equals("Member-" + i);
 	}
 
-	public void testRemoveMemberFromEmbeddedCollection() {
+    @Test
+    public void testRemoveMemberFromEmbeddedCollection() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		List<EmbeddingOwnerEntity> result = em.createQuery(

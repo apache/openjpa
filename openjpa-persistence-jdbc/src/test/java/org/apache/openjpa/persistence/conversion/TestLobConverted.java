@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Types;
 import java.util.Arrays;
 
@@ -29,6 +32,8 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A {@code @Lob} attribute with a converter is a CLOB or a BLOB depending on
@@ -38,7 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestLobConverted extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LobConvertedEntity.class, DROP_TABLES);
     }
@@ -53,18 +58,22 @@ public class TestLobConverted extends SingleEMFTestCase {
         return cols[0];
     }
 
+    @Test
     public void testListConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("items", false).getType());
     }
 
+    @Test
     public void testItemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("item", false).getType());
     }
 
+    @Test
     public void testElementConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("elements", true).getType());
     }
 
+    @Test
     public void testStringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("bytes", false).getType());
     }
@@ -74,16 +83,19 @@ public class TestLobConverted extends SingleEMFTestCase {
      * {@code @Lob}. The column used to be typed as an object, so reading
      * the value back passed the driver's Blob to the converter.
      */
+    @Test
     public void testStringConvertedToBytesWithoutLobIsReadAsBytes() {
         assertEquals(JavaSQLTypes.BYTES, column("plainBytes", false).getJavaType());
     }
 
+    @Test
     public void testLobsWithoutConverterAreUnchanged() {
         assertEquals(Types.CLOB, column("text", false).getType());
         assertEquals(Types.BLOB, column("data", false).getType());
         assertEquals(Types.BLOB, column("serial", false).getType());
     }
 
+    @Test
     public void testRoundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

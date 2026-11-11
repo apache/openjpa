@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.results.cls;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,9 +29,11 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestResultClsXml extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ResultClsXml.class, DROP_TABLES);
         assertNotNull(emf);
@@ -35,6 +41,7 @@ public class TestResultClsXml extends SQLListenerTestCase {
         populate();
     }
 
+    @Test
     public void testIt() {
         EntityManager em = emf.createEntityManager();
 

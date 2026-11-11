@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that manually constructing instances with existing primary key values
@@ -33,11 +36,12 @@ import junit.textui.TestRunner;
 public class TestAttachConstructedCopy
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Record.class);
     }
 
+    @Test
     public void testAttachConstructedCopyWithGeneratedPKAndNoVersion() {
         Record record = new Record();
         record.setContent("orig");
@@ -65,10 +69,6 @@ public class TestAttachConstructedCopy
         record = em.find(Record.class, id);
         assertEquals("new", record.getContent());
         em.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestAttachConstructedCopy.class);
     }
 }
 

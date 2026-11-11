@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jpql.joins.leftfetch;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +28,12 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJoinLeftFetch extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, DepartmentTest.class, PersonTest.class);
         createTestData();
@@ -40,6 +44,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
      * DepartmentTests are not populated with the correct
      * number of PersonTests
      */
+    @Test
     public void testReadDepartmentsWithLeftJoinFetch() {
 
         EntityManager em = emf.createEntityManager();
@@ -61,7 +66,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
     //            while (i.hasNext()){
       //              System.out.println("i.next() = " + i.next());
         //        }
-                assertEquals("Size should be 3", 3, department.getPersons().size());
+                assertEquals(3, department.getPersons().size(), "Size should be 3");
             }
             if (department.getPrimaryKey().equals("002")) {
 //                System.out.println("Dept: " + department.getName());
@@ -69,7 +74,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
     //            while (i.hasNext()){
       //              System.out.println("i.next() = " + i.next());
         //        }
-                assertEquals("Size should be 2", 2, department.getPersons().size());
+                assertEquals(2, department.getPersons().size(), "Size should be 2");
             }
         }
     }
@@ -77,6 +82,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
     /*
      * This test works as expected.
      */
+    @Test
     public void testReadDepartmentsWithFetchPlan() {
 
         EntityManager em = emf.createEntityManager();
@@ -93,6 +99,7 @@ public class TestJoinLeftFetch extends SingleEMFTestCase {
     /*
      * This test works as expected.
      */
+    @Test
     public void testReadDepartmentsWithLeftJoinFetchAndOrderBy() {
 
         EntityManager em = emf.createEntityManager();

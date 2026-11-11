@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -31,6 +36,8 @@ import org.apache.openjpa.lib.util.collections.ComparableComparator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
 import org.apache.openjpa.util.Proxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestProxies2 extends BaseKernelTest {
 
@@ -39,11 +46,7 @@ public class TestProxies2 extends BaseKernelTest {
     private java.sql.Date _sqlDate = null;
     private java.sql.Timestamp _timestamp = null;
 
-    public TestProxies2(String casename) {
-        super(casename);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(ProxiesPC.class);
 
@@ -93,6 +96,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testStringSet() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -131,6 +135,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testStringMap() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -166,6 +171,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testProxySet() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -213,6 +219,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testProxyMap() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -220,7 +227,7 @@ public class TestProxies2 extends BaseKernelTest {
 
         // check that orig values are correct
         Map map = pc.getProxyMap();
-        assertEquals("original map size is correct: 3", 3, map.size());
+        assertEquals(3, map.size(), "original map size is correct: 3");
         ProxiesPC map1 = (ProxiesPC) map.get("key1");
         ProxiesPC map2 = (ProxiesPC) map.get("key2");
         ProxiesPC map3 = (ProxiesPC) map.get("key3");
@@ -256,6 +263,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testReplace() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -279,32 +287,33 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testComparators() {
         // make sure the system uses the initial field value to find
         // comparators
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
-        assertNotNull("pc is null", pc);
-        assertTrue("pc.getComp() is not instanceof Proxy",
-            pc.getComp() instanceof Proxy);
+        assertNotNull(pc, "pc is null");
+        assertTrue(pc.getComp() instanceof Proxy,
+            "pc.getComp() is not instanceof Proxy");
         assertTrue(
-  "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator",
-            ((TreeSet) pc.getComp())
-                .comparator() instanceof ComparableComparator);
+  ((TreeSet) pc.getComp())
+                .comparator() instanceof ComparableComparator,
+            "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator");
         pm.evict(pc);
         endTx(pm);
 
         // see if it still saves comparator after transition to hollow
         // and back
-        assertTrue("pc.getComp() is not instanceof ProxyTreeSet",
-            pc.getComp() instanceof Proxy);
+        assertTrue(pc.getComp() instanceof Proxy,
+            "pc.getComp() is not instanceof ProxyTreeSet");
         Comparator compart = ((TreeSet) pc.getComp()).comparator();
-        assertNotNull("compart is null", compart);
+        assertNotNull(compart, "compart is null");
         assertTrue(
-  "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator",
-            ((TreeSet) pc.getComp())
-                .comparator() instanceof ComparableComparator);
+  ((TreeSet) pc.getComp())
+                .comparator() instanceof ComparableComparator,
+            "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator");
 
         endEm(pm);
     }
@@ -424,6 +433,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 */
+    @Test
     public void testChangeListOrder() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
@@ -458,6 +468,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testDate() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -480,6 +491,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testSQLDate() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
@@ -502,6 +514,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testTimestamp() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);

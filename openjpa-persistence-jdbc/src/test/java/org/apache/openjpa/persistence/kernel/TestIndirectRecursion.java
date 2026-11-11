@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +36,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.kernel.common.apps.State;
 import org.apache.openjpa.persistence.kernel.common.apps.Transition;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test complex relationship graph fetch.
@@ -60,7 +65,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         { 0, 0, 0, 0, 0 }  // s5
     };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, State.class, Transition.class);
 
@@ -70,6 +75,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testFetch() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -117,7 +123,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
         int N = transitions.length;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                assertEquals("Transition(s" + (i+1) + ", s" + (j+1) + ") does not match", expected[i][j], actual[i][j]);
+                assertEquals(expected[i][j], actual[i][j], "Transition(s" + (i+1) + ", s" + (j+1) + ") does not match");
             }
         }
     }
@@ -191,7 +197,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
     void assertIncomingStates(State origin, State... expected) {
         assertNotNull(origin);
         for (State e : expected) {
-            assertNotNull(e + " in not an incoimng states of " + origin, findIncomingState(e.getName(), origin));
+            assertNotNull(findIncomingState(e.getName(), origin), e + " in not an incoimng states of " + origin);
         }
     }
 
@@ -201,7 +207,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
     void assertOutgoingStates(State origin, State... expected) {
         assertNotNull(origin);
         for (State e : expected) {
-            assertNotNull(e + " in not an incoimng states of " + origin, findOutgoingState(e.getName(), origin));
+            assertNotNull(findOutgoingState(e.getName(), origin), e + " in not an incoimng states of " + origin);
         }
     }
 }

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed.pqueue;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +30,12 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
 import org.apache.openjpa.util.proxy.DelayedPriorityQueueProxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDelayedPriorityQueueProxyDetachLite extends TestDelayedPriorityQueueProxy {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 "openjpa.DetachState", "loaded(LiteAutoDetach=true,detachProxyFields=false)");
@@ -38,7 +44,8 @@ public class TestDelayedPriorityQueueProxyDetachLite extends TestDelayedPriority
     /*
      * Verify that a collection can be loaded post detachment
      */
-    @Override
+    
+    @Test
     public void testPostDetach() {
         EntityManager em = emf.createEntityManager();
 

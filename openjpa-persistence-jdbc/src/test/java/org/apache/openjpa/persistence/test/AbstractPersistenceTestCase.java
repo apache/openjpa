@@ -18,20 +18,30 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import jakarta.persistence.Cache;
@@ -48,30 +58,51 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ConditionEvaluationResult;
+import org.junit.jupiter.api.extension.ExecutionCondition;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-import junit.framework.TestCase;
-import junit.framework.TestResult;
+@Target({TYPE, METHOD})
+@Retention(RUNTIME)
+@ExtendWith(DisabledBasedOnTest.class)
+@interface DisabledBasedOnTestCondition {
+}
 
+class DisabledBasedOnTest implements ExecutionCondition {
+    @Override
+    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        AbstractPersistenceTestCase test = (AbstractPersistenceTestCase)context.getTestInstance().orElse(null);
+        if (test != null && test.skipTest()) {
+            return ConditionEvaluationResult.disabled("Skipping test: test skipped due to skipTest == true");
+        }
+        if (test != null && !test.isRunsOnCurrentPlatform()) {
+            return ConditionEvaluationResult.disabled("Skipping test: platform is not supported");
+        }
+        if (test != null && test.isTestsDisabled()) {
+            return ConditionEvaluationResult.disabled("Skipping test: it is disabled");
+        }
+        return ConditionEvaluationResult.enabled(null);
+    }
+}
 /**
  * Base class for Persistence TestCases. This class contains utility methods but does not maintain an EntityManager or
- * EntityManagerFactory - these tasks are left for subclasses to handle.  Extends junit.framework.TestCase and
- * performs NO automatic clean up of EMFs created by createEMF() or createNamedEMF().
+ * EntityManagerFactory - these tasks are left for subclasses to handle.
+ * Performs NO automatic clean up of EMFs created by createEMF() or createNamedEMF().
  */
-public abstract class AbstractPersistenceTestCase extends TestCase {
+@DisabledBasedOnTestCondition
+public abstract class AbstractPersistenceTestCase {
     public static final String FRESH_EMF = "Creates new EntityManagerFactory";
     public static final String RETAIN_DATA = "Retain data after test run";
     private boolean retainDataOnTearDown;
     protected boolean _fresh = false;
-    private Object testsDisabledLock = new Object();
-    private Boolean testsDisabled = Boolean.FALSE;
-
-    public static final String ALLOW_FAILURE_LOG = "log";
-    public static final String ALLOW_FAILURE_IGNORE = "ignore";
-    public static final String ALLOW_FAILURE_SYS_PROP = "tests.openjpa.allowfailure";
+    private TestInfo info = null;
 
     private static final Logger logger = Logger.getLogger(AbstractPersistenceTestCase.class.getCanonicalName());
 
-    private static String allowFailureConfig = System.getProperty(ALLOW_FAILURE_SYS_PROP, ALLOW_FAILURE_IGNORE);
     /**
      * Marker object you pass to {@link #setUp} to indicate that the database table rows should be cleared.
      */
@@ -83,11 +114,12 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      */
     protected static final Object DROP_TABLES = new Object();
 
-    /**
-     * The {@link TestResult} instance for the current test run.
-     */
-    protected TestResult testResult;
-
+    protected String getTestName() {
+        return Optional.ofNullable(info)
+            .flatMap(TestInfo::getTestMethod)
+            .map(Member::getName)
+            .orElse("Unknown Test");
+    }
     /**
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in this list to tell the test framework to delete all
      * table contents before running the tests.
@@ -119,15 +151,14 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      */
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(final String pu, Object... props) {
         Map<String, Object> map = getPropertiesMap(props);
-        OpenJPAEntityManagerFactorySPI oemf = null;
         Map<Object, Object> config = new HashMap<>(System.getProperties());
         config.putAll(map);
-        oemf = (OpenJPAEntityManagerFactorySPI) Persistence.createEntityManagerFactory(pu, config);
+        EntityManagerFactory oemf = Persistence.createEntityManagerFactory(pu, config);
         if (oemf == null) {
-            throw new NullPointerException("Expected an entity manager factory " + "for the persistence unit named: \""
+            throw new NullPointerException("Expected an entity manager factory for the persistence unit named: \""
                 + pu + "\"");
         }
-        return oemf;
+        return (OpenJPAEntityManagerFactorySPI)oemf;
     }
 
     /**
@@ -207,23 +238,13 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         return map;
     }
 
-    @Override
-    public void run(TestResult testResult) {
-        this.testResult = testResult;
-        super.run(testResult);
+    @BeforeEach
+    void check(TestInfo info) {
+        this.info = info;
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
-        try {
-            super.tearDown();
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful()) {
-                throw e;
-            }
-        }
     }
 
     /**
@@ -514,98 +535,8 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         }
         String message = actual.getMessage();
         for (String key : keys) {
-            assertTrue(key + " is not in " + message, message.contains(key));
+            assertTrue(message.contains(key), key + " is not in " + message);
         }
-    }
-
-    public void printException(Throwable t) {
-        printException(t, 2);
-    }
-
-    public void printException(Throwable t, int tab) {
-        if (t == null) {
-            return;
-        }
-        for (int i = 0; i < tab * 4; i++) {
-            logger.warning(" ");
-        }
-        String sqlState =
-            (t instanceof SQLException) ? "(SQLState=" + ((SQLException) t).getSQLState() + ":" + t.getMessage() + ")"
-                : "";
-        logger.warning(t.getClass().getName() + sqlState);
-        if (t.getCause() == t) {
-            return;
-        }
-        printException(t.getCause(), tab + 2);
-    }
-
-    /**
-     * Overrides to allow tests annotated with @AllowFailure to fail.
-     * If @DatabasePlatform value matches the current JDBC driver or
-     * tests have been disabled, then the test will not be run.
-     * If the test is in error then the normal pathway is executed.
-     */
-    @Override
-    public void runBare() throws Throwable {
-        if (!isRunsOnCurrentPlatform()) {
-            return;
-        }
-        runBare(getAllowFailure());
-    }
-
-    protected void runBare(AllowFailure allowFailureAnnotation) throws Throwable {
-        boolean allowFailureValue = allowFailureAnnotation == null ? false : allowFailureAnnotation.value();
-
-        if (allowFailureValue) {
-            if (ALLOW_FAILURE_IGNORE.equalsIgnoreCase(allowFailureConfig)) {
-                return; // skip this test
-            } else {
-                try {
-                    super.runBare();
-                } catch (Throwable t) {
-                    if (ALLOW_FAILURE_LOG.equalsIgnoreCase(allowFailureConfig)) {
-                        logger.warning("*** FAILED (but ignored): " + this);
-                        logger.warning("***              Reason : " + allowFailureAnnotation.message());
-                        logger.warning("Stacktrace of failure");
-                        t.printStackTrace();
-                    } else {
-                        throw t;
-                    }
-                }
-            }
-        } else {
-            super.runBare();
-        }
-    }
-
-    /**
-     * Override to run the test and assert its state.
-     * @exception Throwable if any exception is thrown
-     */
-    @Override
-    protected void runTest() throws Throwable {
-        if (isTestsDisabled()) {
-            return;
-        }
-        super.runTest();
-    }
-
-    /**
-     * Affirms if the test case or the test method is annotated with
-     *
-     * @AllowFailure. Method level annotation has higher precedence than Class level annotation.
-     */
-    protected AllowFailure getAllowFailure() {
-        try {
-            Method runMethod = getClass().getMethod(getName(), (Class[]) null);
-            AllowFailure anno = runMethod.getAnnotation(AllowFailure.class);
-            if (anno != null) {
-                return anno;
-            }
-        } catch (SecurityException | NoSuchMethodException e) {
-            // ignore
-        }
-        return getClass().getAnnotation(AllowFailure.class);
     }
 
     /**
@@ -671,22 +602,18 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      */
     protected void assertCached(Cache cache, Class<?> clss, Object id, boolean expected) {
         if (expected) {
-            assertTrue(String.format("Expected %s:%s to exist in cache", clss, id), cache.contains(clss, id));
+            assertTrue(cache.contains(clss, id), String.format("Expected %s:%s to exist in cache", clss, id));
         } else {
-            assertFalse(String.format("Expected %s:%s not to exist in cache", clss, id), cache.contains(clss, id));
-        }
-    }
-
-    protected void setTestsDisabled(boolean disable) {
-        synchronized (testsDisabledLock) {
-            testsDisabled = disable;
+            assertFalse(cache.contains(clss, id), String.format("Expected %s:%s not to exist in cache", clss, id));
         }
     }
 
     protected boolean isTestsDisabled() {
-        synchronized (testsDisabledLock) {
-            return testsDisabled;
-        }
+        return false;
+    }
+
+    protected boolean skipTest() {
+        return false;
     }
 
     protected Class<?> resolveEntityClass(JPAEntityClassEnum enumerationRef)

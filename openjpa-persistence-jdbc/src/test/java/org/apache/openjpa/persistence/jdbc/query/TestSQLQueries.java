@@ -27,6 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,20 +54,11 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachA;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachD;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSQLQueries
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-
-    /** Creates a new instance of TestSQLQueries */
-    public TestSQLQueries(String name)
-    {
-    	super(name);
-    }
-
-    public TestSQLQueries()
-    {}
+public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private String _tableName = null;
     private String _fullTableName = null;
@@ -70,7 +67,7 @@ public class TestSQLQueries
     private String _stringColName = null;
     private String _relColName = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(RuntimeTest1.class);
 
@@ -105,6 +102,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -120,8 +118,9 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testCompiledQuery()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -139,8 +138,9 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testCompiledLanguageQuery()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -158,6 +158,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testTableStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -174,6 +175,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testColumnQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -191,6 +193,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testJoinQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -206,6 +209,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testParameters() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -234,6 +238,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testOnlySelectedFieldsLoaded() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -258,6 +263,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testSingleColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -287,6 +293,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testMultiColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -308,6 +315,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testResultClass() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
@@ -332,6 +340,7 @@ public class TestSQLQueries
         pm.close();
     }
 
+    @Test
     public void testClasslessProjection() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",

@@ -23,15 +23,18 @@ import java.util.Arrays;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRelationOrphanRemoval extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Parent.class, Child.class, GrandChild.class, CLEAR_TABLES
              );
     }
 
+    @Test
     public void testRelationOrphanRemoval() {
         EntityTransaction tx = em.getTransaction();
 

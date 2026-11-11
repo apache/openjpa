@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +35,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.ValueStrategyPC;
 import org.apache.openjpa.util.OpenJPAException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test value and update strategies.  Also tests version fields, which
@@ -35,18 +44,18 @@ import org.apache.openjpa.util.OpenJPAException;
  *
  * @author Abe White
  */
-public class TestValueStrategies
-    extends AbstractTestCase {
+public class TestValueStrategies extends AbstractTestCase {
 
-    public TestValueStrategies(String test) {
-        super(test, "metacactusapp");
+    public TestValueStrategies() {
+        super("metacactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(ValueStrategyPC.class);
     }
 
+    @Test
     public void testIgnoreUpdate() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");
@@ -81,6 +90,7 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testRestrictUpdate() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");
@@ -111,6 +121,7 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testUUID() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
@@ -165,6 +176,7 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testSequence() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
@@ -210,10 +222,12 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testVersion() {
         versionTest(getEmf());
     }
 
+    @Test
     public void testVersionDataCache() {
 
         Map map = new HashMap();
@@ -284,6 +298,7 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testVersionDetach() {
         ValueStrategyPC pc = new ValueStrategyPC();
         ValueStrategyPC pc2 = new ValueStrategyPC();
@@ -357,6 +372,7 @@ public class TestValueStrategies
         endEm(pm);
     }
 
+    @Test
     public void testVersionRefresh() {
         ValueStrategyPC pc = new ValueStrategyPC();
         pc.setName("pc");

@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for TCK failure: joinColumnUpdatable
@@ -37,7 +43,7 @@ public class TestJoinColumnUpdatable extends SingleEMFTestCase {
     private UnenhancedJCDepartment dept1;
     private UnenhancedJCDepartment dept2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedJCDepartment.class, UnenhancedJCEmployee.class,
               CLEAR_TABLES,
@@ -70,6 +76,7 @@ public class TestJoinColumnUpdatable extends SingleEMFTestCase {
      * merge+flush. Since updatable=false, the FK should NOT be updated
      * and flush should NOT fail with "unmanaged object" error.
      */
+    @Test
     public void testJoinColumnUpdatableFalse() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -77,7 +84,7 @@ public class TestJoinColumnUpdatable extends SingleEMFTestCase {
             em.clear();
 
             UnenhancedJCEmployee emp = em.find(UnenhancedJCEmployee.class, 6);
-            assertNotNull("Employee should be found", emp);
+            assertNotNull(emp, "Employee should be found");
 
             // Set department to dept2 (which is detached - from prior tx)
             emp.setDepartment(dept2);
@@ -90,12 +97,12 @@ public class TestJoinColumnUpdatable extends SingleEMFTestCase {
             // Re-find and check department is still null (since insertable
             // was also false, the FK was never written)
             emp = em.find(UnenhancedJCEmployee.class, 6);
-            assertNotNull("Employee should still exist", emp);
+            assertNotNull(emp, "Employee should still exist");
             UnenhancedJCDepartment dept = emp.getDepartment();
             // With insertable=false, the FK_DEPT column was never set,
             // so the department should be null after re-load
-            assertNull("Department should be null since insertable=false "
-                + "(FK was never written)", dept);
+            assertNull(dept, "Department should be null since insertable=false "
+                + "(FK was never written)");
 
             em.getTransaction().commit();
         } catch (Exception e) {

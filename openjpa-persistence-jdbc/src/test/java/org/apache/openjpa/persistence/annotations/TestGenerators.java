@@ -18,10 +18,14 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Generator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for generators
@@ -31,17 +35,18 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
 public class TestGenerators extends AnnotationTestCase
 {
 
-	public TestGenerators(String name)
+	public TestGenerators()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         deleteAll(Generator.class);
     }
 
+    @Test
     public void testGet() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -54,6 +59,7 @@ public class TestGenerators extends AnnotationTestCase
         assertNew();
     }
 
+    @Test
     public void testFlush() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -67,6 +73,7 @@ public class TestGenerators extends AnnotationTestCase
         assertNew();
     }
 
+    @Test
     public void testCommit() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

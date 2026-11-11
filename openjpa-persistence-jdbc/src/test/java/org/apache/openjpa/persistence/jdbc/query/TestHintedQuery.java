@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -30,19 +32,22 @@ import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeKeeper;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests database-specific query hints.
  */
 public class TestHintedQuery extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 TimeKeeper.class);
     }
 
+    @Test
     public void testHintedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -18,13 +18,25 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -41,27 +53,27 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	private static int    NUM_LINES    = 20;
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(DerbyDictionary.class, DB2Dictionary.class, OracleDictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
-            org.apache.openjpa.jdbc.sql.OracleDictionary.class);
-
-        if (isTestsDisabled()) {
-            return;
-        }
-
         super.setUp(DROP_TABLES, Library1.class, Book1.class, Page1.class,
             BookId1.class, PageId1.class, Line1.class, LineId1.class,
             "openjpa.RuntimeUnenhancedClasses", "unsupported");
         create();
     }
 
-	public void testPersist() {
+    @Test
+    public void testPersist() {
 	    sql.clear();
 		create();
 	}
 
-	public void testQueryRootLevel() {
+    @Test
+    public void testQueryRootLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Library1> list = em.createQuery("SELECT p FROM Library1 p")
@@ -77,7 +89,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testQueryIntermediateLevel() {
+    @Test
+    public void testQueryIntermediateLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Book1> list = em.createQuery("SELECT p FROM Book1 p")
@@ -97,7 +110,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testQueryLeafLevel() {
+    @Test
+    public void testQueryLeafLevel() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		List<Page1> list = em.createQuery("SELECT p FROM Page1 p")
@@ -114,7 +128,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testFindRootNode() {
+    @Test
+    public void testFindRootNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		Library1 lib = em.find(Library1.class, LIBRARY_NAME);
@@ -127,7 +142,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testFindIntermediateNode() {
+    @Test
+    public void testFindIntermediateNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 
@@ -139,7 +155,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testFindLeafNode() {
+    @Test
+    public void testFindLeafNode() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 
@@ -154,7 +171,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testUpdate() {
+    @Test
+    public void testUpdate() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -168,7 +186,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testDeleteRoot() {
+    @Test
+    public void testDeleteRoot() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -182,7 +201,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    em.close();
 	}
 
-	public void testDeleteLeafObtainedByQuery() {
+    @Test
+    public void testDeleteLeafObtainedByQuery() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -199,7 +219,8 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    em.close();
 	}
 
-	public void testDeleteLeafObtainedByFind() {
+    @Test
+    public void testDeleteLeafObtainedByFind() {
 	    sql.clear();
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -220,6 +241,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    em.close();
 	}
 
+    @Test
     public void testOrderBy() {
         sql.clear();
         EntityManager em = emf.createEntityManager();

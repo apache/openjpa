@@ -18,6 +18,14 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,6 +48,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.jdbc.JoinSyntax;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * To test:
@@ -47,8 +58,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *  - converting non-enhanced classes to enhanced subclasses
  *    (maybe an ugly ThreadLocal, maybe through PCData?)
  */
-public abstract class AbstractBrokerSerializationTest<T>
-    extends SingleEMFTestCase {
+public abstract class AbstractBrokerSerializationTest<T> extends SingleEMFTestCase {
 
     private static LifeListener deserializedLifeListener;
     private static int testGlobalRefreshCount = 0;
@@ -59,7 +69,7 @@ public abstract class AbstractBrokerSerializationTest<T>
 
     private Object id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         testGlobalRefreshCount = 0;
         deserializedLifeListener = null;
@@ -78,7 +88,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         testGlobalRefreshCount = 0;
@@ -87,6 +97,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         deserializedTxListener = null;
     }
 
+    @Test
     public void testEmptyBrokerSerialization() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAEntityManager em2 = deserializeEM(serialize(em));
@@ -104,6 +115,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         em2.close();
     }
 
+    @Test
     public void testNontransactionalBrokerSerialization() {
         OpenJPAEntityManager em = emf.createEntityManager();
         T e = em.find(getManagedType(), id);
@@ -120,6 +132,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         em2.close();
     }
 
+    @Test
     public void testUnflushedOptimisticTxBrokerSerialization() {
         OpenJPAEntityManager em = emf.createEntityManager();
         T e = em.find(getManagedType(), id);
@@ -157,6 +170,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testFlushedOptimisticTxBrokerSerialization() {
         OpenJPAEntityManager em = emf.createEntityManager();
         T e = em.find(getManagedType(), id);
@@ -174,6 +188,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testConnectedOptimisticTxBrokerSerialization() {
         Map m = new HashMap();
         m.put("openjpa.ConnectionRetainMode", "always");
@@ -188,6 +203,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testEmptyPessimisticTxBrokerSerialization() {
         Map m = new HashMap();
         m.put("openjpa.Optimistic", "false");
@@ -205,6 +221,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testNonEmptyPessimisticTxBrokerSerialization() {
         Map m = new HashMap();
         m.put("openjpa.Optimistic", "false");
@@ -223,6 +240,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testFetchConfigurationMutations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         JDBCFetchPlan plan = (JDBCFetchPlan) em.getFetchPlan();
@@ -239,6 +257,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         assertEquals(JoinSyntax.TRADITIONAL, plan2.getJoinSyntax());
     }
 
+    @Test
     public void testInMemorySavepointsWithNewInstances() {
         OpenJPAEntityManagerFactory emf1 = createEMF(
             getManagedType(), getSecondaryType(),
@@ -273,6 +292,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testInMemorySavepointsWithModifiedInstances() {
         OpenJPAEntityManagerFactory emf1 = createEMF(
             getManagedType(), getSecondaryType(),
@@ -305,6 +325,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         }
     }
 
+    @Test
     public void testEventManagers() {
         TxListener txListener = new TxListener();
         emf.addTransactionListener(txListener);
@@ -408,7 +429,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         extends AbstractTransactionListener
         implements Serializable {
 
-        
+
         private static final long serialVersionUID = 1L;
         private int beginCount = 0;
 
@@ -433,7 +454,7 @@ public abstract class AbstractBrokerSerializationTest<T>
         extends AbstractLifecycleListener
         implements Serializable {
 
-        
+
         private static final long serialVersionUID = 1L;
         private int refreshCount = 0;
 

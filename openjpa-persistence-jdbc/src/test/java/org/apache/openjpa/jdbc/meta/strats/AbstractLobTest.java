@@ -19,16 +19,20 @@
 
 package org.apache.openjpa.jdbc.meta.strats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
@@ -36,6 +40,8 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This abstract class defines all the tests for LOB streaming.
@@ -45,19 +51,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 
 public abstract class AbstractLobTest extends SingleEMFTestCase {
-
     protected static boolean firstTestExecuted;
 
-    protected List<Class<?>> supportedDatabases =
-        new ArrayList<>(Arrays.asList(MySQLDictionary.class, MariaDBDictionary.class, DB2Dictionary.class));
-
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(supportedDatabases.toArray(new Class<?>[] {}));
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(MySQLDictionary.class, MariaDBDictionary.class, DB2Dictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         // Test CREATE TABLE but only once to save time.
         Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
         firstTestExecuted = true;
@@ -75,10 +78,12 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testInsert() {
         insert(newLobEntity(createLobData(), 1));
     }
 
+    @Test
     public void testInsertAndSelect() throws IOException {
         String s = createLobData();
         insert(newLobEntity(s, 1));
@@ -93,6 +98,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testInsertNull() {
         insert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
@@ -103,6 +109,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testUpdate() throws IOException {
         insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -120,6 +127,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testUpdateWithNull() {
         insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -136,6 +144,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testUpdateANullObjectWithoutNull() throws IOException {
         insert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
@@ -153,6 +162,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testDelete() {
         insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -169,6 +179,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLifeCycleInsertFlushModify() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -180,6 +191,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testLifeCycleLoadFlushModifyFlush() {
         insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -192,6 +204,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testReadingMultipleTimesWithASingleConnection()
         throws IOException {
         insert(newLobEntity(createLobData(), 1));
@@ -213,6 +226,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testDataCache() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -231,6 +245,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSetResetAndFlush() throws IOException {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -249,6 +264,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSetFlushAndReset() throws IOException {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -18,12 +18,13 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * An XML column is compatible with an XML column of the database, so that

@@ -18,12 +18,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Array;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.MultiColumnVersionStrategy;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests numeric version spanning multiple columns and those columns spanning
@@ -32,12 +39,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  */
 public class TestMultiColumnVersion extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MultiColumnVersionPC.class, MultiColumnSecondaryVersionPC.class,
         		CLEAR_TABLES);
     }
 
+    @Test
     public void testVersionStrategyIsSet() {
     	assertStrategy(MultiColumnVersionPC.class);
     	assertStrategy(MultiColumnSecondaryVersionPC.class);
@@ -50,6 +58,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     		instanceof MultiColumnVersionStrategy);
     }
 
+    @Test
     public void testVersionOnPersistAndUpdateForSingleTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
@@ -67,6 +76,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testConcurrentOptimisticUpdateFailsForSingleTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
@@ -97,6 +107,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testConcurrentOptimisticReadSucceedsForSingleTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
@@ -119,6 +130,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em2.close();
     }
 
+    @Test
     public void testVersionOnPersistAndUpdateForMultiTable() {
     	OpenJPAEntityManager em = emf.createEntityManager();
     	em.getTransaction().begin();
@@ -136,6 +148,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testConcurrentOptimisticUpdateFailsForMultiTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
@@ -167,6 +180,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testConcurrentOptimisticReadSucceedsForMultiTable() {
     	OpenJPAEntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
@@ -199,11 +213,11 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     		Object v1 = Array.get(expected, i);
     		Object v2 = Array.get(actual, i);
     		// exact equality may fail on non-integral values
-    		assertTrue("element " + i + " mismatch. Expeceted: " +
-       		    v1 + " actual: " + v2,
-       		    Math.abs(((Number)v1).doubleValue()
+    		assertTrue(Math.abs(((Number)v1).doubleValue()
        		            - ((Number)v2).doubleValue())
-       		    < 0.01);
+       		    < 0.01,
+       		    "element " + i + " mismatch. Expeceted: " +
+       		    v1 + " actual: " + v2);
     	}
     }
 }

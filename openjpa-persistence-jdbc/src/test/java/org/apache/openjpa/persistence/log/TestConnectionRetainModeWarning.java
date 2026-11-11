@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.log;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,13 +32,15 @@ import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase implements LogFactory {
     private static List<String> messages = new ArrayList<>();
 
     Localizer _loc = Localizer.forPackage(PersistenceProviderImpl.class);
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         messages.clear();
@@ -95,6 +100,7 @@ public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase
         }
     }
 
+    @Test
     public void testInfoMessage() {
         EntityManagerFactory emf =
             createEMF("openjpa.Log", this.getClass().getCanonicalName(), "openjpa.ConnectionRetainMode", "always");
@@ -104,6 +110,7 @@ public class TestConnectionRetainModeWarning extends AbstractPersistenceTestCase
         emf.close();
     }
 
+    @Test
     public void testInfoMessageNotFound() {
         EntityManagerFactory emf =
             createEMF("openjpa.Log", this.getClass().getCanonicalName(), "openjpa.ConnectionRetainMode", "on-demand");

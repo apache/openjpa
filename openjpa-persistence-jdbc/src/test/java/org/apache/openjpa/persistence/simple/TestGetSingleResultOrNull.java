@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link jakarta.persistence.TypedQuery#getSingleResultOrNull()}
@@ -30,11 +37,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestGetSingleResultOrNull extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testReturnsNullWhenNoResult() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
@@ -45,6 +53,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testReturnsSingleResult() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -65,6 +74,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testReturnsNullValueFromProjection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -84,6 +94,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testThrowsNonUniqueResultException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -109,6 +120,7 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testOnClosedEntityManagerThrows() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(

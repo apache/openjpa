@@ -27,6 +27,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Base class for OpenJPA-specific Test Case.
@@ -41,8 +43,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  * Cleans up the EMF it provides and any EMs created from it in tearDown().
  *
  */
-public abstract class SingleEMFTestCase
-    extends AbstractCachedEMFTestCase  {
+public abstract class SingleEMFTestCase extends AbstractCachedEMFTestCase {
 
     protected OpenJPAEntityManagerFactorySPI emf;
 
@@ -51,9 +52,8 @@ public abstract class SingleEMFTestCase
      * set-up happens even if <code>setUp()</code> is not called from the
      * subclass.
      */
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         setUp(new Object[0]);
     }
 
@@ -74,24 +74,24 @@ public abstract class SingleEMFTestCase
     /**
      * Closes the entity manager factory.
      */
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
 
-        if (emf == null)
+        if (emf == null) {
             return;
+        }
 
         try {
             clear(emf);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf);
             emf = null;
         }
+    }
+
+    public OpenJPAEntityManagerFactorySPI getEmf() {
+        return emf;
     }
 
     /**
@@ -126,9 +126,9 @@ public abstract class SingleEMFTestCase
      * Get number of instances by an aggregate query with the given alias.
      */
     public int count(String alias) {
-        return ((Number)emf.createEntityManager().createQuery(
-                "SELECT COUNT(p) FROM " + alias + " p")
-                .getSingleResult()).intValue();
+        return emf.createEntityManager().createQuery("SELECT COUNT(p) FROM " + alias + " p", Number.class)
+                .getSingleResult()
+                .intValue();
     }
 
     /**
@@ -168,40 +168,18 @@ public abstract class SingleEMFTestCase
         return (ClassMapping [] ) emf.getConfiguration().getMetaDataRepositoryInstance().getMetaDatas();
     }
 
-    protected void setUnsupportedDatabases(Class<?> ... dbs) {
-        OpenJPAEntityManagerFactorySPI tempEMF = emf;
-        if (tempEMF == null) {
-            tempEMF = createEMF();
+    @Override
+    protected boolean isTestsDisabled() {
+        try (OpenJPAEntityManagerFactorySPI tempEMF = createEMF()) {
+            return !isSupported(((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance());
+        } catch (Exception e) {
+            // no-op
         }
-        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
-        for (Class<?> db : dbs) {
-            if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
-                setTestsDisabled(true);
-                break;
-            }
-        }
-        if (emf == null) {
-            closeEMF(tempEMF);
-        }
+        return false;
     }
 
-    protected void setSupportedDatabases(Class<?> ... dbs) {
-        OpenJPAEntityManagerFactorySPI tempEMF = emf;
-        if (tempEMF == null) {
-            tempEMF = createEMF();
-        }
-        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
-        boolean supportedDB = false;
-        for (Class<?> db : dbs) {
-            if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
-                supportedDB = true;
-                break;
-            }
-        }
-        setTestsDisabled(!supportedDB);
-        if (emf == null) {
-            closeEMF(tempEMF);
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return true;
     }
 
     protected Log getLog() {

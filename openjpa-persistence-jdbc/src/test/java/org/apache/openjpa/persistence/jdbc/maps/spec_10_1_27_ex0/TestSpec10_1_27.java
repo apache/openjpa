@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +32,9 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_27 extends SQLListenerTestCase {
     public int numItems = 2;
@@ -44,7 +48,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public List<Compny1> rsAllCompny1 = null;
     public List<Compny2> rsAllCompny2 = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 Compny1.class, Compny2.class,
@@ -56,10 +60,12 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     }
 
     @AllowFailure
+    @Test
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
+    @Test
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
@@ -151,6 +157,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryObj() throws Exception {
         queryObj(emf);
     }
@@ -264,25 +271,25 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public void assertItem1(Item1 item) {
         int id = item.getId();
         Map<String, String> images = item.getImages();
-        Assert.assertEquals(numImagesPerItem, images.size());
+        Assertions.assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertItem2(Item2 item) {
         int id = item.getId();
         Map<String, String> images = item.getImages();
-        Assert.assertEquals(numImagesPerItem, images.size());
+        Assertions.assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertCompany1(Compny1 c) {
         int id = c.getId();
         Map<Division, VicePresident> organization = c.getOrganization();
-        Assert.assertEquals(2,organization.size());
+        Assertions.assertEquals(2,organization.size());
     }
 
     public void assertCompany2(Compny2 c) {
         int id = c.getId();
         Map<Division, VicePresident> organization = c.getOrganization();
-        Assert.assertEquals(2,organization.size());
+        Assertions.assertEquals(2,organization.size());
     }
 
     public void assertDivision(Division d) {

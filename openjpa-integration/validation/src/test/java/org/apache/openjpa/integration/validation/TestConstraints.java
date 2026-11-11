@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Set;
 
 import jakarta.persistence.Query;
@@ -30,6 +35,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the new Bean Validation constraint support in the JPA 2.0 spec by
@@ -79,16 +87,15 @@ public class TestConstraints extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
                 "org/apache/openjpa/integration/validation/persistence.xml");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
@@ -100,6 +107,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   1) Update @Null constraint exception on variables in mode=AUTO
      *      Tests that a constraint violation will occur on invalid update.
      */
+    @Test
     public void testNullUpdateConstraint() {
         getLog().trace("testNullUpdateConstraint() started");
 
@@ -112,8 +120,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createValid();
@@ -156,6 +164,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   2) No invalid Delete @Null constraint exception when mode=AUTO
      *      Tests that a violation will not occur when deleting invalid entity.
      */
+    @Test
     public void testNullDeleteIgnored() {
         getLog().trace("testNullDeleteIgnored() started");
 
@@ -173,8 +182,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("NONE"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("NONE"),
+                "ValidationMode");
             // create invalid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createInvalidNull();
@@ -204,8 +213,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("CALLBACK"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("CALLBACK"),
+                "ValidationMode");
             // get the invalid entity to delete
             Query q = em.createQuery("DELETE FROM VNULL c WHERE c.id = 1");
             em.getTransaction().begin();
@@ -227,6 +236,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   3) No invalid Persist constraint exception when mode=NONE
      *      Tests that no Validation Providers are used when disabled.
      */
+    @Test
     public void testNullConstraintIgnored() {
         getLog().trace("testNullConstraintIgnored() started");
         // create our EMF w/ props
@@ -242,8 +252,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("NONE"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("NONE"),
+                "ValidationMode");
             // create invalid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createInvalidNull();
@@ -265,6 +275,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   4) Test @Null constraint exception on variables in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
+    @Test
     public void testNullConstraint() {
         getLog().trace("testNullConstraint() started");
         // create EM from default EMF
@@ -274,8 +285,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createInvalidNull();
@@ -297,6 +308,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   5) Test @NotNull constraint exception on getter in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
+    @Test
     public void testNotNullConstraint() {
         getLog().trace("testNotNullConstraint() started");
         // create EM from default EMF
@@ -306,8 +318,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createInvalidNotNull();
@@ -329,6 +341,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   6) Test @NotNull and @Null constraints pass in mode=AUTO
      *      Basic constraint test for no violations.
      */
+    @Test
     public void testNullNotNullConstraint() {
         getLog().trace("testNullNotNullConstraint() started");
         // create EM from default EMF
@@ -338,8 +351,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintNull instance
             em.getTransaction().begin();
             ConstraintNull c = ConstraintNull.createValid();
@@ -360,6 +373,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   7) Test @AssertTrue constraint exception on variables in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
+    @Test
     public void testAssertTrueConstraint() {
         getLog().trace("testAssertTrueConstraint() started");
         // create EM from default EMF
@@ -369,8 +383,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintBoolean c = ConstraintBoolean.createInvalidTrue();
@@ -392,6 +406,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   8) Test @AssertFalse constraint exception on getter in mode=AUTO
      *      Basic constraint test for a violation exception.
      */
+    @Test
     public void testAssertFalseConstraint() {
         getLog().trace("testAssertFalseConstraint() started");
         // create EM from default EMF
@@ -401,8 +416,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintBoolean c = ConstraintBoolean.createInvalidFalse();
@@ -424,6 +439,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   9) Test @AssertFalse and @AssertTrue constraints pass in mode=AUTO
      *      Basic constraint test for no violations.
      */
+    @Test
     public void testAssertTrueFalseConstraint() {
         getLog().trace("testAssertTrueFalseConstraint() started");
         // create EM from default EMF
@@ -433,8 +449,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintBoolean c = ConstraintBoolean.createValid();
@@ -455,6 +471,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   10) Test @DecimalMin constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDecimalMinConstraint() {
         getLog().trace("testDecimalMinConstraint() started");
         // create EM from default EMF
@@ -464,8 +481,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDecimal c = ConstraintDecimal.createInvalidMin();
@@ -487,6 +504,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   11) Test @DecimalMax constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDecimalMaxConstraint() {
         getLog().trace("testDecimalMaxConstraint() started");
         // create EM from default EMF
@@ -496,8 +514,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDecimal c = ConstraintDecimal.createInvalidMax();
@@ -519,6 +537,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   12) Test @DecimalMin and @DecimalMax constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testDecimalMinMaxConstraint() {
         getLog().trace("testDecimalMinMaxConstraint() started");
         // create EM from default EMF
@@ -528,8 +547,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDecimal c = ConstraintDecimal.createValid();
@@ -550,6 +569,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   13) Test @Min constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testMinConstraint() {
         getLog().trace("testMinConstraint() started");
         // create EM from default EMF
@@ -559,8 +579,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintNumber c = ConstraintNumber.createInvalidMin();
@@ -582,6 +602,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   14) Test @Max constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testMaxConstraint() {
         getLog().trace("testMaxConstraint() started");
         // create EM from default EMF
@@ -591,8 +612,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintNumber c = ConstraintNumber.createInvalidMax();
@@ -614,6 +635,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   15) Test @Min and @Max constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testMinMaxConstraint() {
         getLog().trace("testMinMaxConstraint() started");
         // create EM from default EMF
@@ -623,8 +645,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintNumber c = ConstraintNumber.createValid();
@@ -645,6 +667,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   16) Test @Digits constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDigitsTwoConstraint() {
         getLog().trace("testDigitsTwoConstraint() started");
         // create EM from default EMF
@@ -654,8 +677,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDigits c = ConstraintDigits.createInvalidTwoDigits();
@@ -677,6 +700,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   17) Test @Digits constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDigitsFiveConstraint() {
         getLog().trace("testDigitsFiveConstraint() started");
         // create EM from default EMF
@@ -686,8 +710,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDigits c = ConstraintDigits.createInvalidFiveDigits();
@@ -709,6 +733,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   18) Test @Digits constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testDigitsConstraint() {
         getLog().trace("testDigitsConstraint() started");
         // create EM from default EMF
@@ -718,8 +743,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDigits c = ConstraintDigits.createValid();
@@ -740,6 +765,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   19) Test @Size constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testSizeStringConstraint() {
         getLog().trace("testSizeStringConstraint() started");
         // create EM from default EMF
@@ -749,8 +775,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintSize c = ConstraintSize.createInvalidString();
@@ -772,6 +798,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   20) Test @Size constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testSizeMapConstraint() {
         getLog().trace("testSizeMapConstraint() started");
         // create EM from default EMF
@@ -781,8 +808,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintSize c = ConstraintSize.createInvalidMap();
@@ -804,6 +831,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   21) Test @Size constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testSizeConstraint() {
         getLog().trace("testSizeConstraint() started");
         // create EM from default EMF
@@ -813,8 +841,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintSize c = ConstraintSize.createValid();
@@ -835,6 +863,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   22) Test @Future constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDatesFutureConstraint() {
         getLog().trace("testDatesFutureConstraint() started");
         // create EM from default EMF
@@ -844,8 +873,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDates c = ConstraintDates.createInvalidFuture();
@@ -867,6 +896,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   23) Test @Past constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testDatesPastConstraint() {
         getLog().trace("testDatesPastConstraint() started");
         // create EM from default EMF
@@ -876,8 +906,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDates c = ConstraintDates.createInvalidPast();
@@ -899,6 +929,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   24) Test @Past and @Future constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testDatesConstraint() {
         getLog().trace("testDatesConstraint() started");
         // create EM from default EMF
@@ -908,8 +939,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintDates c = ConstraintDates.createValid();
@@ -930,6 +961,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   25) Test @Pattern constraint exception on variables in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testPatternAlphaConstraint() {
         getLog().trace("testPatternAlphaConstraint() started");
         // create EM from default EMF
@@ -939,8 +971,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintPattern c = ConstraintPattern.createInvalidString();
@@ -962,6 +994,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   26) Test @Pattern constraint exception on getter in mode=AUTO
      *       Basic constraint test for a violation exception.
      */
+    @Test
     public void testPatternNumericConstraint() {
         getLog().trace("testPatternNumericConstraint() started");
         // create EM from default EMF
@@ -971,8 +1004,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintPattern c = ConstraintPattern.createInvalidZipcode();
@@ -994,6 +1027,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   27) Test @Pattern constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testPatternConstraint() {
         getLog().trace("testPatternConstraint() started");
         // create EM from default EMF
@@ -1003,8 +1037,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create valid ConstraintBoolean instance
             em.getTransaction().begin();
             ConstraintPattern c = ConstraintPattern.createValid();
@@ -1025,6 +1059,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   28) Test @Valid constraint exceptions in mode=AUTO
      *       Basic constraint test for violation exceptions.
      */
+    @Test
     public void testValidFailuresConstraint() {
         Address a = new Address();
         getLog().trace("testValidFailuresConstraint() started");
@@ -1043,8 +1078,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
                 // verify Validation Mode
                 OpenJPAConfiguration conf = em.getConfiguration();
                 assertNotNull(conf);
-                assertTrue("ValidationMode",
-                    conf.getValidationMode().equalsIgnoreCase("NONE"));
+                assertTrue(conf.getValidationMode().equalsIgnoreCase("NONE"),
+                    "ValidationMode");
                 // provide an invalid Address (every value is invalid)
                 em.getTransaction().begin();
                 a.setStreetAddress(null);
@@ -1076,8 +1111,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             // verify Validation Mode
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
             // create invalid Person instance
             em.getTransaction().begin();
             // create a valid Person, minus the address
@@ -1101,8 +1136,8 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             for (ConstraintViolation<?> cv: cves) {
                 getLog().trace("CVE Contains ConstraintViolation = " + cv.getMessage());
             }
-            assertEquals("Wrong number of embedded ConstraintViolation failures",
-                5, cves.size());
+            assertEquals(5,
+                cves.size(), "Wrong number of embedded ConstraintViolation failures");
             getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
         } finally {
             closeEM(em);
@@ -1114,6 +1149,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
      *   29) Test @Pattern constraints pass in mode=AUTO
      *       Basic constraint test for no violations.
      */
+    @Test
     public void testValidPassConstraint() {
         getLog().trace("testValidPassConstraint() started");
         // create EM from default EMF

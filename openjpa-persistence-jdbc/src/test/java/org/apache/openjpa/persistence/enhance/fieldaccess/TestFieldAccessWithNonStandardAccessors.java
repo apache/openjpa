@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.enhance.fieldaccess;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +33,7 @@ import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entities with PROPERTY access (@Id on getter) and fields
@@ -57,19 +58,19 @@ public class TestFieldAccessWithNonStandardAccessors {
         try {
             ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
                 FieldAccessOrder.class);
-            assertNotNull("Metadata should exist for FieldAccessOrder", meta);
+            assertNotNull(meta, "Metadata should exist for FieldAccessOrder");
 
-            assertTrue("Access type should be PROPERTY",
-                AccessCode.isProperty(meta.getAccessType()));
+            assertTrue(AccessCode.isProperty(meta.getAccessType()),
+                "Access type should be PROPERTY");
 
             // All three fields should be persistent — getdescription() is
             // a valid property accessor per JPA 3.2 TCK
-            assertNotNull("'id' should be persistent",
-                meta.getField("id"));
-            assertNotNull("'total' should be persistent",
-                meta.getField("total"));
-            assertNotNull("'description' should be persistent",
-                meta.getField("description"));
+            assertNotNull(meta.getField("id"),
+                "'id' should be persistent");
+            assertNotNull(meta.getField("total"),
+                "'total' should be persistent");
+            assertNotNull(meta.getField("description"),
+                "'description' should be persistent");
         } finally {
             emf.close();
         }
@@ -97,7 +98,7 @@ public class TestFieldAccessWithNonStandardAccessors {
             em.clear();
 
             FieldAccessOrder found = em.find(FieldAccessOrder.class, 99);
-            assertNotNull("Entity should be found", found);
+            assertNotNull(found, "Entity should be found");
             assertEquals(99, found.getId());
             assertEquals(100, found.getTotal());
             assertEquals("test order", found.getdescription());

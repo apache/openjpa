@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * The AttributeConverter instance of a field is cached on the shared

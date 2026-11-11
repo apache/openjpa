@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,12 +29,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class Test1x1OrderByResultCollection extends SingleEMTestCase {
 	
 	private static final Logger logger = Logger.getLogger(Test1x1OrderByResultCollection.class.getCanonicalName());
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(Hardware.class, Person.class, CLEAR_TABLES
             , "openjpa.jdbc.DBDictionary", "fullResultCollectionInOrderByRelation=true"
@@ -40,7 +45,8 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
         populateData();
     }
 
-   public void testCollectionSizeNoOrderBy() {
+    @Test
+    public void testCollectionSizeNoOrderBy() {
        Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();
@@ -50,7 +56,8 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
        assertEquals(4, results.size());
    }
 
-   public void testCollectionSizeOrderBy() {
+    @Test
+    public void testCollectionSizeOrderBy() {
         Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo order by h.techOwner.name");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();
@@ -60,7 +67,8 @@ public class Test1x1OrderByResultCollection extends SingleEMTestCase {
        assertOrderBy(results, true);
    }
 
-   public void testCollectionSizeOrderByDesc() {
+    @Test
+    public void testCollectionSizeOrderByDesc() {
         Query query = em.createQuery("select h from Hardware h where h.empNo = :empNo order by h.techOwner.name desc");
        query.setParameter("empNo", "Emp1");
        List<Hardware> results = (List<Hardware>) query.getResultList();

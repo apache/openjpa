@@ -16,9 +16,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A collection table that is shared by more than one mapping and discriminated
@@ -29,7 +33,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteSharedA.class,
             BulkDeleteSharedB.class);
@@ -55,10 +59,12 @@ public class TestBulkDeleteSharedCollectionTable extends SQLListenerTestCase {
      * A delete without criteria matches every candidate of its own type, but
      * the rows of the other mapping share the table and must survive.
      */
+    @Test
     public void testDeleteWithoutCriteriaKeepsRowsOfTheOtherMapping() {
         assertSharedTableIsCleanedUp("delete from BulkDeleteSharedA a");
     }
 
+    @Test
     public void testDeleteWithCriteriaKeepsRowsOfTheOtherMapping() {
         assertSharedTableIsCleanedUp(
             "delete from BulkDeleteSharedA a where a.name='a'");

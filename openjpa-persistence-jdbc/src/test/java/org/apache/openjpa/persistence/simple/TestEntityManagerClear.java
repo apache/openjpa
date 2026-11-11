@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case to ensure that the proper JPA clear semantics are processed.
@@ -32,11 +36,12 @@ import junit.textui.TestRunner;
 public class TestEntityManagerClear
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, Item.class,CLEAR_TABLES);
     }
 
+    @Test
     public void testDetach() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -46,22 +51,23 @@ public class TestEntityManagerClear
         testObject1.setStringField("my test object1");
         persist(testObject1);
         em.flush();
-        assertTrue("testObject1 not found in pc", em.contains(testObject1));
+        assertTrue(em.contains(testObject1), "testObject1 not found in pc");
 
         // Insert another object and persist
         AllFieldTypes testObject2 = new AllFieldTypes();
         testObject1.setStringField("my test object2");
         persist(testObject2);
-        assertTrue("testObject2 not found in pc", em.contains(testObject2));
+        assertTrue(em.contains(testObject2), "testObject2 not found in pc");
 
         // Rollback to clear the PC
         rollback();
 
-        assertFalse("testObject1 found in pc", em.contains(testObject1));
-        assertFalse("testObject2 found in pc", em.contains(testObject2));
+        assertFalse(em.contains(testObject1), "testObject1 found in pc");
+        assertFalse(em.contains(testObject2), "testObject2 found in pc");
 
     }
 
+    @Test
     public void testClear() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -98,6 +104,7 @@ public class TestEntityManagerClear
         rollback();
     }
 
+    @Test
     public void testNewClearMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -127,6 +134,7 @@ public class TestEntityManagerClear
         rollback();
     }
 
+    @Test
     public void testUpdateClearMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -167,6 +175,7 @@ public class TestEntityManagerClear
      * commit. Expect both changes before clear and after clear are persisted.
      *
      */
+    @Test
     public void testUpdateClearUpdateMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -203,6 +212,7 @@ public class TestEntityManagerClear
         rollback();
     }
 
+    @Test
     public void testUpdateFlushClearUpdateMerge() {
         // Create EntityManager and Start a transaction (1)
         begin();
@@ -240,8 +250,4 @@ public class TestEntityManagerClear
         // Rollback the transaction and close everything
         rollback();
     }
-    public static void main(String[] args) {
-        TestRunner.run(TestEntityManagerClear.class);
-    }
 }
-

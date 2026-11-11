@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.distinctjoin;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -47,7 +53,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
     private Log log;
 
-    @Override
+    @BeforeEach
     public void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
@@ -73,6 +79,7 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
         return tmp;
     }
 
+    @Test
     public void testJoinOnly() throws SQLException {
 
         log.error("THIS TEST IS CURRENTLY DISABLED!");

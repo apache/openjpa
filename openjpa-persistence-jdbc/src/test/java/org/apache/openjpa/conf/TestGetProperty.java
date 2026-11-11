@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -25,30 +28,30 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestGetProperty extends TestCase {
+public class TestGetProperty {
     private EntityManagerFactory emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        emf = (OpenJPAEntityManagerFactory) Persistence
-                .createEntityManagerFactory("test");
+        emf = Persistence.createEntityManagerFactory("test");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         emf.close();
         emf = null;
     }
 
+    @Test
     public void testGetProperty() {
         try {
             Collection<Thread> tests = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
-                Test test = new Test();
+                GetPropertyThread test = new GetPropertyThread();
                 test.start();
                 tests.add(test);
             }
@@ -60,15 +63,16 @@ public class TestGetProperty extends TestCase {
             fail(e.getMessage());
         }
     }
-    
+
+    @Test
     public void testGetPersistenceUnitName() {
-    	assertEquals("test", emf.getName());
+        assertEquals("test", emf.getName());
     }
 
-    class Test extends Thread {
+    class GetPropertyThread extends Thread {
         EntityManager em;
 
-        public Test() {
+        public GetPropertyThread() {
             this.em = emf.createEntityManager();
         }
 
@@ -77,8 +81,9 @@ public class TestGetProperty extends TestCase {
             for (int i = 0; i < 10; i++) {
                 em.getProperties();
             }
-            if (em != null && em.isOpen())
+            if (em != null && em.isOpen()) {
                 em.close();
+            }
         }
     }
 }

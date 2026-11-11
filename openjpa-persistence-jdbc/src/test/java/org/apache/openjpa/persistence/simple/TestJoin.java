@@ -18,14 +18,19 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJoin extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(Item.class);
     }
@@ -33,6 +38,7 @@ public class TestJoin extends SingleEMFTestCase {
     /*
      * Verify that an entity does not create joins to itself.
      */
+    @Test
     public void testSelfJoin() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(emf,
                 Item.class);

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.batch.exception;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -30,6 +35,8 @@ import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 //This test was created for OPENJPA-1550.  In this issue the user was
 //not able to get the 'failed object' (the object causing the failure) when
@@ -66,7 +73,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
                 CLEAR_TABLES);
 
-        assertNotNull("Unable to create EntityManagerFactory", emf);
+        assertNotNull(emf, "Unable to create EntityManagerFactory");
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         isOracle = dict instanceof OracleDictionary;
@@ -75,7 +82,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         return emf;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         expectedFailedObject = null;
         expectedFailedObjectOracle = null;
@@ -85,6 +92,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // of X and Y rows, where X>Y. A duplicate row will be inserted
     // sometime within the Y rows. This will verify that we get the right
     // 'failed object' and message.
+    @Test
     public void testExceptionInFirstBatch() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
@@ -128,6 +136,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // Test that we get the correct 'failed object' when there is only one
     // row in the batch. The 'batching' logic executes a different
     // statement when only one row is to be updated/inserted.
+    @Test
     public void testExceptionSingleBatchedRow() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
@@ -169,6 +178,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // fix to OPENJPA-1510 we had to add extra logic to keep track
     // of which batch the 'failed object' was in, along with the
     // index into that batch.
+    @Test
     public void testExceptionInSecondBatch() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=9");
         EntityManager em = emf.createEntityManager();
@@ -212,6 +222,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // the failing object as the first element in the second batch, this test puts
     // it somewhere in the middle of the third batch. Again, we want to make sure our
     // indexing into the batch containing the 'failed object' is correct.
+    @Test
     public void testExceptionInThirdBatch() throws Throwable {
         final int batchLimit=9;
         EntityManagerFactory emf = newEmf("batchLimit="+batchLimit);
@@ -266,6 +277,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     // batch with a failure, and then commit, then run large batches
     // again with failures again.....just want to make sure things are not in
     // some way 're-used' between the two commits as far as the indexes go.
+    @Test
     public void testSecondExceptionHasRightIndex() throws Throwable {
         final int batchLimit=9;
 
@@ -303,6 +315,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
         }
     }
 
+    @Test
     public void testExceptionWithMultipleCommits() throws Throwable {
         EntityManagerFactory emf = newEmf("batchLimit=-1");
         EntityManager em = emf.createEntityManager();
@@ -362,7 +375,7 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
             Ent1 failedObject = (Ent1) e.getFailedObject();
 
-            assertNotNull("Failed object was null.", failedObject);
+            assertNotNull(failedObject, "Failed object was null.");
             if (!isOracle && !isPostgres && !isMariaDB) {
                 assertEquals(expectedFailedObject, failedObject);
             } else if (isOracle || isMariaDB) {
@@ -380,18 +393,18 @@ public class TestBatchLimitException extends AbstractPersistenceTestCase {
     }
 
     public void verifyExMsg(String msg) {
-        assertNotNull("Exception message was null.", msg);
+        assertNotNull(msg, "Exception message was null.");
         if (!isOracle && !isPostgres && !isMariaDB) {
-            assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
-                msg, msg.contains(expectedFailureMsg));
+            assertTrue(msg.contains(expectedFailureMsg),
+                "Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " + msg);
         } else if (isOracle || isMariaDB) {
             // Oracle 18 and MariaDB 11.8 both vary between per-row and
             // first-row-of-batch reporting across versions, so accept either.
             assertTrue(msg.contains(expectedFailureMsg) || msg.contains(expectedFailureMsgOracle));
         } else {
             // special case, as Postgres returns all statements in the batch
-            assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsgOracle + "> but was " +
-                msg, msg.contains(expectedFailureMsgOracle));
+            assertTrue(msg.contains(expectedFailureMsgOracle),
+                "Did not see expected text in message. Expected <" + expectedFailureMsgOracle + "> but was " + msg);
         }
     }
 }

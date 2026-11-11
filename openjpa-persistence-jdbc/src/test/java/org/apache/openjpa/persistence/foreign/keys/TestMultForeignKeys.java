@@ -18,19 +18,24 @@
  */
 package org.apache.openjpa.persistence.foreign.keys;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test multiple keys that have the same Entity as
  * the type.
  */
 public class TestMultForeignKeys extends SQLListenerTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class,
             ContainsMultSimpleEntity.class,
@@ -41,6 +46,7 @@ public class TestMultForeignKeys extends SQLListenerTestCase {
         create();
     }
 
+    @Test
     public void testCreated() {
 
         EntityManager em = emf.createEntityManager();

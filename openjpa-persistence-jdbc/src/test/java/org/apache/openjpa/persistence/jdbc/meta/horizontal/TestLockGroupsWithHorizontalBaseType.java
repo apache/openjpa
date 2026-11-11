@@ -31,22 +31,25 @@ package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.LockGroupSubclass;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestLockGroupsWithHorizontalBaseType extends AbstractTestCase
 {
     /** Creates a new instance of TestLockGroupsWithHorizontalBaseType */
-    public TestLockGroupsWithHorizontalBaseType(String name)
+    public TestLockGroupsWithHorizontalBaseType()
     {
-    	super(name, "jdbccactusapp");
+    	super("jdbccactusapp");
     }
 
 
-    @Override
+    @BeforeEach
     public void setUp() {
        deleteAll(LockGroupSubclass.class);
     }
 
+    @Test
     public void testHorizontalLockGroup() {
         LockGroupSubclass pc = new LockGroupSubclass();
         pc.setDefaultLockGroupField("foo");

@@ -21,17 +21,20 @@ package org.apache.openjpa.persistence.detachment;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachment extends SingleEMFTestCase {
 
     private int id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(Record.class);
         id = prepare();
     }
 
+    @Test
     public void testAttachWithNewString() {
         // set up record with string "default" as content
         Record record = detach(id);
@@ -42,6 +45,7 @@ public class TestDetachment extends SingleEMFTestCase {
         attach(record);
     }
 
+    @Test
     public void testSetSameStringInstance() {
         Record record = detach(id);
 
@@ -51,6 +55,7 @@ public class TestDetachment extends SingleEMFTestCase {
         attach(record);
     }
 
+    @Test
     public void testSetSameString() {
         Record record = detach(id);
         // same text, different String instance

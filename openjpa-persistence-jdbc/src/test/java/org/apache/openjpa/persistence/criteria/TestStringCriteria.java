@@ -36,9 +36,11 @@ import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Test;
 
 public class TestStringCriteria extends CriteriaTest {
 
+    @Test
     public void testCriteria() {
         String jpql = "select c from Customer c where c.name='Autowest Toyota'";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -49,6 +51,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testJoins1() {
         String jpql = "SELECT c.name FROM Customer c JOIN c.orders o "
                 + "JOIN o.lineItems i WHERE i.product.productType = 'printer'";
@@ -62,6 +65,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testJoins2() {
         String jpql = "SELECT c FROM Customer c LEFT JOIN c.orders o WHERE "
                 + "c.status = 1";
@@ -74,6 +78,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testFetchJoins() {
         String jpql = "SELECT d FROM Department d LEFT JOIN FETCH d.employees WHERE d.deptNo = 1";
         CriteriaQuery<Department> q = cb.createQuery(Department.class);
@@ -84,7 +89,8 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    @AllowFailure(message="SQL mismatch. Not analyzed further. Is the CriteriaQuery corect for e.contactInfo.phones?")
+    @AllowFailure(message = "SQL mismatch. Not analyzed further. Is the CriteriaQuery corect for e.contactInfo.phones?")
+    @Test
     public void testPathNavigation() {
         String jpql = "SELECT p.vendor FROM Employee e "
                 + "JOIN e.contactInfo.phones p  WHERE e.contactInfo.address.zipCode = '95054'";
@@ -97,6 +103,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testKey() {
         String jpql = "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) LIKE '%egret%'";
 
@@ -109,6 +116,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testRestrictQueryResult() {
         String jpql = "SELECT t FROM CreditCard c JOIN c.transactionHistory t "
                 + "WHERE c.customer.accountNum = 321987 AND INDEX(t) BETWEEN 0 AND 9";
@@ -122,6 +130,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testIsEmpty() {
         String jpql = "SELECT o FROM Order o WHERE o.lineItems IS EMPTY";
           CriteriaQuery<Order> q = cb.createQuery(Order.class);
@@ -132,6 +141,7 @@ public class TestStringCriteria extends CriteriaTest {
           assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testExpressions() {
         String jpql = "SELECT o.quantity, o.totalCost*1.08 AS taxedCost, "
                 + "a.zipCode FROM Customer c JOIN c.orders o JOIN c.address a "
@@ -148,6 +158,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testIndex() {
         String jpql = "SELECT w.name FROM Course c JOIN c.studentWaitList w "
                 + "WHERE c.name = 'Calculus' AND INDEX(w) = 0";
@@ -160,6 +171,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSum() {
         String jpql = "SELECT SUM(i.price) FROM Order o JOIN o.lineItems i JOIN "
                 + "o.customer c WHERE c.lastName = 'Smith' AND c.firstName = 'John'";
@@ -173,6 +185,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSize() {
         String jpql = "SELECT SIZE(d.employees) FROM Department d "
                 + "WHERE d.name = 'Sales'";
@@ -184,6 +197,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testCase() {
         String jpql = "SELECT e.name, CASE WHEN e.rating = 1 THEN e.salary * 1.1 "
                 + "WHEN e.rating = 2 THEN e.salary * 1.2 ELSE e.salary * 1.01 END "
@@ -199,7 +213,8 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-      public void testLiterals() {
+    @Test
+    public void testLiterals() {
           String jpql = "SELECT p FROM Person p where 'Joe' MEMBER OF " + "p.nickNames";
           CriteriaQuery<Person> q = cb.createQuery(Person.class);
           Root<Person> p = q.from(Person.class);
@@ -208,6 +223,7 @@ public class TestStringCriteria extends CriteriaTest {
           assertEquivalence(q, jpql);
      }
 
+    @Test
     public void testParameters() {
         String jpql = "SELECT c FROM Customer c Where c.status = :stat";
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
@@ -224,6 +240,7 @@ public class TestStringCriteria extends CriteriaTest {
         }, q, jpql);
     }
 
+    @Test
     public void testSelectList() {
         String jpql = "SELECT v.location.street, KEY(i).title, VALUE(i) FROM "
                 + "VideoStore v JOIN v.videoInventory i "
@@ -237,7 +254,8 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void TestContructor() {
+    @Test
+    public void testContructor() {
         String jpql = "SELECT NEW CustomerDetails(c.id, c.status, o.quantity) FROM "
                 + "Customer c JOIN c.orders o WHERE o.quantity > 100";
         CriteriaQuery<CustomerDetails> q = cb.createQuery(CustomerDetails.class);
@@ -249,6 +267,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery1() {
         String jpql = "SELECT goodCustomer FROM Customer goodCustomer WHERE "
                 + "goodCustomer.balanceOwed < (SELECT AVG(c.balanceOwed) FROM "
@@ -264,6 +283,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery2() {
         String jpql = "SELECT DISTINCT emp FROM Employee emp WHERE EXISTS ("
                 + "SELECT spouseEmp FROM Employee spouseEmp WHERE spouseEmp = "
@@ -280,6 +300,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery3() {
         String jpql = "SELECT emp FROM Employee emp WHERE emp.salary > ALL ("
                 + "SELECT m.salary FROM Manager m WHERE m.department ="
@@ -296,6 +317,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery4() {
         String jpql = "SELECT c FROM Customer c WHERE "
                 + "(SELECT COUNT(o) FROM c.orders o) > 10";
@@ -310,6 +332,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery5() {
         String jpql = "SELECT o FROM Order o WHERE 10000 < ALL ("
                 + "SELECT a.balance FROM o.customer c JOIN c.accounts a)";
@@ -326,6 +349,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testSubquery6() {
         String jpql = "SELECT o FROM Order o JOIN o.customer c WHERE 10000 < "
                 + "ALL (SELECT a.balance FROM c.accounts a)";
@@ -342,6 +366,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testGroupByAndHaving() {
         String jpql = "SELECT c.status, AVG(c.filledOrderCount), COUNT(c) FROM "
                 + "Customer c GROUP BY c.status HAVING c.status IN (1, 2)";
@@ -354,6 +379,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testOrdering1() {
         String jpql = "SELECT o FROM Customer c JOIN c.orders o "
                 + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity DESC, "
@@ -369,6 +395,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testOrdering2() {
         String jpql = "SELECT o.quantity, a.zipCode FROM Customer c JOIN c.orders o "
                 + "JOIN c.address a WHERE a.state = 'CA' ORDER BY o.quantity, "
@@ -384,6 +411,7 @@ public class TestStringCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
+    @Test
     public void testOrdering3() {
         String jpql = "SELECT o.quantity, o.totalCost * 1.08 AS taxedCost, a.zipCode "
                 + "FROM Customer c JOIN c.orders o JOIN c.address a "
@@ -402,5 +430,5 @@ public class TestStringCriteria extends CriteriaTest {
 
         assertEquivalence(q, jpql);
     }
-    
+
 }

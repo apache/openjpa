@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +37,8 @@ import org.apache.openjpa.persistence.detachment.model.DMCustomer;
 import org.apache.openjpa.persistence.detachment.model.DMCustomerInventory;
 import org.apache.openjpa.persistence.detachment.model.DMItem;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests detachment behavior according to JPA 2.0 Specification. The primary
@@ -54,7 +62,7 @@ public class TestDetach extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     DMCustomer root;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DMCustomer.class, DMCustomerInventory.class, DMItem.class,
             CLEAR_TABLES);
@@ -68,6 +76,7 @@ public class TestDetach extends SingleEMFTestCase {
         root = createData();
     }
 
+    @Test
     public void testDetachCascadeIsSet() {
         MetaDataRepository repos = emf.getConfiguration()
                                       .getMetaDataRepositoryInstance();
@@ -85,6 +94,7 @@ public class TestDetach extends SingleEMFTestCase {
 
     }
 
+    @Test
     public void testDetachRemovesEntityAndCascadedRelationFromContext() {
         em.getTransaction().begin();
 
@@ -106,6 +116,7 @@ public class TestDetach extends SingleEMFTestCase {
         assertNotNull(pc.getFirstName());
     }
 
+    @Test
     public void testDetachingDirtyEntityDoesNotImplicitlyFlush() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
@@ -120,6 +131,7 @@ public class TestDetach extends SingleEMFTestCase {
         assertEquals(original, pc2.getLastName());
     }
 
+    @Test
     public void testDetachingNewEntityIsIgnored() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
@@ -137,6 +149,7 @@ public class TestDetach extends SingleEMFTestCase {
         em.getTransaction().rollback();
     }
 
+    @Test
     public void testDetachingDetachedEntityIsIgnored() {
         em.getTransaction().begin();
         DMCustomer pc = em.find(DMCustomer.class, root.getId());
@@ -171,10 +184,12 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testFlushingBeforeDetachingSavesChange() {
 
     }
 
+    @Test
     public void testManagedEntityContinuesToReferDetachedEntities() {
         em.getTransaction().begin();
 
@@ -219,12 +234,12 @@ public class TestDetach extends SingleEMFTestCase {
     }
 
     void assertDetached(Object pc) {
-        assertTrue(pc + " should be detached", em.isDetached(pc));
-        assertFalse(pc + " should not be in cache", em.contains(pc));
+        assertTrue(em.isDetached(pc), pc + " should be detached");
+        assertFalse(em.contains(pc), pc + " should not be in cache");
     }
 
     void assertNotDetached(Object pc) {
-        assertFalse(pc + " should not be detached", em.isDetached(pc));
-        assertTrue(pc + " should be in cache", em.contains(pc));
+        assertFalse(em.isDetached(pc), pc + " should not be detached");
+        assertTrue(em.contains(pc), pc + " should be in cache");
     }
 }

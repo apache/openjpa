@@ -18,20 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.OuterJoinValuePC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBOuterJoinValues
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestEJBOuterJoinValues extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	public int oid = 0;
 
-	public TestEJBOuterJoinValues(String name)
-	{
-		super(name);
-	}
-
-	@Override
+    @BeforeEach
     public void setUp()
 	{
 		deleteAll(OuterJoinValuePC.class);
@@ -50,7 +48,8 @@ public class TestEJBOuterJoinValues
 		endEm(pm);
 	}
 
-	public void testNull ()
+    @Test
+    public void testNull ()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -68,7 +67,8 @@ public class TestEJBOuterJoinValues
 		endEm(pm);
 	}
 
-	public void testUpdate ()
+    @Test
+    public void testUpdate ()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -85,7 +85,8 @@ public class TestEJBOuterJoinValues
 		endEm(pm);
 	}
 
-	public void testInsert ()
+    @Test
+    public void testInsert ()
 	{
 		// just tests the values inserted in the setup method
 		EntityManager pm = currentEntityManager();

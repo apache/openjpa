@@ -16,7 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A candidate with cascade-delete relations is bulk deleted in SQL, whether
@@ -48,7 +52,7 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
     // the parts plus the profile and the category
     private static final int CHILD_COUNT = PART_COUNT + 2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteDependentOwner.class,
             BulkDeleteDependentChild.class, BulkDeleteDependentNote.class);
@@ -104,6 +108,7 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
      * with it: the join table of the dependent collection and the element
      * collection table.
      */
+    @Test
     public void testFilteredDeleteCleansOwnedTablesOfDependentFields() {
         assertEquals(1, delete(
             "delete from BulkDeleteDependentOwner o where o.name=:n",
@@ -126,6 +131,7 @@ public class TestBulkDeleteDependentFields extends AbstractBulkDeleteTestCase {
      * A delete without criteria empties the owned tables outright and still
      * leaves the dependent entities alone.
      */
+    @Test
     public void testUnfilteredDeleteCleansOwnedTablesOfDependentFields() {
         assertEquals(1, delete("delete from BulkDeleteDependentOwner o"));
 

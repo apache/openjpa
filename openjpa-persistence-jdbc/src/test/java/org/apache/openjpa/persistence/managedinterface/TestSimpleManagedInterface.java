@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
@@ -27,15 +31,18 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSimpleManagedInterface
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleManagedInterface.class, SimpleEntity.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testMetaDataRepository() {
         AbstractBrokerFactory bf =
             (AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf);
@@ -49,6 +56,7 @@ public class TestSimpleManagedInterface
         assertEquals(SimpleManagedInterface.class, meta.getDescribedType());
     }
 
+    @Test
     public void testInterfaceImplGeneration() {
         ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf))
             .makeReadOnly();
@@ -58,6 +66,7 @@ public class TestSimpleManagedInterface
         assertEquals(SimpleManagedInterface.class, meta.getDescribedType());
     }
 
+    @Test
     public void testBasicOperations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         SimpleManagedInterface pc =
@@ -84,6 +93,7 @@ public class TestSimpleManagedInterface
         em.close();
     }
 
+    @Test
     public void testJPQL() {
         EntityManager em = emf.createEntityManager();
         assertEquals(0, em.createQuery("select o from SimpleManagedInterface o")

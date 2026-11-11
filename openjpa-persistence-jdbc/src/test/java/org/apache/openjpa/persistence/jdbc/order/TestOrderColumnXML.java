@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -45,6 +50,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingParser;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingSerializer;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
 
@@ -52,6 +58,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
      * Validates the use of the nullable attribute on OrderColumn through
      * an entity defined in orm.xml
      */
+    @Test
     public void testOrderColumnNullableFalse() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -90,6 +97,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
     /*
      * Validates the use of the columnDefinition attribute on OrderColumn.
      */
+    @Test
     public void testOrderColumnColumnDefinition() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -154,6 +162,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
     /**
      * Validates the use of the table attribute defined in XML
      */
+    @Test
     public void testOrderColumnTableXML() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -187,6 +196,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
      * Validates OrderBy and OrderColumn should not be specified together per
      * the JPA 2.0 spec.
      */
+    @Test
     public void testOrderColumnOrderBy() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
@@ -226,6 +236,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         }
     }
 
+    @Test
     public void testOrderColumnMetaDataSerialization()
         throws Exception {
 
@@ -369,11 +380,6 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
 
         try {
             clear(emf1);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf1);
         }

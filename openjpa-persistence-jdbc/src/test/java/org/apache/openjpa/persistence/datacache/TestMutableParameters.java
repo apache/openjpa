@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,19 +36,22 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestMutableParameters
     extends AbstractTestCase {
 
-    public TestMutableParameters(String test) {
-        super(test, "datacachecactusapp");
+    public TestMutableParameters() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
     private Date _startDate;
 
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         deleteAll(CacheObjectA.class);
@@ -76,7 +81,7 @@ public class TestMutableParameters
         CacheTestHelper.cacheManager(_factory).getSystemQueryCache().clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         try {
@@ -88,6 +93,7 @@ public class TestMutableParameters
         super.tearDown();
     }
 
+    @Test
     public void testMutatedDateParameter() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,

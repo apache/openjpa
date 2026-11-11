@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
 import org.apache.openjpa.lib.util.Options;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 
 /**

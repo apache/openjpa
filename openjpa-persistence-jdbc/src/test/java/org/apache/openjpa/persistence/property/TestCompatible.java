@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.property;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>TestCompatibile</b> is used to test various backwards compatibility
@@ -40,7 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestCompatible extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityContact.class,
               EmbeddableAddress.class,
@@ -48,6 +52,7 @@ public class TestCompatible extends SingleEMFTestCase {
               DROP_TABLES);
     }
 
+    @Test
     public void testPrivateEmbbeddable() {
 
         EntityManager em = emf.createEntityManager();

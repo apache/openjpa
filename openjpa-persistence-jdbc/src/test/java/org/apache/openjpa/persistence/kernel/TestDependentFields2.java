@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +33,8 @@ import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDependentFields2 extends BaseKernelTest {
 
@@ -43,11 +52,7 @@ public class TestDependentFields2 extends BaseKernelTest {
     private Object _depMap = null;
     private Object _repeat = null;
 
-    public TestDependentFields2(String casename) {
-        super(casename);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         deleteAll(DependentFieldsPC.class);
 
@@ -87,31 +92,37 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testDependentFieldsLoaded() {
         delete(true, COMMIT);
         checkFields();
     }
 
+    @Test
     public void testDependentFieldsLoadedWithRollback() {
         delete(true, ROLLBACK);
         checkFields();
     }
 
+    @Test
     public void testDependentFieldsLoadedWithPreStore() {
         delete(true, PRESTORE);
         checkFields();
     }
 
+    @Test
     public void testDependentFieldsUnloaded() {
         delete(false, COMMIT);
         checkFields();
     }
 
+    @Test
     public void testDependentFieldsUnloadedWithRollback() {
         delete(false, ROLLBACK);
         checkFields();
     }
 
+    @Test
     public void testDependentFieldsUnloadedWithPreStore() {
         delete(false, PRESTORE);
         checkFields();
@@ -210,14 +221,17 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testNullDeletesDependent() {
         nullDeletesDependent(COMMIT);
     }
 
+    @Test
     public void testNullDeletesDependentWithRollback() {
         nullDeletesDependent(ROLLBACK);
     }
 
+    @Test
     public void testNullDeletesDependentWithPreStore() {
         nullDeletesDependent(PRESTORE);
     }
@@ -255,14 +269,17 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testRemoveDeletesDependent() {
         removeDeletesDependent(COMMIT);
     }
 
+    @Test
     public void testRemoveDeletesDependentWithRollback() {
         removeDeletesDependent(ROLLBACK);
     }
 
+    @Test
     public void testRemoveDeletesDependentWithPreStore() {
         removeDeletesDependent(PRESTORE);
     }
@@ -279,16 +296,16 @@ public class TestDependentFields2 extends BaseKernelTest {
             startTx(pm);
             pc = (DependentFieldsPC) pm.find(DependentFieldsPC.class, _root);
             list = pc.getDependentList();
-            assertEquals("list size =! 2", 2, list.size());
+            assertEquals(2, list.size(), "list size =! 2");
             depColl = (DependentFieldsPC) list.remove(0);
-            assertEquals("_depColl is not pm.getObjectId(depColl)", _depColl,
-                pm.getObjectId(depColl));
+            assertEquals(_depColl, pm.getObjectId(depColl),
+                "_depColl is not pm.getObjectId(depColl)");
 
             map = pc.getDependentMap();
-            assertEquals("map size =! 2", 2, map.size());
+            assertEquals(2, map.size(), "map size =! 2");
             depMap = (DependentFieldsPC) map.remove("key");
-            assertEquals("_depMap is not pm.getObjectId(depMap)", _depMap,
-                pm.getObjectId(depMap));
+            assertEquals(_depMap, pm.getObjectId(depMap),
+                "_depMap is not pm.getObjectId(depMap)");
 
             if (action == ROLLBACK) {
                 rollbackTx(pm);
@@ -314,19 +331,22 @@ public class TestDependentFields2 extends BaseKernelTest {
 //        assertTrue("depMap is persistence", !pm.isPersistent(depMap));
         assertNull(pm.find(DependentFieldsPC.class, _depMap));
 
-        assertNotNull("repeat is null",
-            pm.find(DependentFieldsPC.class, _repeat));
+        assertNotNull(pm.find(DependentFieldsPC.class, _repeat),
+            "repeat is null");
         endEm(pm);
     }
 
+    @Test
     public void testMoveDependentInContainer() {
         moveDependentInContainer(COMMIT);
     }
 
+    @Test
     public void testMoveDependentInContainerWithRollback() {
         moveDependentInContainer(ROLLBACK);
     }
 
+    @Test
     public void testMoveDependentInContainerWithPreStore() {
         moveDependentInContainer(PRESTORE);
     }
@@ -382,14 +402,17 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testRefedDependentNotDeleted() {
         refedDependentNotDeleted(COMMIT);
     }
 
+    @Test
     public void testRefedDependentNotDeletedWithRollback() {
         refedDependentNotDeleted(ROLLBACK);
     }
 
+    @Test
     public void testRefedDependentNotDeletedWithPreStore() {
         refedDependentNotDeleted(PRESTORE);
     }
@@ -432,14 +455,17 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testNullSharedDependent() {
         nullSharedDependent(COMMIT);
     }
 
+    @Test
     public void testNullSharedDependentWithRollback() {
         nullSharedDependent(ROLLBACK);
     }
 
+    @Test
     public void testNullSharedDependentWithPreStore() {
         nullSharedDependent(PRESTORE);
     }
@@ -493,10 +519,12 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testClearMappedDependentOfDetached() {
         clearDependentOfDetachedTest(true);
     }
 
+    @Test
     public void testClearInverseKeyDependentOfDetached() {
         clearDependentOfDetachedTest(false);
     }

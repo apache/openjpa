@@ -19,6 +19,12 @@
 package org.apache.openjpa.audit;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -29,8 +35,8 @@ import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test for audit facility.
@@ -38,7 +44,7 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestAudit extends TestCase {
+public class TestAudit {
 	private static final Logger logger = Logger.getLogger(TestAudit.class.getCanonicalName());
 	private static OpenJPAEntityManagerFactory emf;
 	private static Auditor auditor;
@@ -46,7 +52,7 @@ public class TestAudit extends TestCase {
 
 	EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
     	if (emf == null) {
     		emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory("audit"));
@@ -77,14 +83,17 @@ public class TestAudit extends TestCase {
     	em.getTransaction().commit();
     }
 
+    @Test
     public void testAuditorIsConfigured() {
     	assertNotNull(auditor);
     }
 
+    @Test
     public void testIsEntityAuditable() {
     	assertNotNull(X.class.getAnnotation(Auditable.class));
     }
 
+    @Test
     public void testNewInstancesAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
@@ -98,6 +107,7 @@ public class TestAudit extends TestCase {
     	assertTrue(entry.getUpdatedFields().isEmpty());
     }
 
+    @Test
     public void testUpdateOutsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
@@ -117,6 +127,7 @@ public class TestAudit extends TestCase {
     	assertFalse(entry.getUpdatedFields().contains("price"));
     }
 
+    @Test
     public void testUpdateInsideTransactionAreAudited() {
     	X x = em.find(X.class, oid);
     	assertNotNull(x);
@@ -137,6 +148,7 @@ public class TestAudit extends TestCase {
     	assertTrue(entry.getUpdatedFields().contains("price"));
     }
 
+    @Test
     public void testAuditDoesNotLeakMemory() {
     	int N = 1000;
     	EntityManager em = emf.createEntityManager();

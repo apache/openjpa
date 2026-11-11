@@ -20,12 +20,18 @@ package org.apache.openjpa.persistence.lockmgr;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test EntityManager find/namedQuery deadlock exceptions.
@@ -35,16 +41,13 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     private HashMap<DBType,Class<?>[]> expWriteLockExClasses;
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
-                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.SQLServerDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(DerbyDictionary.class, OracleDictionary.class, DB2Dictionary.class, SQLServerDictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
         );
@@ -67,6 +70,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     }
 
     /* ======== Find dead lock exception test ============*/
+    @Test
     public void testFindDeadLockException() {
         commonFindTest("testFindDeadLockException", LockModeType.READ, null);
         commonFindTest("testFindDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
@@ -111,6 +115,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     }
 
     /* ======== named query dead lock exception test ============*/
+    @Test
     public void testNamedQueryDeadLockException() {
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.READ, null);
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));

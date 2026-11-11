@@ -42,12 +42,7 @@ import org.apache.openjpa.persistence.meta.common.apps.MetaTest6;
  *
  * @author Abe White
  */
-public class TestXMLPersistenceMetaDataSerializer
-    extends TestClassMetaData {
-
-    public TestXMLPersistenceMetaDataSerializer(String test) {
-        super(test);
-    }
+public class TestXMLPersistenceMetaDataSerializer extends TestClassMetaData {
 
     @Override
     protected MetaDataRepository getRepository()

@@ -19,6 +19,10 @@
 package org.apache.openjpa.persistence.event;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.LoadListener;
@@ -32,6 +36,7 @@ import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the {@link LifecycleEventManager}.</p>
@@ -39,13 +44,13 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * @author Abe White
  */
 @AllowFailure(message="surefire excluded")
-public class TestLifecycleEventManager
-    extends AbstractTestCase {
+public class TestLifecycleEventManager extends AbstractTestCase {
 
-    public TestLifecycleEventManager(String s) {
-        super(s, "eventcactusapp");
+    public TestLifecycleEventManager() {
+        super("eventcactusapp");
     }
 
+    @Test
     public void testAllClassListener() {
         MetaDataRepository repos =
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
@@ -120,6 +125,7 @@ public class TestLifecycleEventManager
         assertEquals(2, listener.store);
     }
 
+    @Test
     public void testBaseClassListener() {
         MetaDataRepository repos =
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(

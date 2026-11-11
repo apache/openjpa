@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CompoundSelection;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -27,13 +31,15 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for Criteria API validation fixes.
  */
 public class TestCriteriaAPIValidation extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
@@ -41,6 +47,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
     /**
      * ParameterExpression.getPosition() should return null for named parameters.
      */
+    @Test
     public void testParameterExpressionPositionIsNull() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         ParameterExpression<String> param = cb.parameter(String.class, "myParam");
@@ -51,6 +58,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
     /**
      * CriteriaBuilder.literal(null) should throw IllegalArgumentException.
      */
+    @Test
     public void testLiteralNullThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         try {
@@ -65,6 +73,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * CriteriaBuilder.tuple(tuple(...)) should throw IllegalArgumentException
      * because compound selections cannot be nested.
      */
+    @Test
     public void testNestedTupleThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -84,6 +93,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
      * CriteriaBuilder.array(array(...)) should throw IllegalArgumentException
      * because compound selections cannot be nested.
      */
+    @Test
     public void testNestedArrayThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
@@ -102,6 +112,7 @@ public class TestCriteriaAPIValidation extends SingleEMFTestCase {
     /**
      * CriteriaBuilder.tuple(array(...)) should throw IllegalArgumentException.
      */
+    @Test
     public void testTupleContainingArrayThrows() {
         CriteriaBuilder cb = emf.getCriteriaBuilder();
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);

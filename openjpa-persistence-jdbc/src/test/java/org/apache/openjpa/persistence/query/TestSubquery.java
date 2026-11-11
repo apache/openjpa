@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +32,8 @@ import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPQL subquery
@@ -37,7 +41,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSubquery
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,
@@ -222,6 +226,7 @@ public class TestSubquery
 
         };
 
+    @Test
     public void testSubquery2() {
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys2.length; i++) {
@@ -234,6 +239,7 @@ public class TestSubquery
     }
 
 
+    @Test
     public void testSubquery() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -276,6 +282,7 @@ public class TestSubquery
      * originally caused problems for DBDictionaries which used DATABASE
      * syntax.
      */
+    @Test
     public void testSubSelectMaxDateRange() {
         String query =
             "SELECT e,d from Employee e, Dependent d "
@@ -292,6 +299,7 @@ public class TestSubquery
         em.close();
     }
 
+    @Test
     public void testUpdateWithCorrelatedSubquery() {
         String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
            " (select o from  in(c.orders)  o)";

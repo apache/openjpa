@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex0;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +33,9 @@ import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMany2ManyMap extends SQLListenerTestCase {
 
@@ -49,7 +52,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
     public List rsAllPhones = null;
     public List rsAllEmps = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Division.class,
             Employee.class, PhoneNumber.class);
@@ -57,10 +60,14 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         rsAllPhones = getAll(PhoneNumber.class);
         rsAllEmps = getAll(Employee.class);
     }
+
     @AllowFailure
+    @Test
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
+
+    @Test
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
@@ -176,6 +183,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryObject() throws Exception {
         queryObj();
         findObj();
@@ -266,7 +274,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         Employee e0 = empMap.get(id);
         Map<Division, PhoneNumber> phones0 = e0.getPhoneNumbers();
         Map<Division, PhoneNumber> phones = e.getPhoneNumbers();
-        Assert.assertEquals(phones0.size(), phones.size());
+        Assertions.assertEquals(phones0.size(), phones.size());
         checkPhoneMap(phones0, phones);
     }
 
@@ -275,7 +283,7 @@ public class TestMany2ManyMap extends SQLListenerTestCase {
         PhoneNumber p0 = phoneMap.get(number);
         Map<Division, Employee> es0 = p0.getEmployees();
         Map<Division, Employee> es = p.getEmployees();
-        Assert.assertEquals(es0.size(), es.size());
+        Assertions.assertEquals(es0.size(), es.size());
         checkEmpMap(es0, es);
     }
 

@@ -18,12 +18,19 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPA TCK override/annotation fixes:
@@ -33,7 +40,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ShortFieldEntity.class,
               EagerParentEntity.class, EagerChildEntity.class,
@@ -45,6 +52,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
      * Per JPA 3.2 spec section 4.8.5, arithmetic on Short operands
      * should produce Integer results, not Long.
      */
+    @Test
     public void testShortAdditionReturnsInteger() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -57,8 +65,8 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             Object result = em.createQuery(
                 "SELECT (s.basicShort + 1) FROM ShortFieldEntity s WHERE s.id = 1")
                 .getSingleResult();
-            assertTrue("Expected Integer but got " + result.getClass().getName(),
-                result instanceof Integer);
+            assertTrue(result instanceof Integer,
+                "Expected Integer but got " + result.getClass().getName());
             assertEquals(11, ((Integer) result).intValue());
             em.getTransaction().commit();
         } finally {
@@ -72,6 +80,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
      * Per JPA 3.2 spec section 4.8.5, arithmetic on Short (boxed) operands
      * should also produce Integer results.
      */
+    @Test
     public void testBoxedShortSubtractionReturnsInteger() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -84,8 +93,8 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             Object result = em.createQuery(
                 "SELECT (s.basicBigShort - 1) FROM ShortFieldEntity s WHERE s.id = 2")
                 .getSingleResult();
-            assertTrue("Expected Integer but got " + result.getClass().getName(),
-                result instanceof Integer);
+            assertTrue(result instanceof Integer,
+                "Expected Integer but got " + result.getClass().getName());
             assertEquals(29, ((Integer) result).intValue());
             em.getTransaction().commit();
         } finally {
@@ -98,6 +107,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
     /**
      * Per JPA 3.2 spec, Short * Integer literal should return Integer.
      */
+    @Test
     public void testShortMultiplicationReturnsInteger() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -110,8 +120,8 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             Object result = em.createQuery(
                 "SELECT (s.basicShort * 2) FROM ShortFieldEntity s WHERE s.id = 3")
                 .getSingleResult();
-            assertTrue("Expected Integer but got " + result.getClass().getName(),
-                result instanceof Integer);
+            assertTrue(result instanceof Integer,
+                "Expected Integer but got " + result.getClass().getName());
             assertEquals(14, ((Integer) result).intValue());
             em.getTransaction().commit();
         } finally {
@@ -125,6 +135,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
      * Verify that Long + integer literal still returns Long.
      * This ensures the integer literal type change doesn't break Long arithmetic.
      */
+    @Test
     public void testLongAdditionStillReturnsLong() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -137,8 +148,8 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             Object result = em.createQuery(
                 "SELECT (p.id + 1) FROM EagerParentEntity p WHERE p.id = 999")
                 .getSingleResult();
-            assertTrue("Expected Long but got " + result.getClass().getName(),
-                result instanceof Long);
+            assertTrue(result instanceof Long,
+                "Expected Long but got " + result.getClass().getName());
             assertEquals(1000L, ((Long) result).longValue());
             em.getTransaction().commit();
         } finally {
@@ -154,6 +165,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
      * used getCachedMetaData(pc.getClass()) which returned null for
      * runtime-generated subclasses, causing NPE.
      */
+    @Test
     public void testEagerCollectionLoadWithQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -176,10 +188,10 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             q.setParameter("id", 1L);
             EagerParentEntity loaded = (EagerParentEntity) q.getSingleResult();
 
-            assertNotNull("Parent should not be null", loaded);
+            assertNotNull(loaded, "Parent should not be null");
             assertEquals("Parent1", loaded.getName());
-            assertNotNull("Children should not be null", loaded.getChildren());
-            assertEquals("Should have 2 children", 2, loaded.getChildren().size());
+            assertNotNull(loaded.getChildren(), "Children should not be null");
+            assertEquals(2, loaded.getChildren().size(), "Should have 2 children");
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive())
@@ -195,6 +207,7 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
      * the FK column should not be written, so the reference should
      * be allowed but ignored during flush.
      */
+    @Test
     public void testReadOnlyJoinColumnWithUnmanagedReference() {
         // First, persist the department
         EntityManager em = emf.createEntityManager();
@@ -225,11 +238,11 @@ public class TestOverrideAnnotationFixes extends SingleEMFTestCase {
             // Verify the employee was persisted
             em.clear();
             ReadOnlyJoinEmployee loaded = em.find(ReadOnlyJoinEmployee.class, 100);
-            assertNotNull("Employee should be persisted", loaded);
+            assertNotNull(loaded, "Employee should be persisted");
             assertEquals("Smith", loaded.getLastName());
             // Department FK was not insertable, so it should be null
-            assertNull("Department should be null (FK not insertable)",
-                loaded.getDepartment());
+            assertNull(loaded.getDepartment(),
+                "Department should be null (FK not insertable)");
         } finally {
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();

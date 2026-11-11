@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -35,6 +37,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Temporal values used as the fallback of a COALESCE or as a CASE result in the
@@ -66,35 +69,43 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testTimestamp() {
         verify("due", Timestamp.valueOf("2025-04-08 11:56:02.0"), Timestamp.valueOf("2020-01-02 03:04:05.0"));
     }
 
+    @Test
     public void testSqlDate() {
         verify("dueDate", Date.valueOf("2025-04-08"), Date.valueOf("2020-01-02"));
     }
 
+    @Test
     public void testSqlTime() {
         verify("dueTime", Time.valueOf("11:56:02"), Time.valueOf("03:04:05"));
     }
 
+    @Test
     public void testUtilDate() {
         verify("dueUtilDate", new java.util.Date(Timestamp.valueOf("2025-04-08 11:56:02.0").getTime()),
                 new java.util.Date(Timestamp.valueOf("2020-01-02 03:04:05.0").getTime()));
     }
 
+    @Test
     public void testLocalDateTime() {
         verify("dueLocalDateTime", LocalDateTime.of(2025, 4, 8, 11, 56, 2), LocalDateTime.of(2020, 1, 2, 3, 4, 5));
     }
 
+    @Test
     public void testLocalDate() {
         verify("dueLocalDate", LocalDate.of(2025, 4, 8), LocalDate.of(2020, 1, 2));
     }
 
+    @Test
     public void testLocalTime() {
         verify("dueLocalTime", LocalTime.of(11, 56, 2), LocalTime.of(3, 4, 5));
     }
 
+    @Test
     public void testTimestampInCase() {
         Timestamp fallback = Timestamp.valueOf("2020-01-02 03:04:05.0");
         for (boolean limit : new boolean[] { false, true }) {
@@ -114,6 +125,7 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
      * A value that is not a date, time or timestamp and has no literal form is bound,
      * not written as its unquoted toString().
      */
+    @Test
     public void testCharacter() {
         for (boolean limit : new boolean[] { false, true }) {
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();

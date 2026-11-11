@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests mixed access (field + property) with runtime subclass enhancement.
@@ -31,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMixedAccessRuntime extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedMixedAccessEntity.class,
@@ -41,6 +47,7 @@ public class TestMixedAccessRuntime extends SingleEMFTestCase {
     /**
      * Verify EMF creation succeeds — this is where the enhancement error occurred.
      */
+    @Test
     public void testEmfCreation() {
         assertNotNull(emf);
     }
@@ -48,6 +55,7 @@ public class TestMixedAccessRuntime extends SingleEMFTestCase {
     /**
      * Persist and find entity with mixed access fields.
      */
+    @Test
     public void testPersistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -66,7 +74,7 @@ public class TestMixedAccessRuntime extends SingleEMFTestCase {
         em.getTransaction().begin();
         UnenhancedMixedAccessEntity found =
             em.find(UnenhancedMixedAccessEntity.class, 1);
-        assertNotNull("Entity should be found", found);
+        assertNotNull(found, "Entity should be found");
         assertEquals("test", found.getStrData());
         assertEquals(42, found.getIntData());
         assertEquals(99, found.getIntData2());

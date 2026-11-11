@@ -20,10 +20,15 @@ package org.apache.openjpa.persistence.conversion;
 
 import static org.apache.openjpa.persistence.conversion.TestConvertedBean.assertSettings;
 import static org.apache.openjpa.persistence.conversion.TestConvertedBean.newSettings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The data cache keeps the value of a converted attribute apart from the
@@ -31,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestConvertedBeanCache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedBeanEntity.class, SettingsHolder.class, CLEAR_TABLES,
             "openjpa.DataCache", "true",
@@ -47,6 +52,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testGetterOnlyStateSurvivesLoadFromCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
@@ -61,6 +67,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
      * A change made in place and rolled back is not seen through the cache,
      * and each persistence context gets its own value.
      */
+    @Test
     public void testValueChangedInPlaceIsNotShared() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
@@ -84,6 +91,7 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testValueChangedInPlaceIsCached() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

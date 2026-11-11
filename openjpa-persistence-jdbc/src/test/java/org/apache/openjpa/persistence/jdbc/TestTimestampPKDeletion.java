@@ -26,14 +26,17 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.simple.EntityWithTimestampPK;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTimestampPKDeletion extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityWithTimestampPK.class);
     }
 
+    @Test
     public void testTimestampPKDeletion() {
         EntityWithTimestampPK testEntity = new EntityWithTimestampPK("test");
 

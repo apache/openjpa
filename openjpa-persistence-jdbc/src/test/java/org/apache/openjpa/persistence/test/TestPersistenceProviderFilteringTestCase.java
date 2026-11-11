@@ -22,13 +22,18 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
+
 import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 
 /*
@@ -38,18 +43,20 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
 
     private final String persistenceUnitName = "test";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, EntityA.class, EntityB.class, EntityC.class);
 
     }
 
+    @Test
     public void testGenerateSchemaNoProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
+    @Test
     public void testGenerateSchemaOpenJPAProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
@@ -57,6 +64,7 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
         assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
+    @Test
     public void testGenerateSchemaEclipseProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
@@ -64,6 +72,7 @@ public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCas
         assertFalse(ppi.generateSchema(persistenceUnitName, map));
     }
 
+    @Test
     public void testGenerateSchemaFakeProviderClass() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();

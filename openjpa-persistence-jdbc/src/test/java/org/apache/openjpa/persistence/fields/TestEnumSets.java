@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.EnumSet;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEnumSets
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EnumSetOwner.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testExternalizedEnumSet() {
         // test that inserting works
         EnumSetOwner o = new EnumSetOwner();

@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Random;
 
 import jakarta.persistence.Cache;
@@ -29,6 +36,8 @@ import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies L2 operations using multiple entity manager factories. The EMF which
@@ -37,7 +46,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp( CLEAR_TABLES, CacheableEntity.class,
                "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
@@ -49,6 +58,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * entity is updated in the database.
      */
+    @Test
     public void testCacheRefreshModeRefresh() {
 
         EntityManager em = emf.createEntityManager();
@@ -126,6 +136,7 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * record is removed from the database.
      */
+    @Test
     public void testCacheRefreshModeRefreshDelete() {
 
         EntityManager em = emf.createEntityManager();

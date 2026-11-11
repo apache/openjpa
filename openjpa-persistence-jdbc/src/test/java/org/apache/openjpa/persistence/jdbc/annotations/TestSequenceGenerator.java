@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -28,6 +30,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for sequence generator.
@@ -51,7 +55,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
 
     private boolean enabled = true;
 
-    @Override
+    @BeforeEach
     public void setUp()
         throws Exception {
         setUp(NativeSequenceEntity.class,
@@ -79,6 +83,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * databases do not support native sequences so this method is
      * currently allowed to fail.
      */
+    @Test
     public void testSequenceSchema() {
         if (enabled) {
             OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -103,6 +108,7 @@ public class TestSequenceGenerator extends SingleEMFTestCase {
      * databases do not support native sequences so this method is
      * currently allowed to fail.
      */
+    @Test
     public void testORMSequenceSchema() {
         if (enabled) {
             OpenJPAEntityManagerSPI em = emf.createEntityManager();

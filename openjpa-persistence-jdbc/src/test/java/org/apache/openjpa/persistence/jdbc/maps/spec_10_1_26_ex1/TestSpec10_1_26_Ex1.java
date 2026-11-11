@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex1;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +35,9 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
 
@@ -45,7 +49,7 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     public int empId = 1;
     public List rsAllDepartments = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Department.class,
@@ -55,10 +59,12 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     }
 
     @AllowFailure
+    @Test
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
+    @Test
     public void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
@@ -108,6 +114,7 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryObject() throws Exception {
         queryObj();
         findObj();
@@ -194,12 +201,12 @@ public class TestSpec10_1_26_Ex1 extends SQLListenerTestCase {
     public void assertDepartment(Department d) {
         int id = d.getDeptId();
         Map<Integer, Employee> es = d.getEmpMap();
-        Assert.assertEquals(2, es.size());
+        Assertions.assertEquals(2, es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             Integer empId = (Integer) obj;
             Employee e = es.get(empId);
-            Assert.assertEquals(empId.intValue(), e.getEmpId());
+            Assertions.assertEquals(empId.intValue(), e.getEmpId());
         }
     }
 

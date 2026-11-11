@@ -19,23 +19,30 @@
 package org.apache.openjpa.persistence.annotations;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.PropertyAccess1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="excluded")
 public class TestPropertyAccess extends AnnotationTestCase
 {
-	public TestPropertyAccess(String name)
+	public TestPropertyAccess()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(PropertyAccess1.class);
     }
 
+    @Test
     public void testPropertyAccessBasicCreation() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -55,6 +62,7 @@ public class TestPropertyAccess extends AnnotationTestCase
         assertEquals("foo", pa1_2.getName());
     }
 
+    @Test
     public void testPropertyAccessBasicMutation() {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -78,6 +86,7 @@ public class TestPropertyAccess extends AnnotationTestCase
         assertEquals("foobar", pa1_3.getName());
     }
 
+    @Test
     public void testJPQL() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
@@ -87,6 +96,7 @@ public class TestPropertyAccess extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testJPQLWithFieldNameMismatch() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         em.createQuery("select o from PropertyAccess1 o where " +
@@ -95,22 +105,4 @@ public class TestPropertyAccess extends AnnotationTestCase
             "o.intValue asc").getResultList();
         endEm(em);
     }
-
-    /*public void testJDOQL() {
-        PersistenceManager pm = getPM();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
-            + "annotype.PropertyAccess1 where name == 'foo'").execute();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
-            + "annotype.PropertyAccess1 order by name ascending").execute();
-        pm.close();
-    }
-
-    public void testJDOQLWithFieldNameMismatch() {
-        PersistenceManager pm = getPM();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
-            + "annotype.PropertyAccess1 where intValue == 0").execute();
-        pm.newQuery("select from persistence.annotations.common.apps.annotApp."
-            + "annotype.PropertyAccess1 order by intValue asc").execute();
-        pm.close();
-    }*/
 }

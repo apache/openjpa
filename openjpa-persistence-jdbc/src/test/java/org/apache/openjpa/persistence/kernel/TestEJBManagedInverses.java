@@ -18,27 +18,33 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.InverseA;
 import org.apache.openjpa.persistence.kernel.common.apps.InverseB;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBManagedInverses extends AbstractTestCase {
 
-    public TestEJBManagedInverses(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBManagedInverses() {
+        super("kernelcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(InverseA.class, InverseB.class);
     }
 
+    @Test
     public void testOneOne() {
         oneOneTest(true);
     }
 
+    @Test
     public void testOneOneWithPreStore() {
         oneOneTest(false);
     }
@@ -56,8 +62,8 @@ public class TestEJBManagedInverses extends AbstractTestCase {
 
 //		assertEquals (a, a2.getOneOne ());
 //		assertEquals (a, a2.getOneOneOwner ());
-        assertEquals("a.getOneOne is not a2", a2, a.getOneOne());
-        assertEquals("a.getOneOneOwner is not a2", a2, a.getOneOneOwner());
+        assertEquals(a2, a.getOneOne(), "a.getOneOne is not a2");
+        assertEquals(a2, a.getOneOneOwner(), "a.getOneOneOwner is not a2");
         endTx(pm);
 
         startTx(pm);

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,14 +33,16 @@ import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.Student;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBClauses extends AbstractTestCase {
 
-    public TestEJBClauses(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBClauses() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
@@ -71,6 +78,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testFromClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM Student o";
@@ -84,6 +92,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testFromClause2() {
         EntityManager em = currentEntityManager();
 
@@ -98,6 +107,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testFromClause3() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name " +
@@ -115,6 +125,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testWhereClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
@@ -129,6 +140,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testWhereClause2() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
@@ -146,6 +158,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testClauseRangeVar() {
         EntityManager em = currentEntityManager();
         String query = "SELECT DISTINCT s FROM Student s, Student s2 " +
@@ -162,6 +175,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testClausePathExpr() {
         EntityManager em = currentEntityManager();
         String failure = "SELECT DISTINCT s " +
@@ -177,6 +191,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testClausePathExpr2() {
         EntityManager em = currentEntityManager();
         String success =
@@ -190,6 +205,7 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
+    @Test
     public void testCollMemberDecl() {
         EntityManager em = currentEntityManager();
 

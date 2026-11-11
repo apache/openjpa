@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -26,6 +29,8 @@ import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test find, lock and refresh em methods against non-versioned entity.
@@ -39,7 +44,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployeeNonVersion.class
             , "openjpa.LockManager", "mixed"
@@ -51,6 +56,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.find(lockMode) on non-versioned entity.
      */
+    @Test
     public void testFindNonVersionWithLock() {
         commonFindNonVerWithLock(LockModeType.NONE);
         commonFindNonVerWithLock(LockModeType.READ);
@@ -93,6 +99,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.lock(lockMode) on non-versioned entity.
      */
+    @Test
     public void testLockNonVersionWithLock() {
         commonLockNonVerWithLock(LockModeType.NONE);
         commonLockNonVerWithLock(LockModeType.READ);
@@ -136,6 +143,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.refresh(lockMode) on non-versioned entity.
      */
+    @Test
     public void testRefreshNonVersionWithLock() {
         commonRefreshNonVerWithLock(LockModeType.NONE);
         commonRefreshNonVerWithLock(LockModeType.READ);

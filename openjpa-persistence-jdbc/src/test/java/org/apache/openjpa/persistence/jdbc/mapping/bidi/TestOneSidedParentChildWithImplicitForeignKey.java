@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.meta.ClassMetaData;
@@ -25,6 +30,9 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests behavior of Parent-Child mapping under following conditions a) Parent
@@ -57,8 +65,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 	private static long CHILD_ID_COUNTER = System.currentTimeMillis();
 	private static int CHILD_COUNT = 3;
 
-	@Override
-	public void setUp() {
+    @BeforeEach
+    public void setUp() {
 		super.setUp(DROP_TABLES, ParentWithAppIdentity.class,
                 ParentWithSequenceIdentity.class, ParentWithAutoIdentity.class,
 				Child.class);
@@ -73,8 +81,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
             ClassMetaData meta = repos.getMetaData(PARENT_ID_TYPES[i], null,
                     true);
 			FieldMetaData fmd = meta.getPrimaryKeyFields()[0];
-            assertEquals(fmd + " strategy is " + fmd.getValueStrategy(),
-                    VALUE_STRATEGIES[i], fmd.getValueStrategy());
+            assertEquals(VALUE_STRATEGIES[i],
+                    fmd.getValueStrategy(), fmd + " strategy is " + fmd.getValueStrategy());
 		}
 	}
 
@@ -104,7 +112,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		em.getTransaction().commit();
 	}
 
-	public void testPersist() {
+    @Test
+    public void testPersist() {
 		em.getTransaction().begin();
 
 		for (int i = 0; i < PARENT_ID_TYPES.length; i++) {
@@ -121,7 +130,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		em.getTransaction().commit();
 	}
 
-	public void testUpdate() {
+    @Test
+    public void testUpdate() {
 		em.getTransaction().begin();
 
 		Child newChild = new Child();
@@ -151,8 +161,8 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		em.getTransaction().commit();
 	}
 
-	@Override
-	public void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
 	    closeEM(em);
 	    super.tearDown();
 	}

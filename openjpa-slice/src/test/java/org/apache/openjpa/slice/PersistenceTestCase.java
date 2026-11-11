@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,26 +35,19 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-
-import junit.framework.TestCase;
-import junit.framework.TestResult;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Base test class providing persistence utilities.
  */
-public abstract class PersistenceTestCase
-    extends TestCase {
+public abstract class PersistenceTestCase {
 
     /**
-     * Marker object you an pass to {@link #setUp} to indicate that the
+     * Marker object you an pass to {@link Assertions#setUp} to indicate that the
      * database tables should be cleared.
      */
     protected static final Object CLEAR_TABLES = new Object();
-
-    /**
-     * The {@link TestResult} instance for the current test run.
-     */
-    protected TestResult testResult;
 
     /**
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in
@@ -117,24 +112,6 @@ public abstract class PersistenceTestCase
         }
         return (OpenJPAEntityManagerFactorySPI) Persistence.
             createEntityManagerFactory(pu, map);
-    }
-
-    @Override
-    public void run(TestResult testResult) {
-        this.testResult = testResult;
-        super.run(testResult);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        try {
-            super.tearDown();
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
-        }
     }
 
     /**

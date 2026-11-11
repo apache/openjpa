@@ -18,19 +18,23 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEagerInit extends AbstractPersistenceTestCase {
     OpenJPAEntityManagerFactorySPI _emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.InitializeEagerly", "true");
         _emf =
@@ -38,12 +42,13 @@ public class TestEagerInit extends AbstractPersistenceTestCase {
                 "org/apache/openjpa/integration/validation/persistence.xml", props);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         _emf.close();
     }
 
+    @Test
     public void testNonNullEmf() {
         assertNotNull(_emf);
     }

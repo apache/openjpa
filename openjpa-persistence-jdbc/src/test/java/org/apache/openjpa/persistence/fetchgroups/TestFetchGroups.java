@@ -19,6 +19,12 @@
 
 package org.apache.openjpa.persistence.fetchgroups;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -27,6 +33,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFetchGroups extends SingleEMTestCase {
     private static final int empPerMgr = 5;
@@ -39,12 +47,13 @@ public class TestFetchGroups extends SingleEMTestCase {
     private static final String empDescriptionFieldStr =
         "org.apache.openjpa.persistence.fetchgroups.FGEmployee.description";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, FGManager.class, FGDepartment.class, FGEmployee.class, FGAddress.class);
         createEmployeeData();
     }
 
+    @Test
     public void testNoDefaultGroupLazyLoad() {
         FGEmployee emp = employeeSet.iterator().next();
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -67,6 +76,7 @@ public class TestFetchGroups extends SingleEMTestCase {
     /**
      * Verify the "default" fetch plan that models JPA's expected eager/lazy fetch load behaviors.
      */
+    @Test
     public void testDefaultFetchPlan001() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
@@ -95,6 +105,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Verify that adding a FetchGroup to the fetch plan makes a normally JPA determined lazy loaded field to behave as
      * an eagerly loaded field.
      */
+    @Test
     public void testDefaultFetchPlan002() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
@@ -126,6 +137,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Verify that adding a field to the fetch plan makes a normally JPA determined lazy loaded field to behave as an
      * eagerly loaded field.
      */
+    @Test
     public void testDefaultFetchPlan003() {
         OpenJPAEntityManager em = emf.createEntityManager();
         FetchPlan fp = em.getFetchPlan();
@@ -157,6 +169,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Verify the use of the "openjpa.FetchGroups" property when used to add a fetch group to the default fetch plan.
      * Note when overriding that "default" must be included in the list.
      */
+    @Test
     public void testPctxDefaultFetchPlan001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
@@ -194,6 +207,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      *
      * Note that fetch groups are case sensitive, "default" != "Default".
      */
+    @Test
     public void testPctxDefaultFetchPlan002() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
@@ -231,6 +245,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * Note that the method does not place "default" back in the list of active fetch groups, OPENJPA-2413 was opened to
      * note this behavior.
      */
+    @Test
     public void testClearFetchGroups001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
@@ -270,6 +285,7 @@ public class TestFetchGroups extends SingleEMTestCase {
     /**
      * The resetFetchGroups() method restores the fetch plan's active fetch plans to the PCtx's configured default.
      */
+    @Test
     public void testResetFetchGroups001() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
@@ -322,6 +338,7 @@ public class TestFetchGroups extends SingleEMTestCase {
     /**
      * Baseline test for Finder Cache
      */
+    @Test
     public void testFinderCache001() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -371,6 +388,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * In this variant, a find using the default fetch plan is first executed to prime the finder cache. Finds operating
      * under a modified fetch plan should not utilize sql stored in the finder cache.
      */
+    @Test
     public void testFinderCache002() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -531,6 +549,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * In this variant, a find using a modified fetch plan is first executed, which should not be added to the finder
      * cache.
      */
+    @Test
     public void testFinderCache003() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -699,6 +718,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * ability to distinguish fetch plan configuration in its key value. The PCtx's default fetch plan is modified by
      * the "openjpa.FetchGroups" property.
      */
+    @Test
     public void testFinderCache004() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
@@ -839,14 +859,15 @@ public class TestFetchGroups extends SingleEMTestCase {
     }
 
     /**
-      * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache, as it currently lacks
-      * the ability to distinguish fetch plan configuration in its key value. The PCtx's default fetch plan is modified
-      * by the "openjpa.FetchGroups" property.
-      *
-      * In this variant, a find using a modified fetch plan is first executed, which should not be added to the finder
-      * cache.
-      */
-     public void testFinderCache005() {
+     * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache, as it currently lacks
+     * the ability to distinguish fetch plan configuration in its key value. The PCtx's default fetch plan is modified
+     * by the "openjpa.FetchGroups" property.
+     *
+     * In this variant, a find using a modified fetch plan is first executed, which should not be added to the finder
+     * cache.
+     */
+    @Test
+    public void testFinderCache005() {
         OpenJPAEntityManagerFactory emf2 =
             createNamedEMF(getPersistenceUnitName(), FGManager.class, FGDepartment.class, FGEmployee.class,
                 FGAddress.class, "openjpa.FetchGroups", "default,DescFetchGroup");
@@ -977,14 +998,15 @@ public class TestFetchGroups extends SingleEMTestCase {
         emf2.close();
     }
 
-     /**
-      * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache, as it currently lacks
-      * the ability to distinguish fetch plan configuration in its key value. The PCtx's default fetch plan is the \
-      * normal plan not modified by the "openjpa.FetchGroups" property.
-      *
-      * In this variant, a find using the default fetch plan is first executed to prime the finder cache. Finds
-      * operating under a modified fetch plan should not utilize sql stored in the finder cache.
-      */
+    /**
+     * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache, as it currently lacks
+     * the ability to distinguish fetch plan configuration in its key value. The PCtx's default fetch plan is the \
+     * normal plan not modified by the "openjpa.FetchGroups" property.
+     *
+     * In this variant, a find using the default fetch plan is first executed to prime the finder cache. Finds
+     * operating under a modified fetch plan should not utilize sql stored in the finder cache.
+     */
+    @Test
     public void testFinderCache006() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
@@ -1145,6 +1167,7 @@ public class TestFetchGroups extends SingleEMTestCase {
      * In this variant, a find using a modified fetch plan is first executed, which should not be added
      * to the finder cache.
      */
+    @Test
     public void testFinderCache007() {
         OpenJPAEntityManager em = emf.createEntityManager();
 

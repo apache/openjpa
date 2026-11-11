@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.dbcs;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * This test will verify that when a double byte charater set (DBCS) character
@@ -27,12 +29,13 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestDBCS extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MyDBCSEntity.class);
     }
 
 
+    @Test
     public void test() {
         // Test test is disabled as most won't have their environment configured to support UTF-8 chars
 //        EntityManager em = emf.createEntityManager();

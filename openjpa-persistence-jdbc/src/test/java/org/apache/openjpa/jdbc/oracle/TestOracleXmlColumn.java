@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.oracle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,6 +34,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
@@ -48,7 +53,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         return !(dict instanceof OracleDictionary);
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
@@ -84,6 +89,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         emf.close();
     }
 
+    @Test
     public void testCrudXmlColumn() throws SQLException {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
@@ -121,6 +127,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         emf.close();
     }
 
+    @Test
     public void testExistingColumn() throws SQLException {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).

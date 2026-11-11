@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message=
 	"Multi-level embedding" +
@@ -62,7 +66,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -72,6 +76,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         return "embed-pu";
     }
 
+    @Test
     public void testJoinColumns() {
         createFeatureXml();
         EntityManager em = emf.createEntityManager();
@@ -119,12 +124,14 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testEntityA_Coll_StringXml() {
         createEntityA_Coll_StringXml();
         queryEntityA_Coll_StringXml();
         findEntityA_Coll_StringXml();
     }
 
+    @Test
     public void testEntityA_Coll_Embed_Embed() {
         createEntityA_Coll_Embed_EmbedXml();
         queryEntityA_Coll_Embed_EmbedXml();
@@ -311,6 +318,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
 
+    @Test
     public void testMapKeyAnnotations(){
         createObj();
         queryObj();
@@ -730,6 +738,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         return o;
     }
 
+    @Test
     public void testOrphanRemovalTarget() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
@@ -759,6 +768,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testOrphanRemovalTargetSetNull() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
@@ -780,6 +790,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testOrphanRemovalSource() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();

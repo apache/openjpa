@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPrecisionMapping extends SingleEMFTestCase {
 
@@ -31,31 +35,36 @@ public class TestPrecisionMapping extends SingleEMFTestCase {
             { "primDbl", "dbl" };
     private static final String _BIG_DECIMAL_FIELD = "bigDecimal";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(PrecisionTestEntity.class);
     }
 
+    @Test
     public void testUnspecified() {
         testDoubleMapping("", Types.DOUBLE,0,0);
         testBigDecimalMapping("", Types.NUMERIC, 0, 0);
     }
 
+    @Test
     public void testPrecisionOnly() {
         testDoubleMapping("Precis", Types.NUMERIC, 10, 0);
         testBigDecimalMapping("Precis", Types.NUMERIC, 10, 0);
     }
 
+    @Test
     public void testScaleOnly() {
         testDoubleMapping("Scale", Types.NUMERIC, 0, 10);
         testBigDecimalMapping("Scale", Types.NUMERIC, 0, 10);
     }
 
+    @Test
     public void testPrecisionAndScale() {
         testDoubleMapping("PrecisScale", Types.NUMERIC,10,10);
         testBigDecimalMapping("PrecisScale", Types.NUMERIC, 10, 10);
     }
 
+    @Test
     private void testBigDecimalMapping(String fieldSuffix, int expectedType,
             int expectedPrecision, int expectedScale) {
         ClassMapping mapping = getMapping(PrecisionTestEntity.class);
@@ -69,6 +78,7 @@ public class TestPrecisionMapping extends SingleEMFTestCase {
         assertEquals(expectedScale, cols[0].getDecimalDigits());
     }
 
+    @Test
     private void testDoubleMapping(String fieldSuffix, int expectedType,
             int expectedPrecision, int expectedScale) {
         ClassMapping mapping = getMapping(PrecisionTestEntity.class);

@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +31,9 @@ import org.apache.openjpa.jdbc.kernel.PreparedQueryCacheImpl;
 import org.apache.openjpa.jdbc.kernel.PreparedQueryImpl;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test exclusion patterns of PreparedQueryCache in isolation.
@@ -34,14 +41,13 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestPreparedQueryCacheExclusion extends TestCase {
+public class TestPreparedQueryCacheExclusion {
 	private PreparedQueryCache cache;
 	private String[] keys   = {"jpql1", "jpql2", "jpql3"};
 	private String[] values = {"sql1", "sql2", "sql3"};
 
-	@Override
-    protected void setUp() throws Exception {
-		super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 		cache = new PreparedQueryCacheImpl();
 		for (int i = 0; i < keys.length; i++) {
             PreparedQuery p = new PreparedQueryImpl(keys[i], values[i], null);
@@ -49,12 +55,12 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		}
 	}
 
-	@Override
-    protected void tearDown() throws Exception {
-		super.tearDown();
+    @AfterEach
+    public void tearDown() throws Exception {
 	}
 
-	public void testExclusionPatternsAreSet() {
+    @Test
+    public void testExclusionPatternsAreSet() {
 		String excludes = "a;b;c";
 		cache.setExcludes(excludes);
 		assertEquals(3, cache.getExcludes().size());
@@ -68,21 +74,24 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 //		    System.err.println(e);
 	}
 
-	public void testCachePopulationSetUp() {
+    @Test
+    public void testCachePopulationSetUp() {
 		assertContent(keys, values);
 	}
 
-	public void testAddExclusionPatternDisallowsCacheing() {
+    @Test
+    public void testAddExclusionPatternDisallowsCacheing() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 
         PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED],
                 values[EXCLUDED], null);
-        assertFalse("Must not cache excluded key " + keys[EXCLUDED],
-                cache.cache(p));
+        assertFalse(cache.cache(p),
+                "Must not cache excluded key " + keys[EXCLUDED]);
 	}
 
-	public void testAddExclusionPatternMakesExistingEntryInvalid() {
+    @Test
+    public void testAddExclusionPatternMakesExistingEntryInvalid() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 		Map<String, String> view = cache.getMapView();
@@ -97,42 +106,44 @@ public class TestPreparedQueryCacheExclusion extends TestCase {
 		}
 	}
 
-	public void testRemoveExclusionPatternAllowsCacheing() {
+    @Test
+    public void testRemoveExclusionPatternAllowsCacheing() {
 		int EXCLUDED = 1;
 		cache.addExclusionPattern(keys[EXCLUDED]);
 
         PreparedQuery p = new PreparedQueryImpl(keys[EXCLUDED],
                 values[EXCLUDED], null);
-        assertFalse("Must not cache excluded key " + keys[EXCLUDED],
-                cache.cache(p));
+        assertFalse(cache.cache(p),
+                "Must not cache excluded key " + keys[EXCLUDED]);
 
 		cache.removeExclusionPattern(keys[EXCLUDED]);
-        assertTrue("Must cache remove excluded key " + keys[EXCLUDED],
-                cache.cache(p));
+        assertTrue(cache.cache(p),
+                "Must cache remove excluded key " + keys[EXCLUDED]);
 	}
 
-	public void testRemoveExclusionPatternDoesNotRemoveUserProhbitedKeys() {
+    @Test
+    public void testRemoveExclusionPatternDoesNotRemoveUserProhbitedKeys() {
 		String USER_MARKED_UNCACHABLE = "[user prohibited]";
 		cache.markUncachable(USER_MARKED_UNCACHABLE,
 		        new PreparedQueryCacheImpl.StrongExclusion(USER_MARKED_UNCACHABLE,"for testing"));
 
         PreparedQuery p = new PreparedQueryImpl(USER_MARKED_UNCACHABLE, "xyz",
                 null);
-		assertFalse("Must not cache user-prohibited key " +
-				USER_MARKED_UNCACHABLE, cache.cache(p));
+		assertFalse(cache.cache(p), "Must not cache user-prohibited key " +
+				USER_MARKED_UNCACHABLE);
 
 		cache.removeExclusionPattern(USER_MARKED_UNCACHABLE);
-        assertFalse("Must not cache user-prohibited key even when removed " +
-				USER_MARKED_UNCACHABLE, cache.cache(p));
+        assertFalse(cache.cache(p), "Must not cache user-prohibited key even when removed " +
+				USER_MARKED_UNCACHABLE);
 	}
 
 	void assertContent(String[] keys, String[] values) {
 		Map<String, String> view = cache.getMapView();
 		for (int i = 0; i < keys.length; i++) {
-			assertTrue("key " + keys[i] + " not in " + view,
-					view.containsKey(keys[i]));
-			assertTrue("value " + values[i] + " not in " + view,
-					view.containsValue(values[i]));
+			assertTrue(view.containsKey(keys[i]),
+					"key " + keys[i] + " not in " + view);
+			assertTrue(view.containsValue(values[i]),
+					"value " + values[i] + " not in " + view);
 		}
 	}
 }

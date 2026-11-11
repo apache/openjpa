@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.MapKey;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +30,8 @@ import org.apache.openjpa.jdbc.meta.strats.RelationMapInverseKeyFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationMapTableFieldStrategy;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the use of the {@link MapKey} annotation.  Note that we have
@@ -38,12 +43,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMapKey
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Flat1.class, AnnoTest1.class, AnnoTest2.class, CLEAR_TABLES);
 
     }
 
+    @Test
     public void testDefaultMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
@@ -55,6 +61,7 @@ public class TestMapKey
             true).getField("pk"), fm.getKey().getValueMappedByMetaData());
     }
 
+    @Test
     public void testNamedMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
@@ -66,6 +73,7 @@ public class TestMapKey
             true).getField("basic"), fm.getKey().getValueMappedByMetaData());
     }
 
+    @Test
     public void testInverseOwnerMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
@@ -79,6 +87,7 @@ public class TestMapKey
             getValueMappedByMetaData());
     }
 
+    @Test
     public void testInsertAndRetrieve() {
         Flat1 f1 = new Flat1(1);
         f1.setBasic(100);

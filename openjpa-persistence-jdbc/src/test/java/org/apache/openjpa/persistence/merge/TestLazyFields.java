@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
@@ -25,13 +28,16 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.merge.model.Inner;
 import org.apache.openjpa.persistence.merge.model.Outer;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestLazyFields extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Outer.class, Inner.class);
     }
 
+    @Test
     public void testMergeOfLazyFields() {
         EntityManager em = emf.createEntityManager();
         try {

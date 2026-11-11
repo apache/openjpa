@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.querycache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,6 +30,8 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity1;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity2;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @NamedQuery(name = "setParam1",
     query = "SELECT o FROM Entity1 o WHERE o.pk = :pk")
@@ -34,7 +39,8 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     EntityManager em;
     private static final String CACHE_NAME = "QueryCacheName";
-    @Override
+
+    @BeforeEach
     public void setUp() {
         super.setUp(
             DROP_TABLES,
@@ -56,6 +62,7 @@ public class TestQueryCache extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testCachedQuery(){
         em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
         resetSQL();
@@ -65,6 +72,8 @@ public class TestQueryCache extends SQLListenerTestCase {
         assertEquals(0, getSQLCount());
 
     }
+
+    @Test
     public void testResultList() {
         List list = em.createQuery("Select object(o) from Entity1 o")
             .getResultList();
@@ -73,6 +82,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
+    @Test
     public void testGetSingleList() {
 
         String curr = 2 + "";
@@ -89,6 +99,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
+    @Test
     public void testExecuteUpdate() {
         String curr = 2 + "";
         String curr2 = 22 + "";
@@ -121,6 +132,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
+    @Test
     public void testSetMaxResults() {
 
 
@@ -134,6 +146,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
+    @Test
     public void testSetFirstResults() {
 
 
@@ -150,6 +163,7 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
+    @Test
     public void testName() {
         ConcurrentQueryCache qCache =
             (ConcurrentQueryCache) emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();

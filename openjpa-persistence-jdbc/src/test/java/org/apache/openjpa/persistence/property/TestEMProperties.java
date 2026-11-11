@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.property;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +36,8 @@ import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>TestEMProperties</b> is used to test various persistence properties set through EntityManager.setProperty() API
@@ -39,13 +45,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestEMProperties extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityContact.class,
               EmbeddableAddress.class,
               DROP_TABLES, "jakarta.persistence.query.timeout", 23456);
     }
 
+    @Test
     public void testQueryTimeoutPropertyDefault() {
         EntityManager em = emf.createEntityManager();
 
@@ -57,6 +64,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryTimeoutPropertyOnEntityManagerCreation() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("jakarta.persistence.query.timeout", "12345");
@@ -71,6 +79,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testQueryTimeoutPropertySetOnEntityManager() {
         EntityManager em = emf.createEntityManager();
 
@@ -85,6 +94,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCacheModeStringSetOnEntityManager() {
         EntityManager em = emf.createEntityManager();
 
@@ -100,6 +110,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCacheModeStringOnEntityManagerCreation() {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JPAProperties.CACHE_RETRIEVE_MODE, "BYPASS");
@@ -115,6 +126,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCacheModeStringIsCaseInsensitive() {
         EntityManager em = emf.createEntityManager();
 
@@ -127,6 +139,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testCacheModeEnumStillWorks() {
         EntityManager em = emf.createEntityManager();
 
@@ -148,6 +161,7 @@ public class TestEMProperties extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testInvalidCacheModeStringFails() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -155,14 +169,15 @@ public class TestEMProperties extends SingleEMFTestCase {
             fail("Expected an IllegalArgumentException for an invalid cache retrieve mode");
         } catch (IllegalArgumentException iae) {
             String message = iae.getMessage();
-            assertTrue(message, message.contains("cache.retrieveMode"));
-            assertTrue(message, message.contains("USE"));
-            assertTrue(message, message.contains("BYPASS"));
+            assertTrue(message.contains("cache.retrieveMode"), message);
+            assertTrue(message.contains("USE"), message);
+            assertTrue(message.contains("BYPASS"), message);
         } finally {
             em.close();
         }
     }
 
+    @Test
     public void testNullCacheModeResetsToDefault() {
         EntityManager em = emf.createEntityManager();
 

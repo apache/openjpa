@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.detach;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +36,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachNoProxy extends SingleEMFTestCase {
 
@@ -38,7 +45,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     private static final String PROXY = new String("$proxy");
     private Log _log;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Entity20.class);
         _log = emf.getConfiguration().getLog("test");
@@ -60,6 +67,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that an in-place detached entity does not use the proxy classes.
      */
+    @Test
     public void testDetach20() {
         Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
@@ -107,6 +115,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that a detachCopy() returned entity does not contain any proxy classes.
      */
+    @Test
     public void testDetachCopy20() {
         Integer id = 0;
         OpenJPAEntityManagerFactorySPI emf2 =
@@ -158,6 +167,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that in-place detachAll entities do not use the proxy classes.
      */
+    @Test
     public void testDetachAll20() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -213,6 +223,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
+    @Test
     public void testClear10Compat() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -267,6 +278,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that after EM.clear() entities still contain proxy classes for 1.0 apps.
      */
+    @Test
     public void testClear20Compat() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -321,6 +333,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that after EM.clear() entities do not contain proxy classes for 2.0 apps.
      */
+    @Test
     public void testClear20New() {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -434,12 +447,12 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             _log.trace("verifyEntities() - asserting expected proxy usage is " + usesProxy);
             printClassNames(e20);
         }
-        assertTrue("Expected sqlDate endsWith($proxy) to return " + usesProxy,
-            usesProxy == e20.getDate().getClass().getCanonicalName().endsWith(PROXY));
-        assertTrue("Expected sqlTime endsWith($proxy) to return " + usesProxy,
-            usesProxy == e20.getTime().getClass().getCanonicalName().endsWith(PROXY));
-        assertTrue("Expected sqlTimestamp endsWith($proxy) to return " + usesProxy,
-            usesProxy == e20.getTimestamp().getClass().getCanonicalName().endsWith(PROXY));
+        assertTrue(usesProxy == e20.getDate().getClass().getCanonicalName().endsWith(PROXY),
+            "Expected sqlDate endsWith($proxy) to return " + usesProxy);
+        assertTrue(usesProxy == e20.getTime().getClass().getCanonicalName().endsWith(PROXY),
+            "Expected sqlTime endsWith($proxy) to return " + usesProxy);
+        assertTrue(usesProxy == e20.getTimestamp().getClass().getCanonicalName().endsWith(PROXY),
+            "Expected sqlTimestamp endsWith($proxy) to return " + usesProxy);
 
     }
 

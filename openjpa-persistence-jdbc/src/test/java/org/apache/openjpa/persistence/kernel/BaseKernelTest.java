@@ -37,18 +37,13 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
-public abstract class BaseKernelTest
-        extends org.apache.openjpa.persistence.common.utils.AbstractTestCase
-{
+public abstract class BaseKernelTest extends AbstractTestCase {
     private static Map _sysprops = new HashMap();
 
-    /** Creates a new instance of BaseKernelTest */
     public BaseKernelTest() {
-    }
-
-    public BaseKernelTest(String name) {
-        super(name, "kernelcactusapp");
+        super("kernelcactusapp");
     }
 
     protected OpenJPAEntityManager getPM() {

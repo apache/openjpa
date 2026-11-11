@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 
@@ -26,16 +31,19 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestGeneratedValues extends SingleEMFTestCase {
     DBDictionary _dict;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(GeneratedValues.class, CLEAR_TABLES);
         _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
+    @Test
     public void testDefaultValues() {
         if (_dict instanceof PostgresDictionary)
             return;
@@ -70,6 +78,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testInitialValues() {
         EntityManager em = emf.createEntityManager();
 
@@ -91,6 +100,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
+    @Test
     public void testIdSetter() {
         EntityManager em = emf.createEntityManager();
 
@@ -113,6 +123,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
+    @Test
     public void testFieldSetter() {
         EntityManager em = emf.createEntityManager();
 
@@ -146,6 +157,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
 //        assertNotEquals(0, gv.getCustomSeqField());
 //    }
 
+    @Test
     public void testCustomSequenceGeneratorWithIndirection() {
         if (_dict instanceof PostgresDictionary)
             return;
@@ -161,6 +173,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         closeEM(em);
     }
 
+    @Test
     public void testUUIDGenerators() {
         if (_dict instanceof PostgresDictionary)
             return;

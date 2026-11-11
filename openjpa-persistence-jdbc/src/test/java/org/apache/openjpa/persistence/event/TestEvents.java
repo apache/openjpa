@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -29,8 +34,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 @AllowFailure(message="surefire excluded")
 public class TestEvents
@@ -38,16 +44,17 @@ public class TestEvents
 
     private TransactionEventListenerTestImpl transactionListener;
 
-    public TestEvents(String s) {
-        super(s, "eventcactusapp");
+    public TestEvents() {
+        super( "eventcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         transactionListener = new TransactionEventListenerTestImpl();
         deleteAll(RuntimeTest1.class);
     }
 
+    @Test
     public void testCommit() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -70,6 +77,7 @@ public class TestEvents
             transactionListener.status);
     }
 
+    @Test
     public void testRollback() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -91,6 +99,7 @@ public class TestEvents
             transactionListener.status);
     }
 
+    @Test
     public void testObjectChanges() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -120,6 +129,7 @@ public class TestEvents
         assertTrue(transactionListener.trans.contains(t3));
     }
 
+    @Test
     public void testIgnoreCallbackModeExceptionConsumed() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -144,6 +154,7 @@ public class TestEvents
             transactionListener.status);
     }
 
+    @Test
     public void testExceptionCausesRollback() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
@@ -175,6 +186,7 @@ public class TestEvents
             transactionListener.status);
     }
 
+    @Test
     public void testExceptionAfterCommitThrown() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.qualified.path;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test queries containing qualified paths of the form:
@@ -48,7 +54,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
 
     OpenJPAEntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Division.class, Employee.class, Phone.class, PersonalInfo.class);
@@ -58,6 +64,7 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         createObj();
     }
 
+    @Test
     public void testQueries() {
         em.clear();
         String query = "select p " +

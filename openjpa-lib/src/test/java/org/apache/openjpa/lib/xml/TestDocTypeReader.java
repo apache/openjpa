@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.lib.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -26,14 +29,12 @@ import java.io.Writer;
 
 import javax.xml.parsers.SAXParser;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import static org.junit.Assert.*;
 
 
 /**
@@ -53,7 +54,7 @@ public class TestDocTypeReader {
     private String _xmlWithDocType = null;
 
 
-    @Before
+    @BeforeEach
     public void setUp() {
         StringBuilder docType = new StringBuilder();
         docType.append("<!DOCTYPE foo [\n");

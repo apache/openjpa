@@ -19,9 +19,9 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link PostgresDictionary}, in particular the version dependent
@@ -65,8 +65,8 @@ public class TestPostgresDictionary {
         PostgresDictionary dict = newConfiguredDictionary("StoreCharsAsNumbers=true");
         assertTrue(dict.storeCharsAsNumbers);
         dict.connectedConfiguration(connection(16, 0));
-        assertTrue("explicit StoreCharsAsNumbers=true must not be overridden on PostgreSQL 16",
-            dict.storeCharsAsNumbers);
+        assertTrue(dict.storeCharsAsNumbers,
+            "explicit StoreCharsAsNumbers=true must not be overridden on PostgreSQL 16");
     }
 
     @Test
@@ -74,8 +74,8 @@ public class TestPostgresDictionary {
         PostgresDictionary dict = newConfiguredDictionary("StoreCharsAsNumbers=false");
         assertFalse(dict.storeCharsAsNumbers);
         dict.connectedConfiguration(connection(8, 4));
-        assertFalse("explicit StoreCharsAsNumbers=false must not be overridden on PostgreSQL 8.4",
-            dict.storeCharsAsNumbers);
+        assertFalse(dict.storeCharsAsNumbers,
+            "explicit StoreCharsAsNumbers=false must not be overridden on PostgreSQL 8.4");
     }
 
     @Test
@@ -99,8 +99,8 @@ public class TestPostgresDictionary {
         PostgresDictionary dict = newConfiguredDictionary(null);
         dict.storeCharsAsNumbers = true;
         dict.connectedConfiguration(connection(16, 0));
-        assertTrue("storeCharsAsNumbers=true assigned via the public field must survive on PostgreSQL 16",
-            dict.storeCharsAsNumbers);
+        assertTrue(dict.storeCharsAsNumbers,
+            "storeCharsAsNumbers=true assigned via the public field must survive on PostgreSQL 16");
     }
 
     @Test
@@ -112,8 +112,8 @@ public class TestPostgresDictionary {
         };
         Configurations.configureInstance(dict, new JDBCConfigurationImpl(), (String) null, "DBDictionary");
         dict.connectedConfiguration(connection(16, 0));
-        assertTrue("storeCharsAsNumbers=true assigned by a subclass constructor must survive on PostgreSQL 16",
-            dict.storeCharsAsNumbers);
+        assertTrue(dict.storeCharsAsNumbers,
+            "storeCharsAsNumbers=true assigned by a subclass constructor must survive on PostgreSQL 16");
     }
 
     @Test
@@ -123,11 +123,11 @@ public class TestPostgresDictionary {
 
         DBDictionary explicit = DBDictionaryFactory.newDBDictionary(conf, ds, "StoreCharsAsNumbers=true");
         assertTrue(explicit instanceof PostgresDictionary);
-        assertTrue("explicit StoreCharsAsNumbers=true must survive DBDictionaryFactory", explicit.storeCharsAsNumbers);
+        assertTrue(explicit.storeCharsAsNumbers, "explicit StoreCharsAsNumbers=true must survive DBDictionaryFactory");
 
         DBDictionary auto = DBDictionaryFactory.newDBDictionary(conf, ds, null);
         assertTrue(auto instanceof PostgresDictionary);
-        assertFalse("PostgreSQL 16 must default to native CHAR storage", auto.storeCharsAsNumbers);
+        assertFalse(auto.storeCharsAsNumbers, "PostgreSQL 16 must default to native CHAR storage");
     }
 
     /**

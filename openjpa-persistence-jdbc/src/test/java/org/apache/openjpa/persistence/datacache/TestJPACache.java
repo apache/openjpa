@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
@@ -25,10 +30,12 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJPACache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CachedPerson.class, CachedManager.class, CachedEmployee.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm");
@@ -86,9 +93,10 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>org.apache.openjpa.persistence.StoreCache</li>
      * </ul>
      */
+    @Test
     public void testInterfacesReturned() {
         Object cache = emf.getCache();
-        assertNotNull("Cache is not enabled", cache);
+        assertNotNull(cache, "Cache is not enabled");
         assertTrue(cache instanceof jakarta.persistence.Cache);
         assertTrue(cache instanceof org.apache.openjpa.persistence.StoreCache);
     }
@@ -96,6 +104,7 @@ public class TestJPACache extends SingleEMFTestCase {
     /**
      * Ensure that an Entity is not inserted in the cache until the transaction commits.
      */
+    @Test
     public void testContains() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -128,6 +137,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>CachedPerson id:1 is found in the cache after evicting CachedPerson id:11</li>
      * </ul>
      */
+    @Test
     public void testEvictInstance() {
         populate();
         assertInCache(CachedPerson.class, 10);
@@ -150,6 +160,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>Any instance of CachedManager or CachedEmployee is found in the cache after calling evict()</li>
      * </ul>
      */
+    @Test
     public void testEvictClass() {
         populate();
         assertInCache(CachedPerson.class, 10);
@@ -177,6 +188,7 @@ public class TestJPACache extends SingleEMFTestCase {
      * </ul>
      *
      */
+    @Test
     public void testEvictAll() {
         populate();
 
@@ -196,6 +208,7 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     // test methods for bad input.
+    @Test
     public void testContainsNullEntity() {
         try {
             emf.getCache().contains(null, 1);
@@ -205,6 +218,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testContainsNonEntityClass() {
         try {
             emf.getCache().contains(Object.class, 1);
@@ -214,14 +228,17 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testContainsNullPrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, null));
     }
 
+    @Test
     public void testContainsNegativePrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, -1));
     }
 
+    @Test
     public void testContainsInvalidPrimaryKeyType() {
         try{
             emf.getCache().contains(CachedPerson.class, "abcd");
@@ -231,6 +248,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEvictNullInstance() {
         try {
             emf.getCache().evict(null, 1);
@@ -240,6 +258,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEvictNonEntityInstance() {
         try {
             emf.getCache().evict(Object.class, 1);
@@ -249,14 +268,17 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEvictNullPrimaryKey() {
         emf.getCache().evict(CachedPerson.class, null);
     }
 
+    @Test
     public void testEvictNegativePrimaryKey() {
         emf.getCache().evict(CachedPerson.class, -1);
     }
 
+    @Test
     public void testEvictInvalidPrimaryKeyType() {
         try{
             emf.getCache().evict(CachedPerson.class, "abcd");
@@ -266,6 +288,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEvictNullClass() {
         try {
             emf.getCache().evict(null);
@@ -275,6 +298,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testEvictNonEntity() {
         try {
             emf.getCache().evict(Object.class);
@@ -284,6 +308,7 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testIllegalStateExceptionAfterClose() {
         emf.close();
         try {
@@ -294,6 +319,8 @@ public class TestJPACache extends SingleEMFTestCase {
             // expected
         }
     }
+
+    @Test
     public void testIllegalStateExceptionGetAfterClose() {
         emf.getCache();  // populate the EntityManagerFactoryImpl's wrapper for the StoreCache.
         emf.close();
@@ -315,8 +342,8 @@ public class TestJPACache extends SingleEMFTestCase {
      *            PrimaryKey of the entity.
      */
     private void assertInCache(Class<?> cls, Object primaryKey) {
-        assertTrue(String.format("%s:%s should exist in cache", cls.toString(), primaryKey.toString()), emf.getCache()
-            .contains(cls, primaryKey));
+        assertTrue(emf.getCache()
+            .contains(cls, primaryKey), String.format("%s:%s should exist in cache", cls.toString(), primaryKey.toString()));
     }
 
     /**
@@ -328,8 +355,8 @@ public class TestJPACache extends SingleEMFTestCase {
      *            PrimaryKey of the entity.
      */
     private void assertNotInCache(Class<?> cls, Object primaryKey) {
-        assertFalse(String.format("%s:%s should not exist in cache", cls.toString(), primaryKey.toString()), emf
-            .getCache().contains(cls, primaryKey));
+        assertFalse(emf
+            .getCache().contains(cls, primaryKey), String.format("%s:%s should not exist in cache", cls.toString(), primaryKey.toString()));
     }
 
 }

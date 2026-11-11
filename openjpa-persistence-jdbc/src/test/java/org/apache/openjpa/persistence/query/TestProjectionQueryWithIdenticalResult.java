@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,6 +29,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.
 import org.apache.openjpa.persistence.jdbc.common.apps.
         UnidirectionalOneToOneOwner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -42,7 +46,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 	private static boolean USE_TXN = true;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
         	  UnidirectionalOneToOneOwned.class,
@@ -60,7 +65,8 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
         em.close();
     }
 
-	public void testDuplicateResultInProjection1() {
+    @Test
+    public void testDuplicateResultInProjection1() {
         String jpql = "SELECT p.owned, p FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
@@ -71,7 +77,8 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 		}
 	}
 
-	public void testDuplicateResultInProjection2() {
+    @Test
+    public void testDuplicateResultInProjection2() {
         String jpql = "SELECT p, p.owned FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
@@ -82,7 +89,8 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 		}
 	}
 
-	public void testDuplicateResultInProjection3() {
+    @Test
+    public void testDuplicateResultInProjection3() {
         String jpql = "SELECT p, q FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
@@ -94,7 +102,8 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 		}
 	}
 
-	public void testDuplicateResultInProjection4() {
+    @Test
+    public void testDuplicateResultInProjection4() {
         String jpql = "SELECT q, p FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);

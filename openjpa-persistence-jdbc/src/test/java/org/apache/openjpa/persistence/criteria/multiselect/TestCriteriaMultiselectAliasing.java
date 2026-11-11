@@ -32,27 +32,29 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.criteria.Subquery;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
-	
 	private static final Logger logger = Logger.getLogger(TestCriteriaMultiselectAliasing.class.getCanonicalName());
-	
+
     CriteriaQuery<Tuple> critQuery;
     String critQueryString;
 
     String doCB = System.getProperty("doCB");
 
     @Override
-    public void setUp() throws Exception {
+    protected boolean isSupported(DBDictionary dict) {
         // Only run on Oracle....the asserts at this time look for SQL specific to the
         // way things are generated for Oracle.
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.OracleDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+        return dict instanceof OracleDictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(DimDay.class, FactWorkAssignment.class
             ,"openjpa.Log","SQL=TRACE,Tests=TRACE", "openjpa.ConnectionFactoryProperties",
             "PrintParameters=true, PrettyPrint=true, PrettyPrintLineLength=72"
@@ -63,7 +65,8 @@ public class TestCriteriaMultiselectAliasing extends SQLListenerTestCase {
         logger.fine("critQueryString = " + critQueryString);
     }
 
-    public void test (){
+    @Test
+    public void test() {
         if ("true".equals(doCB)){
             this.ttestCriteriaQuery();
         }

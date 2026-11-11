@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.embed.record;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests record embeddables with @AttributeOverride to map the same
@@ -28,12 +34,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(WarehouseEntity.class, AddressRecord.class,
                 CLEAR_TABLES);
     }
 
+    @Test
     public void testPersistAndLoadWithAttributeOverride() {
         final AddressRecord ship =
                 new AddressRecord("10 Dock Rd", "PortCity", "30001");
@@ -67,6 +74,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em2.close();
     }
 
+    @Test
     public void testUpdateOneOverriddenEmbeddable() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Update",
                 new AddressRecord("Old Ship St", "OldCity", "11111"),
@@ -103,6 +111,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em3.close();
     }
 
+    @Test
     public void testDeleteWithAttributeOverride() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Delete",
                 new AddressRecord("S", "C", "00000"),
@@ -129,6 +138,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em3.close();
     }
 
+    @Test
     public void testOneEmbeddableNull() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Partial",
                 new AddressRecord("Ship St", "ShipCity", "55555"),
@@ -150,6 +160,7 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em2.close();
     }
 
+    @Test
     public void testRecordEqualityAcrossOverrides() {
         final AddressRecord same =
                 new AddressRecord("Same St", "SameCity", "77777");

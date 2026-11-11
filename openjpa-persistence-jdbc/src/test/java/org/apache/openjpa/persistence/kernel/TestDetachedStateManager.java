@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,6 +45,8 @@ import org.apache.openjpa.persistence.kernel.common.apps.AttachB;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachE;
 import org.apache.openjpa.persistence.kernel.common.apps.DetachSMPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachedStateManager extends BaseKernelTest {
 
@@ -45,13 +54,6 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
     private int oid;
     private int doid;
-
-    /**
-     * Creates a new instance of TestDetachedStateManager
-     */
-    public TestDetachedStateManager(String name) {
-        super(name);
-    }
 
     private void deleteAll() {
         deleteAll(AttachA.class);
@@ -66,9 +68,8 @@ public class TestDetachedStateManager extends BaseKernelTest {
         return pm;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
 
         deleteAll();
 
@@ -97,11 +98,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testDetach() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = pm.find(AttachB.class, oid);
 
-        assertNotNull("b is null in testDetach", b);
+        assertNotNull(b, "b is null in testDetach");
 
         b = (AttachB) pm.detachCopy(b);
         endEm(pm);
@@ -136,6 +138,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testDetachWithGroups() {
         OpenJPAEntityManager pm = getPM();
         //FIXME jthomas
@@ -145,16 +148,16 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm.getFetchPlan().addFetchGroup("all");
         AttachB b = pm.find(AttachB.class, oid);
 
-        assertNotNull("b is null in testDetachWithGroups", b);
+        assertNotNull(b, "b is null in testDetachWithGroups");
 
         b = (AttachB) pm.detachCopy(b);
         endEm(pm);
 
         assertTrue(pm.isDetached(b));
-        assertEquals("b.getAint() not 5", 5, b.getAint());
-        assertEquals("b.getAint() not 5str", "5", b.getBstr());
-        assertEquals("b.getStringIntMap().size() not equal to 1", 1,
-            b.getStringIntMap().size());
+        assertEquals(5, b.getAint(), "b.getAint() not 5");
+        assertEquals("5", b.getBstr(), "b.getAint() not 5str");
+        assertEquals(1, b.getStringIntMap().size(),
+            "b.getStringIntMap().size() not equal to 1");
 
         b.setAint(12);
         b.setBstr("12");
@@ -163,26 +166,27 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm = getPM();
         startTx(pm);
         AttachB attached = (AttachB) pm.merge(b);
-        assertEquals("not 12", 12, attached.getAint());
-        assertEquals("not 12str", "12", attached.getBstr());
-        assertEquals("not newInteger(12)", 12,
-            attached.getStringIntMap().get("12"));
-        assertEquals("not newInteger(5)", 5,
-            attached.getStringIntMap().get("5"));
+        assertEquals(12, attached.getAint(), "not 12");
+        assertEquals("12", attached.getBstr(), "not 12str");
+        assertEquals(12, attached.getStringIntMap().get("12"),
+            "not newInteger(12)");
+        assertEquals(5, attached.getStringIntMap().get("5"),
+            "not newInteger(5)");
         endTx(pm);
         endEm(pm);
 
         pm = getPM();
         b = (AttachB) pm.find(AttachB.class, oid);
-        assertEquals("not equal 12", 12, b.getAint());
-        assertEquals("not equal 12str", "12", b.getBstr());
-        assertEquals("not equal newinteger(12)", 12,
-            b.getStringIntMap().get("12"));
-        assertEquals("not equal newInteger(5)", 5,
-            b.getStringIntMap().get("5"));
+        assertEquals(12, b.getAint(), "not equal 12");
+        assertEquals("12", b.getBstr(), "not equal 12str");
+        assertEquals(12, b.getStringIntMap().get("12"),
+            "not equal newinteger(12)");
+        assertEquals(5, b.getStringIntMap().get("5"),
+            "not equal newInteger(5)");
         endEm(pm);
     }
 
+    @Test
     public void testDetachNoOverwrite() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
@@ -210,11 +214,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testOptimisticLock() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
 
-        assertNotNull("b is null in testOptimisticLock", b);
+        assertNotNull(b, "b is null in testOptimisticLock");
 
         b = (AttachB) pm.detachCopy(b);
         endEm(pm);
@@ -244,11 +249,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testEmbedded() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = pm.find(AttachD.class, doid);
 
-        assertNotNull("d is null in testEmbedded", d);
+        assertNotNull(d, "d is null in testEmbedded");
 
         d.getEmbeddedE().getEstr();
         d = (AttachD) pm.detachCopy(d);
@@ -267,18 +273,19 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm = getPM();
         d2 = (AttachD) pm.find(AttachD.class, doid);
 
-        assertNotNull("d2 is null in testEmbedded", d2);
+        assertNotNull(d2, "d2 is null in testEmbedded");
 
         assertEquals("E12", d2.getEmbeddedE().getEstr());
         assertEquals(5, d2.getEmbeddedE().getEint());
         endEm(pm);
     }
 
+    @Test
     public void testNullEmbedded() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = (AttachD) pm.find(AttachD.class, doid);
 
-        assertNotNull("d is null in testNullEmbedded", d);
+        assertNotNull(d, "d is null in testNullEmbedded");
         d.getEmbeddedE().getEstr();
         d = (AttachD) pm.detachCopy(d);
         endEm(pm);
@@ -294,7 +301,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm = getPM();
         d2 = (AttachD) pm.find(AttachD.class, doid);
 
-        assertNotNull("d2 is null in testNullEmbedded", d2);
+        assertNotNull(d2, "d2 is null in testNullEmbedded");
         // no null ind
         if (d2.getEmbeddedE() != null) {
             assertNull(d2.getEmbeddedE().getEstr());
@@ -303,11 +310,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testNullEmbeddedRelated() {
         OpenJPAEntityManager pm = getPM();
         AttachD d = (AttachD) pm.find(AttachD.class, doid);
 
-        assertNotNull("d is null in testNullEmbeddedRelated", d);
+        assertNotNull(d, "d is null in testNullEmbeddedRelated");
 
         d.getEmbeddedE().getEstr();
         d = (AttachD) pm.detachCopy(d);
@@ -317,22 +325,23 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pm = getPM();
         startTx(pm);
         AttachD d2 = (AttachD) pm.merge(d);
-        assertNull("d2.getEmbeddedE().getEstr() is not null",
-            d2.getEmbeddedE().getEstr());
-        assertEquals("d2.getEmbeddedE().getEint() is not equal to 5", 5,
-            d2.getEmbeddedE().getEint());
+        assertNull(d2.getEmbeddedE().getEstr(),
+            "d2.getEmbeddedE().getEstr() is not null");
+        assertEquals(5, d2.getEmbeddedE().getEint(),
+            "d2.getEmbeddedE().getEint() is not equal to 5");
         endTx(pm);
         endEm(pm);
 
         pm = getPM();
         d2 = (AttachD) pm.find(AttachD.class, doid);
-        assertNull("d2.getEmbeddedE().getEstr() is not null",
-            d2.getEmbeddedE().getEstr());
-        assertEquals("d2.getEmbeddedE().getEint() is not 5", 5,
-            d2.getEmbeddedE().getEint());
+        assertNull(d2.getEmbeddedE().getEstr(),
+            "d2.getEmbeddedE().getEstr() is not null");
+        assertEquals(5, d2.getEmbeddedE().getEint(),
+            "d2.getEmbeddedE().getEint() is not 5");
         endEm(pm);
     }
 
+    @Test
     public void testNullCollection() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
@@ -356,10 +365,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endEm(pm);
     }
 
+    @Test
     public void testCollectionAdd() {
         doCollectionTest(false);
     }
 
+    @Test
     public void testCollectionChanges() {
         doCollectionTest(true);
     }
@@ -368,12 +379,12 @@ public class TestDetachedStateManager extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
 
-        assertNotNull("b is null in doCollectionTest", b);
+        assertNotNull(b, "b is null in doCollectionTest");
         b.getDs();
         b = (AttachB) pm.detachCopy(b);
         endEm(pm);
 
-        assertEquals("b is null in doCollectionTest", 1, b.getDs().size());
+        assertEquals(1, b.getDs().size(), "b is null in doCollectionTest");
         if (remove) {
             for (Iterator it = b.getDs().iterator(); it.hasNext();) {
                 it.next();

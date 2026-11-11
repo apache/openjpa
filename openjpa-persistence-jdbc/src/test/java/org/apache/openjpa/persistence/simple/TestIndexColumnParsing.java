@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -25,6 +28,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that @Index columnList with ASC/DESC sort directions
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestIndexColumnParsing extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, IndexedEntity.class);
     }
@@ -42,6 +47,7 @@ public class TestIndexColumnParsing extends SingleEMFTestCase {
      * persisted and retrieved — the sort direction should not cause
      * a "column not found" error during schema creation.
      */
+    @Test
     public void testIndexWithSortDirection() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -70,6 +76,7 @@ public class TestIndexColumnParsing extends SingleEMFTestCase {
      * Verify the index metadata has the correct column names
      * (without ASC/DESC suffixes).
      */
+    @Test
     public void testIndexMetadataColumns() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
@@ -80,9 +87,9 @@ public class TestIndexColumnParsing extends SingleEMFTestCase {
         assertNotNull(table);
 
         // Verify the columns exist in the table (no "svalue DESC" nonsense)
-        assertNotNull("Column 'svalue' should exist",
-            table.getColumn("svalue"));
-        assertNotNull("Column 'svalue2' should exist",
-            table.getColumn("svalue2"));
+        assertNotNull(table.getColumn("svalue"),
+            "Column 'svalue' should exist");
+        assertNotNull(table.getColumn("svalue2"),
+            "Column 'svalue2' should exist");
     }
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.time.LocalTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
@@ -26,6 +28,8 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A time parameter with a fraction of a second finds the entity stored with the same time, also where
@@ -36,7 +40,7 @@ public class TestTimeParameterPrecision extends SingleEMFTestCase {
     private static final LocalTime TIME = LocalTime.of(10, 11, 12, 345_678_000);
     private static final OffsetTime OFFSET_TIME = OffsetTime.of(TIME, ZoneOffset.UTC);
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, Java8TimeTypes.class);
         try (EntityManager em = emf.createEntityManager()) {
@@ -50,6 +54,7 @@ public class TestTimeParameterPrecision extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testFindByLocalTime() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e WHERE e.localTimeField = :t",
@@ -58,6 +63,7 @@ public class TestTimeParameterPrecision extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testFindByOffsetTime() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM Java8TimeTypes e WHERE e.offsetTimeField = :t",

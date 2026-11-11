@@ -33,6 +33,9 @@ import org.apache.openjpa.persistence.datacache.common.apps.AttachB;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachC;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachD;
 import org.apache.openjpa.persistence.datacache.common.apps.AttachE;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests load on the cache. To run:
@@ -42,8 +45,7 @@ import org.apache.openjpa.persistence.datacache.common.apps.AttachE;
  *
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
-public class CacheLoadTest
-    extends AbstractTestCase {
+public class CacheLoadTest extends AbstractTestCase {
 
     private EntityManagerFactory emf;
     protected int threadCount =
@@ -51,9 +53,8 @@ public class CacheLoadTest
     protected int interationCount =
             Integer.getInteger("cachetest.iterations", 1000);
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -61,13 +62,14 @@ public class CacheLoadTest
         emf = getEmf(propsMap);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
         super.tearDown();
     }
 
+    @Test
     public void testCacheLoad()
         throws Exception {
         mttest(Integer.getInteger("cachetest.threads", 30),

@@ -27,25 +27,22 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.StateImagePC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.StateImagePC3;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestStateImage
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
+public class TestStateImage extends TestSQLListenerTestCase {
     private Object _oid = null;
-
-    /** Creates a new instance of TestStateImage */
-    public TestStateImage() {
-    }
-    public TestStateImage(String test) {
-        super(test);
-    }
-
 
     @Override
     public void setUpTestCase() {
@@ -68,6 +65,7 @@ public class TestStateImage
         pm.close();
     }
 
+    @Test
     public void testOptLock() {
         OpenJPAEntityManager pm1 = getEm(true, true);
         OpenJPAEntityManager pm2 = getEm(true, true);
@@ -154,6 +152,7 @@ public class TestStateImage
         }
     }
 
+    @Test
     public void testOptLockOnVerticalClass() {
         OpenJPAEntityManager pm1 = getEm(true, true);
         OpenJPAEntityManager pm2 = getEm(true, true);
@@ -204,8 +203,9 @@ public class TestStateImage
         pm.close();
     }
 
+    @Test
     public void testLockGroup()
-    throws Exception {
+        throws Exception {
         OpenJPAEntityManager pm = getEm(true, true);
         pm.getTransaction().begin();
         StateImagePC3 pc = new StateImagePC3();

@@ -16,7 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The tables owned by a subclass of a single table hierarchy have to be cleaned
@@ -26,7 +30,7 @@ import jakarta.persistence.EntityManager;
  */
 public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteBase.class, BulkDeleteSub.class,
             BulkDeleteItem.class);
@@ -38,6 +42,7 @@ public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase 
      * The whole hierarchy is deleted without criteria, so the owned tables are
      * emptied outright.
      */
+    @Test
     public void testBulkDeleteThroughBaseClass() {
         assertEquals(2, delete("delete from BulkDeleteBase b"));
 
@@ -57,6 +62,7 @@ public class TestBulkDeleteSubclassJoinTable extends AbstractBulkDeleteTestCase 
      * the keys of the matching rows are materialized and the rows of the base
      * class survive.
      */
+    @Test
     public void testBulkDeleteOfSubclassKeepsBaseRows() {
         assertEquals(1, delete("delete from BulkDeleteSub s"));
 

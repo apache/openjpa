@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.update;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -35,7 +40,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     private MultilingualString entity1;
 	private OpenJPAEntityManagerSPI em;
 
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             MultilingualString.class,
@@ -44,6 +49,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
         em = emf.createEntityManager();
     }
 
+    @Test
     public void testUpdateMapKey() throws Exception {
     	em.getTransaction().begin();
 
@@ -63,6 +69,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     	em.close();
     }
 
+    @Test
     public void testUpdateMapValue() throws Exception {
     	em.getTransaction().begin();
 

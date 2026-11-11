@@ -18,18 +18,22 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for JPQL LOCATE function.
  */
 public class TestLocate extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 
@@ -40,6 +44,7 @@ public class TestLocate extends SingleEMTestCase {
         em1.close();
     }
 
+    @Test
     public void testLocate() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where LOCATE('bar', o.value) = 1").getSingleResult());
@@ -53,6 +58,7 @@ public class TestLocate extends SingleEMTestCase {
             "where LOCATE('ar', o.value, 2) = 2").getSingleResult());
     }
 
+    @Test
     public void testLocateInMemory() {
         List<SimpleEntity> allEntities = em.createQuery("select o from simple o", SimpleEntity.class).getResultList();
         Object inMemoryResult = em.createQuery("select LOCATE('bar', o.value) from simple o")

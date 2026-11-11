@@ -18,19 +18,21 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Tuple;
 
 import org.apache.openjpa.persistence.simple.NamedEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TupleQueryTest
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(NamedEntity.class);
 
@@ -44,6 +46,7 @@ public class TupleQueryTest
         em.close();
     }
 
+    @Test
     public void testNormalQuery() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -55,9 +58,4 @@ public class TupleQueryTest
             em.close();
         }
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TupleQueryTest.class);
-    }
 }
-

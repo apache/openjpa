@@ -22,8 +22,8 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public abstract class AnnotationTestCase extends AbstractTestCase {
 
-    public AnnotationTestCase(String name, String s) {
-        super(name, s);
+    public AnnotationTestCase(String s) {
+        super(s);
     }
 
     @Override

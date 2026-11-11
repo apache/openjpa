@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.
         RelationRelationMapTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRelationToRelationMaps
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(RelationToRelationMapInstance.class, AllFieldTypes.class,
             CLEAR_TABLES);
     }
 
+    @Test
     public void testRelationToRelationMaps() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             RelationToRelationMapInstance.class);

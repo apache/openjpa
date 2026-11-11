@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests OPENJPA-199
@@ -26,7 +30,7 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class TestBulkUpdatesAndEmbeddedFields
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MultipleSameTypedEmbedded.class, EmbeddableWithRelation.class,
             CLEAR_TABLES);
@@ -39,6 +43,7 @@ public class TestBulkUpdatesAndEmbeddedFields
         em.getTransaction().commit();
     }
 
+    @Test
     public void testBulkUpdateOfEmbeddedField() {
         em.getTransaction().begin();
         assertEquals(1, em.createQuery(

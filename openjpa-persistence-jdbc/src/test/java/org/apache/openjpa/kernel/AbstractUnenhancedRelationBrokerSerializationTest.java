@@ -22,10 +22,13 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.UnenhancedSubtype;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.util.ImplHelper;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractUnenhancedRelationBrokerSerializationTest<T>
     extends AbstractBrokerSerializationTest<T> {
 
+    @Test
     public void testNewUnenhancedSMsRegisteredGlobally() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAEntityManager em2 = null;
@@ -36,11 +39,11 @@ public abstract class AbstractUnenhancedRelationBrokerSerializationTest<T>
             em2 = deserializeEM(serialize(em));
 
             for (Object o : em2.getManagedObjects()) {
-                assertFalse(o instanceof PersistenceCapable);
-                assertNotNull(ImplHelper.toPersistenceCapable(o,
+                Assertions.assertFalse(o instanceof PersistenceCapable);
+                Assertions.assertNotNull(ImplHelper.toPersistenceCapable(o,
                     emf.getConfiguration()));
                 if (o instanceof UnenhancedSubtype)
-                    assertNotNull(ImplHelper.toPersistenceCapable(
+                    Assertions.assertNotNull(ImplHelper.toPersistenceCapable(
                         ((UnenhancedSubtype) o).getRelated(),
                             emf.getConfiguration()));
             }

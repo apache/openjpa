@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.inheritance.serializable;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,10 +31,12 @@ import java.io.ObjectOutputStream;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSerialization extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Person.class, Employee.class, DROP_TABLES, "openjpa.DetachState",
                 "fgs(DetachedStateField=true)");
@@ -42,6 +48,7 @@ public class TestSerialization extends SingleEMFTestCase {
      * server merges the entity back into a persistence context and commits the
      * changes.
      */
+    @Test
     public void testDetachedUpdate() {
         Employee emp = new Employee();
         emp.setFirstName("John");

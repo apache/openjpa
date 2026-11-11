@@ -18,17 +18,21 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDupNamedQuery extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class, SimpleEntity2.class, CLEAR_TABLES);
 
@@ -42,6 +46,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testSimpleQuery() {
         simpleQuery(false, "FindOne", "FindAll", "Name One", "Value One",
             "Name Two", "Value Two");
@@ -97,9 +102,5 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             }
         }
         em.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestDupNamedQuery.class);
     }
 }

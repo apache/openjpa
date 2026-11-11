@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.kernel.exps.Parameter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestSQLBuffer {
 

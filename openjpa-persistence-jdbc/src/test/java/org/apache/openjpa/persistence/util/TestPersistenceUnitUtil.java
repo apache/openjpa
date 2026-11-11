@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -45,11 +46,11 @@ import jakarta.persistence.metamodel.Attribute;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPersistenceUnitUtil {
 
@@ -57,7 +58,7 @@ public class TestPersistenceUnitUtil {
 	
 	private EntityManager em;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void beforeAll() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -453,11 +454,13 @@ public class TestPersistenceUnitUtil {
 		assertTrue(puu.isLoaded(det));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testUnmanagedEntity() {
-		Eager ee = createEagerEntity();
-		emf.getPersistenceUnitUtil().getVersion(ee);
-	}
+        assertThrows(IllegalArgumentException.class, () -> {
+            Eager ee = createEagerEntity();
+            emf.getPersistenceUnitUtil().getVersion(ee);
+        });
+    }
 
 	@Test
 	public void testVersionedEntity() {
@@ -534,12 +537,14 @@ public class TestPersistenceUnitUtil {
 		assertEquals(expectedId, id);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testGetIdentifierNonEntity() {
-		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
-		// Pass a non-entity object - should throw IllegalArgumentException
-		puu.getIdentifier("not an entity");
-	}
+        assertThrows(IllegalArgumentException.class, () -> {
+            PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+            // Pass a non-entity object - should throw IllegalArgumentException
+            puu.getIdentifier("not an entity");
+        });
+    }
 
 	@Test
 	public void testIsInstanceManaged() {
@@ -697,19 +702,19 @@ public class TestPersistenceUnitUtil {
         assertFalse(pu.isLoaded(ent, "transField"));
     }
 
-    @AfterClass
+    @AfterAll
 	public static void afterAll() {
 		if (emf != null && emf.isOpen()) {
 			emf.close();
 		}
 	}
 	
-	@Before
+	@BeforeEach
 	public void beforeEach() {
 		em = emf.createEntityManager();
 	}
 	
-	@After
+	@AfterEach
 	public void afterEach() {
 		if (em != null && em.isOpen()) {
 			em.close();

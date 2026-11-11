@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Date;
 
 import jakarta.persistence.Query;
@@ -28,10 +31,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestXMLExplicitAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)");
@@ -42,11 +47,13 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
     protected String getPersistenceUnitName() {
         return "Access-1";
     }
+
     /**
      * Validates the use of field level access on an
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
+    @Test
     public void testClassSpecifiedFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -77,6 +84,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
+    @Test
     public void testClassSpecifiedPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -109,6 +117,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * on specific methods.
      */
 
+    @Test
     public void testClassSpecifiedMixedSinglePCFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -157,6 +166,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * defined at the class level and property access defined
      * on specific methods.
      */
+    @Test
     public void testClassSpecifiedMixedSinglePCPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -201,6 +211,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using field access and an entity
      * subclass using property access get mapped properly.
      */
+    @Test
     public void testAbstractMappedSuperField() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -258,6 +269,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using property access and an entity
      * subclass using field access get mapped properly.
      */
+    @Test
     public void testAbstractMappedSuperProperty() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -317,6 +329,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
+    @Test
     public void testMappedSuperField() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
@@ -376,6 +389,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
+    @Test
     public void testMappedSuperProperty() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -427,6 +441,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * persistent classes within an inheritance hierarchy that uses
      * MappedSuperclass.
      */
+    @Test
     public void testMixedMappedSuper() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -479,6 +494,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
+    @Test
     public void testEntityFieldDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -558,6 +574,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
+    @Test
     public void testEntityPropertyDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -636,8 +653,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with field access can be used within an
      * entity with property access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
     public void testEmbeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -685,8 +703,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with property access can be used within an
      * entity with field access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
     public void testEmbeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -736,8 +755,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with mixed access can be used within an
      * entity with mixed access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
     public void testMixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 

@@ -18,11 +18,13 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities can use floating point ids.
@@ -32,11 +34,12 @@ import junit.textui.TestRunner;
 public class TestFloatingPointIds
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(FloatIdEntity.class, DoubleObjIdEntity.class);
     }
 
+    @Test
     public void testPersistFloat() {
         FloatIdEntity e = new FloatIdEntity();
         e.setId(3F);
@@ -55,6 +58,7 @@ public class TestFloatingPointIds
         em.close();
     }
 
+    @Test
     public void testPersistDoubleObj() {
         DoubleObjIdEntity e = new DoubleObjIdEntity();
         e.setId(4D);
@@ -72,9 +76,4 @@ public class TestFloatingPointIds
         assertEquals(44, e.getData());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestFloatingPointIds.class);
-    }
 }
-

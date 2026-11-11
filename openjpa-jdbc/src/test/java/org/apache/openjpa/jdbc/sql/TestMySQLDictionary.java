@@ -20,9 +20,9 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Proxy;
 import java.sql.CallableStatement;
@@ -45,14 +45,24 @@ import org.apache.openjpa.lib.jdbc.ConfiguringConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class TestMySQLDictionary {
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @AfterEach
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testDBDictionaryGetBatchFetchSize() throws Exception {
@@ -426,13 +436,13 @@ public class TestMySQLDictionary {
             String name = version[0] + "." + version[1];
             MySQLDictionary dict = newConfiguredDictionary();
             dict.connectedConfiguration(connection(version[0], version[1], name + ".0", 8));
-            assertEquals(name, "DATETIME{0}", dict.timestampTypeName);
-            assertEquals(name, "TIME{0}", dict.timeTypeName);
-            assertEquals(name, 6, dict.dateFractionDigits);
-            assertTrue(name, dict.fractionalTypeNameSet.contains("DATETIME{0}"));
-            assertTrue(name, dict.fractionalTypeNameSet.contains("TIME{0}"));
-            assertFalse(name, dict.fixedSizeTypeNameSet.contains("DATETIME{0}"));
-            assertTrue(name, dict.supportsXMLColumn);
+            assertEquals("DATETIME{0}", dict.timestampTypeName, name);
+            assertEquals("TIME{0}", dict.timeTypeName, name);
+            assertEquals(6, dict.dateFractionDigits, name);
+            assertTrue(dict.fractionalTypeNameSet.contains("DATETIME{0}"), name);
+            assertTrue(dict.fractionalTypeNameSet.contains("TIME{0}"), name);
+            assertFalse(dict.fixedSizeTypeNameSet.contains("DATETIME{0}"), name);
+            assertTrue(dict.supportsXMLColumn, name);
         }
     }
 

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,6 +33,8 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that a parameter used only in the selection, grouping or ordering of a
@@ -37,7 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSelectionParameters extends SingleEMFTestCase {
     private CriteriaBuilder cb;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, CompUser.class, Address.class);
         cb = emf.getCriteriaBuilder();
@@ -49,6 +55,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInFunctionOfSelect() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -62,6 +69,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInArithmeticOfMultiselect() {
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -79,6 +87,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testPositionalParameterInSelect() {
         CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -93,6 +102,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInSelectAndWhere() {
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -112,6 +122,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInTuple() {
         CriteriaQuery<Tuple> cq = cb.createTupleQuery();
         Root<CompUser> u = cq.from(CompUser.class);
@@ -129,6 +140,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInConstruct() {
         CriteriaQuery<NameAndAge> cq = cb.createQuery(NameAndAge.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -144,6 +156,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInNestedCompoundSelection() {
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -162,6 +175,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInCaseOfSelect() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -178,6 +192,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInCoalesceOfSelect() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -191,6 +206,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInGroupByAndOrderByIsRegistered() {
         CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -210,6 +226,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testParameterInOrderByOnly() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> u = cq.from(CompUser.class);
@@ -225,6 +242,7 @@ public class TestSelectionParameters extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testReplacedSelectionDropsItsParameter() {
         CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
         Root<CompUser> u = cq.from(CompUser.class);

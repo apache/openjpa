@@ -16,6 +16,9 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
@@ -26,7 +29,7 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that a {@link MappingTool#ACTION_REFRESH} uses the right

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -31,6 +36,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.jdbc.query.domain.Magazine;
 import org.apache.openjpa.persistence.jdbc.query.domain.Publisher;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests multiple entities in projection are returned with both inner and outer
@@ -58,7 +65,7 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 
 	};
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Magazine.class, Publisher.class);
 		createData();
@@ -96,7 +103,8 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 
-	public void testMultipleEntitiesInProjectionUsingOuterJoin() {
+    @Test
+    public void testMultipleEntitiesInProjectionUsingOuterJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m left outer join m.publisher p " +
                       "where ((:useName = false) or (m.name like :name))";
@@ -123,7 +131,8 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		}
 	}
 
-	public void testMultipleEntitiesInProjectionUsingInnerJoin() {
+    @Test
+    public void testMultipleEntitiesInProjectionUsingInnerJoin() {
 		String jpql = "select m, p " +
 		              "from Magazine m inner join m.publisher p " +
                       "where ((:useName = false) or (m.name like :name))";
@@ -151,7 +160,8 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		}
 	}
 
-	public void testAggregateExpressionInHavingExpression() {
+    @Test
+    public void testAggregateExpressionInHavingExpression() {
         String jpql = "select m.publisher, max(m.datePublished) " +
                       "from Magazine m group by m.publisher " +
 					  "having max(m.datePublished) is null";

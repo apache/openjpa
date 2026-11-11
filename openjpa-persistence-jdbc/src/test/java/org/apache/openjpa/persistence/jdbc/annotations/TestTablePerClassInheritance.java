@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test that InheritanceType.TABLE_PER_CLASS JPA mapping is translated
@@ -35,12 +41,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestTablePerClassInheritance
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TablePerClass1.class, TablePerClass2.class, EmbedOwner.class,
             EmbedValue.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(TablePerClass2.class,
@@ -69,6 +76,7 @@ public class TestTablePerClassInheritance
             getColumns()[0].getName());
     }
 
+    @Test
     public void testInsertAndRetrieve() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.integration.slf4j;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to verify SLF4JLogFactory is being loaded
@@ -46,6 +49,7 @@ public class TestLogFactory extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSLF4J() {
         try {
             EntityManager em = emf.createEntityManager();

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,18 +29,20 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.EntityWithCompositeId;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.OwnerOfEntityWithCompositeId;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.RecursiveEntityWithCompositeId;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 
 
-	public TestCompositeIdTraversalInSQLMapping(String name)
+	public TestCompositeIdTraversalInSQLMapping()
 	{
-		super(name, "jdbccactusapp");
+		super("jdbccactusapp");
 	}
 
 
-	@Override
+    @BeforeEach
     public void setUp()
 	{
 		deleteAll(OwnerOfEntityWithCompositeId.class);
@@ -60,7 +64,9 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 		endTx(em);
 		endEm(em);
 	}
-	public void testTraversalWhenSQLSelectsBothEndOfTheRelation ()
+
+    @Test
+    public void testTraversalWhenSQLSelectsBothEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid  = (int) (System.currentTimeMillis() % 100000);
@@ -102,7 +108,8 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 		endEm(em);
 	}
 
-	public void testTraversalWhenSQLSelectsOnlyOneEndOfTheRelation ()
+    @Test
+    public void testTraversalWhenSQLSelectsOnlyOneEndOfTheRelation ()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid  = (int) (System.currentTimeMillis() % 100000);
@@ -135,7 +142,9 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 		assertEquals("foo", relative.getValue());
 		endEm(em);
 	}
-	public void testTraversalWhenSQLSelectsUnrelatedInstances ()
+
+    @Test
+    public void testTraversalWhenSQLSelectsUnrelatedInstances ()
 	{
 		EntityManager em = currentEntityManager();
         Integer uid1  = (int) (System.currentTimeMillis() % 100000);
@@ -182,7 +191,8 @@ public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {
 		endEm(em);
 	}
 
-	public void testRecursiveTraversal ()
+    @Test
+    public void testRecursiveTraversal ()
 	{
         Integer rootId  = (int) (System.currentTimeMillis() % 100000);
 

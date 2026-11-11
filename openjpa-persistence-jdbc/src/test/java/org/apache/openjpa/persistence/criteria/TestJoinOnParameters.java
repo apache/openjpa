@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +30,9 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.criteria.Subquery;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that a parameter used only in the ON condition of a join of a criteria
@@ -35,14 +40,14 @@ import jakarta.persistence.criteria.Subquery;
  */
 public class TestJoinOnParameters extends CriteriaTest {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         deleteData();
         createData();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         deleteData();
         super.tearDown();
@@ -94,6 +99,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         em.getTransaction().commit();
     }
 
+    @Test
     public void testParameterInOnOfSingularJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -107,6 +113,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Bob"), em.createQuery(cq).setParameter("city", "Oslo").getResultList());
     }
 
+    @Test
     public void testParameterInOnOfCollectionJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -120,6 +127,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Alice", "Bob"), em.createQuery(cq).setParameter("name", "small").getResultList());
     }
 
+    @Test
     public void testPositionalParameterInOn() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -131,6 +139,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Bob"), em.createQuery(cq).setParameter(city, "Oslo").getResultList());
     }
 
+    @Test
     public void testParameterInOnOfNestedJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -145,6 +154,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("small"), em.createQuery(cq).setParameter("name", "Bob").getResultList());
     }
 
+    @Test
     public void testParameterInOnThatReferencesTheRoot() {
         CriteriaQuery<Customer> cq = cb.createQuery(Customer.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -158,6 +168,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals("Alice", result.get(0).getName());
     }
 
+    @Test
     public void testParameterInOnAndWhereIsRegisteredOnce() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -171,6 +182,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Alice"), em.createQuery(cq).setParameter("city", "Rome").getResultList());
     }
 
+    @Test
     public void testParameterInOnOfSubqueryJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -186,6 +198,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Bob"), em.createQuery(cq).setParameter("name", "Bob").getResultList());
     }
 
+    @Test
     public void testParameterInOnOfJoinOfCorrelatedRoot() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);
@@ -203,6 +216,7 @@ public class TestJoinOnParameters extends CriteriaTest {
         assertEquals(List.of("Alice", "Bob"), em.createQuery(cq).setParameter("name", "small").getResultList());
     }
 
+    @Test
     public void testParameterInOnOfJoinOfCorrelatedJoin() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<Customer> c = cq.from(Customer.class);

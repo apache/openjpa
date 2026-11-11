@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.datacache;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
@@ -27,6 +29,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectB;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test some assumptions about query result metadata that the query
@@ -35,10 +38,11 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 @AllowFailure(message="surefire excluded")
 public class TestQueryResultTypes extends AbstractTestCase {
 
-    public TestQueryResultTypes(String test) {
-        super(test, "datacachecactusapp");
+    public TestQueryResultTypes() {
+        super("datacachecactusapp");
     }
 
+    @Test
     public void testQueryResultTypesWithThis() {
         Broker broker = getBroker();
         Query q =
@@ -51,6 +55,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectA.class, types[1]);
     }
 
+    @Test
     public void testQueryResultTypesWithRelated() {
         Broker broker = getBroker();
         Query q = broker
@@ -64,6 +69,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectB.class, types[1]);
     }
 
+    @Test
     public void testSingleProjectionOfNonThisRelation() {
         Broker broker = getBroker();
         Query q =
@@ -75,6 +81,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectB.class, types[0]);
     }
 
+    @Test
     public void testSingleProjectionOfThisRelation() {
         Broker broker = getBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +
@@ -83,6 +90,7 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(0, types.length);
     }
 
+    @Test
     public void testNoResultClause() {
         Broker broker = getBroker();
         Query q =

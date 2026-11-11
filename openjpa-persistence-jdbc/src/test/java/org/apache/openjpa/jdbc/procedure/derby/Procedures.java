@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.procedure.derby;
 
-import static junit.framework.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

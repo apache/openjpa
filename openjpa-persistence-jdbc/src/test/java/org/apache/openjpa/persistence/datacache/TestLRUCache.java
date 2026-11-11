@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,13 +33,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.IntId;
+import org.junit.jupiter.api.Test;
 
 public class TestLRUCache extends SingleEMFTestCase {
     private final int cacheSize = 5;
     private final String QUERY = "SELECT p FROM CachedPerson p WHERE p.id=";
 
     @Override
-    protected void setUp(Object... props) {
+    public void setUp(Object... props) {
         super.setUp(CLEAR_TABLES,
             CachedPerson.class,
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -44,6 +49,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         );
     }
 
+    @Test
     public void testQueryCacheOverFlow() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         ConcurrentQueryCache cache =
@@ -83,6 +89,7 @@ public class TestLRUCache extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testDataCacheOverFlow() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         StoreCacheImpl storeCache = (StoreCacheImpl) emf.getCache();

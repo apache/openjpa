@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Proxy;
 
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.DateTimeExtractPart;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestOracleDictionary {
 

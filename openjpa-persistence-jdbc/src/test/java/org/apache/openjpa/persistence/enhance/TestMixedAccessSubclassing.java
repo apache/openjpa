@@ -16,9 +16,13 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.enhance.common.apps.MixedAccessPerson;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test subclass enhancement on the fly with mixed access strategy
@@ -27,7 +31,7 @@ import org.junit.Test;
  */
 public class TestMixedAccessSubclassing extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 "openjpa.RuntimeUnenhancedClasses", "supported",

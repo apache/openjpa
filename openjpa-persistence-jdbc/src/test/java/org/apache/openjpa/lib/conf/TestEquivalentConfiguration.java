@@ -18,16 +18,26 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Properties;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that configuration properties can be specified both as new
@@ -80,23 +90,28 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         "jdbc:derby:target/database/openjpa-test-database;create=true";
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 
+    @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
     /**
      * Erase that System properties to ensure they are not impacting the
      * configuration as test harness inserts the System properties for
      * connection parameters.
      */
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         // Only run on Derby
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
         _system = backup();
         clear(_system);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
-        restore(_system);
+        if (_system != null) {
+            restore(_system);
+        }
         super.tearDown();
         if (emf1 != null) {
             clear(emf1);
@@ -108,6 +123,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that openjpa.* namespace can be used for persistence.xml.
      */
+    @Test
     public void testOldStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
@@ -124,6 +140,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that javax.* namespace can be used for persistence.xml.
      */
+    @Test
     public void testNewStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(NEW_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
@@ -141,6 +158,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* and javax.* namespace can both be used for
      * persistence.xml.
      */
+    @Test
     public void testMixedStylePersistenceUnitConfiguration() {
         emf1 = OpenJPAPersistence.createEntityManagerFactory(
             MIXED_STYLE_UNIT_NAME, PERSISTENCE_UNIT);
@@ -160,6 +178,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      *
      */
 
+    @Test
     public void testConflictStylePersistenceUnitConfiguration() {
         try {
             emf1 = OpenJPAPersistence.createEntityManagerFactory(
@@ -173,6 +192,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that javax.* namespace can be used for System properties.
      */
+    @Test
     public void testNewStyleSystemPropertyConfiguration() {
         try {
             System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
@@ -197,6 +217,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that openjpa.* namespace can be used for System properties.
      */
+    @Test
     public void testOldStyleSystemPropertyConfiguration() {
         try {
             System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
@@ -221,6 +242,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* and javax.* namespace can both be used for System
      * properties.
      */
+    @Test
     public void testMixedStyleSystemPropertyConfiguration() {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_URL_KEY, URL);
@@ -245,6 +267,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* and javax.* namespace can not both be used for the
      * same property in System configuration.
      */
+    @Test
     public void testConflictStyleSystemPropertyConfiguration() {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
@@ -263,6 +286,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that openjpa.* namespace can be used for runtime configuration.
      */
+    @Test
     public void testOldStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
@@ -283,6 +307,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     /**
      * Tests that javax.* namespace can be used for runtime configuration.
      */
+    @Test
     public void testNewStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
@@ -304,6 +329,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* and javax.* namespace can both be used for runtime
      * configuration.
      */
+    @Test
     public void testMixedStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
@@ -325,6 +351,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that openjpa.* and javax.* namespace can not both be used for the
      * same property in runtime configuration.
      */
+    @Test
     public void testConflictStyleRuntimePropertyConfiguration() {
         Properties conf = new Properties();
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

@@ -18,12 +18,21 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
     OpenJPAEntityManager em;
@@ -35,14 +44,12 @@ public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
     EntityI4 entityI4;
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.xml.EntityH.class,
             org.apache.openjpa.persistence.delimited.identifiers.xml.EntityI.class,
@@ -56,7 +63,7 @@ public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
         assertNotNull(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -98,6 +105,7 @@ public class TestXmlDelimitedJoinAnnotation extends SQLListenerTestCase {
         entityI2.setEntityI3(entityI3);
     }
 
+    @Test
     public void testCreate() {
         id++;
         createHandI(id);

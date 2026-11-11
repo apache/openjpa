@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.event.AbstractLifecycleListener;
@@ -27,6 +29,8 @@ import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestBrokerFactoryListenerRegistry
     extends SingleEMFTestCase {
@@ -34,7 +38,7 @@ public class TestBrokerFactoryListenerRegistry
     private int persistCount = 0;
     private int beginCount = 0;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(AllFieldTypes.class);
     }
@@ -57,6 +61,7 @@ public class TestBrokerFactoryListenerRegistry
         return emf;
     }
 
+    @Test
     public void testLifecycleListenerRegistry() {
         beginCount = 0;
         persistCount = 0;

@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,22 +38,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNTW extends BaseKernelTest {
 
     private OpenJPAEntityManagerFactory factory;
 
-    /**
-     * Creates a new instance of TestNTW
-     */
-    public TestNTW() {
-    }
-
-    public TestNTW(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         deleteAll(RuntimeTest1.class);
 
@@ -69,6 +63,7 @@ public class TestNTW extends BaseKernelTest {
         startTx(em);
     }
 
+    @Test
     public void testNonTransactionalWrite() throws Exception {
         OpenJPAEntityManagerFactory factory = broker();
         OpenJPAEntityManager em = factory.createEntityManager();

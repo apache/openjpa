@@ -23,7 +23,9 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.io.*;
@@ -38,13 +40,12 @@ import java.util.List;
 public class ReservedWordsIT extends AbstractPersistenceTestCase {
     private static OpenJPAEntityManagerFactory _emf;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         _emf = createEMF(new Object[0]);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(_emf);
         _emf = null;
@@ -52,6 +53,7 @@ public class ReservedWordsIT extends AbstractPersistenceTestCase {
     }
 
 
+    @Test
     public void testReservedColumnWords() throws Exception {
         List<String> reservedColumnWords = new ArrayList<>();
         DBDictionary dict = ((JDBCConfiguration)_emf.getConfiguration()).getDBDictionaryInstance();

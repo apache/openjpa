@@ -28,8 +28,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.tree.ClassNode;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
@@ -37,7 +37,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 public class TestSubclassValidator extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
                 Department.class,

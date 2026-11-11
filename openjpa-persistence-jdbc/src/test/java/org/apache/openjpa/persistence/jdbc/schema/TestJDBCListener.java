@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,21 +38,14 @@ import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.Test;
 
 
-public class TestJDBCListener
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestJDBCListener extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     public static boolean commitOccurred;
 
-    /** Creates a new instance of TestJDBCListener */
-    public TestJDBCListener() {
-    }
-
-    public TestJDBCListener(String name) {
-        super(name);
-    }
-
+    @Test
     public void testJDBCListener() {
         Map props=new HashMap();
         props.put("openjpa.jdbc.JDBCListeners", Listener.class.getName());
@@ -64,8 +60,8 @@ public class TestJDBCListener
         assertFalse(commitOccurred);
         pm.persist(new RuntimeTest1("Listener test", 99));
         pm.getTransaction().commit();
-        assertTrue("Commit event should have occurred, but did not",
-            commitOccurred);
+        assertTrue(commitOccurred,
+            "Commit event should have occurred, but did not");
         pm.close();
     }
 

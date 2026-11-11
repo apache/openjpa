@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.entitymanager;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,13 +30,16 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEntityManagerConfiguration extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class);
     }
 
+    @Test
     public void testEMConfig001() {
         Map propMap = new HashMap();
         EntityManager em = emf.createEntityManager(propMap);
@@ -42,6 +48,7 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertTrue(eml.getQuerySQLCache());
     }
 
+    @Test
     public void testEMConfig002() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "true(EnableStatistics=true)");
@@ -51,6 +58,7 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertTrue(eml.getQuerySQLCache());
     }
 
+    @Test
     public void testEMConfig003() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "false");
@@ -60,6 +68,7 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertFalse(eml.getQuerySQLCache());
     }
 
+    @Test
     public void testEMConfig004() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "false(EnableStatistics=true)");
@@ -69,6 +78,7 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertFalse(eml.getQuerySQLCache());
     }
 
+    @Test
     public void testEMConfig005() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "notabool");

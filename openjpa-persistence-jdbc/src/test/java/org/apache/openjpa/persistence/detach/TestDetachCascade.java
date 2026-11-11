@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.detach;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +34,8 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
@@ -52,7 +59,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
 
     Collection<Object> allEntities = new HashSet<>();
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(Entity1.class,
             Entity3.class,
@@ -126,6 +133,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Test that detach cascade values are set correctly
+    @Test
     public void testCascadeValues() {
         id++;
         em.getTransaction().begin();
@@ -148,6 +156,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Make sure cascade is no longer done by default
+    @Test
     public void testNoCascade() {
         boolean cwd = compat.getCascadeWithDetach();
         compat.setCascadeWithDetach(false);
@@ -165,6 +174,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Change to the previous behavior to always cascade
+    @Test
     public void testAlwaysCascade() {
         id++;
         em.getTransaction().begin();
@@ -185,6 +195,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Test explicit cascade of entities
+    @Test
     public void testCascadeOfEntities() {
         boolean cwd = compat.getCascadeWithDetach();
         compat.setCascadeWithDetach(false);
@@ -206,6 +217,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Test always cascade of entities
+    @Test
     public void testAlwaysCascadeOfEntities() {
         id++;
         em.getTransaction().begin();
@@ -226,6 +238,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // test single cascade in new transaction with no fetch of e4
+    @Test
     public void testSingleCascadeNoFetch() {
         id++;
         em.getTransaction().begin();
@@ -250,6 +263,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // test cascade of a simple collection
+    @Test
     public void testCascadeOfCollection() {
         id++;
         em.getTransaction().begin();
@@ -268,6 +282,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // test cascade of Map
+    @Test
     public void testCascadeOfMap() {
         id++;
         em.getTransaction().begin();
@@ -282,6 +297,7 @@ public class TestDetachCascade extends SingleEMFTestCase {
     }
 
     // Test old detach behavior - flush, copy, and cascade
+    @Test
     public void testOldDetachBehavior() {
         id++;
 

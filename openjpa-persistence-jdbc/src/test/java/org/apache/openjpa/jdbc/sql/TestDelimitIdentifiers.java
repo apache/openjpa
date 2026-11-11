@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static junit.framework.TestCase.assertEquals;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -33,7 +31,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import java.sql.Connection;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;

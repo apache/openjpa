@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,12 +29,14 @@ import jakarta.persistence.EntityTransaction;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
 
     public int ID = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Embed.class,
             Embed_Embed.class,
@@ -40,6 +45,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
             DROP_TABLES);
     }
 
+    @Test
     public void testUpdateEmbedded() {
         EntityManager em = emf.createEntityManager();
         Address a = new Address();
@@ -104,6 +110,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         em.close();
     }
 
+    @Test
     public void testEntityA_Embed_Embed_update() {
         createEntityA_Embed_Embed();
         updateEmbedded_EntityA_Embed_Embed();
@@ -150,6 +157,7 @@ public class TestUpdateEmbeddedQueryResult extends SingleEMFTestCase {
         return embed;
     }
 
+    @Test
     public void testBulkUpdateEmbeddedField() {
         EntityManager em = emf.createEntityManager();
         String update = "UPDATE EntityA_Embed_Embed a set a.embed.embed.intVal1 = ?1," +

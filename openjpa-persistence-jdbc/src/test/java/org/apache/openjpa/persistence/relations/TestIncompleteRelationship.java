@@ -19,12 +19,17 @@
 
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipChildEntity;
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipParentEntity;
 import org.apache.openjpa.persistence.relations.entity.IncompleteRelationshipSubclass;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test case that tests for incomplete foreign-key relationships and ensures
@@ -38,7 +43,7 @@ public class TestIncompleteRelationship extends SingleEMFTestCase {
         "Staff Discount"
     };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                     IncompleteRelationshipParentEntity.class,
@@ -49,6 +54,7 @@ public class TestIncompleteRelationship extends SingleEMFTestCase {
                     "openjpa.jdbc.QuerySQLCache", "true");
     }
 
+    @Test
     public void testIncompleteRelationship() {
         final EntityManager em = emf.createEntityManager();
         IncompleteRelationshipSubclass parent = null;

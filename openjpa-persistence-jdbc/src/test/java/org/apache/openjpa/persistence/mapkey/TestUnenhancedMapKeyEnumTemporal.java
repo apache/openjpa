@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.mapkey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +37,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for @MapKeyEnumerated and @MapKeyTemporal with RUNTIME
@@ -45,6 +50,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * Tests @MapKeyEnumerated(STRING) on @OneToMany(mappedBy) Map
      * with runtime enhancement. Mirrors TCK mapKeyEnumeratedTest.
      */
+    @Test
     public void testMapKeyEnumeratedOneToMany() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             DROP_TABLES,
@@ -54,17 +60,17 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, UnenhancedMKEDept.class);
         FieldMapping fm = cm.getFieldMapping("lastNameEmployees");
-        assertNotNull("FieldMapping for lastNameEmployees should exist", fm);
+        assertNotNull(fm, "FieldMapping for lastNameEmployees should exist");
         String keyStrategy = fm.getKeyMapping().getValueInfo()
             .getStrategy();
-        assertNotNull("Key strategy should be set (EnumValueHandler)",
-            keyStrategy);
-        assertTrue("Key strategy should contain EnumValueHandler: "
-            + keyStrategy,
-            keyStrategy.contains("EnumValueHandler"));
-        assertTrue("Key strategy should have StoreOrdinal=false for STRING: "
-            + keyStrategy,
-            keyStrategy.contains("StoreOrdinal=false"));
+        assertNotNull(keyStrategy,
+            "Key strategy should be set (EnumValueHandler)");
+        assertTrue(keyStrategy.contains("EnumValueHandler"),
+            "Key strategy should contain EnumValueHandler: "
+            + keyStrategy);
+        assertTrue(keyStrategy.contains("StoreOrdinal=false"),
+            "Key strategy should have StoreOrdinal=false for STRING: "
+            + keyStrategy);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -98,14 +104,14 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         UnenhancedMKEEmp foundEmp = em.find(UnenhancedMKEEmp.class, 1);
-        assertNotNull("Employee should be found", foundEmp);
+        assertNotNull(foundEmp, "Employee should be found");
         UnenhancedMKEDept foundDept = foundEmp.getDepartment();
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<UnenhancedMKEOffices, UnenhancedMKEEmp> emps =
             foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 3 entries", 3, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(3, emps.size(), "Map should have 3 entries");
 
         Set<UnenhancedMKEOffices> expectedKeys = new HashSet<>();
         expectedKeys.add(UnenhancedMKEOffices.OFF000);
@@ -113,9 +119,9 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         expectedKeys.add(UnenhancedMKEOffices.OFF004);
 
         Set<UnenhancedMKEOffices> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -126,6 +132,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * @Transient field and runtime enhancement.
      * Mirrors TCK elementCollectionTest for mapkeyenumerated.
      */
+    @Test
     public void testMapKeyEnumeratedElementCollection() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             CLEAR_TABLES,
@@ -134,11 +141,11 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         // Check identity type
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, UnenhancedMKEDept4.class);
-        assertEquals("Should be APPLICATION identity",
-            ClassMetaData.ID_APPLICATION, cm.getIdentityType());
+        assertEquals(ClassMetaData.ID_APPLICATION,
+            cm.getIdentityType(), "Should be APPLICATION identity");
         FieldMetaData[] pks = cm.getPrimaryKeyFields();
-        assertEquals("Should have 1 PK field", 1, pks.length);
-        assertEquals("PK field should be 'id'", "id", pks[0].getName());
+        assertEquals(1, pks.length, "Should have 1 PK field");
+        assertEquals("id", pks[0].getName(), "PK field should be 'id'");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -164,20 +171,20 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
 
         UnenhancedMKEDept4 foundDept =
             em.find(UnenhancedMKEDept4.class, 7);
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
         Map<UnenhancedMKENumbers, UnenhancedMKEmbedEmp> emps =
             foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 2 entries", 2, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(2, emps.size(), "Map should have 2 entries");
 
         Set<UnenhancedMKENumbers> expectedKeys = new HashSet<>();
         expectedKeys.add(UnenhancedMKENumbers.one);
         expectedKeys.add(UnenhancedMKENumbers.two);
 
         Set<UnenhancedMKENumbers> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -187,6 +194,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * Tests @MapKeyTemporal(DATE) on @OneToMany(mappedBy) Map
      * with runtime enhancement. Mirrors TCK mapKeyTemporalTest.
      */
+    @Test
     public void testMapKeyTemporalOneToMany() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             DROP_TABLES,
@@ -228,14 +236,14 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         UnenhancedMKTEmp foundEmp = em.find(UnenhancedMKTEmp.class, 1);
-        assertNotNull("Employee should be found", foundEmp);
+        assertNotNull(foundEmp, "Employee should be found");
         UnenhancedMKTDept foundDept = foundEmp.getDepartment();
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<Date, UnenhancedMKTEmp> emps =
             foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 3 entries", 3, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(3, emps.size(), "Map should have 3 entries");
 
         Set<Date> expectedKeys = new HashSet<>();
         expectedKeys.add(d1);
@@ -243,9 +251,9 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
         expectedKeys.add(d3);
 
         Set<Date> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();
@@ -256,6 +264,7 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
      * @Transient field and runtime enhancement.
      * Mirrors TCK elementCollectionTest for mapkeytemporal.
      */
+    @Test
     public void testMapKeyTemporalElementCollection() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             CLEAR_TABLES,
@@ -285,21 +294,21 @@ public class TestUnenhancedMapKeyEnumTemporal extends SingleEMFTestCase {
 
         UnenhancedMKTDept4 foundDept =
             em.find(UnenhancedMKTDept4.class, 5);
-        assertNotNull("Department should be found", foundDept);
+        assertNotNull(foundDept, "Department should be found");
 
         Map<Date, UnenhancedMKEmbedEmp> emps =
             foundDept.getLastNameEmployees();
-        assertNotNull("Map should not be null", emps);
-        assertEquals("Map should have 2 entries", 2, emps.size());
+        assertNotNull(emps, "Map should not be null");
+        assertEquals(2, emps.size(), "Map should have 2 entries");
 
         Set<Date> expectedKeys = new HashSet<>();
         expectedKeys.add(d6);
         expectedKeys.add(d7);
 
         Set<Date> actualKeys = emps.keySet();
-        assertTrue("Keys should match expected",
-            expectedKeys.containsAll(actualKeys)
-            && actualKeys.containsAll(expectedKeys));
+        assertTrue(expectedKeys.containsAll(actualKeys)
+            && actualKeys.containsAll(expectedKeys),
+            "Keys should match expected");
 
         em.getTransaction().commit();
         em.close();

@@ -21,13 +21,15 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.util.Arrays;
 
 import jakarta.persistence.LockModeType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 LockMode type permutation behaviors with "mixed" lock manager.
  */
 public class TestMixedLockManagerRefreshPermutation
     extends SequencedActionsTest {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -36,6 +38,7 @@ public class TestMixedLockManagerRefreshPermutation
     }
 
     /* ======== Thread 1 : Read Lock ============*/
+    @Test
     public void testRefreshReadRead() {
         commonRefreshTest(
             "testRefresh(Read,Commit/Read,Commit)",
@@ -47,6 +50,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshReadWrite() {
         commonRefreshTest(
             "testRefresh(Read,Commit/Write,Commit)",
@@ -59,6 +63,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshReadPessimisticRead() {
         commonRefreshTest(
             "testRefresh(Read,Commit/PessimisticRead,Commit)",
@@ -70,6 +75,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshReadPessimisticWrite() {
         commonRefreshTest(
             "testRefresh(Read,Commit/PessimisticWrite,Commit)",
@@ -81,6 +87,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshReadPessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(Read,Commit/PessimisticForceInc,Commit)",
@@ -93,6 +100,7 @@ public class TestMixedLockManagerRefreshPermutation
     }
 
     /* ======== Thread 1 : Write Lock ============*/
+    @Test
     public void testRefreshWriteRead() {
         commonRefreshTest(
             "testRefresh(Write,Commit/Read,Commit)",
@@ -104,6 +112,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshWriteWrite() {
         commonRefreshTest(
             "testRefresh(Write,Commit/Write,Commit)",
@@ -115,6 +124,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshWritePessimisticRead() {
         commonRefreshTest(
             "testRefresh(Write,Commit/PessimisticRead,Commit)",
@@ -126,6 +136,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshWritePessimisticWrite() {
         commonRefreshTest(
             "testRefresh(Write,Commit/PessimisticWrite,Commit)",
@@ -137,6 +148,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshWritePessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(Write,Commit/PessimisticForceInc,Commit)",
@@ -149,6 +161,7 @@ public class TestMixedLockManagerRefreshPermutation
     }
 
     /* ======== Thread 1 : PessimisticRead Lock ============*/
+    @Test
     public void testRefreshPessimisticReadRead() {
         commonRefreshTest(
             "testRefresh(PessimisticRead,Commit/Read,Commit)",
@@ -160,6 +173,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimisticReadWrite() {
         commonRefreshTest(
             "testRefresh(PessimisticRead,Commit/Write,Commit)",
@@ -171,6 +185,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimisticReadPessimisticRead() {
         commonRefreshTest(
             "testRefresh(PessimisticRead,Commit/PessimisticRead,Commit)",
@@ -182,6 +197,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimisticReadPessimisticWrite() {
         commonRefreshTest(
             "testRefresh(PessimisticRead,Commit/PessimisticWrite,Commit)",
@@ -193,6 +209,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimisticReadPessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(PessimisticRead,Commit/PessimisticForceInc,Commit)",
@@ -205,6 +222,7 @@ public class TestMixedLockManagerRefreshPermutation
     }
 
     /* ======== Thread 1 : Pessimistic Write Lock ============*/
+    @Test
     public void testRefreshPessimsiticWriteRead() {
         commonRefreshTest(
             "testRefresh(PessimsiticWrite,Commit/Read,Commit)",
@@ -216,6 +234,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticWriteWrite() {
         commonRefreshTest(
             "testRefresh(PessimsiticWrite,Commit/Write,Commit)",
@@ -227,6 +246,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticWritePessimisticRead() {
         commonRefreshTest(
             "testRefresh(PessimsiticWrite,Commit/PessimisticRead,Commit)",
@@ -238,6 +258,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticWritePessimisticWrite() {
         commonRefreshTest(
             "testRefresh(PessimsiticWrite,Commit/PessimisticWrite,Commit)",
@@ -249,6 +270,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticWritePessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(PessimsiticWrite,Commit/PessimisticForceInc,Commit)",
@@ -261,6 +283,7 @@ public class TestMixedLockManagerRefreshPermutation
     }
 
     /* ======== Thread 1 : Pessimistic Force Increment Lock ============*/
+    @Test
     public void testRefreshPessimsiticForceIncRead() {
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/Read,Commit)",
@@ -272,6 +295,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticForceIncWrite() {
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/Write,Commit)",
@@ -283,6 +307,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticForceIncPessimisticRead() {
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/PessimisticRead,Commit)",
@@ -294,6 +319,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticForceIncPessimisticWrite() {
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/PessimisticWrite,Commit)",
@@ -305,6 +331,7 @@ public class TestMixedLockManagerRefreshPermutation
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 2, null);
     }
 
+    @Test
     public void testRefreshPessimsiticForceIncPessimisticForceInc() {
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/PessimisticForceInc,Commit)",

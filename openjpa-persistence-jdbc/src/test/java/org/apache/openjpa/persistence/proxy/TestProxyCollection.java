@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.LinkedHashSet;
 
 import jakarta.persistence.EntityManager;
@@ -25,6 +30,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.proxy.ProxyCollection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests proxying and change tracking of collection fields for modification in
@@ -37,15 +44,17 @@ import org.apache.openjpa.util.proxy.ProxyCollection;
  *
  */
 public class TestProxyCollection extends SingleEMFTestCase {
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, TreeNode.class, ConcreteEntity.class, AbstractEntity.class);
 	}
-	/**
-	 * Tests that a uniform tree is created with expected fan outs at each
-	 * level. This is not a persistent operation, just in-memory.
-	 */
-	public void testCreateTree() {
+
+    /**
+     * Tests that a uniform tree is created with expected fan outs at each
+     * level. This is not a persistent operation, just in-memory.
+     */
+    @Test
+    public void testCreateTree() {
 		TreeNode root = new TreeNode();
 		root.setName("0");
 		int[] fanOuts = {1,2,3};
@@ -53,11 +62,12 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		assertArrayEquals(fanOuts, root.getFanOuts());
 	}
 
-	/**
+    /**
      * Tests that a uniform tree can be modified with different fan outs at each
-	 * level. This is not a persistent operation, just in-memory.
-	 */
-	public void testModifyTree() {
+     * level. This is not a persistent operation, just in-memory.
+     */
+    @Test
+    public void testModifyTree() {
 		int[] fanOuts = {1,2,2,4};
 		int[] newFanOuts = {1,3,1,2};
 		TreeNode root = new TreeNode();
@@ -68,45 +78,52 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		assertArrayEquals(newFanOuts, root.getFanOuts());
 	}
 
-	/**
+    /**
      * Tests that a uniform tree is persisted and later fetched back with same
-	 * number of children at every level.
-	 */
-	public void testPersistTree() {
+     * number of children at every level.
+     */
+    @Test
+    public void testPersistTree() {
 		int[] fanOuts = {2,3,4};
 		verify(create(fanOuts), fanOuts);
 	}
 
-	public void testAddNodeAtLeaf() {
+    @Test
+    public void testAddNodeAtLeaf() {
 		int[] original = {1,2,3};
 		int[] modifier = {1,2,4}; // add new child at Level 2
 		createModifyAndMerge(original, modifier);
 	}
 
-	public void testAddNewLevel() {
+    @Test
+    public void testAddNewLevel() {
 		int[] original = {1,2,3};
 		int[] modifier = {1,2,3,2}; // add 2 new children at new Level
 		createModifyAndMerge(original, modifier);
 	}
 
-	public void testAddAndRemove() {
+    @Test
+    public void testAddAndRemove() {
 		int[] original = {2,3,4};
         int[] modifier = {4,3,2}; // add 1 at Level 1 + remove 1 at Level 3
 		createModifyAndMerge(original, modifier);
 	}
 
-	public void testAddAtAllLevel() {
+    @Test
+    public void testAddAtAllLevel() {
 		int[] original = {2,3,4};
 		int[] modifier = {3,4,5}; // add 1 at each Level
 		createModifyAndMerge(original, modifier);
 	}
 
-	public void testRemoveAtAllLevel() {
+    @Test
+    public void testRemoveAtAllLevel() {
 		int[] original = {2,3,4};
 		int[] modifier = {1,2,3}; // remove 1 from each Level
 		createModifyAndMerge(original, modifier);
 	}
 
+    @Test
     public void testCreateCorrectType() {
         ConcreteEntity ce = new ConcreteEntity();
         ce.addItem(ce);
@@ -121,8 +138,8 @@ public class TestProxyCollection extends SingleEMFTestCase {
         ce = em.find(ConcreteEntity.class, ce.getId());
         assertNotNull(ce);
         Class<?> proxyCls = ce.getItems().getClass();
-        assertTrue(proxyCls + " is not assignableFrom " + LinkedHashSet.class,
-            LinkedHashSet.class.isAssignableFrom(proxyCls));
+        assertTrue(LinkedHashSet.class.isAssignableFrom(proxyCls),
+            proxyCls + " is not assignableFrom " + LinkedHashSet.class);
     }
 	/**
 	 * Create a uniform tree with original fanout.

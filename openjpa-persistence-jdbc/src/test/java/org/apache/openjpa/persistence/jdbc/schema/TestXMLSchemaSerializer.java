@@ -42,16 +42,6 @@ import org.apache.openjpa.lib.meta.MetaDataSerializer;
 
 public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
 
-
-    /** Creates a new instance of TestXMLSchemaSerializer */
-    public TestXMLSchemaSerializer() {
-    }
-
-
-    public TestXMLSchemaSerializer(String test) {
-        super(test);
-    }
-
     @Override
     protected SchemaGroup getSchemaGroup()
     throws Exception {
@@ -70,9 +60,5 @@ public class TestXMLSchemaSerializer extends TestXMLSchemaParser{
         parser.parse(new InputStreamReader
                 (new ByteArrayInputStream(bytes)), "bytes");
         return parser.getSchemaGroup();
-    }
-
-    public static void main(String[] args) {
-        //   main(TestXMLSchemaSerializer.class);
     }
 }

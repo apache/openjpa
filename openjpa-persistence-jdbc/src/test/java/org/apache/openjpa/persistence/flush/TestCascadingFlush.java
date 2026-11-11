@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.flush;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,12 +36,14 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCascadingFlush extends SingleEMFTestCase {
 
     boolean supportsNativeSequence = false;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Assignment.class, ClassPeriod.class, Course.class, SubTopic.class, Topic.class, CLEAR_TABLES);
 
@@ -53,6 +60,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * Verifies flushing a complex bidirectional domain model results in retrieval and population of all sequence-gen
      * ID values.
      */
+    @Test
     public void testCascadingFlushBasic() {
         if (!supportsNativeSequence) {
             return;
@@ -69,6 +77,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * Verifies flushing a complex bidirectional domain model results in retrieval and population of all sequence-gen
      * ID values using an detached, then merged entity graph.
      */
+    @Test
     public void testCascadingFlushDetach() {
         if (!supportsNativeSequence) {
             return;
@@ -88,6 +97,7 @@ public class TestCascadingFlush extends SingleEMFTestCase {
      * Verifies flushing a complex bidirectional domain model results in retrieval of all sequence-gen ID values using
      * an serialized (resulting in detach), then merged entity graph.
      */
+    @Test
     public void testCascadingFlushSerialize() {
         if (!supportsNativeSequence) {
             return;

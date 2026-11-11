@@ -36,6 +36,7 @@ import org.apache.openjpa.persistence.proxy.delayed.IMember;
 import org.apache.openjpa.persistence.proxy.delayed.IUserIdentity;
 import org.apache.openjpa.persistence.proxy.delayed.Location;
 import org.apache.openjpa.persistence.proxy.delayed.Product;
+import org.junit.jupiter.api.BeforeEach;
 
 public class TestDelayedLinkedListProxy extends DelayedProxyCollectionsTestCase {
 
@@ -47,7 +48,7 @@ public class TestDelayedLinkedListProxy extends DelayedProxyCollectionsTestCase 
         Account.class
     };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(_pcList);
     }

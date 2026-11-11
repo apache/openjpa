@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.mapkey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Reproduces TCK EntityGraph pattern with runtime enhancement:
@@ -31,13 +36,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestUnenhancedEntityGraphPattern extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             UnenhancedEGEmployee.class, UnenhancedEGDepartment.class,
             CLEAR_TABLES);
     }
 
+    @Test
     public void testPersistAndFindWithMappedByMap() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -62,13 +68,13 @@ public class TestUnenhancedEntityGraphPattern extends SingleEMFTestCase {
         em = emf.createEntityManager();
         UnenhancedEGDepartment found =
             em.find(UnenhancedEGDepartment.class, 1);
-        assertNotNull("Department should be found", found);
+        assertNotNull(found, "Department should be found");
         Map<String, UnenhancedEGEmployee> map =
             found.getLastNameEmployees();
-        assertNotNull("Map should not be null", map);
-        assertEquals("Should have 2 employees", 2, map.size());
-        assertNotNull("Should find by lastName Doe", map.get("Doe"));
-        assertNotNull("Should find by lastName Smith", map.get("Smith"));
+        assertNotNull(map, "Map should not be null");
+        assertEquals(2, map.size(), "Should have 2 employees");
+        assertNotNull(map.get("Doe"), "Should find by lastName Doe");
+        assertNotNull(map.get("Smith"), "Should find by lastName Smith");
         em.close();
     }
 }

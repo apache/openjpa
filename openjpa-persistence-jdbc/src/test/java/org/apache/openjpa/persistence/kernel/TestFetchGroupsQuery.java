@@ -37,16 +37,6 @@ import org.apache.openjpa.persistence.kernel.common.apps.
 
 public class TestFetchGroupsQuery extends TestFetchGroups {
 
-    /**
-     * Creates a new instance of TestFetchGroupsQuery
-     */
-    public TestFetchGroupsQuery() {
-    }
-
-    public TestFetchGroupsQuery(String s) {
-        super(s);
-    }
-
     @Override
     protected FetchGroupTestObject getO1(OpenJPAEntityManager pm) {
 //        OpenJPAQuery q = pm.createNativeQuery("a == 5",

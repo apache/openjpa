@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Perform basic operations on an inheritance hierarchy involving multiple
@@ -33,12 +37,13 @@ import junit.textui.TestRunner;
 public class TestMultipleMappedSuperclassHierarchy
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MappedSuperclassBase.class, MappedSuperclassL2.class,
             EntityL3.class);
     }
 
+    @Test
     public void testPersist() {
         EntityL3 ent = new EntityL3();
         ent.setL2Data(99);
@@ -59,9 +64,4 @@ public class TestMultipleMappedSuperclassHierarchy
         assertEquals(100, ent.getL3Data());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestMultipleMappedSuperclassHierarchy.class);
-    }
 }
-

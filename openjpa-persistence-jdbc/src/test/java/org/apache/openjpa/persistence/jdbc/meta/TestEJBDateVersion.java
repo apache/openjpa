@@ -18,20 +18,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.DateVersion;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBDateVersion
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestEJBDateVersion extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 
-	public TestEJBDateVersion(String name)
-	{
-		super(name);
-	}
-
-	@Override
+    @BeforeEach
     public void setUp() throws Exception
 	{
 		deleteAll(DateVersion.class);
@@ -48,7 +47,8 @@ public class TestEJBDateVersion
 		endEm(pm);
 	}
 
-	public void testOptLock ()	throws InterruptedException
+    @Test
+    public void testOptLock ()	throws InterruptedException
 {
 	EntityManager pm1 = currentEntityManager();
 	EntityManager pm2 = currentEntityManager();

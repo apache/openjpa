@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -317,7 +323,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         Object[][][] actions = thisThread.actions;
         Map<Integer,LockEmployee> employees = thisThread.employees;
 
-        assertNotNull("Test sequence table must be defined", actions);
+        assertNotNull(actions, "Test sequence table must be defined");
         assert (actions.length >= 1);
 
         int numThreads = actions.length;
@@ -600,7 +606,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         id = (Integer)args[1];
                     }
                     employee = employees.get(id);
-                    assertNotNull(curAct, employee);
+                    assertNotNull(employee, curAct);
                     break;
                 case TestEmployee:
                     id = 1;
@@ -611,22 +617,22 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     switch (args.length) {
                     case 4:
                         if (args[3] != null) {
-                            assertEquals(curAct, saveVersion
-                                + (Integer) args[3], employee.getVersion());
+                            assertEquals(saveVersion
+                                + (Integer) args[3], employee.getVersion(), curAct);
                         }
                     case 3:
                         if (args[2] != null) {
-                            assertEquals(curAct, (String) args[2], employee
-                                .getFirstName());
+                            assertEquals((String) args[2], employee
+                                .getFirstName(), curAct);
                         }
                     case 2:
                         if (args[1] != null) {
-                            assertEquals(curAct, id.intValue(),
-                                employee.getId());
+                            assertEquals(id.intValue(), employee.getId(),
+                                curAct);
                         }
                         break;
                     case 1:
-                        assertNull(curAct, employee);
+                        assertNull(employee, curAct);
                     }
                     break;
                 case SaveVersion:
@@ -649,8 +655,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         + (saveVersion + increment) + ", testing="
                         + employee.getVersion());
 
-                    assertEquals(curAct, saveVersion + increment, employee
-                        .getVersion());
+                    assertEquals(saveVersion + increment, employee
+                        .getVersion(), curAct);
                     break;
                 case TestLockMode:
                     id = 1;
@@ -663,8 +669,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     log.trace("test version: expected=" + expectedlockMode
                         + ", testing=" + testinglockMode);
 
-                    assertEquals(curAct, getCanonical(expectedlockMode),
-                        getCanonical(testinglockMode));
+                    assertEquals(getCanonical(expectedlockMode), getCanonical(testinglockMode),
+                        curAct);
                     break;
                 case ResetException:
                     thisThread.throwable = null;
@@ -724,8 +730,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                                 logStack(curThrowable);
                             }
                         }
-                        assertTrue(curAct + ":Expecting=" + expectedExceptions
-                            + ", Testing=" + testExClass, exMatched);
+                        assertTrue(exMatched, curAct + ":Expecting=" + expectedExceptions
+                            + ", Testing=" + testExClass);
                         exThread.throwable = null;
                     } else {
                     	// test exception in any thread; used for deadlock exception testing since db server
@@ -744,8 +750,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
 		                            aThread.throwable = null;
 							    }
 							}
-	                        assertTrue(curAct + ":Expecting=[no exception]"
-	                                + ", Testing=" + aTestExClass + ']', noExMatched);
+	                        assertTrue(noExMatched, curAct + ":Expecting=[no exception]"
+	                                + ", Testing=" + aTestExClass + ']');
 						} else {
                         	// Expecting any exception in any threads.
 							boolean aMatched = false;
@@ -773,8 +779,8 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
 	                        if (!aMatched) {
 	                            log.trace(aTestExClass);
 	                        }
-	                        assertTrue(curAct + ":Expecting=" + expectedExceptions
-	                            + ", Testing=" + aTestExClass + "]", aMatched);
+	                        assertTrue(aMatched, curAct + ":Expecting=" + expectedExceptions
+	                            + ", Testing=" + aTestExClass + "]");
 						}
                     }
                     break;
@@ -971,7 +977,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
 
     private boolean matchExpectedException(String curAct, Class<?> expected,
         Throwable tested) {
-        assertNotNull(curAct, expected);
+        assertNotNull(expected, curAct);
         Class<?> testExClass = null;
         boolean exMatched = true;
         if (tested != null) {

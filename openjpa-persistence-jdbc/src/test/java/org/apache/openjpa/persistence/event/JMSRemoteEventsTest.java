@@ -36,24 +36,23 @@ import javax.naming.InitialContext;
 
 import org.apache.openjpa.event.JMSRemoteCommitProvider;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * So named to prevent the autobuild from running this -- we don't
  * have a JMS provider up and running in the autobuild currently.
  */
 public class JMSRemoteEventsTest extends RemoteEventBase {
-	
+
 	private static final Logger logger = Logger.getLogger(JMSRemoteEventsTest.class.getCanonicalName());
 
-    public JMSRemoteEventsTest(String s) {
-        super(s);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
+    @Test
     public void testJMSEvents() {
         doTest(JMSRemoteCommitProvider.class,
             "Topic=topic/KodoCommitProviderTopic",

@@ -20,8 +20,7 @@ package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.persistence.query.ManyOneEntity;
 
-public class TestInstanceGraphBrokerSerialization
-    extends AbstractBrokerSerializationTest<ManyOneEntity> {
+public class TestInstanceGraphBrokerSerialization extends AbstractBrokerSerializationTest<ManyOneEntity> {
 
     @Override
     protected Class<ManyOneEntity> getManagedType() {

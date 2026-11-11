@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,17 +39,19 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.Duration;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestTCPRemoteEventsDuration extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestTCPRemoteEventsDuration.class.getCanonicalName());
 
-    public TestTCPRemoteEventsDuration(String s) {
-        super(s, "eventcactusapp");
+    public TestTCPRemoteEventsDuration() {
+        super("eventcactusapp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
@@ -61,6 +67,7 @@ public class TestTCPRemoteEventsDuration extends AbstractTestCase {
     private static final int NUM_TO_AVERAGE = 3;
     private static final int NUM_CONCURRENT = 3;
 
+    @Test
     public void testDurationDifference() {
         // create a non-cluserted, single pmf
         OpenJPAEntityManagerFactory factorySingle = createDistinctFactory(

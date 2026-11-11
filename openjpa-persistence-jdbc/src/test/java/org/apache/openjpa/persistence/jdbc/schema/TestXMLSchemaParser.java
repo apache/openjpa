@@ -27,6 +27,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.sql.Types;
 
@@ -41,26 +46,18 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestXMLSchemaParser
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestXMLSchemaParser extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     protected JDBCConfiguration conf = null;
     private SchemaGroup _group = null;
 
-
-    /** Creates a new instance of TestXMLSchemaParser */
-    public TestXMLSchemaParser() {
-    }
-
-    public TestXMLSchemaParser(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp()
-    throws Exception {
+        throws Exception {
         this.conf = new JDBCConfigurationImpl();
         _group = getSchemaGroup();
     }
@@ -89,6 +86,7 @@ public class TestXMLSchemaParser
     /**
      * Checks the generated schema group for accuracy.
      */
+    @Test
     public void testSchemaParsing() {
         assertEquals(2, _group.getSchemas().length);
         assertEquals("SCHEMA1", _group.getSchema("SCHEMA1").getName());
@@ -98,6 +96,7 @@ public class TestXMLSchemaParser
     /**
      * Checks the pased sequences.
      */
+    @Test
     public void testSequenceParsing() {
         Schema schema = _group.getSchema("SCHEMA1");
         assertEquals(2, schema.getSequences().length);
@@ -122,6 +121,7 @@ public class TestXMLSchemaParser
     /**
      * Checks table and column parsing.
      */
+    @Test
     public void testTableColumnParsing() {
         Schema schema1 = _group.getSchema("SCHEMA1");
         Table[] tables = schema1.getTables();
@@ -144,6 +144,7 @@ public class TestXMLSchemaParser
     /**
      * Test that primary keys are resolved correctly.
      */
+    @Test
     public void testPrimaryKeyParsing() {
         Table table = _group.getSchema("SCHEMA1").getTable("TABLE1");
         PrimaryKey pk = table.getPrimaryKey();
@@ -166,6 +167,7 @@ public class TestXMLSchemaParser
     /**
      * Test that indexes are resolved correctly.
      */
+    @Test
     public void testIndexParsing() {
         Table table = _group.getSchema("SCHEMA1").getTable("TABLE1");
         Index idx = table.getIndex("IDX1");
@@ -186,6 +188,7 @@ public class TestXMLSchemaParser
     /**
      * Test that foreign keys are resolved correctly.
      */
+    @Test
     public void testForeignKeyParsing() {
         Table table1 = _group.getSchema("SCHEMA1").getTable("TABLE1");
         Table table2 = _group.getSchema("SCHEMA2").getTable("TABLE2");

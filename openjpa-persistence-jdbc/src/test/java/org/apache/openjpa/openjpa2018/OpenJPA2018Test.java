@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.openjpa2018;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +31,8 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test verifies that select IN statements with
@@ -37,11 +41,12 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 public class OpenJPA2018Test extends SingleEMTestCase
 {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(User2018.class, CLEAR_TABLES);
     }
 
+    @Test
     public void testInCriteriaWithArray() {
         em.getTransaction().begin();
         try {
@@ -67,6 +72,7 @@ public class OpenJPA2018Test extends SingleEMTestCase
         }
     }
 
+    @Test
     public void testInJpqlWithArray() {
         em.getTransaction().begin();
         try {
@@ -85,6 +91,7 @@ public class OpenJPA2018Test extends SingleEMTestCase
         }
     }
 
+    @Test
     public void testInCriteriaWithCollection() {
         em.getTransaction().begin();
         try {
@@ -110,6 +117,7 @@ public class OpenJPA2018Test extends SingleEMTestCase
         }
     }
 
+    @Test
     public void testInJpqlWithCollection() {
         em.getTransaction().begin();
         try {
@@ -129,6 +137,7 @@ public class OpenJPA2018Test extends SingleEMTestCase
     }
 
 
+    @Test
     public void testId() {
         em.getTransaction().begin();
         try {

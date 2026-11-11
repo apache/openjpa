@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,12 +33,15 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test only works in Derby due to the simple-JNDI setup
@@ -40,6 +49,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     private String defaultJndiName = "jdbc/mocked";
     private String[] jndiNames = { "jdbc/mocked1" };
+
+    @Override
+    protected boolean isSupported(DBDictionary dict) {
+        // Disable for non-Derby, due to connectionUserName to schema mapping failures
+        return dict instanceof DerbyDictionary;
+    }
 
     protected void init(String cfName) {
         EntityManagerFactory emf1 = getEmf("openjpa.ConnectionFactoryName", cfName, true);
@@ -51,20 +66,12 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         closeEMF(emf1);
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(Person.class, CLEAR_TABLES);
-        OpenJPAEntityManager em = emf.createEntityManager();
-        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        if (!(conf.getDBDictionaryInstance() instanceof DerbyDictionary)) {
-            // Disable for non-Derby, due to connectionUserName to schema mapping failures
-            setTestsDisabled(true);
-            getLog().trace("TestOverrideNonJtaDataSource can only be executed against Derby w/o a schema");
-        } else {
-            // create an EMF for each database.
-            init(defaultJndiName);
-            init(jndiNames[0]);
-        }
+        // create an EMF for each database.
+        init(defaultJndiName);
+        init(jndiNames[0]);
     }
 
     protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue) {
@@ -101,12 +108,14 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         return "TestCfSwitching";
     }
 
+    @Test
     public void testConnectionFactoryName() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactory2Name", jndiNames[0]);
     }
 
+    @Test
     public void testJtaDataSource() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
@@ -152,8 +161,8 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
                 em.getTransaction().commit();
                 fail("Should not be able to commit the same row a second time");
             } catch (RollbackException rbe) {
-                assertTrue("Expected EntityExistsException but found " + rbe.getCause(),
-                    rbe.getCause() instanceof EntityExistsException);
+                assertTrue(rbe.getCause() instanceof EntityExistsException,
+                    "Expected EntityExistsException but found " + rbe.getCause());
                 // expected
             }
 
@@ -173,6 +182,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testInvalidCfName() throws Exception {
         // ensure EM creation fails - when provided an invalid JNDI name
         EntityManagerFactory emf1 = null;
@@ -190,6 +200,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testDataCache() {
         EntityManagerFactory emf1 = null;
 
@@ -206,6 +217,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testQueryCache() {
         EntityManagerFactory emf1 = null;
 
@@ -222,6 +234,7 @@ public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testSyncMappings() {
         EntityManagerFactory emf1 = null;
 

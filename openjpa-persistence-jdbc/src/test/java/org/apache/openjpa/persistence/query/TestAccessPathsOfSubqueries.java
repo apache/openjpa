@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -37,17 +40,10 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest5;
+import org.junit.jupiter.api.Test;
 
 public class TestAccessPathsOfSubqueries extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestAccessPathsOfSubqueries
-     */
-
-    public TestAccessPathsOfSubqueries(String name) {
-        super(name);
-    }
-
+    @Test
     public void testSimpleSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
@@ -67,6 +63,7 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
         assertEquals(2, c.size());
     }
 
+    @Test
     public void testRelationTraversalSubqueryAccessPath() {
         Broker broker = getBrokerFactory().newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,

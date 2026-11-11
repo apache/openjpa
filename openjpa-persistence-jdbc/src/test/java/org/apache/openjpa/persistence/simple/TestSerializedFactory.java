@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -28,8 +31,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that a EntityManagerFactory can be used after serialization.
@@ -38,7 +41,7 @@ import junit.textui.TestRunner;
  */
 public class TestSerializedFactory extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
@@ -53,11 +56,12 @@ public class TestSerializedFactory extends SingleEMFTestCase {
      * should), the catch block in the test and the fail method invocation can
      * be removed.
      */
+    @Test
     public void testSerializedEntityManagerFactory() throws Exception {
         // correct the logic if and when EMFs do not implement
         // the serializable interface
-        assertTrue("EntityManagerFactory object is not serializable",
-                emf instanceof Serializable);
+        assertTrue(emf instanceof Serializable,
+                "EntityManagerFactory object is not serializable");
 
         // serialize and deserialize the entity manager factory
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -68,11 +72,11 @@ public class TestSerializedFactory extends SingleEMFTestCase {
                 new ByteArrayInputStream(baos.toByteArray())).readObject();
 
         // use the deserialized entity manager factory
-        assertTrue("The deserialized entity manager factory is not open",
-                emf2.isOpen());
+        assertTrue(emf2.isOpen(),
+                "The deserialized entity manager factory is not open");
         EntityManager em = emf2.createEntityManager();
-        assertTrue("The newly created entity manager is not open",
-                em.isOpen());
+        assertTrue(em.isOpen(),
+                "The newly created entity manager is not open");
 
         // exercise the entity manager produced from the deserialized EMF
         em.getTransaction().begin();
@@ -81,19 +85,15 @@ public class TestSerializedFactory extends SingleEMFTestCase {
 
         // close the extra resources
         em.close();
-        assertFalse("The entity manager is not closed", em.isOpen());
+        assertFalse(em.isOpen(), "The entity manager is not closed");
 
         // clean up any committed records, etc.
         clear(emf2);
         if (emf2.isOpen())
             emf2.close();
-        assertFalse("The entity manager factory is not closed",
-                emf2.isOpen());
+        assertFalse(emf2.isOpen(),
+                "The entity manager factory is not closed");
         emf2 = null;
         oos.close();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestSerializedFactory.class);
     }
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -25,6 +27,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Bulk updates that set a column outside the primary table of the updated
@@ -37,7 +41,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
     private static final String PART = "BulkSubqueryPart";
     private static final String ENGINE = "BulkSubqueryEngine";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, BulkSubqueryItem.class, BulkSubqueryProduct.class,
             BulkSubquerySoftware.class, BulkSubqueryPart.class,
@@ -67,6 +71,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUpdateSuperclassColumn() {
         assertEquals(2, execute("UPDATE " + ENGINE
             + " e SET e.quantity = e.quantity + 10"));
@@ -74,6 +79,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("3=30,4=40", powers());
     }
 
+    @Test
     public void testUpdateSuperclassColumnWhereSubclassColumn() {
         assertEquals(1, execute("UPDATE " + ENGINE
             + " e SET e.quantity = :value WHERE e.power > :min", 0, 30));
@@ -81,6 +87,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("3=30,4=40", powers());
     }
 
+    @Test
     public void testUpdateSuperclassAndSubclassColumns() {
         // the WHERE clause reads both tables and no longer matches the row
         // once its quantity is set, so both tables have to be updated for
@@ -92,6 +99,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("3=30,4=41", powers());
     }
 
+    @Test
     public void testUpdateSuperclassColumnWithSubquery() {
         assertEquals(1, execute("UPDATE " + ENGINE
             + " e SET e.quantity = 0 WHERE e.power < "
@@ -99,6 +107,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("1=1,2=2,3=0,4=4", quantities(PART));
     }
 
+    @Test
     public void testUpdateSecondaryTableColumn() {
         assertEquals(4, execute("UPDATE " + PRODUCT
             + " e SET e.detail = 'changed'"));
@@ -106,6 +115,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("1=1,2=2,3=3,4=4", quantities(PRODUCT));
     }
 
+    @Test
     public void testUpdateSecondaryTableColumnWherePrimaryColumn() {
         assertEquals(2, execute("UPDATE " + PRODUCT
             + " e SET e.detail = :value WHERE e.quantity > :min",
@@ -113,6 +123,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("1=detail 1,2=detail 2,3=changed,4=changed", details());
     }
 
+    @Test
     public void testUpdatePrimaryAndSecondaryTableColumns() {
         // the WHERE clause reads both tables and no longer matches the row
         // once its detail is set
@@ -123,18 +134,21 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("1=1,2=12,3=3,4=4", quantities(PRODUCT));
     }
 
+    @Test
     public void testUpdateSecondaryTableColumnOfSubclass() {
         assertEquals(1, execute("UPDATE " + SOFTWARE
             + " e SET e.detail = 'changed' WHERE e.quantity = 4"));
         assertEquals("1=detail 1,2=detail 2,3=detail 3,4=changed", details());
     }
 
+    @Test
     public void testUpdateSecondaryTableColumnToNull() {
         assertEquals(2, execute("UPDATE " + PRODUCT
             + " e SET e.detail = NULL WHERE e.detail IN ('detail 1', 'detail 3')"));
         assertEquals("1=null,2=detail 2,3=null,4=detail 4", details());
     }
 
+    @Test
     public void testUpdateSubclassColumnWithVersionInSuperclassTable() {
         assertEquals(1, execute("UPDATE BulkVersionedEngine e"
             + " SET e.power = e.power + 1 WHERE e.quantity > 3"));
@@ -146,6 +160,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("3=13,4=14", quantities("BulkVersionedPart"));
     }
 
+    @Test
     public void testUpdateVersionedEntityWithBulkUpdatedState() {
         try (EntityManager em = emf.createEntityManager()) {
             BulkVersionedEngine engine = em.find(BulkVersionedEngine.class, 4L);
@@ -162,6 +177,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         }
     }
 
+    @Test
     public void testUpdateSuperclassColumnFromSubclassColumn() {
         assertEquals(1, execute("UPDATE " + ENGINE
             + " e SET e.quantity = e.power + 100 WHERE e.power = 30"));
@@ -169,12 +185,14 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("3=30,4=40", powers());
     }
 
+    @Test
     public void testUpdatePrimaryTableColumnFromSecondaryTableColumn() {
         assertEquals(1, execute("UPDATE " + PRODUCT
             + " e SET e.quantity = LENGTH(e.detail) WHERE e.id = 1"));
         assertEquals("1=8,2=2,3=3,4=4", quantities(PRODUCT));
     }
 
+    @Test
     public void testUpdateSecondaryTableColumnFromItself() {
         assertEquals(2, execute("UPDATE " + PRODUCT
             + " e SET e.detail = CONCAT(e.detail, ' changed')"
@@ -183,6 +201,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
             + "4=detail 4 changed", details());
     }
 
+    @Test
     public void testUpdateCompositeKeyColumnsOfAllTables() {
         // the root, subclass and secondary tables name their key columns
         // differently, and the WHERE clause reads the root and subclass table
@@ -195,6 +214,7 @@ public class TestBulkUpdateMultipleTables extends SingleEMFTestCase {
         assertEquals("1-1=1,1-2=12,2-3=3,2-4=14,3-5=5", compositeQuantities());
     }
 
+    @Test
     public void testUpdateSecondaryTableColumnFromSuperclassColumn() {
         assertEquals(1, execute("UPDATE BulkCompositeEngine e"
             + " SET e.label = e.name WHERE e.number = 1"));

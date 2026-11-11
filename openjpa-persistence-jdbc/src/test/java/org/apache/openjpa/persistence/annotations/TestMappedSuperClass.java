@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +35,8 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
         Store;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
         Store1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMappedSuperClass extends AnnotationTestCase {
 
@@ -41,11 +45,11 @@ public class TestMappedSuperClass extends AnnotationTestCase {
     public static int ikey = 1501;
     public static PartyId pid = new PartyId(pstr, ikey);
 
-    public TestMappedSuperClass(String name) {
-        super(name, "annotationMappedSuperclassApp");
+    public TestMappedSuperClass() {
+        super("annotationMappedSuperclassApp");
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(Store.class);
         deleteAll(Site.class);
@@ -53,11 +57,13 @@ public class TestMappedSuperClass extends AnnotationTestCase {
         deleteAll(Store1.class);
     }
 
+    @Test
     public void testMappedSuperClassSameKeys() {
         createSite();
         createStore();
     }
 
+    @Test
     public void testMappedSuperClassIdClass() {
         createSite1();
         createStore1();

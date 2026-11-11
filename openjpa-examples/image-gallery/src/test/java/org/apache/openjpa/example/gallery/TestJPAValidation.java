@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.example.gallery;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -29,9 +31,7 @@ import jakarta.validation.ConstraintViolationException;
 
 import org.apache.openjpa.example.gallery.model.Image;
 import org.apache.openjpa.example.gallery.model.Location;
-import org.junit.Test;
-
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 public class TestJPAValidation {
 

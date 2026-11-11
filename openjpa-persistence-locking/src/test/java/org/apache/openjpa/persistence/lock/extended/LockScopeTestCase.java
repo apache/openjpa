@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.lock.extended;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -206,8 +209,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *" + (e0 != null ? "F" : "Can not f") + "ind entity");
             verify.findNoLockDbSQL(em);
             getLog().info(" *Found entity:" + e0);
-            assertNotNull(" *Found " + entityName + "(" + id0 + ")", e0);
-            assertEquals(" *Assert no lock applied", LockModeType.NONE, em.getLockMode(e0));
+            assertNotNull(e0, " *Found " + entityName + "(" + id0 + ")");
+            assertEquals(LockModeType.NONE, em.getLockMode(e0), " *Assert no lock applied");
 
             getLog().info(" *Find " + entityName + "(" + id1 + ") with pessimistic force increment lock");
             resetSQL();
@@ -215,9 +218,9 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *" + (e1 != null ? "F" : "Can not f") + "ind entity");
             verify.findPessimisticForcIncDbSQL(em);
             getLog().info(" *Found entity:" + e1);
-            assertNotNull(" *Found " + entityName + "(" + id1 + ")", e1);
-            assertEquals(" *Assert pessimistic force increment lock applied", LockModeType.PESSIMISTIC_FORCE_INCREMENT,
-                    em.getLockMode(e1));
+            assertNotNull(e1, " *Found " + entityName + "(" + id1 + ")");
+            assertEquals(LockModeType.PESSIMISTIC_FORCE_INCREMENT, em.getLockMode(e1),
+                    " *Assert pessimistic force increment lock applied");
 
             getLog().info("Committing transaction.");
             em.getTransaction().commit();
@@ -247,14 +250,14 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             q = q.setParameter("firstName", "firstName%" + id0);
             List<T> es = q.getResultList();
             getLog().info(" *Found " + es.size() + " entity");
-            assertEquals(" *Should find 1 entity", es.size(), 1);
+            assertEquals(es.size(), 1, " *Should find 1 entity");
             verify.queryPessimisticReadDbSQL(em);
             e0 = es.get(0);
             getLog().info(" *Found entity:" + e0);
-            assertNotNull(" *Found " + entityName + "(" + id0 + ")", e0);
-            assertEquals("Assert pessimistic read lock applied", LockModeType.PESSIMISTIC_READ, em.getLockMode(e0));
-            assertEquals(" *Read lock should still be " + beforeReadMode + "after query set lock mode",
-                    beforeReadLevel, getConfiguration(em).getReadLockLevelConstant());
+            assertNotNull(e0, " *Found " + entityName + "(" + id0 + ")");
+            assertEquals(LockModeType.PESSIMISTIC_READ, em.getLockMode(e0), "Assert pessimistic read lock applied");
+            assertEquals(beforeReadLevel,
+                    getConfiguration(em).getReadLockLevelConstant(), " *Read lock should still be " + beforeReadMode + "after query set lock mode");
 
             getLog().info(
                     " *Find " + entityName + "(" + id1
@@ -264,8 +267,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *" + (e1 != null ? "F" : "Can not f") + "ind entity");
             verify.findNoLockAfterQueryPessimisticReadDbSQL(em);
             getLog().info(" *Found entity:" + e1);
-            assertNotNull(" *Found " + entityName + "(" + id1 + ")", e1);
-            assertEquals(" *Assert default lock applied", LockModeType.NONE, em.getLockMode(e1));
+            assertNotNull(e1, " *Found " + entityName + "(" + id1 + ")");
+            assertEquals(LockModeType.NONE, em.getLockMode(e1), " *Assert default lock applied");
 
             getLog().info("Committing transaction.");
             em.getTransaction().commit();
@@ -294,16 +297,16 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             q = q.setParameter("firstName", "firstName%" + id0);
             List<T> es = q.getResultList();
             getLog().info(" *Found " + es.size() + " entity");
-            assertEquals(" *Found 1 entity", es.size(), 1);
+            assertEquals(es.size(), 1, " *Found 1 entity");
             verify.namedQueryPessimisticWriteDbSql(em);
             e0 = es.get(0);
             getLog().info(" *Found entity:" + e0);
-            assertNotNull(" *Found " + entityName + "(" + id0 + ")", e0);
-            assertEquals("Assert pessimistic write lock applied", LockModeType.PESSIMISTIC_WRITE, em.getLockMode(e0));
+            assertNotNull(e0, " *Found " + entityName + "(" + id0 + ")");
+            assertEquals(LockModeType.PESSIMISTIC_WRITE, em.getLockMode(e0), "Assert pessimistic write lock applied");
 
             getLog().info(" *Ensure ReadLockLevel remains at level " + beforeReadMode);
-            assertEquals(" *Read lock should still be " + beforeReadMode + "after query set lock mode",
-                    beforeReadLevel, getConfiguration(em).getReadLockLevelConstant());
+            assertEquals(beforeReadLevel,
+                    getConfiguration(em).getReadLockLevelConstant(), " *Read lock should still be " + beforeReadMode + "after query set lock mode");
 
             getLog().info(
                     " *Find " + entityName + "(" + id1
@@ -313,8 +316,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
             getLog().info(" *" + (e1 != null ? "F" : "Can not f") + "ind an entity");
             verify.findNoLockAfterNamedQueryPessimisticWriteDbSql(em);
             getLog().info(" *Found entity:" + e1);
-            assertNotNull(" *Found " + entityName + "(" + id1 + ")", e1);
-            assertEquals(" *Assert default lock applied", LockModeType.NONE, em.getLockMode(e1));
+            assertNotNull(e1, " *Found " + entityName + "(" + id1 + ")");
+            assertEquals(LockModeType.NONE, em.getLockMode(e1), " *Assert default lock applied");
 
             getLog().info("Committing transaction.");
             em.getTransaction().commit();

@@ -30,18 +30,15 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.junit.jupiter.api.Test;
 
 public class TestBrokerFactoryPooling extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestBrokerFactoryPooling
-     */
-    public TestBrokerFactoryPooling(String name) {
-        super(name);
-    }
-
+    @Test
     public void testPooling() {
         BrokerFactory bf0 = Bootstrap.getBrokerFactory();
         BrokerFactory bf1 = Bootstrap.getBrokerFactory();

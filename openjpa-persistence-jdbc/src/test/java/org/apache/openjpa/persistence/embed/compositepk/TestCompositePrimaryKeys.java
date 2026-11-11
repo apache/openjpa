@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.embed.compositepk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +42,9 @@ import jakarta.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
@@ -54,7 +60,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     protected EntityManager em;
     private EntityTransaction tx;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, Subject.class, SubjectKey.class, SubjectWithIdClass.class, Topic.class,
             SubTopic.class, Chapter.class, Section.class, SubjectGroup.class);
@@ -68,6 +74,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     /*
      * OpenJPA handles this test just fine with or without the fixes of OPENJPA-2631.
      */
+    @Test
     public void testFindUsingFindOnSubjectKey() {
 
         Subject s = createSubject();
@@ -81,6 +88,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * OpenJPA handles this test just fine with or without the fixes of OPENJPA-2631.  This works,
      * compared to other tests, because a select is performed on the key class' fields.
      */
+    @Test
     public void testFindUsingEqualsOnObjectJPQL() {
         Subject s = createSubject();
 
@@ -101,6 +109,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * performed on the key class' fields.  This slight difference in this test compared to the
      * previous test is that it traverses from Topic to the SubjectKey fields.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnSubjectKeyAttributes() {
 
         Subject s = createSubject();
@@ -123,12 +132,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      *
      * The message in the exception tells it all. Per the spec, you can not do a compare on embeddables.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnSubjectKey() {
         try {
             em.createQuery("select distinct t from Topic t where t.subject.key = :subjectKey");
         } catch (Throwable t) {
             // An exception is EXPECTED!
-            Assert.assertTrue(t.getMessage().contains("does not support conditional expression"));
+            assertTrue(t.getMessage().contains("does not support conditional expression"));
         }
     }
 
@@ -141,6 +151,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      *
      * With fix #1, this test works fine.
      */
+    @Test
     public void testFindSubjectUsingJPQLEqualsOnSubject() {
 
         Subject s = createSubject();
@@ -161,6 +172,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      *
      * With fix #1, this test works fine.
      */
+    @Test
     public void testFindUsingNamedQuery() {
 
         Subject s = createSubject();
@@ -183,6 +195,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      *
      * With fix #1, this test works fine.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnSubject() {
 
         Subject s = createSubject();
@@ -202,6 +215,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * at org.apache.openjpa.jdbc.meta.ClassMapping.toDataStoreValue(ClassMapping.java:272)
      *
      */
+    @Test
     public void testFindUsingJPQLSubjectKeyIn() {
         Query query = em.createQuery("select distinct s from Subject s where s.key in :subjectKeyList");
         query.setParameter("subjectKeyList",
@@ -231,6 +245,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * 'findSubjectUsingCriteriaBuilderEquals' below causes the Subject to be treated as a Lit. There is
      * a bug in both cases, with an additional bug for the 'Lit' case.
      */
+    @Test
     public void testFindSubjectUsingCriteriaBuilderEqualsAndParameter() {
 
         Subject s = createSubject();
@@ -275,6 +290,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * 'findSubjectUsingCriteriaBuilderEqualsAndParameter' above treats the Subject as a Parameter. There is a bug in
      * both cases, with an additional bug for the 'Lit' case.
      */
+    @Test
     public void testFindSubjectUsingCriteriaBuilderEquals() {
 
         Subject s = createSubject();
@@ -309,6 +325,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * For comparison, this test does the same CriteriaBuilder code on Topic (an entity
      * with a single PK) as was done in the previous test to make sure it works.
      */
+    @Test
     public void testFindTopicUsingCriteriaBuilderEquals() {
 
         Topic t = new Topic();
@@ -348,6 +365,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there are two parameter markers.  With fix #2.1 and
      * #2.2, this issue is resolved.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEquals() {
 
         Subject s = createSubject();
@@ -375,6 +393,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      *
      * Notice this time the CCEx occurs in InExpression.  With fix #1 the issue is resolved.
      */
+    @Test
     public void testFindUsingJPQLInClauseOnSubject() {
         Subject s = createSubject();
         SubjectKey key = new SubjectKey(999, "Bla");
@@ -412,6 +431,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there are two parameter markers.  With fix #2.1 and
      * #2.2, this issue is resolved.
      */
+    @Test
     public void testFindUsingCriteriaBuilderInClauseOnSubject() {
 
         Subject s = createSubject();
@@ -443,6 +463,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * where an @EmbeddedId is used.  In other words, this query selects a Subject which uses
      * a @IdClass (still considered an embeddable in OpenJPA).
      */
+    @Test
     public void testFindUsingJPQLEqualsOnSubjectWithIdClass() {
         SubjectWithIdClass s = new SubjectWithIdClass();
         s.setSubjectNummer(1);
@@ -455,9 +476,9 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
             SubjectWithIdClass s2 = query.getSingleResult();
 
 
-        Assert.assertNotNull(s2);
-        Assert.assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
-        Assert.assertEquals(s.getSubjectTypeCode(), s2.getSubjectTypeCode());
+        assertNotNull(s2);
+        assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
+        assertEquals(s.getSubjectTypeCode(), s2.getSubjectTypeCode());
     }
 
     /*
@@ -470,6 +491,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * Notice that 't0.CODE_SUBJECTTYPE' is missing, and there is an extra parameter marker.  With
      * fix #2.1 and #2.2 this issue is resolved.
      */
+    @Test
     public void testFindUsingCriteriaBuilderOnSubjectWithIdClass() {
         SubjectWithIdClass s = new SubjectWithIdClass();
         s.setSubjectNummer(1);
@@ -489,9 +511,9 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
 
         SubjectWithIdClass s2 = query.getSingleResult();
 
-        Assert.assertNotNull(s2);
-        Assert.assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
-        Assert.assertEquals(s.getSubjectTypeCode(), s2.getSubjectTypeCode());
+        assertNotNull(s2);
+        assertEquals(s.getSubjectNummer(), s2.getSubjectNummer());
+        assertEquals(s.getSubjectTypeCode(), s2.getSubjectTypeCode());
     }
 
 
@@ -500,6 +522,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * a join failed with a NullPointerException in EqualExpression, because the path created
      * for the join carried no metadata.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnJoin() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -511,13 +534,14 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         root.fetch(SubTopic_.topic);
 
         SubTopic st = em.createQuery(cq).getSingleResult();
-        Assert.assertEquals(Integer.valueOf(8), st.getId());
+        assertEquals(Integer.valueOf(8), st.getId());
         verifyResults(st.getTopic(), sub);
     }
 
     /*
      * OPENJPA-2931: JPQL equivalent of the previous test.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnJoin() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -526,12 +550,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         query.setParameter("subject", sub);
 
         SubTopic st = query.getSingleResult();
-        Assert.assertEquals(Integer.valueOf(8), st.getId());
+        assertEquals(Integer.valueOf(8), st.getId());
     }
 
     /*
      * OPENJPA-2931: the comparison on a path navigated from the root through two relations.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnNestedPath() {
         Subject sub = createSubject();
 
@@ -540,12 +565,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Root<SubTopic> root = cq.from(SubTopic.class);
         cq.where(builder.equal(root.get(SubTopic_.topic).get(Topic_.subject), sub));
 
-        Assert.assertEquals(Integer.valueOf(8), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(8), em.createQuery(cq).getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: the comparison on a join that is correlated in a subquery.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnCorrelatedJoin() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -561,7 +587,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         sq.where(builder.equal(correlated.get(Topic_.subject), sub));
         cq.where(builder.exists(sq));
 
-        Assert.assertEquals(Integer.valueOf(8), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(8), em.createQuery(cq).getSingleResult().getId());
     }
 
     /*
@@ -569,6 +595,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * relation, so that only the metadata of the type the path navigates to, Subject, tells the store to
      * compare all PK columns.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnPathFromDerivedIdentityRoot() {
         Subject sub = createSubject();
 
@@ -578,13 +605,14 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         cq.where(builder.equal(root.get("topic").get("subject"), sub));
 
         Chapter chapter = em.createQuery(cq).getSingleResult();
-        Assert.assertEquals("Type", chapter.getOwner().getKey().getSubjectTypeCode());
+        assertEquals("Type", chapter.getOwner().getKey().getSubjectTypeCode());
     }
 
     /*
      * OPENJPA-2931: comparing an entity with a derived identity, whose first PK field is a relation, on a
      * path navigated from the root must compare all of its PK columns.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnDerivedIdentityPath() {
         Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
 
@@ -593,12 +621,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Root<Section> root = cq.from(Section.class);
         cq.where(builder.equal(root.get("chapter"), chapter));
 
-        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: the same comparison as the previous test on a join.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnDerivedIdentityJoin() {
         Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
 
@@ -608,12 +637,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Join<Section, Chapter> join = root.join("chapter");
         cq.where(builder.equal(join, chapter));
 
-        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: JPQL equivalent of the previous tests.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnDerivedIdentityPath() {
         Chapter chapter = em.find(Chapter.class, new ChapterId(new SubjectKey(1, "Type"), 1));
 
@@ -621,12 +651,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
                 "select s from Section s where s.chapter = :chapter", Section.class);
         query.setParameter("chapter", chapter);
 
-        Assert.assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: comparing an entity with a composite PK on a plural join.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnPluralJoin() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -636,12 +667,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         ListJoin<SubjectGroup, Subject> join = root.joinList("subjects");
         cq.where(builder.equal(join, sub));
 
-        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: JPQL equivalent of the previous test.
      */
+    @Test
     public void testFindUsingJPQLEqualsOnPluralJoin() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -649,12 +681,13 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
                 "select g from SubjectGroup g join g.subjects s where s = :subject", SubjectGroup.class);
         query.setParameter("subject", sub);
 
-        Assert.assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), query.getSingleResult().getId());
     }
 
     /*
      * OPENJPA-2931: comparing the entity key of a map join, which has a composite PK.
      */
+    @Test
     public void testFindUsingCriteriaBuilderEqualsOnMapJoinKey() {
         Subject sub = em.find(Subject.class, new SubjectKey(1, "Type"));
 
@@ -664,7 +697,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         MapJoin<SubjectGroup, Subject, Topic> join = root.joinMap("topics");
         cq.where(builder.equal(join.key(), sub));
 
-        Assert.assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
+        assertEquals(Integer.valueOf(1), em.createQuery(cq).getSingleResult().getId());
     }
 
     private void createData(){
@@ -765,19 +798,19 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
     }
 
     public void verifyResults(Topic topic, Subject s) {
-        Assert.assertNotNull(topic);
-        Assert.assertEquals(Integer.valueOf(5), topic.getId());
+        assertNotNull(topic);
+        assertEquals(Integer.valueOf(5), topic.getId());
         Subject s2 = topic.getSubject();
         verifySubject(s, s2);
     }
 
     public void verifySubject(Subject expected, Subject actual) {
-        Assert.assertNotNull(expected);
-        Assert.assertEquals(expected.getKey().getSubjectNummer(), actual.getKey().getSubjectNummer());
-        Assert.assertEquals(expected.getKey().getSubjectTypeCode(), actual.getKey().getSubjectTypeCode());
+        assertNotNull(expected);
+        assertEquals(expected.getKey().getSubjectNummer(), actual.getKey().getSubjectNummer());
+        assertEquals(expected.getKey().getSubjectTypeCode(), actual.getKey().getSubjectTypeCode());
     }
 
-    @Override
+    @AfterEach
     public void tearDown() {
         if (tx != null && tx.isActive()) {
             tx.rollback();

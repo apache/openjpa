@@ -44,6 +44,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted
@@ -55,6 +56,7 @@ import jakarta.persistence.criteria.Subquery;
 
 public class TestTypeSafeCondExpression extends CriteriaTest {
 
+    @Test
     public void testNothingUsingCriteria() {
         String query = "SELECT o FROM CompUser o";
 
@@ -63,6 +65,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testBetween() {
         String jpql = "SELECT o.name FROM CompUser o "
                     + "WHERE o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
@@ -76,6 +79,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testNotBetween() {
         String jpql = "SELECT o.name FROM CompUser o WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
 
@@ -88,6 +92,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testInExpr() {
         String jpql = "SELECT o.name FROM CompUser o WHERE o.age IN (29, 40, 10)";
 
@@ -99,6 +104,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testNotIn() {
         String jpql = "SELECT o.name FROM CompUser o WHERE o.age NOT IN (29, 40, 10)";
 
@@ -111,6 +117,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testLike1() {
         String jpql = "SELECT o.computerName FROM CompUser o "
                  + "WHERE o.name LIKE 'Sha%' AND o.computerName NOT IN ('PC','Laptop')";
@@ -127,6 +134,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testLike2() {
         String jpql = "SELECT o.computerName FROM CompUser o "
             + "WHERE o.name LIKE 'Sha%o_' AND o.computerName NOT IN ('UNIX','DOS')";
@@ -142,6 +150,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testLike3() {
         String jpql = "SELECT o.name FROM CompUser o WHERE o.name LIKE '_J%'";
 
@@ -153,6 +162,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, jpql);
     }
 
+    @Test
     public void testLikeWithEscapeCharacter() {
         String query = "SELECT o.name FROM CompUser o WHERE o.name LIKE :name ESCAPE '|'";
 
@@ -170,6 +180,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         }, cq, query);
     }
 
+    @Test
     public void testNullExpression() {
         String query = "SELECT o.name FROM CompUser o "
                      + "WHERE o.age IS NOT NULL AND o.computerName = 'PC'";
@@ -183,6 +194,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testNullExpr2UsingCriteria() {
         String query =
             "SELECT o.name FROM CompUser o WHERE o.address.country IS NULL";
@@ -196,6 +208,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testIsEmptyExprUsingCriteria() {
         String query = "SELECT o.name FROM CompUser o WHERE o.nicknames IS NOT EMPTY";
 
@@ -206,6 +219,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testConstructorExprUsingCriteria() {
         String query = "SELECT NEW org.apache.openjpa.persistence.criteria.MaleUser(" +
             "c.name, c.computerName, c.address, c.age, c.userid)" +
@@ -221,6 +235,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
    }
 
+    @Test
     public void testConcatSubStringFunc1() {
         String query = "select " +
             "CONCAT('Ablahum', SUBSTRING(e.name, LOCATE('e', e.name), 4)) " +
@@ -241,6 +256,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testConcatSubStringFunc2() {
         String query = "select e.address From CompUser e where " +
             "e.name = 'Seetha' AND e.computerName = " +
@@ -257,6 +273,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testConcatSubStringFunc3() {
         String query = "select " +
             "CONCAT('XYZ', SUBSTRING(e.name, LOCATE('e', e.name))) " +
@@ -270,6 +287,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testConcatSubStringFunc4() {
         String query = "select e.age from CompUser e where " +
             "e.name = 'Seetha' AND e.computerName = " +
@@ -285,6 +303,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testConcatFunc() {
         String query = "select " +
             "CONCAT('', '') From CompUser e WHERE e.name='Seetha'";
@@ -296,6 +315,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTrimFunc1() {
         String query = "select Trim(e.computerName) From CompUser e " +
         		"WHERE e.name='Shannon '";
@@ -307,6 +327,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTrimFunc2() {
         String query = "select e.computerName From CompUser e where " +
             "Trim(e.name) = 'Shannon '";
@@ -318,6 +339,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testLowerFunc1() {
         String query = "select LOWER(e.name) From CompUser e WHERE " +
         		"e.computerName='UNIX'";
@@ -329,6 +351,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testLowerFunc2() {
         String query = "select e.age From CompUser e where LOWER(e.name) ='ugo'";
         CriteriaQuery<Integer> q = cb.createQuery(Integer.class);
@@ -339,6 +362,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testUpperFunc1() {
         String query = "select UPPER(e.name) From CompUser e WHERE " +
                        "e.computerName='PC'";
@@ -350,6 +374,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testUpperFunc2() {
         String query = "select e.age from CompUser e where " +
             "UPPER(e.name)='UGO'";
@@ -361,6 +386,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testLengthFunc() {
         String query = "SELECT o.name FROM CompUser o " +
             "WHERE LENGTH(o.address.country) = 3";
@@ -374,6 +400,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testArithmFunc1() {
         String query = "select ABS(e.age) From CompUser e WHERE e.name='Seetha'";
 
@@ -385,6 +412,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testArithmFunc2() {
         String query = "select SQRT(e.age) From CompUser e WHERE e.name='Seetha'";
 
@@ -396,6 +424,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testArithmFunc3() {
         String query = "select MOD(e.age, 4) From CompUser e WHERE e.name='Seetha'";
 
@@ -407,6 +436,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testArithmFunc4() {
         String query = "SELECT e.name FROM CompUser e WHERE SIZE(e.nicknames) = 6";
 
@@ -418,6 +448,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testGroupByHavingClause() {
         String query = "SELECT c.name FROM CompUser c GROUP BY c.name HAVING c.name LIKE 'S%'";
 
@@ -430,6 +461,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testOrderByClause() {
         String query = "SELECT c.name FROM CompUser c WHERE c.name LIKE 'S%' ORDER BY c.name";
 
@@ -442,6 +474,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testAVGAggregFunc() {
         //To be Tested: AVG, COUNT, MAX, MIN, SUM
         String query = "SELECT AVG(e.age) FROM CompUser e";
@@ -453,6 +486,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testCOUNTAggregFunc() {
         String query = "SELECT COUNT(c.name) FROM CompUser c";
 
@@ -463,6 +497,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testMAXAggregFunc() {
         String query = "SELECT DISTINCT MAX(c.age) FROM CompUser c";
 
@@ -473,6 +508,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testMINAggregFunc() {
         String query = "SELECT DISTINCT MIN(c.age) FROM CompUser c";
 
@@ -483,6 +519,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSUMAggregFunc() {
         String query = "SELECT SUM(c.age) FROM CompUser c";
 
@@ -493,6 +530,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTypeExpression1() {
         String jpql = "SELECT e FROM CompUser e where TYPE(e) in (:a, :b) ORDER By e.name";
 
@@ -513,6 +551,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         }, cq, jpql);
     }
 
+    @Test
     public void testTypeExpression2() {
         String query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) <> :t";
 
@@ -532,6 +571,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         }, q, query);
     }
 
+    @Test
     public void testTypeExpression3() {
         String query = "SELECT e, FemaleUser, a FROM Address a, FemaleUser e where e.address IS NOT NULL";
 
@@ -544,6 +584,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTypeExpression4() {
         String query = "SELECT e FROM CompUser e where TYPE(e) = MaleUser";
 
@@ -555,6 +596,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testTypeExpression5() {
         String query = "SELECT e FROM CompUser e where TYPE(e) in (MaleUser)";
 
@@ -565,6 +607,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(cq, query);
     }
 
+    @Test
     public void testTypeExpression6() {
         String query = "SELECT e FROM CompUser e where TYPE(e) not in " +
             "(MaleUser, FemaleUser)";
@@ -578,6 +621,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     }
 
 
+    @Test
     public void testTypeExpression7() {
         String query = "SELECT TYPE(a.b) FROM A a";
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -587,6 +631,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTypeExpression8() {
         String query = "SELECT MaleUser FROM A a";
 
@@ -597,6 +642,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testTypeExpression9() {
         String query = "SELECT "
                 + " CASE TYPE(e) WHEN FemaleUser THEN 'Female' "
@@ -610,6 +656,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testCoalesceExpressions() {
          String query = "SELECT e.name, COALESCE (e.address.country, 'Unknown') FROM CompUser e ORDER BY e.name DESC";
 
@@ -622,6 +669,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testNullIfExpressions() {
         String query = "SELECT e.name, NULLIF (e.address.country, 'USA') FROM CompUser e ORDER BY e.name DESC";
 
@@ -634,6 +682,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSimpleCaseExpression1() {
         String query = "SELECT e.name, e.age+1, "
                 + "CASE e.address.country WHEN 'USA' THEN 'us' "
@@ -652,6 +701,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSimpleCaseExpression2() {
         String query = "SELECT e.name, e.age+1, "
                 + "CASE e.address.country WHEN 'USA'"
@@ -671,6 +721,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSimpleCaseExpression3() {
         String query = "SELECT e.name, "
                 + " CASE TYPE(e) WHEN FemaleUser THEN 'Female' "
@@ -688,6 +739,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testSimpleCaseExpression4() {
         String query = "SELECT e.name, CASE e.address.country WHEN 'USA'"
                 + " THEN true ELSE false END,"
@@ -703,6 +755,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testGeneralCaseExpression1() {
         String query = "SELECT e.name, e.age, "
                 + " CASE WHEN e.age > 30 THEN e.age - 1 "
@@ -720,6 +773,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testGeneralCaseExpression2() {
         String query = "SELECT e.name, e.age+1, "
                 + "CASE WHEN e.address.country = 'USA' "
@@ -742,6 +796,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
         assertEquivalence(q, query);
     }
 
+    @Test
     public void testGeneralCaseExpression3() {
         String query = " select e.name, "
             + "CASE WHEN e.age = 11 THEN "
@@ -770,6 +825,7 @@ public class TestTypeSafeCondExpression extends CriteriaTest {
     // not sure how to write CriteriaQuery for
     // Subquery.select(SimpleCase/GeneralCase)
 
+    @Test
     public void testGeneralCaseExpression4() {
         String query = "select e.name, e.creditRating from CompUser e "
             + "where e.creditRating = "

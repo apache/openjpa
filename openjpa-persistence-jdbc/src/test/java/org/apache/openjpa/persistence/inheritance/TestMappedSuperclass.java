@@ -25,6 +25,8 @@ import org.apache.openjpa.persistence.inheritance.entity.MappedSuper;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassC;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassD;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test verifies basic Mapped Superclass functionality as dictated by
@@ -34,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestMappedSuperclass extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BaseClass.class, SubclassC.class, MappedSuper.class,
                 SubclassD.class);
@@ -50,6 +52,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * hierarchy.  This test variant inserts new entities into the persistence
      * context by calling EntityManager.persist() on the new entity object.
      */
+    @Test
     public void testMappedSuperclassContract001() {
         EntityManager em = emf.createEntityManager();
 
@@ -82,6 +85,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * hierarchy.  This test variant inserts new entities into the persistence
      * context by calling EntityManager.merge() on the new entity object.
      */
+    @Test
     public void testMappedSuperclassContract002() {
         EntityManager em = emf.createEntityManager();
 

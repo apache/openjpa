@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that field values set via setter and then merge()'d are persisted
@@ -34,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedPropertyOrderEntity.class,
@@ -48,6 +53,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
      * Test: persist entity, then set a field and merge - the value should be persisted.
      * This mirrors TCK createOrderData: persist order, then setTotalPrice, merge.
      */
+    @Test
     public void testSetFieldAfterPersistAndMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -70,14 +76,14 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         UnenhancedPropertyOrderEntity found = em.find(UnenhancedPropertyOrderEntity.class, "1");
-        assertNotNull("Order should be found", found);
-        assertEquals("totalPrice should be 5000.0", 5000.0, found.getTotalPrice(), 0.001);
+        assertNotNull(found, "Order should be found");
+        assertEquals(5000.0, found.getTotalPrice(), 0.001, "totalPrice should be 5000.0");
 
         // Also test JPQL query with the field
         Query q = em.createQuery(
             "SELECT o FROM UnenhancedPropertyOrderEntity o WHERE o.totalPrice > 4500");
         List<?> results = q.getResultList();
-        assertEquals("Should find 1 order with totalPrice > 4500", 1, results.size());
+        assertEquals(1, results.size(), "Should find 1 order with totalPrice > 4500");
 
         em.getTransaction().commit();
         em.close();
@@ -88,6 +94,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
      * merge, flush, commit. Then query in a new tx.
      * This is exactly what createOrderData does.
      */
+    @Test
     public void testTCKPatternPersistFlushSetMergeFlushCommitThenQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -126,13 +133,13 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
         List<?> results = em.createQuery(
             "SELECT o FROM UnenhancedPropertyOrderEntity o WHERE NOT o.totalPrice < 4500")
             .getResultList();
-        assertEquals("Should find 1 order with totalPrice >= 4500", 1, results.size());
+        assertEquals(1, results.size(), "Should find 1 order with totalPrice >= 4500");
 
         // This mirrors test_ANDconditionTT
         results = em.createQuery(
             "SELECT o FROM UnenhancedPropertyOrderEntity o WHERE o.customerName = 'Alice' AND o.totalPrice > 500")
             .getResultList();
-        assertEquals("Should find Alice with totalPrice > 500", 1, results.size());
+        assertEquals(1, results.size(), "Should find Alice with totalPrice > 500");
 
         em.getTransaction().commit();
         em.close();
@@ -141,6 +148,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
     /**
      * Test: persist entity in one transaction, then find+set+merge in another.
      */
+    @Test
     public void testSetFieldAfterFindAndMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -166,7 +174,7 @@ public class TestMergeAfterSetWithRuntimeEnhancement extends SingleEMFTestCase {
         // Verify
         em = emf.createEntityManager();
         UnenhancedPropertyOrderEntity verify = em.find(UnenhancedPropertyOrderEntity.class, "2");
-        assertEquals("totalPrice should be updated to 9999.0", 9999.0, verify.getTotalPrice(), 0.001);
+        assertEquals(9999.0, verify.getTotalPrice(), 0.001, "totalPrice should be updated to 9999.0");
         em.close();
     }
 }

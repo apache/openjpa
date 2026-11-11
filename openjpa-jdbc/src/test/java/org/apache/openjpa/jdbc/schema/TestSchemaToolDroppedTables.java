@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The tables a schema generation script drops are tracked statically, because
@@ -35,7 +35,7 @@ import org.junit.Test;
  */
 public class TestSchemaToolDroppedTables {
 
-    @After
+    @AfterEach
     public void clearTracking() {
         SchemaTool.clearDroppedTables();
     }
@@ -72,10 +72,10 @@ public class TestSchemaToolDroppedTables {
 
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
 
-        assertFalse("unit-b must not see unit-a's drop",
-            SchemaTool.isDroppedTable(b, "FOO"));
-        assertTrue("unit-a must see its own drop",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertFalse(SchemaTool.isDroppedTable(b, "FOO"),
+            "unit-b must not see unit-a's drop");
+        assertTrue(SchemaTool.isDroppedTable(a, "FOO"),
+            "unit-a must see its own drop");
     }
 
     @Test
@@ -96,8 +96,8 @@ public class TestSchemaToolDroppedTables {
 
         SchemaTool.clearDroppedTables(b);
 
-        assertTrue("clearing unit-b must not discard unit-a's tracking",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertTrue(SchemaTool.isDroppedTable(a, "FOO"),
+            "clearing unit-b must not discard unit-a's tracking");
         assertFalse(SchemaTool.isDroppedTable(b, "FOO"));
     }
 
@@ -116,7 +116,7 @@ public class TestSchemaToolDroppedTables {
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
 
         assertTrue(SchemaTool.isDroppedTable(a, "FOO"));
-        assertFalse("the entry suppresses one create only",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertFalse(SchemaTool.isDroppedTable(a, "FOO"),
+            "the entry suppresses one create only");
     }
 }

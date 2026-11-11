@@ -27,6 +27,9 @@ import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -48,7 +51,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
     private DataCacheManager dcm;
     private OpenJPAStateManager sm;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(p);
 
@@ -68,7 +71,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
         sm = (OpenJPAStateManager) ((PersistenceCapable) p).pcGetStateManager();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         dcm.startCaching(CachedEntityStatistics.class.getName());
         em.close();
@@ -76,10 +79,12 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
         super.tearDown();
     }
 
+    @Test
     public void testExists() {
         dsm.exists(sm, null);
     }
 
+    @Test
     public void testsyncVersion() {
         dsm.syncVersion(sm, null);
     }

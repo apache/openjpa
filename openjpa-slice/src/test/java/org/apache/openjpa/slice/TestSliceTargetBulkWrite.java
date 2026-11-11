@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The target hint confines bulk statements to the slices it names, the way
@@ -37,7 +43,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         return "slice";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, CLEAR_TABLES,
             "openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName());
@@ -49,7 +55,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
             em.getTransaction().begin();
             // the active slices are only resolved once a broker has connected
             sliceNames = ((DistributedConfiguration) emf.getConfiguration()).getActiveSliceNames();
-            assertTrue("need at least two slices, got " + sliceNames, sliceNames.size() > 1);
+            assertTrue(sliceNames.size() > 1, "need at least two slices, got " + sliceNames);
             for (int i = 0; i < 4 * sliceNames.size(); i++) {
                 PObject pc = new PObject();
                 pc.setValue(0);
@@ -79,6 +85,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
+    @Test
     public void testJpqlBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
@@ -91,6 +98,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(0, countIn(other, 42));
     }
 
+    @Test
     public void testJpqlBulkUpdateRunsOnAllHintedSlices() {
         seed();
 
@@ -103,6 +111,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
+    @Test
     public void testJpqlBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
@@ -114,6 +123,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(other, 0));
     }
 
+    @Test
     public void testNativeBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
@@ -126,6 +136,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(0, countIn(other, 42));
     }
 
+    @Test
     public void testNativeBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
@@ -138,6 +149,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(other, 0));
     }
 
+    @Test
     public void testBulkUpdateWithoutTargetRunsOnAllSlices() {
         seed();
 
@@ -154,6 +166,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
+    @Test
     public void testUnknownTargetFails() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -164,7 +177,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
                     .executeUpdate();
                 fail("a target that names no active slice must fail");
             } catch (IllegalArgumentException e) {
-                assertTrue(e.getMessage(), e.getMessage().contains("NoSuchSlice"));
+                assertTrue(e.getMessage().contains("NoSuchSlice"), e.getMessage());
             } finally {
                 if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
@@ -176,6 +189,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
+    @Test
     public void testUnknownTargetFailsForAQuery() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
@@ -184,7 +198,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
                 .getResultList();
             fail("a target that names no active slice must fail");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("NoSuchSlice"));
+            assertTrue(e.getMessage().contains("NoSuchSlice"), e.getMessage());
         }
     }
 }

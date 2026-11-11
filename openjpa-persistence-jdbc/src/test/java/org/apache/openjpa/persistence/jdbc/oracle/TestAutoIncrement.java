@@ -18,14 +18,20 @@
  */
 package org.apache.openjpa.persistence.jdbc.oracle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests identity value assignment with IDENTITY strategy specifically for
@@ -47,15 +53,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestAutoIncrement extends SingleEMFTestCase {
 
     @Override
-    public void setUp() throws Exception {
+    protected boolean isSupported(DBDictionary dict) {
         // Only run on Oracle
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.OracleDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+        return dict instanceof OracleDictionary;
+    }
 
-        if ("testAutoIncrementIdentityWithNamedSequence".equals(getName())) {
+    @BeforeEach
+    public void setUp() throws Exception {
+        if ("testAutoIncrementIdentityWithNamedSequence".equals(getTestName())) {
             String sequence = "autoIncrementSequence";
             createSequence(sequence);
 			super.setUp(CLEAR_TABLES, PObject.class,
@@ -68,6 +73,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		}
     }
 
+    @Test
     public void testAutoIncrementIdentityWithNamedSequence() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
@@ -81,7 +87,8 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testAutoIncrementIdentityWithNativeSequence() {
+    @Test
+    public void testAutoIncrementIdentityWithNativeSequence() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		PObjectNative pc1 = new PObjectNative();

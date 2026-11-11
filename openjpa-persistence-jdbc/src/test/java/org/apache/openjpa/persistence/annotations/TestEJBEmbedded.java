@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedOwner;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for embedded
@@ -34,9 +40,9 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 public class TestEJBEmbedded extends AnnotationTestCase
 {
 
-	public TestEJBEmbedded(String name)
+	public TestEJBEmbedded()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
     private static final String CLOB;
@@ -48,12 +54,13 @@ public class TestEJBEmbedded extends AnnotationTestCase
         CLOB = buf.toString();
     }
 
-    @Override
+    @BeforeEach
     public void setUp()
     {
         deleteAll (EmbedOwner.class);
     }
 
+    @Test
     public void testEmbedded()
     {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
@@ -83,6 +90,7 @@ public class TestEJBEmbedded extends AnnotationTestCase
         endEm(em);
     }
 
+    @Test
     public void testNull() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

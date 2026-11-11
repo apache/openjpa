@@ -20,6 +20,10 @@ package org.apache.openjpa.persistence.jdbc.schema;
 
 import static org.apache.openjpa.jdbc.identifier.DBIdentifier.newTable;
 import static org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier.getPath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -39,6 +43,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Roberto Cortez
@@ -61,10 +67,6 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
             "EAGEROUTERJOINPC"
     };
 
-    public TestSchemaGenerationProperties(String name) {
-        super(name);
-    }
-
     @Override
     protected String getPersistenceUnitName() {
         return "TestConv";
@@ -73,9 +75,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
     @Override
     protected void addProperties(Map map) {}
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
 
         OpenJPAEntityManagerFactory pmf = getEmf(new HashMap());
         pmf.createEntityManager();
@@ -89,6 +90,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
     // TODO - Add validation when source uses script but no script is provided?.
 
+    @Test
     public void testSchemaGenMetadataDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
@@ -96,11 +98,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNull("Table " + tableName + " should not exist in the DB.",
-                       dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                       "Table " + tableName + " should not exist in the DB.");
         }
     }
 
+    @Test
     public void testSchemaGenMetadataCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
@@ -108,11 +111,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
     }
 
+    @Test
     public void testSchemaGenMetadataDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
@@ -120,11 +124,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
     }
 
+    @Test
     public void testSchemaGenScriptDrop() throws Exception {
         testSchemaGenMetadataCreate();
 
@@ -137,11 +142,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNull("Table " + tableName + " should not exist in the DB.",
-                       dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                       "Table " + tableName + " should not exist in the DB.");
         }
     }
 
+    @Test
     public void testSchemaGenScriptCreate() throws Exception {
 
         testSchemaGenMetadataDrop();
@@ -167,11 +173,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
     }
 
+    @Test
     public void testSchemaGenScriptDropAndCreate() throws Exception {
         testSchemaGenMetadataCreate();
 
@@ -201,11 +208,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
     }
 
+    @Test
     public void testSchemaGenMetadataThenScriptDropAndCreate() throws Exception {
         try {
             OpenJPAEntityManagerFactory pmf = getEmf();
@@ -229,14 +237,15 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
 
-        assertNotNull("Table " + "CREATE_AFTER_METADATA" + " should have been created in the DB, but does not exists.",
-                      dbSchemaGroup.findTable(getPath(newTable("CREATE_AFTER_METADATA"))));
+        assertNotNull(dbSchemaGroup.findTable(getPath(newTable("CREATE_AFTER_METADATA"))),
+                      "Table " + "CREATE_AFTER_METADATA" + " should have been created in the DB, but does not exists.");
     }
 
+    @Test
     public void testSchemaGenNoCreateSourceSpecifiedAndCreateScriptSourceSpecified() throws Exception {
         try {
             OpenJPAEntityManagerFactory pmf = getEmf();
@@ -255,10 +264,11 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
 
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
-        assertNotNull("Table " + "CREATE_AFTER_METADATA" + " should have been created in the DB, but does not exists.",
-                      dbSchemaGroup.findTable(getPath(newTable("CREATE_AFTER_METADATA"))));
+        assertNotNull(dbSchemaGroup.findTable(getPath(newTable("CREATE_AFTER_METADATA"))),
+                      "Table " + "CREATE_AFTER_METADATA" + " should have been created in the DB, but does not exists.");
     }
 
+    @Test
     public void testSchemaGenNoCreateSourceAndCreateScriptSourceSpecified() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
@@ -266,11 +276,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
     }
 
+    @Test
     public void testSchemaGenNoDropSourceSpecifiedAndDropScriptSourceSpecified() throws Exception {
         testSchemaGenMetadataCreate();
 
@@ -282,11 +293,12 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = getSchemaGroup(properties);
 
         for (String tableName : TABLES_NAME) {
-            assertNull("Table " + tableName + " should not exist in the DB.",
-                       dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                       "Table " + tableName + " should not exist in the DB.");
         }
     }
 
+    @Test
     public void testSchemaGenScriptLoad() throws Exception {
         testSchemaGenMetadataDropAndCreate();
 
@@ -302,8 +314,8 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaGroup dbSchemaGroup = schemaTool.getDBSchemaGroup();
 
         for (String tableName : TABLES_NAME) {
-            assertNotNull("Table " + tableName + " should have been created in the DB, but does not exists.",
-                          dbSchemaGroup.findTable(getPath(newTable(tableName))));
+            assertNotNull(dbSchemaGroup.findTable(getPath(newTable(tableName))),
+                          "Table " + tableName + " should have been created in the DB, but does not exists.");
         }
 
         InvertA invertA = entityManager.find(InvertA.class, 1);
@@ -311,6 +323,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         assertEquals("script load test", invertA.getTest());
     }
 
+    @Test
     public void testSchemaGenOutputScriptCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "create");
@@ -324,6 +337,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         assertTrue(createFile.length() > 0);
     }
 
+    @Test
     public void testSchemaGenOutputScriptDrop() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop");
@@ -337,6 +351,7 @@ public class TestSchemaGenerationProperties extends BaseJDBCTest {
         assertTrue(dropFile.length() > 0);
     }
 
+    @Test
     public void testSchemaGenOutputScriptDropAndCreate() throws Exception {
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");

@@ -18,17 +18,16 @@
  */
 package org.apache.openjpa.persistence.fetchgroups;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -49,7 +48,7 @@ public class TestEntityManagerFactoryLoading {
 	
 	private Set<FGEmployee> employees = new HashSet<FGEmployee>();
 	
-	@Before
+	@BeforeEach
 	public void beforeEach() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -62,7 +61,7 @@ public class TestEntityManagerFactoryLoading {
 		emf.runInTransaction(this::loadTestData);
 	}
 	
-	@After
+	@AfterEach
 	public void afterEach() {
 		if (emf != null && emf.isOpen()) {
 			emf.close();

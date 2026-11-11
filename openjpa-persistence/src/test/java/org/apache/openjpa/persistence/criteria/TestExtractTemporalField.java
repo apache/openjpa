@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,7 +34,7 @@ import jakarta.persistence.criteria.LocalTimeField;
 import jakarta.persistence.criteria.TemporalField;
 
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that EXTRACT resolves each temporal field constant of the specification to its
@@ -89,9 +89,9 @@ public class TestExtractTemporalField {
     private <N, T extends Temporal> void assertExtracts(DateTimeExtractField expected,
             TemporalField<N, T> field, Class<T> temporalType) {
         Expression<N> e = extract(field, temporalType);
-        assertSame(field.toString(), expected, ((Expressions.ExtractField<N>) e).getField());
-        assertEquals(field.toString(),
-            expected == DateTimeExtractField.SECOND ? Double.class : Integer.class, e.getJavaType());
+        assertSame(expected, ((Expressions.ExtractField<N>) e).getField(), field.toString());
+        assertEquals(expected == DateTimeExtractField.SECOND ? Double.class : Integer.class,
+            e.getJavaType(), field.toString());
     }
 
     private <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Class<T> temporalType) {

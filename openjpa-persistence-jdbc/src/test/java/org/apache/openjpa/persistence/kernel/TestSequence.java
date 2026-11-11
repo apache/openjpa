@@ -28,27 +28,22 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.Generator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSequence extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestSequence
-     */
-    public TestSequence() {
-    }
-
-    public TestSequence(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(AImplB.class);
     }
 
+    @Test
     public void testSequence() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);

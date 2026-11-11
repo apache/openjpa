@@ -18,16 +18,16 @@
  */
 package org.apache.openjpa.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Pins the registry contract of

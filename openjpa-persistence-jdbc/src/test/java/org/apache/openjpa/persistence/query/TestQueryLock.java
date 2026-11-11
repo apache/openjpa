@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
@@ -27,25 +30,23 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestQueryLock extends BaseQueryTest {
-
-    public TestQueryLock(String test) {
-        super(test);
-    }
-
-    @Override
+    @BeforeEach
     public void setUp() {
         deleteAll(Entity1.class);
     }
 
+    @Test
     public void testJPQLLock() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("SELECT o FROM Entity1 o WHERE o.stringField = 'testSimple'");
 
         try {
             q.setLockMode(LockModeType.NONE);
-            assertEquals("Verify NONE after set", LockModeType.NONE, q.getLockMode());
+            assertEquals(LockModeType.NONE, q.getLockMode(), "Verify NONE after set");
         } catch (Exception e) {
             fail("Do not expected " + e.getClass().getName());
         }
@@ -54,7 +55,7 @@ public class TestQueryLock extends BaseQueryTest {
             q.setLockMode(LockModeType.PESSIMISTIC_READ);
             fail("Expecting TransactionRequiredException thrown");
         } catch (TransactionRequiredException tre) {
-            assertEquals("Verify still NONE after set incorrect lock mode", LockModeType.NONE, q.getLockMode());
+            assertEquals(LockModeType.NONE, q.getLockMode(), "Verify still NONE after set incorrect lock mode");
         } catch (Exception e) {
             fail("Expecting TransactionRequiredException thrown");
         }
@@ -62,8 +63,8 @@ public class TestQueryLock extends BaseQueryTest {
         startTx(em);
         try {
             q.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-            assertEquals("Verify changed to OPTIMISTIC_FORCE_INCREMENT", LockModeType.OPTIMISTIC_FORCE_INCREMENT, q
-                    .getLockMode());
+            assertEquals(LockModeType.OPTIMISTIC_FORCE_INCREMENT, q
+                    .getLockMode(), "Verify changed to OPTIMISTIC_FORCE_INCREMENT");
         } catch (Exception e) {
             fail("Do not expected " + e.getClass().getName());
         }
@@ -71,6 +72,7 @@ public class TestQueryLock extends BaseQueryTest {
         endEm(em);
     }
 
+    @Test
     public void testCriteriaLock() {
         EntityManager em = currentEntityManager();
         CriteriaBuilder cb = getEmf().getCriteriaBuilder();
@@ -80,7 +82,7 @@ public class TestQueryLock extends BaseQueryTest {
 
         try {
             q.setLockMode(LockModeType.NONE);
-            assertEquals("Verify NONE after set", LockModeType.NONE, q.getLockMode());
+            assertEquals(LockModeType.NONE, q.getLockMode(), "Verify NONE after set");
         } catch (Exception e) {
             fail("Do not expected " + e.getClass().getName());
         }
@@ -89,7 +91,7 @@ public class TestQueryLock extends BaseQueryTest {
             q.setLockMode(LockModeType.PESSIMISTIC_READ);
             fail("Expecting TransactionRequiredException thrown");
         } catch (TransactionRequiredException tre) {
-            assertEquals("Verify still NONE after set incorrect lock mode", LockModeType.NONE, q.getLockMode());
+            assertEquals(LockModeType.NONE, q.getLockMode(), "Verify still NONE after set incorrect lock mode");
         } catch (Exception e) {
             fail("Expecting TransactionRequiredException thrown");
         }
@@ -97,8 +99,8 @@ public class TestQueryLock extends BaseQueryTest {
         startTx(em);
         try {
             q.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-            assertEquals("Verify changed to OPTIMISTIC_FORCE_INCREMENT", LockModeType.OPTIMISTIC_FORCE_INCREMENT, q
-                    .getLockMode());
+            assertEquals(LockModeType.OPTIMISTIC_FORCE_INCREMENT, q
+                    .getLockMode(), "Verify changed to OPTIMISTIC_FORCE_INCREMENT");
         } catch (Exception e) {
             fail("Do not expected " + e.getClass().getName());
         }
@@ -109,6 +111,7 @@ public class TestQueryLock extends BaseQueryTest {
     /**
      * Per JPA spec, getLockMode() on an UPDATE query must throw IllegalStateException.
      */
+    @Test
     public void testGetLockModeOnUpdateQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -127,6 +130,7 @@ public class TestQueryLock extends BaseQueryTest {
     /**
      * Per JPA spec, getLockMode() on a DELETE query must throw IllegalStateException.
      */
+    @Test
     public void testGetLockModeOnDeleteQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -145,6 +149,7 @@ public class TestQueryLock extends BaseQueryTest {
     /**
      * Per JPA spec, setLockMode() on an UPDATE query must throw IllegalStateException.
      */
+    @Test
     public void testSetLockModeOnUpdateQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("UPDATE Entity1 e SET e.stringField = 'x'");
@@ -161,6 +166,7 @@ public class TestQueryLock extends BaseQueryTest {
     /**
      * Per JPA spec, setLockMode() on a DELETE query must throw IllegalStateException.
      */
+    @Test
     public void testSetLockModeOnDeleteQueryThrowsIllegalState() {
         EntityManager em = currentEntityManager();
         Query q = em.createQuery("DELETE FROM Entity1 e WHERE e.stringField = 'x'");
@@ -177,6 +183,7 @@ public class TestQueryLock extends BaseQueryTest {
     /**
      * Per JPA spec, setLockMode() on a native query must throw IllegalStateException.
      */
+    @Test
     public void testNativeLock() {
         EntityManager em = currentEntityManager();
         Query q = em.createNativeQuery("SELECT * FROM Entity1");

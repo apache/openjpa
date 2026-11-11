@@ -16,6 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 /**
  * The compatibility option <code>CleanupOwnedTablesOnBulkDelete=false</code>
  * suppresses the cleanup of the owned tables and leaves their rows behind.
@@ -24,7 +29,7 @@ package org.apache.openjpa.persistence.jdbc.query.bulk;
  */
 public class TestBulkDeleteJoinTableCompat extends AbstractBulkDeleteTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteOwner.class, BulkDeleteDetails.class,
             BulkDeleteAddress.class, BulkDeleteItem.class,
@@ -33,6 +38,7 @@ public class TestBulkDeleteJoinTableCompat extends AbstractBulkDeleteTestCase {
         sql.clear();
     }
 
+    @Test
     public void testOwnedTableRowsAreLeftBehind() {
         assertEquals(2, delete("delete from BulkDeleteOwner o"));
 
