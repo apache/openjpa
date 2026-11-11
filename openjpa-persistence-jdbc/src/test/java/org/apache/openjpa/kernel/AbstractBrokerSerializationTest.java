@@ -260,6 +260,7 @@ public abstract class AbstractBrokerSerializationTest<T> extends SingleEMFTestCa
     @Test
     public void inMemorySavepointsWithNewInstances() {
         OpenJPAEntityManagerFactory emf1 = createEMF(
+            FRESH_EMF,
             getManagedType(), getSecondaryType(),
             "openjpa.EntityManagerFactoryPool", "true",
             "openjpa.SavepointManager", "in-mem");
@@ -295,6 +296,7 @@ public abstract class AbstractBrokerSerializationTest<T> extends SingleEMFTestCa
     @Test
     public void inMemorySavepointsWithModifiedInstances() {
         OpenJPAEntityManagerFactory emf1 = createEMF(
+            FRESH_EMF,
             getManagedType(), getSecondaryType(),
             "openjpa.EntityManagerFactoryPool", "true",
             "openjpa.SavepointManager", "in-mem");
