@@ -608,8 +608,8 @@ public class ResultSetResult
     protected int findObject(Object obj, Joins joins)
         throws SQLException {
         try {
-          String s1 = obj.toString();
-          DBIdentifier sName = _dict.normalize(DBIdentifier.newColumn(obj.toString()));
+          // convertSchemaCase names the column for the dictionary
+          DBIdentifier sName = DBIdentifier.newColumn(obj.toString());
           return getResultSet().findColumn(_dict.convertSchemaCase(sName));
         } catch (SQLException se) {
             _dict.log.trace(se.getMessage());

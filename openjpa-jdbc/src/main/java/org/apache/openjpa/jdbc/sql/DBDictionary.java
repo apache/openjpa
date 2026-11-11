@@ -619,6 +619,11 @@ public class DBDictionary
     // decides whether a name is delimited when an identifier is named for
     // this dictionary, see normalize(DBIdentifier)
     private final DBIdentifierRule normalizingRule = new DBIdentifierRule();
+    // the names normalize(DBIdentifier) gave, by the name it was given, as
+    // it is called for every name written into SQL; bounded, as names may
+    // come from outside, such as the columns of a native query
+    private final Map<String, String> normalizedNames = new ConcurrentHashMap<>();
+    private static final int MAX_NORMALIZED_NAMES = 4096;
 
     /**
      * If a native query begins with any of the values found here then it will
@@ -746,6 +751,8 @@ public class DBDictionary
      * override this method, providing their own naming rules.
      */
     protected void configureNamingRules() {
+        // the normalizing rule is set up anew
+        normalizedNames.clear();
         // Add the default naming rule
         DBIdentifierRule defRule = new DBIdentifierRule(DBIdentifierType.DEFAULT, reservedWordSet);
         namingRules.put(defRule.getName(), defRule);
@@ -798,9 +805,9 @@ public class DBDictionary
         if (name instanceof QualifiedDBIdentifier path) {
             DBIdentifier schema = normalize(path.getSchemaName());
             DBIdentifier table = normalize(path.getObjectTableName());
-            String base = Normalizer.normalizeString(path.getUnqualifiedName().getName(), normalizingRule);
+            String base = normalizeName(path.getBaseName());
             if (schema == path.getSchemaName() && table == path.getObjectTableName()
-                && Objects.equals(base, path.getUnqualifiedName().getName())) {
+                && Objects.equals(base, path.getBaseName())) {
                 return name;
             }
             QualifiedDBIdentifier sPath = path.clone();
@@ -811,13 +818,31 @@ public class DBDictionary
             return sPath;
         }
         String str = name.getName();
-        String normalized = Normalizer.normalizeString(str, normalizingRule);
+        String normalized = normalizeName(str);
         if (Objects.equals(str, normalized)) {
             return name;
         }
         DBIdentifier sName = name.clone();
         sName.setName(normalized);
         return sName;
+    }
+
+    /**
+     * Returns the given single part name, delimited if the
+     * {@link #getNormalizingRule() normalizing rule} requires it.
+     */
+    private String normalizeName(String name) {
+        if (name == null) {
+            return null;
+        }
+        String normalized = normalizedNames.get(name);
+        if (normalized == null) {
+            normalized = Normalizer.normalizeString(name, normalizingRule);
+            if (normalizedNames.size() < MAX_NORMALIZED_NAMES) {
+                normalizedNames.put(name, normalized);
+            }
+        }
+        return normalized;
     }
 
     //////////////////////
