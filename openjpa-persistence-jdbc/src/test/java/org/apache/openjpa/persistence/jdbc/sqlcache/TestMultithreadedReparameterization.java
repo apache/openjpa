@@ -71,21 +71,21 @@ class TestMultithreadedReparameterization {
         for (int i = 0; i < nThreads; i++) {
             Person p = new Person();
             p.setId(baseId+i);
-            p.setFirstName("First"+i);
-            p.setLastName("Last"+i);
-            p.setAge((short)(20+i));
+            p.setFirstName("First" + i);
+            p.setLastName("Last" + i);
+            p.setAge((short)(20 + i));
             em.persist(p);
         }
         em.getTransaction().commit();
 
         String jpql = "select p from Person p "
-                    + "where p.id=:id and p.firstName=:first and p.lastName=:last and p.age=:age";
+                    + "where p.id = :id and p.firstName = :first and p.lastName = :last and p.age = :age";
         int nRepeats = 20;
         Thread[] threads = new Thread[nThreads];
         final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
 
         for (int i = 0; i < nThreads; i++) {
-            Object[] args = {"id", baseId+i, "first", "First"+i, "last", "Last"+i, "age", (short)(20+i)};
+            Object[] args = {"id", baseId + i, "first", "First" + i, "last", "Last" + i, "age", (short)(20 + i)};
             QueryThread thread = new QueryThread(emf.createEntityManager(), jpql, args, nRepeats, exceptions);
             threads[i] = new Thread(thread);
         }
@@ -100,8 +100,8 @@ class TestMultithreadedReparameterization {
             for(Throwable t : exceptions) {
                 fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
             }
-            assertEquals(nThreads * nRepeats, stats.getExecutionCount());
-            assertEquals(nThreads * nRepeats - 1, stats.getExecutionCount());
+            assertEquals(nThreads * nRepeats, stats.getExecutionCount(), stats.getExecutionCount(jpql));
+            assertEquals(nThreads * nRepeats - 1, stats.getExecutionCount(), stats.getHitCount(jpql));
         } finally {
             //clear statistics for other tests
             emf.getConfiguration().getQuerySQLCacheInstance().clear();

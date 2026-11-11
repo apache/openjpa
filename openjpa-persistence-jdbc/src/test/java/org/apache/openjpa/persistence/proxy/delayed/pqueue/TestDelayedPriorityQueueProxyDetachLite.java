@@ -42,9 +42,10 @@ class TestDelayedPriorityQueueProxyDetachLite extends TestDelayedPriorityQueuePr
     /*
      * Verify that a collection can be loaded post detachment
      */
-    
+
     @Test
-    public void testPostDetach() {
+    @Override
+    public void postDetach() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
