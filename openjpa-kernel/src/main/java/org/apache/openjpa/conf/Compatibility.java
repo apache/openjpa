@@ -1007,13 +1007,12 @@ public class Compatibility {
     }
 
     /**
-     * Whether the type arguments of an <code>AttributeConverter&lt;X,
-     * Y&gt;</code> are resolved through the whole type hierarchy of the
-     * converter class. Defaults to true: a converter that gets its attribute
-     * type <code>X</code> or its database type <code>Y</code> from a generic
-     * superclass, such as <code>Base&lt;X, Y&gt; implements
-     * AttributeConverter&lt;X, Y&gt;</code>, or from an interface that
-     * extends <code>AttributeConverter</code> maps its attribute to a column
+     * Whether the type arguments of an {@code AttributeConverter<X, Y>}
+     * are resolved through the whole type hierarchy of the converter class.
+     * Defaults to true: a converter that gets its attribute type {@code X} or
+     * its database type {@code Y} from a generic superclass, such as
+     * {@code Base<X, Y> implements AttributeConverter<X, Y>}, or from an
+     * interface that extends {@code AttributeConverter} maps its attribute to a column
      * of the database type, and such a converter, like one whose attribute
      * type is parameterized, is registered when it is declared
      * <code>autoApply</code>.

@@ -1782,7 +1782,7 @@ public class FieldMetaData
     }
 
     /**
-     * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
+     * Extract one type argument of the {@code AttributeConverter<X, Y>} that an
      * implementation class declares: index 0 for the attribute type, 1 for the
      * database type. The argument may be given anywhere in the type hierarchy
      * of the class, also through a generic superclass or an interface that
@@ -1797,7 +1797,7 @@ public class FieldMetaData
     }
 
     /**
-     * Extract one type argument of the AttributeConverter&lt;X,Y&gt; that an
+     * Extract one type argument of the {@code AttributeConverter<X, Y>} that an
      * implementation class declares, as {@link
      * #resolveConverterTypeArgument(Class, int)} does if the type hierarchy
      * is to be resolved. Otherwise the argument is only found in a class of
