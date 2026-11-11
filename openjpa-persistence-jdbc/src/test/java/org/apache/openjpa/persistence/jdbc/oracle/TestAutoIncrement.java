@@ -60,7 +60,7 @@ class TestAutoIncrement extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        if ("testAutoIncrementIdentityWithNamedSequence".equals(getTestName())) {
+        if ("autoIncrementIdentityWithNamedSequence".equals(getTestName())) {
             String sequence = "autoIncrementSequence";
             createSequence(sequence);
 			super.setUp(CLEAR_TABLES, PObject.class,

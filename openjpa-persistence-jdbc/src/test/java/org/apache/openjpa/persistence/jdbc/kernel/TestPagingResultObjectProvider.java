@@ -72,8 +72,8 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
         }
 
         // skip test case that requires subselect for DBs that don't support it
-        if ("testPagingRangeQuery".equals(getTestName())
-            || "testNonPagingRangeQuery".equals(getTestName()))
+        if ("pagingRangeQuery".equals(getTestName())
+            || "nonPagingRangeQuery".equals(getTestName()))
         {
             if (!conf.getDBDictionaryInstance().supportsSubselect) {
                 return true;

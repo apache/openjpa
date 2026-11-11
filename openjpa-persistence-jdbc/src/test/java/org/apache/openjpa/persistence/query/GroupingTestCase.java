@@ -90,7 +90,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
         pc4.setSelfOneOne(pc1);
 
         // if variable testing, set up some 1-Ms instead of the 1-1s above
-        if (getTestName().startsWith("testVariable")) {
+        if (getTestName().startsWith("variable")) {
             pc1.setSelfOneOne(pc1);
             pc2.setSelfOneOne(pc1);
             pc1.getSelfOneMany().add(pc1);

@@ -82,7 +82,6 @@ class TestMixedLockManagerLockBasic extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
-    @Test
     void common(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
         Object[][] threadMain = {

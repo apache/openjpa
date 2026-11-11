@@ -36,7 +36,7 @@ class TestSubstring extends SingleEMTestCase {
         // Expressions as substring parameters fail on PostgreSQL.
         // The same problem exists with LOCATE.
         // Possible fix: use CAST to integer as we do with DB2.
-        return !("testSubstringWithExpressionsInWhere".equals(getTestName()) && dict instanceof PostgresDictionary);
+        return !("substringWithExpressionsInWhere".equals(getTestName()) && dict instanceof PostgresDictionary);
     }
 
     @BeforeEach
