@@ -18,11 +18,22 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Calendar;
+
+import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.Literal;
 
 /**
@@ -154,10 +165,19 @@ public class Lit extends Const implements Literal {
                     lstate.sqlValue = new Raw(_val.toString());
                     break;
                 default:
+                    // OPENJPA-2935: only values with a known literal form are written into the
+                    // SQL text, the toString() of any other value is not valid SQL
                     if (_val instanceof String) {
                         lstate.sqlValue = toRawString(ctx, _val, lstate.sqlValue);
-                    } else {
+                    } else if (_val instanceof Number) {
                         lstate.sqlValue = new Raw(_val.toString());
+                    } else {
+                        // a date-time literal renders the same in the select list, ORDER BY and
+                        // GROUP BY and has a known type, unlike a parameter; other values are bound
+                        Raw temporal = toDateTimeLiteral(ctx, lstate.getColumn(index), _val);
+                        if (temporal != null) {
+                            lstate.sqlValue = temporal;
+                        }
                     }
                     break;
             }
@@ -175,5 +195,36 @@ public class Lit extends Const implements Literal {
     private static Object toRawString(ExpContext ctx, Object val, Object sqlValue) {
         String literal = ctx.store.getDBDictionary().toStringLiteral(String.valueOf(val));
         return literal == null ? sqlValue : new Raw(literal);
+    }
+
+    /**
+     * Return the given date, time or timestamp value as a JDBC escaped date-time literal of the
+     * dictionary, converted to the JDBC type the same way as when it is bound as a parameter,
+     * or null if the value has no such literal form.
+     */
+    private static Raw toDateTimeLiteral(ExpContext ctx, Column col, Object val) {
+        DBDictionary dict = ctx.store.getDBDictionary();
+        if (val instanceof java.sql.Date || val instanceof LocalDate) {
+            Date date = val instanceof LocalDate ld ? Date.valueOf(ld) : (Date) val;
+            return new Raw(dict.toJDBCEscapedDateTimeLiteral("{d '" + date + "'}", Literal.TYPE_DATE));
+        }
+        if (val instanceof Time || val instanceof LocalTime) {
+            Time time = val instanceof LocalTime lt ? Time.valueOf(lt) : (Time) val;
+            return new Raw(dict.toJDBCEscapedDateTimeLiteral("{t '" + time + "'}", Literal.TYPE_TIME));
+        }
+        Timestamp ts;
+        if (val instanceof Timestamp t) {
+            ts = t;
+        } else if (val instanceof java.util.Date d) {
+            ts = new Timestamp(d.getTime());
+        } else if (val instanceof Calendar c) {
+            ts = new Timestamp(c.getTimeInMillis());
+        } else if (val instanceof LocalDateTime ldt) {
+            ts = Timestamp.valueOf(ldt);
+        } else {
+            return null;
+        }
+        ts = StateManagerImpl.roundTimestamp(ts, dict.getTimestampPrecision(col));
+        return new Raw(dict.toJDBCEscapedDateTimeLiteral("{ts '" + ts + "'}", Literal.TYPE_TIMESTAMP));
     }
 }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
@@ -43,13 +44,16 @@ abstract class AbstractVal
 
     /**
      * Return the type code to load the value of this expression with: {@link JavaSQLTypes#SQL_DATE} for a
-     * {@link java.sql.Date} and {@link JavaSQLTypes#TIME} for a {@link Time}, as a driver can return another type
-     * for the column, such as the Timestamp the Oracle driver returns for a DATE column; else
-     * {@link JavaSQLTypes#JDBC_DEFAULT}.
+     * {@link java.sql.Date}, {@link JavaSQLTypes#TIME} for a {@link Time}, {@link JavaSQLTypes#TIMESTAMP} for a
+     * {@link Timestamp} and {@link JavaSQLTypes#DATE} for a {@link java.util.Date}, which is loaded like a
+     * {@link java.util.Date} field, as a driver can return another type for the column, such as the Timestamp the
+     * Oracle driver returns for a DATE column or the LocalDateTime MySQL Connector/J returns for a DATETIME column;
+     * else {@link JavaSQLTypes#JDBC_DEFAULT}.
      */
     protected int getLoadTypeCode() {
         Class<?> type = getType();
-        if (type == java.sql.Date.class || type == Time.class) {
+        if (type == java.sql.Date.class || type == Time.class || type == Timestamp.class
+                || type == java.util.Date.class) {
             return JavaSQLTypes.getDateTypeCode(type);
         }
         return JavaSQLTypes.JDBC_DEFAULT;

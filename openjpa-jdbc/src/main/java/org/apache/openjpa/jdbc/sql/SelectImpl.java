@@ -1703,7 +1703,11 @@ public class SelectImpl
     @Override
     public void groupBy(SQLBuffer sql, Joins joins) {
         getJoins(joins, true);
-        groupByAppend(sql.getSQL());
+        String str = sql.getSQL();
+        if (_grouped == null || !_grouped.contains(str)) {
+            // append the buffer, not only its text, so that its parameters are kept
+            groupByAppend(str, sql.getParameters().isEmpty() ? null : sql);
+        }
     }
 
     @Override
@@ -1743,15 +1747,24 @@ public class SelectImpl
 
     private void groupByAppend(String sql) {
         if (_grouped == null || !_grouped.contains(sql)) {
-            if (_grouping == null) {
-                _grouping = new SQLBuffer(_dict);
-                _grouped = new ArrayList();
-            } else
-                _grouping.append(", ");
-
-            _grouping.append(sql);
-            _grouped.add(sql);
+            groupByAppend(sql, null);
         }
+    }
+
+    private void groupByAppend(String sql, SQLBuffer buf) {
+        if (_grouping == null) {
+            _grouping = new SQLBuffer(_dict);
+            _grouped = new ArrayList();
+        } else {
+            _grouping.append(", ");
+        }
+
+        if (buf == null) {
+            _grouping.append(sql);
+        } else {
+            _grouping.append(buf);
+        }
+        _grouped.add(sql);
     }
 
     @Override

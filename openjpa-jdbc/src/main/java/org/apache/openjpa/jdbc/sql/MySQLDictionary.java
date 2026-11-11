@@ -763,5 +763,14 @@ public class MySQLDictionary
         emulateNullsPrecedence(ordering, nullPrecedence,
                 expr -> expr + " IS NULL " + nullSort + ", " + expr);
     }
-}
 
+    /**
+     * Connector/J translates a JDBC escaped date-time literal into a string literal,
+     * so that COALESCE or CASE with a date-time column has a string result. A SQL
+     * standard typed literal keeps the date-time type.
+     */
+    @Override
+    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
+        return toTypedDateTimeLiteral(escape, parseType);
+    }
+}
