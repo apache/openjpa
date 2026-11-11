@@ -5880,6 +5880,22 @@ public class DBDictionary
     }
 
     /**
+     * Whether the given connection is a replication connection, whose driver
+     * sends the statements of a read-only connection to a replica. The store
+     * keeps such a connection read-only outside of a transaction, so that the
+     * reads go to a replica, and makes it writable when a transaction begins.
+     * This implementation returns <code>false</code>.
+     *
+     * @param conn a connection of the store, possibly wrapped by OpenJPA's
+     * decorators
+     * @since 4.2.0
+     */
+    public boolean isReplicationConnection(Connection conn)
+        throws SQLException {
+        return false;
+    }
+
+    /**
      * Implementation of the
      * {@link LoggingConnectionDecorator.SQLWarningHandler} interface
      * that allows customization of the actions to perform when a

@@ -174,7 +174,18 @@ public abstract class AbstractJDBCSeq
         throws SQLException {
         if (!forceNewConnection && (type == TYPE_TRANSACTIONAL || type == TYPE_CONTIGUOUS)) {
             // Also increments ref count.
-            return store.getConnection();
+            Connection conn = store.getConnection();
+            try {
+                // outside of a transaction a replication connection is
+                // read-only, which would send the sequence update to a replica
+                if (store.getDBDictionary().isReplicationConnection(conn) && conn.isReadOnly()) {
+                    conn.setReadOnly(false);
+                }
+            } catch (SQLException se) {
+                conn.close();
+                throw se;
+            }
+            return conn;
         }
         else {
             JDBCConfiguration conf = store.getConfiguration();
