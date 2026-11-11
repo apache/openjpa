@@ -23,11 +23,30 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProvider {
 
+    /**
+     * Minimum time between two refreshes of the addresses triggered by connections from unknown hosts.
+     */
+    private static final long MIN_ON_DEMAND_REFRESH_NANOS = TimeUnit.SECONDS.toNanos(1);
+
     private int _cacheDurationMillis = 30000;
+
+    private volatile TcpAddressesUpdater _updater;
+
+    private final Object _onDemandRefreshLock = new Object();
+
+    /**
+     * {@link System#nanoTime()} at which the last refresh triggered by a connection from an unknown host started,
+     * guarded by {@link #_onDemandRefreshLock}. The monotonic clock is used rather than the wall clock, which can
+     * jump, as it is compared with the time a connection was accepted.
+     */
+    private long _lastOnDemandRefreshNanos;
+
+    private boolean _refreshedOnDemand;
 
     public DynamicTCPRemoteCommitProvider() throws UnknownHostException {
         super();
@@ -51,11 +70,53 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
     public void endConfiguration() {
         TcpAddressesUpdater updater = new TcpAddressesUpdater();
         updater.run();
+        _updater = updater;
 
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(updater, 0, _cacheDurationMillis);
 
         super.endConfiguration();
+    }
+
+    /**
+     * A peer that just came up may connect before the periodic refresh has discovered it, so the addresses are
+     * refreshed before a connection from an unknown host is rejected.
+     */
+    @Override
+    protected boolean refreshesAddressesOnDemand() {
+        return isRestrictToPeers() && _updater != null;
+    }
+
+    /**
+     * Refreshes the addresses, unless a refresh started after the connection was accepted. Refreshes run one at a
+     * time and at most once per second, so that connections from unknown hosts cannot flood the source of the
+     * addresses.
+     */
+    @Override
+    protected void refreshAddresses(final long acceptedNanos) {
+        TcpAddressesUpdater updater = _updater;
+        if (updater == null) {
+            return;
+        }
+        synchronized (_onDemandRefreshLock) {
+            if (_refreshedOnDemand) {
+                if (_lastOnDemandRefreshNanos - acceptedNanos >= 0) {
+                    return;
+                }
+                long wait = MIN_ON_DEMAND_REFRESH_NANOS - (System.nanoTime() - _lastOnDemandRefreshNanos);
+                if (wait > 0) {
+                    try {
+                        TimeUnit.NANOSECONDS.sleep(wait);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+            }
+            _lastOnDemandRefreshNanos = System.nanoTime();
+            _refreshedOnDemand = true;
+            updater.run();
+        }
     }
 
     protected abstract List<String> fetchDynamicAddresses();
@@ -114,6 +175,7 @@ public abstract class DynamicTCPRemoteCommitProvider extends TCPRemoteCommitProv
                     log.error(s_loc.get("dyntcp-updater-error"), e);
                 }
             } finally {
+                addressesChanged();
                 _addressesLock.unlock();
             }
         }
