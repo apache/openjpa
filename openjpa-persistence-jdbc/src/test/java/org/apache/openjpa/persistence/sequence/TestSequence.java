@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @author Tim McConnell
  * @since 2.0.0
  */
-public class TestSequence extends SingleEMFTestCase {
+class TestSequence extends SingleEMFTestCase {
 
     private String multiThreadExecuting = null;
     private static final int NUMBER_ENTITIES = 5000;
@@ -53,7 +53,7 @@ public class TestSequence extends SingleEMFTestCase {
     }
 
     @Test
-    public void multiThreadedNativeSequences() throws Exception {
+    void multiThreadedNativeSequences() throws Exception {
         boolean supportsNativeSequence = false;
 
         try {
@@ -326,7 +326,7 @@ public class TestSequence extends SingleEMFTestCase {
             final Method meth;
 
             try {
-                meth = getClass().getMethod(method, paramClasses);
+                meth = getClass().getDeclaredMethod(method, paramClasses);
             } catch (NoSuchMethodException nsme) {
                 throw new ThreadingException(nsme.toString(), nsme);
             }
@@ -544,7 +544,6 @@ public class TestSequence extends SingleEMFTestCase {
             return shortMethodName;
         }
 
-        throw new IllegalStateException("Could not identify calling "
-            + "method in stack trace");
+        throw new IllegalStateException("Could not identify calling method in stack trace");
     }
 }

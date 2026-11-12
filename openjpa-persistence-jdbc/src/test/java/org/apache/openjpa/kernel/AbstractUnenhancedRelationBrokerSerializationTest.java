@@ -31,7 +31,7 @@ public abstract class AbstractUnenhancedRelationBrokerSerializationTest<T>
     extends AbstractBrokerSerializationTest<T> {
 
     @Test
-    public void newUnenhancedSMsRegisteredGlobally() {
+    void newUnenhancedSMsRegisteredGlobally() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAEntityManager em2 = null;
         try {

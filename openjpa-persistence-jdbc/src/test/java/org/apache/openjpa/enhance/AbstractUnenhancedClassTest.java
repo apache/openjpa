@@ -79,7 +79,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void metaData() {
+    void metaData() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         assertEquals(ClassRedefiner.canRedefineClasses(_log), meta
@@ -87,7 +87,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void implHelperCalls() {
+    void implHelperCalls() {
         assertTrue(ImplHelper.isManagedType(null, getUnenhancedClass()));
 
         UnenhancedType un = newUnenhancedInstance();
@@ -99,7 +99,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void basicPersistenceCapableBehavior() {
+    void basicPersistenceCapableBehavior() {
         UnenhancedType un = newUnenhancedInstance();
         un.setStringField("bar");
         PersistenceCapable pc = ImplHelper.toPersistenceCapable(un,
@@ -112,7 +112,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void pCRegistry() {
+    void pCRegistry() {
         assertTrue(PCRegistry.isRegistered(getUnenhancedClass()));
         PersistenceCapable pc = PCRegistry.newInstance(
             getUnenhancedClass(), null, false);
@@ -121,7 +121,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void clearingOnSubtypeInstance() {
+    void clearingOnSubtypeInstance() {
         // the boolean at the end of newInstance will cause clear to be invoked
         UnenhancedType un = (UnenhancedType)
             PCRegistry.newInstance(getUnenhancedClass(), null, true);
@@ -129,22 +129,22 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void getObjectIdOnOpenJPAType() {
+    void getObjectIdOnOpenJPAType() {
         getObjectIdHelper(true, false);
     }
 
     @Test
-    public void getObjectIdOnOpenJPATypeSubclass() {
+    void getObjectIdOnOpenJPATypeSubclass() {
         getObjectIdHelper(false, false);
     }
 
     @Test
-    public void getObjectIdOnUserDefined() {
+    void getObjectIdOnUserDefined() {
         getObjectIdHelper(true, true);
     }
 
     @Test
-    public void getObjectIdOnUserDefinedSubclass() {
+    void getObjectIdOnUserDefinedSubclass() {
         getObjectIdHelper(false, true);
     }
 
@@ -165,22 +165,22 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void operationsOnUserDefined() {
+    void operationsOnUserDefined() {
         opsHelper(false, true);
     }
 
     @Test
-    public void subclassOperationsOnUserDefined() {
+    void subclassOperationsOnUserDefined() {
         opsHelper(true, true);
     }
 
     @Test
-    public void operationsOnOpenJPADefined() {
+    void operationsOnOpenJPADefined() {
         opsHelper(false, false);
     }
 
     @Test
-    public void subclassOperationsOnOpenJPADefined() {
+    void subclassOperationsOnOpenJPADefined() {
         opsHelper(true, false);
     }
 
@@ -261,7 +261,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void relations() {
+    void relations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         UnenhancedSubtype un = newUnenhancedSubclassInstance();
@@ -282,7 +282,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void enhancer() throws Exception {
+    void enhancer() throws Exception {
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
             emf.getConfiguration(), Collections.singleton(getUnenhancedClass()), null);
         Class sub = subs.get(0);
@@ -295,20 +295,20 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void pCSubclassName() {
+    void pCSubclassName() {
         assertEquals("org.apache.openjpa.enhance."
             + getUnenhancedClass().getName().replace('.', '$') + "$pcsubclass",
             PCEnhancer.toPCSubclassName(getUnenhancedClass()));
     }
 
     @Test
-    public void evictionInUserCreatedInstance()
+    void evictionInUserCreatedInstance()
         throws Exception {
         evictionHelper(true);
     }
 
     @Test
-    public void evictionInOpenJPACreatedInstance()
+    void evictionInOpenJPACreatedInstance()
         throws Exception {
         evictionHelper(false);
     }
@@ -370,7 +370,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     protected abstract boolean isFieldAccessTest();
 
     @Test
-    public void lazyLoading()
+    void lazyLoading()
         throws Exception {
         OpenJPAEntityManager em = emf.createEntityManager();
         UnenhancedType un = newUnenhancedInstance();
@@ -416,25 +416,25 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void serializationOfUserDefinedInstance()
+    void serializationOfUserDefinedInstance()
         throws Exception {
         serializationHelper(true, false);
     }
 
     @Test
-    public void serializationOfUserDefinedSubclassInstance()
+    void serializationOfUserDefinedSubclassInstance()
         throws Exception {
         serializationHelper(true, true);
     }
 
     @Test
-    public void serializationOfOpenJPADefinedInstance()
+    void serializationOfOpenJPADefinedInstance()
         throws Exception {
         serializationHelper(false, false);
     }
 
     @Test
-    public void serializationOfOpenJPADefinedSubclassInstance()
+    void serializationOfOpenJPADefinedSubclassInstance()
         throws Exception {
         serializationHelper(false, true);
     }
@@ -475,25 +475,25 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void cloningOfUserDefinedInstance()
+    void cloningOfUserDefinedInstance()
         throws Exception {
         cloneHelper(true, false);
     }
 
     @Test
-    public void cloningOfUserDefinedSubclassInstance()
+    void cloningOfUserDefinedSubclassInstance()
         throws Exception {
         cloneHelper(true, true);
     }
 
     @Test
-    public void cloningOfOpenJPADefinedInstance()
+    void cloningOfOpenJPADefinedInstance()
         throws Exception {
         cloneHelper(false, false);
     }
 
     @Test
-    public void cloningOfOpenJPADefinedSubclassInstance()
+    void cloningOfOpenJPADefinedSubclassInstance()
         throws Exception {
         cloneHelper(false, true);
     }
@@ -570,25 +570,25 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void listenersOnUserDefinedInstance()
+    void listenersOnUserDefinedInstance()
         throws Exception {
         listenerHelper(true, false);
     }
 
     @Test
-    public void listenersOnUserDefinedSubclassInstance()
+    void listenersOnUserDefinedSubclassInstance()
         throws Exception {
         listenerHelper(true, true);
     }
 
     @Test
-    public void listenersOnOpenJPADefinedInstance()
+    void listenersOnOpenJPADefinedInstance()
         throws Exception {
         listenerHelper(false, false);
     }
 
     @Test
-    public void listenersOnOpenJPADefinedSubclassInstance()
+    void listenersOnOpenJPADefinedSubclassInstance()
         throws Exception {
         listenerHelper(false, true);
     }
@@ -621,7 +621,7 @@ public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void getMetaDataOfSubtype() {
+    void getMetaDataOfSubtype() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(

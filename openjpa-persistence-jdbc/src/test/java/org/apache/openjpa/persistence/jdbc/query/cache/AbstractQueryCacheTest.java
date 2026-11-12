@@ -224,7 +224,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
      *
      */
     @Test
-    public void eviction() {
+    void eviction() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!checkSupportsIdentityGenerationType()) {
             return;

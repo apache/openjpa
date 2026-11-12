@@ -71,34 +71,34 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
         List<Case> allCases = query.getResultList();
     }
 
-    public void insertLookups() {
+    private void insertLookups() {
         lookup = new Lookup();
         lookup.setName("XYZ");
         lookup.setId(1);
         save(lookup);
     }
 
-    public void save(Object obj) {
+    private void save(Object obj) {
         em.getTransaction().begin();
         em.persist(obj);
         em.getTransaction().commit();
     }
 
-    public Role insertJob() {
+    private Role insertJob() {
         Role role = new Role();
         role.setLookup(lookup);
         save(role);
         return role;
     }
 
-    public Case insertCase(ScheduleDay sd) throws Exception {
+    private Case insertCase(ScheduleDay sd) throws Exception {
         Case kase = new Case();
         kase.setScheduleDay(sd);
         save(kase);
         return kase;
     }
 
-    public void insertScheduledAssignmentInCase(Role job, Case kase) {
+    private void insertScheduledAssignmentInCase(Role job, Case kase) {
         ScheduledAssignment sa = new ScheduledAssignment();
         sa.setRole(job);
         sa.setCase(kase);
@@ -106,7 +106,7 @@ public class TestOutOfBoundsEx extends SingleEMFTestCase {
         save(sa);
     }
 
-    public ScheduleDay insertScheduleDay(Date date) {
+    private ScheduleDay insertScheduleDay(Date date) {
         ScheduleDay sd = new ScheduleDay();
         sd.setDate(date);
         save(sd);

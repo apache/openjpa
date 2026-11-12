@@ -113,7 +113,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void simpleGroup() {
+    void simpleGroup() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField order by o.intField asc");
         prepareQuery(q);
@@ -126,7 +126,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void orderByAggregate() {
+    void orderByAggregate() {
         // this is an extension of JPQL
         Query q = em.createQuery("select sum(o.shortField) " +
             "from AllFieldTypes o"
@@ -142,7 +142,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void compoundGroupSame() {
+    void compoundGroupSame() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.shortField order by o.shortField asc");
         prepareQuery(q);
@@ -155,7 +155,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void compoundGroupDifferent() {
+    void compoundGroupDifferent() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField, o.byteField order by o.intField asc");
         prepareQuery(q);
@@ -170,7 +170,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void differentGroupLengths() {
+    void differentGroupLengths() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o"
             + " group by o.byteField order by o.byteField asc");
         prepareQuery(q);
@@ -184,7 +184,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void groupRelationField() {
+    void groupRelationField() {
         Query q = em.createQuery("select o.selfOneOne.intField " +
             "from AllFieldTypes o group by o.selfOneOne.intField " +
             "order by o.selfOneOne.intField asc");
@@ -198,7 +198,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void substringInGroupBy() {
+    void substringInGroupBy() {
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof SolidDBDictionary)
             return;
@@ -219,7 +219,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void groupedAggregate() {
+    void groupedAggregate() {
         Query q = em.createQuery("select count(o) from AllFieldTypes o " +
             "group by o.byteField order by o.byteField asc");
         prepareQuery(q);
@@ -233,7 +233,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void groupedRelationAggregate() {
+    void groupedRelationAggregate() {
         Query q = em.createQuery("select count(o), max(o.selfOneOne.longField)"
             + " from AllFieldTypes o group by o.intField"
             + " order by o.intField asc");
@@ -250,7 +250,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void groupedMixedProjection() {
+    void groupedMixedProjection() {
         Query q = em.createQuery("select count(o), o.shortField " +
             "from AllFieldTypes o group by o.intField, o.shortField " +
             "order by o.intField asc");
@@ -268,7 +268,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void simpleHaving() {
+    void simpleHaving() {
         Query q = em.createQuery("select o.intField from AllFieldTypes o " +
             "group by o.intField having o.intField < 2");
         prepareQuery(q);
@@ -276,7 +276,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void aggregateHaving() {
+    void aggregateHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1");
         prepareQuery(q);
@@ -284,7 +284,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void mixedHaving() {
+    void mixedHaving() {
         Query q = em.createQuery("select o.byteField from AllFieldTypes o " +
             "group by o.byteField having count(o) > 1 or o.byteField = 0 " +
             "order by o.byteField asc");
@@ -298,7 +298,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void variableGroup() {
+    void variableGroup() {
         Query q = em.createQuery("select max(other.longField) " +
             "from AllFieldTypes o, AllFieldTypes other " +
             "where other member of o.selfOneMany " +
@@ -313,7 +313,7 @@ public abstract class GroupingTestCase extends SingleEMTestCase {
     }
 
     @Test
-    public void variableHaving() {
+    void variableHaving() {
         JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict instanceof DerbyDictionary) {

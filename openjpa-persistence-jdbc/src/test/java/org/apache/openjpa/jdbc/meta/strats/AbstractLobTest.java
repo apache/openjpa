@@ -79,12 +79,12 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void insert() {
+    void insert() {
         doInsert(newLobEntity(createLobData(), 1));
     }
 
     @Test
-    public void insertAndSelect() throws Exception {
+    void insertAndSelect() throws Exception {
         String s = createLobData();
         doInsert(newLobEntity(s, 1));
         EntityManager em = emf.createEntityManager();
@@ -99,7 +99,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void insertNull() {
+    void insertNull() {
         doInsert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -110,7 +110,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void update() throws Exception {
+    void update() throws Exception {
         doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -128,7 +128,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void updateWithNull() {
+    void updateWithNull() {
         doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -145,7 +145,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void updateANullObjectWithoutNull() throws Exception {
+    void updateANullObjectWithoutNull() throws Exception {
         doInsert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -163,7 +163,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void delete() {
+    void delete() {
         doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -180,7 +180,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void lifeCycleInsertFlushModify() {
+    void lifeCycleInsertFlushModify() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity(createLobData(), 1);
@@ -192,7 +192,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void lifeCycleLoadFlushModifyFlush() {
+    void lifeCycleLoadFlushModifyFlush() {
         doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -205,7 +205,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void readingMultipleTimesWithASingleConnection()
+    void readingMultipleTimesWithASingleConnection()
         throws Exception {
         doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
@@ -227,7 +227,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void dataCache() {
+    void dataCache() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -246,7 +246,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void setResetAndFlush() throws Exception {
+    void setResetAndFlush() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity(createLobData(), 1);
@@ -265,7 +265,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void setFlushAndReset() throws Exception {
+    void setFlushAndReset() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = newLobEntity(createLobData(), 1);

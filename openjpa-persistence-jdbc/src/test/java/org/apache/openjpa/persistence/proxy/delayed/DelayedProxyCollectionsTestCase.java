@@ -191,7 +191,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * without triggering a load of the collection.
      */
     @Test
-    public void singleRemove() {
+    void singleRemove() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -253,7 +253,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * without triggering a load on the collection.
      */
     @Test
-    public void singleAdd() {
+    void singleAdd() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -317,7 +317,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * triggering a load on a delayed collection.
      */
     @Test
-    public void mixedAddRemove() {
+    void mixedAddRemove() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -404,7 +404,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * functions as expected.
      */
     @Test
-    public void eagerCollection() {
+    void eagerCollection() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and
@@ -442,7 +442,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a DB ordered collection is not delay load capable.
      */
     @Test
-    public void orderedCollection() {
+    void orderedCollection() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and persist
@@ -478,7 +478,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a collection will load upon serialization
      */
     @Test
-    public void serialization() {
+    void serialization() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -545,7 +545,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * (delays load) with delayed loading enabled
      */
     @Test
-    public void lazyEmbeddableCollection() {
+    void lazyEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
         IDepartment d = createDepartment();
@@ -580,7 +580,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * (no delay load) with delayed loading enabled
      */
     @Test
-    public void eagerEmbeddableCollection() {
+    void eagerEmbeddableCollection() {
         EntityManager em = emf.createEntityManager();
 
         IDepartment d = createDepartment();
@@ -618,7 +618,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * Verify that a collection can be loaded post detachment
      */
     @Test
-    public void postDetach() {
+    protected void postDetach() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -697,7 +697,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * delayed.  The to-many in the embeddable uses
      */
     @Test
-    public void embeddableRelationship() {
+    void embeddableRelationship() {
         EntityManager em = emf.createEntityManager();
 
         IUserIdentity ui = createUserIdentity();
@@ -744,7 +744,7 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
      * load.
      */
     @Test
-    public void proxyMethods() {
+    void proxyMethods() {
         // Load up a collection
         EntityManager em = emf.createEntityManager();
 
