@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.conversion.autoapply;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.SQLException;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.meta.FieldMetaData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * An attribute declared <code>@Basic</code> whose type is not serializable is
@@ -31,18 +37,19 @@ import org.apache.openjpa.meta.FieldMetaData;
  * OPENJPA-3073 the persistence unit failed with "isn't supported by declared
  * persistence strategy Basic".
  */
-public class TestAutoApplyConvertedBasicAttribute extends AbstractAutoApplyTestCase {
+class TestAutoApplyConvertedBasicAttribute extends AbstractAutoApplyTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUpUnit(List.of(UnenhancedAutoApplyBasicEntity.class));
     }
 
-    public void testBasicAttributesAreMappedWithTheirConverter() throws SQLException {
+    @Test
+    void basicAttributesAreMappedWithTheirConverter() throws SQLException {
         FieldMetaData sku = persistentField(UnenhancedAutoApplyBasicEntity.class, "sku");
         assertNotNull(sku);
         assertEquals(SkuConverter.class, sku.getConverter());
-        assertFalse("the converter maps the value, not serialization", sku.isSerialized());
+        assertFalse(sku.isSerialized(), "the converter maps the value, not serialization");
         FieldMetaData weight = persistentField(UnenhancedAutoApplyBasicEntity.class, "weight");
         assertNotNull(weight);
         assertEquals(WeightConverter.class, weight.getConverter());
@@ -51,7 +58,8 @@ public class TestAutoApplyConvertedBasicAttribute extends AbstractAutoApplyTestC
         assertColumnType(NUMBER_TYPES, "AA_BASIC", "WEIGHT");
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         persist();
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedAutoApplyBasicEntity found =

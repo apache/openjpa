@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.conversion.autoapply;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -115,8 +118,7 @@ public abstract class AbstractAutoApplyTestCase extends SingleEMFTestCase {
     protected void assertColumnType(Set<Integer> expected, String table, String column)
         throws SQLException {
         Integer type = columnType(table, column);
-        assertNotNull(table + "." + column + " must exist", type);
-        assertTrue(table + "." + column + " has JDBC type " + type,
-            expected.contains(type));
+        assertNotNull(type, table + "." + column + " must exist");
+        assertTrue(expected.contains(type), table + "." + column + " has JDBC type " + type);
     }
 }

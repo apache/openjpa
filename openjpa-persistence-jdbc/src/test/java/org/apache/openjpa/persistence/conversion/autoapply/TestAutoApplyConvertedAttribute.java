@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.conversion.autoapply;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -28,6 +33,8 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.meta.FieldMetaData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * An attribute of a type that is not serializable and that is converted by an
@@ -35,24 +42,26 @@ import org.apache.openjpa.meta.FieldMetaData;
  * attribute (Jakarta Persistence 3.2, section 3.9). Before OPENJPA-3073 it was
  * silently left out of the mapping and its value was never stored.
  */
-public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
+class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUpUnit(List.of(UnenhancedAutoApplyFieldEntity.class,
             UnenhancedAutoApplyPropertyEntity.class, UnenhancedPackaging.class));
     }
 
-    public void testUnannotatedAttributesAreMappedWithTheirConverter() {
+    @Test
+    void unannotatedAttributesAreMappedWithTheirConverter() {
         FieldMetaData sku = persistentField(UnenhancedAutoApplyFieldEntity.class, "sku");
-        assertNotNull("the auto-apply converted attribute must be mapped", sku);
+        assertNotNull(sku, "the auto-apply converted attribute must be mapped");
         assertEquals(SkuConverter.class, sku.getConverter());
         FieldMetaData weight = persistentField(UnenhancedAutoApplyFieldEntity.class, "weight");
-        assertNotNull("the auto-apply converted record must be mapped", weight);
+        assertNotNull(weight, "the auto-apply converted record must be mapped");
         assertEquals(WeightConverter.class, weight.getConverter());
     }
 
-    public void testColumnsHaveTheDatabaseTypeOfTheConverter() throws SQLException {
+    @Test
+    void columnsHaveTheDatabaseTypeOfTheConverter() throws SQLException {
         persistSample();
         assertColumnType(STRING_TYPES, "AA_FIELD", "SKU");
         assertColumnType(NUMBER_TYPES, "AA_FIELD", "WEIGHT");
@@ -62,7 +71,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         assertColumnType(NUMBER_TYPES, "AA_PROPERTY", "WEIGHT");
     }
 
-    public void testFieldAccessRoundTrip() {
+    @Test
+    void fieldAccessRoundTrip() {
         persistSample();
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedAutoApplyFieldEntity found = em.find(UnenhancedAutoApplyFieldEntity.class, 1L);
@@ -71,7 +81,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         }
     }
 
-    public void testEmbeddableRoundTrip() {
+    @Test
+    void embeddableRoundTrip() {
         persistSample();
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedPackaging packaging = em.find(UnenhancedAutoApplyFieldEntity.class, 1L).getPackaging();
@@ -81,7 +92,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         }
     }
 
-    public void testPropertyAccessRoundTrip() {
+    @Test
+    void propertyAccessRoundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedAutoApplyPropertyEntity e = new UnenhancedAutoApplyPropertyEntity();
@@ -98,7 +110,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         }
     }
 
-    public void testUpdateIsWritten() {
+    @Test
+    void updateIsWritten() {
         persistSample();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -114,7 +127,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         }
     }
 
-    public void testQueryWithParameters() {
+    @Test
+    void queryWithParameters() {
         persistSample();
         try (EntityManager em = emf.createEntityManager()) {
             List<UnenhancedAutoApplyFieldEntity> bySku = em.createQuery(
@@ -144,7 +158,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
      * converter off the attribute, so a type that is not serializable has no
      * persistence strategy, as before.
      */
-    public void testDisabledConversionIsNotMapped() throws SQLException {
+    @Test
+    void disabledConversionIsNotMapped() throws SQLException {
         assertNull(persistentField(UnenhancedAutoApplyFieldEntity.class, "unconvertedSku"));
         persistSample();
         assertNull(columnType("AA_FIELD", "UNCONVERTEDSKU"));
@@ -157,7 +172,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
      * An attribute of a type that is neither serializable nor converted stays
      * outside of the mapping.
      */
-    public void testUnconvertedNonSerializableAttributeIsNotMapped() throws SQLException {
+    @Test
+    void unconvertedNonSerializableAttributeIsNotMapped() throws SQLException {
         assertNull(persistentField(UnenhancedAutoApplyFieldEntity.class, "opaque"));
         persistSample();
         assertNull(columnType("AA_FIELD", "OPAQUE"));
@@ -166,7 +182,8 @@ public class TestAutoApplyConvertedAttribute extends AbstractAutoApplyTestCase {
         }
     }
 
-    public void testMetamodelShowsBasicAttributes() {
+    @Test
+    void metamodelShowsBasicAttributes() {
         EntityType<UnenhancedAutoApplyFieldEntity> entity =
             emf.getMetamodel().entity(UnenhancedAutoApplyFieldEntity.class);
         assertBasic(entity.getSingularAttribute("sku"), Sku.class);
