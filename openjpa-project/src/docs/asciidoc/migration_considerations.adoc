@@ -63,6 +63,16 @@ As a consequence the public `PrivilegedAction` factory methods of `org.apache.op
 Third-party code (custom product derivations, dictionaries, plugins, application server integrations) using these helpers must call the JDK API directly.
 Plugin classes instantiated through `J2DoPrivHelper.newInstance` may now have a non-public no-argument constructor.
 
+[[jpa_4.2_DynamicEnhancementAgent]]
+==== Dynamic Enhancement Agent
+
+The dynamic enhancement agent (``openjpa.DynamicEnhancementAgent``, enabled by default) looked for `lib/tools.jar` to load the Attach API. That jar does not exist since Java 9, so the agent was never loaded on the supported Java versions.
+OpenJPA now loads the Attach API from the `jdk.attach` module. The JVM refuses to attach to itself unless it is started with ``-Djdk.attach.allowAttachSelf=true``; with that property set, persistent classes that were not enhanced at build time are now enhanced when they are loaded.
+On Java 21 and later add `-XX:+EnableDynamicAgentLoading` to suppress the JVM warning about the dynamically loaded agent.
+Without the system property OpenJPA logs an informational message once and behaves as before.
+Applications that enhance their classes at build time can set `openjpa.DynamicEnhancementAgent` to `false` to avoid this message.
+See <<ref_guide_pc_enhance_dynamic>>.
+
 [[jpa_4.2_JPQLReservedIdentifiers]]
 ==== New JPQL Reserved Identifiers
 

@@ -43,37 +43,6 @@
         <surefire.excludes.locking />
     </properties>
 
-    <profiles>
-        <!-- Profile for testing with test-dynamic-enhancer -->
-        <profile>
-            <id>test-dynamic-enhancer</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <build.enhance>false</build.enhance>
-                <openjpa.DynamicEnhancementAgent>true</openjpa.DynamicEnhancementAgent>
-                <surefire.jvm.args>-Dopenjpa.RuntimeUnenhancedClasses=unsupported ${test.jvm.arguments}</surefire.jvm.args>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <includes>
-                                <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
-                            </includes>
-                            <excludes>
-                                <exclude>${surefire.excludes.locking}</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>

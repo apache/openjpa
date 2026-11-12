@@ -177,7 +177,10 @@
                                 </manifest>
                                 <manifestEntries>
                                     <Implementation-Build>${buildNumber}</Implementation-Build>
+                                    <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
                                     <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
+                                    <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                 </manifestEntries>
                             </archive>
                         </configuration>
