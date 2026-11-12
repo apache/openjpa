@@ -27,8 +27,9 @@ import jakarta.persistence.Id;
 
 /**
  * An entity whose name and attribute names are words Derby rejects as
- * unquoted identifiers. The table and the collection table are named by the
- * JPA mapping defaults.
+ * unquoted identifiers (OPENJPA-3075). Its default table name is also a word
+ * that MySQL 8.0 and later reserve (OPENJPA-3074). The table and the
+ * collection table are named by the JPA mapping defaults.
  */
 @Entity
 public class Window {
@@ -48,8 +49,18 @@ public class Window {
 
     private boolean deterministic;
 
+    private String label;
+
     @ElementCollection
     private List<String> panes = new ArrayList<>();
+
+    public Window() {
+    }
+
+    public Window(int id, String label) {
+        this.id = id;
+        this.label = label;
+    }
 
     public int getId() {
         return id;
@@ -109,5 +120,13 @@ public class Window {
 
     public List<String> getPanes() {
         return panes;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }
