@@ -198,7 +198,15 @@ public class PCClassFileTransformer
             return null;
         }
 
-        if (clsName.startsWith("java/") || clsName.startsWith("javax/") || clsName.startsWith("jakarta/")) {
+        // TemporaryClassLoader delegates all of these prefixes back to the parent loader.
+        // Loading such a class here while it is still in the process of being defined would re-enter
+        // the defining loader, and the JVM would abort the definition with a
+        // "duplicate class definition" LinkageError.
+        // Framework classes can never be persistent classes anyway.
+        if (clsName.startsWith("java/") || clsName.startsWith("javax/")
+            || clsName.startsWith("jakarta/") || clsName.startsWith("sun/")
+            || clsName.startsWith("jdk/"))
+        {
             return null;
         }
 
@@ -206,19 +214,21 @@ public class PCClassFileTransformer
             return Boolean.FALSE;
         }
 
-        try {
-            Class c = Class.forName(clsName.replace('/', '.'), false,
-                _tmpLoader);
-            if (_repos.getMetaData(c, null, false) != null)
-                return Boolean.TRUE;
+        if (isEnumOrAnnotation(bytes)) {
+            // enum and annotation types can never be persistent classes.
             return null;
+        }
+
+        try {
+            Class c = Class.forName(clsName.replace('/', '.'), false, _tmpLoader);
+            return _repos.getMetaData(c, null, false) == null ? null : Boolean.TRUE;
         } catch (ClassNotFoundException | LinkageError cnfe) {
             // cannot load the class: this might mean that it is a proxy
             // or otherwise inaccessible class which can't be an entity
             return Boolean.FALSE;
-        } // this can happen if we are loading classes that this
-        // class depends on; these will never be enhanced anyway
-        catch (RuntimeException re) {
+        } catch (RuntimeException re) {
+            // this can happen if we are loading classes that this
+            // class depends on; these will never be enhanced anyway
             throw re;
         } catch (Throwable t) {
             throw new GeneralException(t);
@@ -261,6 +271,31 @@ public class PCClassFileTransformer
         }
     }
 
+    /**
+     * Analyze the bytecode to see if the given class definition is an
+     * enum or annotation type.
+     */
+    private static boolean isEnumOrAnnotation(byte[] b) {
+        if (b == null) {
+            return false;
+        }
+        final ClassReader cr = new ClassReader(b);
+        try {
+            cr.accept(new ClassVisitor(Opcodes.ASM9) {
+                @Override
+                public void visit(int version, int access, String name, String signature,
+                                  String superName, String[] interfaces)
+                {
+                    throw new EnhancedStatusException((access & (Opcodes.ACC_ENUM | Opcodes.ACC_ANNOTATION)) != 0);
+                }
+            }, 0);
+            return false;
+        } catch (EnhancedStatusException e) {
+            return e.status;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     private static class EnhancedStatusException extends RuntimeException {
 
