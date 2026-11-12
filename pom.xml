@@ -291,32 +291,6 @@
             </properties>
         </profile>
 
-        <profile>
-            <id>test-dynamic-enhancer</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <test.env>-Dtest.basedir=${basedir}/..</test.env>
-                <policy.file>${basedir}/../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
-                <surefire.jvm.args>-Djava.security.manager -Djava.security.policy=${policy.file} ${test.env} ${test.jvm.arguments}</surefire.jvm.args>
-            </properties>
-            <build>
-                <plugins>
-                   <plugin>
-                       <groupId>org.apache.maven.plugins</groupId>
-                       <artifactId>maven-surefire-plugin</artifactId>
-                       <configuration>
-                           <argLine>${surefire.jvm.args}</argLine>
-                           <includes>
-                               <include />
-                           </includes>
-                       </configuration>
-                   </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <!-- =================== -->
         <!--  Database Profiles  -->
         <!-- =================== -->

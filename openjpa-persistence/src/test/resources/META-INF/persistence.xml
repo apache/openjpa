@@ -43,6 +43,11 @@
     <persistence-unit name="exclude_true">
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+    <!-- Used by TestDynamicEnhancementAgent -->
+    <persistence-unit name="dynamic_agent_pu">
+        <class>org.apache.openjpa.persistence.enhance.DynamicAgentEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
     <!-- Added for OPENJPA-993 -->
     <persistence-unit name="bad_provider">
         <provider>void</provider>
