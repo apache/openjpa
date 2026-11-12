@@ -102,6 +102,13 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
             assertNotNull(emfWithDataCache);
             assertNotNull(emfWithoutDataCache);
 
+            // CLEAR_TABLES deletes the contents of all tables, including the sequence table, when the first
+            // EntityManager of a factory is created. Do that for both factories now: otherwise the second
+            // factory clears the tables once the first one has already persisted instances and allocated ids,
+            // and both factories hand out the same ids, depending on the order the tests run in.
+            emfWithDataCache.createEntityManager().close();
+            emfWithoutDataCache.createEntityManager().close();
+
             // StoreCache is, by design, always non-null
             assertNotNull(emfWithDataCache.getStoreCache());
             assertNotNull(emfWithoutDataCache.getStoreCache());
@@ -110,6 +117,10 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
             assertTrue(isDataCacheActive(emfWithDataCache));
             assertFalse(isDataCacheActive(emfWithoutDataCache));
         }
+        // the factories are shared by all tests and verifyRefresh() changes this option, so start every test
+        // from the default, whatever order the tests run in
+        emfWithDataCache.getConfiguration().setRefreshFromDataCache(false);
+        emfWithoutDataCache.getConfiguration().setRefreshFromDataCache(false);
         TEST_COUNT++;
     }
 
