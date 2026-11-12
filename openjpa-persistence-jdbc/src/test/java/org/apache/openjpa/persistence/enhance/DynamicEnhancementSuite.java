@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.enhance;
 
 import org.apache.openjpa.DynamicEnhancementTest;
 import org.junit.platform.suite.api.BeforeSuite;
-import org.junit.platform.suite.api.IncludeClassNamePatterns;
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
@@ -31,7 +30,6 @@ import jakarta.persistence.Persistence;
 @Suite
 @SuiteDisplayName("JUnit Platform Suite Demo")
 @SelectPackages("org.apache.openjpa.persistence")
-@IncludeClassNamePatterns(".*")
 @IncludeTags(DynamicEnhancementTest.TAG_NAME)
 public class DynamicEnhancementSuite {
     @BeforeSuite
