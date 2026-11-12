@@ -195,9 +195,9 @@ class TestAbstractMySQLDictionary {
                 assertTrue(dict.getInvalidColumnWordSet().contains(word), name + " " + word);
                 assertTrue(dict.reservedWordSet.contains(word), name + " " + word);
             }
-            assertEquals(name, "\"Dual\"", validTableName(dict, "Dual"));
-            assertEquals(name, "\"Range\"", validTableName(dict, "Range"));
-            assertEquals(name, "\"limit\"", validColumnName(dict, "limit"));
+            assertEquals("\"Dual\"", validTableName(dict, "Dual"), name);
+            assertEquals("\"Range\"", validTableName(dict, "Range"), name);
+            assertEquals("\"limit\"", validColumnName(dict, "limit"), name);
         }
         assertTrue(configure(new MySQLDictionary(), null).reservedWordSet.contains("NTILE"));
         // MariaDB does not reserve them, so a table keeps its undelimited name
