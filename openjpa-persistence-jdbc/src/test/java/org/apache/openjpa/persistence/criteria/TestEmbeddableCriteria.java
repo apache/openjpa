@@ -1087,10 +1087,10 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
 
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
         "(t1.intVal1 < ANY (" +
         "SELECT t3.intVal2 FROM TBL1A t2 " +
-        "INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
+        "INNER JOIN EntityA_Coll_Embed_Embed_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
         "ORDER BY t1.intVal3 ASC";
 
         CriteriaQuery<?> q = cb.createQuery();
@@ -1114,9 +1114,9 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
 
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
         "WHERE (t1.intVal1 < ALL (" +
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 " +
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN EntityA_Coll_Embed_Embed_embeds t3 " +
         "ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
         "ORDER BY t1.intVal3 ASC";
 
@@ -1140,9 +1140,10 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " (select e.intVal2 from EntityA_Coll_Embed_Embed a, in (a.embeds) e) " +
                 " order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
         "WHERE (t1.intVal1 <= ANY (" +
-        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
+        "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN EntityA_Coll_Embed_Embed_embeds t3 " +
+        "ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
         "ORDER BY t1.intVal3 ASC";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
@@ -1163,9 +1164,10 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e.intVal2 " +
                 " from EntityA_Coll_Embed_Embed a, in (a.embeds) e) order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-            "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
+            "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID " +
             "WHERE (t1.intVal1 > ALL (" +
-            "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN TBL1A_embeds t3 ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
+            "SELECT t3.intVal2 FROM TBL1A t2 INNER JOIN EntityA_Coll_Embed_Embed_embeds t3 " +
+            "ON t2.id = t3.ENTITYA_COLL_EMBED_EMBED_ID)) " +
             "ORDER BY t1.intVal3 ASC";
         CriteriaQuery<?> q = cb.createQuery();
         Root<EntityA_Coll_Embed_Embed> a = q.from(EntityA_Coll_Embed_Embed.class);
@@ -1186,8 +1188,8 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " , in (a.embeds) e WHERE e.intVal1 < ANY (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
-        "(t1.intVal1 < ANY (SELECT t2.intVal2 FROM TBL1A_embeds t2 " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
+        "(t1.intVal1 < ANY (SELECT t2.intVal2 FROM EntityA_Coll_Embed_Embed_embeds t2 " +
         "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) ORDER BY t1.intVal3 ASC";
 
         CriteriaQuery<?> q = cb.createQuery();
@@ -1209,8 +1211,8 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " , in (a.embeds) e WHERE e.intVal1 < ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
-        "(t1.intVal1 < ALL (SELECT t2.intVal2 FROM TBL1A_embeds t2 " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
+        "(t1.intVal1 < ALL (SELECT t2.intVal2 FROM EntityA_Coll_Embed_Embed_embeds t2 " +
         "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " +
         "ORDER BY t1.intVal3 ASC";
 
@@ -1233,8 +1235,8 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " , in (a.embeds) e WHERE e.intVal1 <= SOME (select e2.intVal2 " +
                 " from in(a.embeds) e2) order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
-        "(t1.intVal1 <= ANY (SELECT t2.intVal2 FROM TBL1A_embeds t2 " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
+        "(t1.intVal1 <= ANY (SELECT t2.intVal2 FROM EntityA_Coll_Embed_Embed_embeds t2 " +
         "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " +
         "ORDER BY t1.intVal3 ASC";
 
@@ -1257,8 +1259,8 @@ class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
                 " , in (a.embeds) e WHERE e.intVal1 > ALL (select e2.intVal2 " +
                 " from a.embeds e2) order by e.intVal3";
         String expectedSQL = "SELECT t1.IntVal1x, t1.IntVal2x, t1.IntVal3x, t1.intVal1, t1.intVal2, t1.intVal3 " +
-        "FROM TBL1A t0 INNER JOIN TBL1A_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
-        "(t1.intVal1 > ALL (SELECT t2.intVal2 FROM TBL1A_embeds t2 " +
+        "FROM TBL1A t0 INNER JOIN EntityA_Coll_Embed_Embed_embeds t1 ON t0.id = t1.ENTITYA_COLL_EMBED_EMBED_ID WHERE " +
+        "(t1.intVal1 > ALL (SELECT t2.intVal2 FROM EntityA_Coll_Embed_Embed_embeds t2 " +
         "WHERE (t0.id = t2.ENTITYA_COLL_EMBED_EMBED_ID))) " +
         "ORDER BY t1.intVal3 ASC";
 
