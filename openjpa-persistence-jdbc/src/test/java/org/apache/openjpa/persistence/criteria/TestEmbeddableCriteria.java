@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,6 +95,7 @@ import org.apache.openjpa.persistence.embed.Item3_;
 import org.apache.openjpa.persistence.embed.VicePresident;
 import org.apache.openjpa.persistence.embed.VicePresident_;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -104,47 +103,36 @@ import org.junit.jupiter.api.Test;
 class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
 
     /**
-     * Number of test methods in this class, i.e. how often {@link #tearDown()} runs before
-     * the shared EntityManagerFactory is no longer needed.
+     * Keeps the EntityManagerFactory open for all test methods of this class: rebuilding it
+     * per method would re-run {@code buildSchema(SchemaAction='drop,add')} over the whole
+     * embeddable domain once per method. The EntityManager is released every time
+     * regardless, so no test can leave a JDBC connection behind.
      */
-    private static final int TEST_METHODS = countTestMethods();
-
-    private static int TEST_COUNT = 0;
-
-    private static int countTestMethods() {
-        int count = 0;
-        for (Method method : TestEmbeddableCriteria.class.getDeclaredMethods()) {
-            if (Modifier.isPublic(method.getModifiers()) && method.getParameterCount() == 0
-                && method.getName().startsWith("test")) {
-                count++;
-            }
+    @AfterEach
+    @Override
+    public void tearDown() throws Exception {
+        try {
+            closeEntityManager();
+        } finally {
+            setEntityManager(null);
+            setCriteriaBuilder(null);
         }
-        return count;
     }
 
     /**
-     * Keeps the EntityManagerFactory open until the last test method of this class has run:
-     * rebuilding it per method would re-run {@code buildSchema(SchemaAction='drop,add')} over
-     * the whole embeddable domain once per method. The EntityManager is released
-     * every time regardless, so no test can leave a JDBC connection behind.
-     * <p>
-     * The methods are counted here and not in {@code setUp()}, so that a {@code setUp()}
-     * failure - after which {@link AbstractCriteriaTestCase#runBare()} now calls
-     * {@code tearDown()} too - still advances the count and the factory is closed with the
-     * last method instead of being leaked for the rest of the JVM (OPENJPA-3016).
+     * Closes the shared EntityManagerFactory after the last test method of this class. This
+     * also runs when methods are skipped or only some of them are selected, so the factory
+     * is not leaked for the rest of the JVM (OPENJPA-3016).
      */
-    @AfterEach
-    public void tearDown() throws Exception {
-        TEST_COUNT++;
-        if (TEST_COUNT >= TEST_METHODS) {
-            super.tearDown();
-        } else {
-            try {
-                closeEntityManager();
-            } finally {
-                setEntityManager(null);
-                setCriteriaBuilder(null);
+    @AfterAll
+    static void closeSharedEntityManagerFactory() {
+        try {
+            if (emf != null && emf.isOpen()) {
+                emf.close();
             }
+        } finally {
+            emf = null;
+            auditor = null;
         }
     }
 
