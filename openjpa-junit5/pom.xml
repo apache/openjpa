@@ -29,8 +29,8 @@
 
     <artifactId>openjpa-junit5</artifactId>
     <packaging>jar</packaging>
-    <name>OpenJPA JUnit 5</name>
-    <description>OpenJPA JUnit 5</description>
+    <name>OpenJPA JUnit Jupiter</name>
+    <description>OpenJPA JUnit Jupiter</description>
 
     <dependencies>
         <dependency>
@@ -51,12 +51,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-commons</artifactId>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

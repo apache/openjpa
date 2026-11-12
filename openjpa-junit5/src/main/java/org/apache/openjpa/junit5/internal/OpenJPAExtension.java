@@ -21,13 +21,13 @@ package org.apache.openjpa.junit5.internal;
 import org.apache.openjpa.junit5.OpenJPASupport;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.platform.commons.util.AnnotationUtils;
+import org.junit.platform.commons.support.AnnotationSupport;
 
 public class OpenJPAExtension implements BeforeAllCallback {
 
     @Override
     public void beforeAll(final ExtensionContext context) {
-        AnnotationUtils.findAnnotation(context.getElement(), OpenJPASupport.class)
+        AnnotationSupport.findAnnotation(context.getElement(), OpenJPASupport.class)
                 .ifPresent(s -> new OpenJPADirectoriesEnhancer(s.auto(), s.entities(), s.logFactory()).run());
     }
 }
