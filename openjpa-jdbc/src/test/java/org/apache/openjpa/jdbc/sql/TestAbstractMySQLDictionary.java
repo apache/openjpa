@@ -26,14 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.meta.JavaTypes;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -342,7 +345,7 @@ class TestAbstractMySQLDictionary {
      * (OPENJPA-3076).
      */
     @Test
-    public void testReservedWordsAreDelimitedPerDictionary() {
+    public void reservedWordsAreDelimitedPerDictionary() {
         for (boolean mysqlFirst : new boolean[] {true, false}) {
             MySQLDictionary mysql = mysqlFirst ? configure(new MySQLDictionary(), null) : null;
             DerbyDictionary derby = configure(new DerbyDictionary(), null);
@@ -383,6 +386,12 @@ class TestAbstractMySQLDictionary {
         resetDelimitingOfReservedWords();
     }
 
+    static void resetDelimitingOfReservedWords() {
+        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
+        rule.setDelimitReservedWords(false);
+        rule.setReservedWords(Set.of());
+    }
+
     /**
      * The dictionary delimits the reserved words in every part of a
      * qualified name, leaves constants and column definitions alone, and
@@ -390,7 +399,7 @@ class TestAbstractMySQLDictionary {
      * word (OPENJPA-3076).
      */
     @Test
-    public void testNormalize() {
+    void normalize() {
         MySQLDictionary mysql = configure(new MySQLDictionary(), null);
 
         DBIdentifier plain = DBIdentifier.newTable("Item");

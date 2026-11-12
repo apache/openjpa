@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,7 +29,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The names of a schema file are named for the dictionary of the
@@ -37,7 +37,7 @@ import org.junit.Test;
  * delimited, so that it equals the name that is read back from the
  * database, on other databases it is left alone (OPENJPA-3076).
  */
-public class TestXMLSchemaParserNames {
+class TestXMLSchemaParserNames {
 
     private static final String SCHEMA = """
         <schemas>
@@ -61,38 +61,38 @@ public class TestXMLSchemaParserNames {
         """;
 
     @Test
-    public void testReservedWordsAreDelimitedOnMySQL() throws IOException {
+    void reservedWordsAreDelimitedOnMySQL() throws IOException {
         for (String dictionary : new String[] {"mysql", "mariadb"}) {
             JDBCConfiguration conf = configuration(dictionary);
             DBDictionary dict = conf.getDBDictionaryInstance();
             SchemaGroup group = parse(conf);
 
             Schema schema = group.getSchema(dict.fromDBName("Current", DBIdentifierType.SCHEMA));
-            assertNotNull(dictionary, schema);
-            assertEquals(dictionary, "\"Current\"", schema.getIdentifier().getName());
+            assertNotNull(schema, dictionary);
+            assertEquals("\"Current\"", schema.getIdentifier().getName(), dictionary);
 
             Sequence seq = schema.getSequence(dict.fromDBName("Order", DBIdentifierType.SEQUENCE));
-            assertNotNull(dictionary, seq);
-            assertEquals(dictionary, "\"Order\"", seq.getIdentifier().getName());
+            assertNotNull(seq, dictionary);
+            assertEquals("\"Order\"", seq.getIdentifier().getName(), dictionary);
 
             Table window = schema.getTable(dict.fromDBName("Window", DBIdentifierType.TABLE));
-            assertNotNull(dictionary, window);
-            assertEquals(dictionary, "\"Rank\"", window.getColumn("Rank").getIdentifier().getName());
-            assertEquals(dictionary, "\"Primary\"", window.getPrimaryKey().getIdentifier().getName());
+            assertNotNull(window, dictionary);
+            assertEquals("\"Rank\"", window.getColumn("Rank").getIdentifier().getName(), dictionary);
+            assertEquals("\"Primary\"", window.getPrimaryKey().getIdentifier().getName(), dictionary);
             Index over = window.getIndex(dict.fromDBName("Over", DBIdentifierType.INDEX));
-            assertNotNull(dictionary, over);
-            assertEquals(dictionary, "\"Over\"", over.getIdentifier().getName());
-            assertEquals(dictionary, "\"Key\"", window.getUniques()[0].getIdentifier().getName());
+            assertNotNull(over, dictionary);
+            assertEquals("\"Over\"", over.getIdentifier().getName(), dictionary);
+            assertEquals("\"Key\"", window.getUniques()[0].getIdentifier().getName(), dictionary);
 
             Table item = schema.getTable(dict.fromDBName("Item", DBIdentifierType.TABLE));
             ForeignKey lead = item.getForeignKeys()[0];
-            assertEquals(dictionary, "\"Lead\"", lead.getIdentifier().getName());
-            assertSame(dictionary, window, lead.getPrimaryKeyTable());
+            assertEquals("\"Lead\"", lead.getIdentifier().getName(), dictionary);
+            assertSame(window, lead.getPrimaryKeyTable(), dictionary);
         }
     }
 
     @Test
-    public void testReservedWordsAreLeftAloneOnOtherDatabases() throws IOException {
+    void reservedWordsAreLeftAloneOnOtherDatabases() throws IOException {
         JDBCConfiguration conf = configuration("derby");
         SchemaGroup group = parse(conf);
         Schema schema = group.getSchema("Current");

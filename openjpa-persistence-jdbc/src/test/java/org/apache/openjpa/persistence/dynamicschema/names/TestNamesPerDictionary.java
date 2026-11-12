@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.dynamicschema.names;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Persistence units for different databases in one JVM each get the names
@@ -39,39 +42,41 @@ import junit.framework.TestCase;
  * <code>0</code> to it or leave it alone. The persistence units never
  * connect, see {@link NameDump}.
  */
-public class TestNamesPerDictionary extends TestCase {
+class TestNamesPerDictionary {
 
-    public void testMySQLAndDerby() {
+    @Test
+    void mySQLAndDerby() {
         Map<String, String> names = assertNamesPerDictionary("mysql", "derby");
 
         String mysql = names.get("mysql");
-        assertTrue(mysql, mysql.contains("MAPPING Partition table=\"Partition\"|`Partition`\n"));
-        assertTrue(mysql, mysql.contains("MAPPING Window table=\"Window\"|`Window`\n"));
-        assertTrue(mysql, mysql.contains("FIELD window col=\"window\"|`window`\n"));
-        assertTrue(mysql, mysql.contains("FIELD user col=\"user_id\"|`user_id`\n"));
-        assertTrue(mysql, mysql.contains("FIELD attributes table=\"Order_attributes\"|`Order_attributes`"));
+        assertTrue(mysql.contains("MAPPING Partition table=\"Partition\"|`Partition`\n"), mysql);
+        assertTrue(mysql.contains("MAPPING Window table=\"Window\"|`Window`\n"), mysql);
+        assertTrue(mysql.contains("FIELD window col=\"window\"|`window`\n"), mysql);
+        assertTrue(mysql.contains("FIELD user col=\"user_id\"|`user_id`\n"), mysql);
+        assertTrue(mysql.contains("FIELD attributes table=\"Order_attributes\"|`Order_attributes`"), mysql);
 
         String derby = names.get("derby");
-        assertTrue(derby, derby.contains("MAPPING Partition table=Partition|Partition\n"));
+        assertTrue(derby.contains("MAPPING Partition table=Partition|Partition\n"), derby);
         // Derby reserves WINDOW as well, and renames it rather than delimiting it
-        assertTrue(derby, derby.contains("MAPPING Window table=WINDOW0|WINDOW0\n"));
-        assertTrue(derby, derby.contains("FIELD window col=WINDOW0|WINDOW0\n"));
-        assertTrue(derby, derby.contains("FIELD user col=USER_ID|USER_ID\n"));
-        assertTrue(derby, derby.contains("FIELD attributes table=Order_attributes|Order_attributes"));
+        assertTrue(derby.contains("MAPPING Window table=WINDOW0|WINDOW0\n"), derby);
+        assertTrue(derby.contains("FIELD window col=WINDOW0|WINDOW0\n"), derby);
+        assertTrue(derby.contains("FIELD user col=USER_ID|USER_ID\n"), derby);
+        assertTrue(derby.contains("FIELD attributes table=Order_attributes|Order_attributes"), derby);
     }
 
-    public void testMariaDBAndPostgreSQL() {
+    @Test
+    void mariaDBAndPostgreSQL() {
         Map<String, String> names = assertNamesPerDictionary("mariadb", "postgres");
 
         String mariadb = names.get("mariadb");
-        assertTrue(mariadb, mariadb.contains("MAPPING Order table=\"Order\"|`Order`\n"));
-        assertTrue(mariadb, mariadb.contains("FIELD offset col=\"offset\"|`offset`\n"));
-        assertTrue(mariadb, mariadb.contains("FIELD window col=window|window\n"));
+        assertTrue(mariadb.contains("MAPPING Order table=\"Order\"|`Order`\n"), mariadb);
+        assertTrue(mariadb.contains("FIELD offset col=\"offset\"|`offset`\n"), mariadb);
+        assertTrue(mariadb.contains("FIELD window col=window|window\n"), mariadb);
 
         String postgres = names.get("postgres");
-        assertTrue(postgres, postgres.contains("MAPPING Order table=Order|Order\n"));
-        assertTrue(postgres, postgres.contains("FIELD offset col=OFFSET0|OFFSET0\n"));
-        assertTrue(postgres, postgres.contains("FIELD window col=WINDOW0|WINDOW0\n"));
+        assertTrue(postgres.contains("MAPPING Order table=Order|Order\n"), postgres);
+        assertTrue(postgres.contains("FIELD offset col=OFFSET0|OFFSET0\n"), postgres);
+        assertTrue(postgres.contains("FIELD window col=WINDOW0|WINDOW0\n"), postgres);
     }
 
     /**
@@ -80,7 +85,8 @@ public class TestNamesPerDictionary extends TestCase {
      * the names they get alone, including those of Derby, which renames the
      * words it reserves rather than delimiting them.
      */
-    public void testAllSetups() {
+    @Test
+    void allSetups() {
         List<String> keys = new ArrayList<>(NameDump.SETUPS.keySet());
         Map<String, String> alone = new HashMap<>();
         for (String key : keys) {
@@ -99,7 +105,8 @@ public class TestNamesPerDictionary extends TestCase {
      * Persistence units for different databases that are mapped at the same
      * time by different threads get the names they get alone as well.
      */
-    public void testConcurrentPersistenceUnits() throws Exception {
+    @Test
+    void concurrentPersistenceUnits() throws Exception {
         List<String> keys = List.of("mysql", "derby", "mariadb", "postgres", "mysql-compat", "sqlserver");
         Map<String, String> alone = new HashMap<>();
         for (String key : keys) {
