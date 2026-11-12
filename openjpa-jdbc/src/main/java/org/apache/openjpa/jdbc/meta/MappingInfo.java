@@ -21,10 +21,8 @@ package org.apache.openjpa.jdbc.meta;
 import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -982,6 +980,20 @@ public abstract class MappingInfo implements Serializable {
     }
 
     /**
+     * Return the base name of an index on the given columns, made of the
+     * column names joined by '_'. The delimiters of a delimited column name
+     * are left out of the parts; the whole name is delimited only if it
+     * requires it.
+     */
+    static DBIdentifier getDefaultIndexName(Column[] cols) {
+        String[] names = new String[cols.length];
+        for (int i = 0; i < cols.length; i++) {
+            names[i] = cols[i].getIdentifier().getName();
+        }
+        return DBIdentifier.combine(DBIdentifierType.INDEX, names);
+    }
+
+    /**
      * Retrieve/create an index on the given columns by merging the given
      * template information with any user-provided information.
      *
@@ -1059,9 +1071,7 @@ public abstract class MappingInfo implements Serializable {
             if (tmplate != null && !DBIdentifier.isNull(tmplate.getIdentifier())) {
                 name = tmplate.getIdentifier();
             } else {
-                name = DBIdentifier.newIndex(Arrays.stream(cols)
-                        .map(c -> c.getIdentifier().getName()).collect(Collectors.joining("_")));
-                name = repos.getDBDictionary().getValidIndexName(name, table);
+                name = repos.getDBDictionary().getValidIndexName(getDefaultIndexName(cols), table);
             }
         }
 
