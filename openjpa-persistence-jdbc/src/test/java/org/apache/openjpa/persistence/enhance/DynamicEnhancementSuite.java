@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import jakarta.persistence.Persistence;
 
+import org.apache.openjpa.enhance.PCEnhancerAgent;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.annotations.TestAnnotationBasics;
 import org.apache.openjpa.persistence.annotations.TestEmbeddedId;
 import org.apache.openjpa.persistence.annotations.TestEnumerated;
@@ -33,7 +39,6 @@ import org.apache.openjpa.persistence.annotations.TestOneToOne;
 import org.apache.openjpa.persistence.annotations.TestPersistentCollection;
 import org.apache.openjpa.persistence.annotations.TestSerializedLobs;
 import org.apache.openjpa.persistence.annotations.TestTablePerClassInheritance;
-import org.apache.openjpa.persistence.datacache.TestDataCacheBehavesIdentical;
 import org.apache.openjpa.persistence.datacache.TestQueryResultSize;
 import org.apache.openjpa.persistence.detach.TestDetachNoCascade;
 import org.apache.openjpa.persistence.detachment.
@@ -90,6 +95,7 @@ import org.apache.openjpa.persistence.relations.
 import org.apache.openjpa.persistence.relations.TestRelationToHandlerMaps;
 import org.apache.openjpa.persistence.relations.TestRelationToRelationMaps;
 import org.apache.openjpa.persistence.relations.TestTargetedIFaceRelations;
+import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.simple.TestBasicAnnotation;
 import org.apache.openjpa.persistence.simple.TestCaseInsensitiveKeywordsInJPQL;
 import org.apache.openjpa.persistence.simple.TestEntityManagerClear;
@@ -124,6 +130,10 @@ public class DynamicEnhancementSuite extends TestCase {
     public static Test suite() throws Exception {
         TestSuite suite = new TestSuite();
 
+        DynamicEnhancementSuite agentCheck = new DynamicEnhancementSuite();
+        agentCheck.setName("testAgentIsActive");
+        suite.addTest(agentCheck);
+
         // Setting the property -DdynamicTest allows you to run a single test
         // with the dynamic enhaner.
         String test = System.getProperty("dynamicTest");
@@ -142,7 +152,6 @@ public class DynamicEnhancementSuite extends TestCase {
             suite.addTestSuite(TestStoreBlob.class);
             suite.addTestSuite(TestEntityTypeExpression.class);
             suite.addTestSuite(TestSimpleXmlEntity.class);
-            suite.addTestSuite(TestDataCacheBehavesIdentical.class);
             suite.addTestSuite(TestQueryResultSize.class);
             suite.addTestSuite(TestEJBClauses.class);
             suite.addTestSuite(TestEJBDeleteUpdateImpl.class);
@@ -167,17 +176,20 @@ public class DynamicEnhancementSuite extends TestCase {
             suite.addTestSuite(TestEntityTypeExpression.class);
             suite.addTestSuite(TestSimpleXmlEntity.class);
             suite.addTestSuite(TestXmlOverrideEntity.class);
-            suite.addTestSuite(TestDataCacheBehavesIdentical.class);
             suite.addTestSuite(TestQueryResultSize.class);
             suite.addTestSuite(TestQueryResultSize.class);
             suite.addTestSuite(TestDetachNoCascade.class);
             // end Subclassing failing tests
 
+            // org.apache.openjpa.persistence.datacache
+            // excluded via pom
+            // suite.addTestSuite(TestDataCacheBehavesIdentical.class);
+
             // org.apache.openjpa.persistence.enhance
             suite.addTestSuite(TestMultipleLevelDerivedIdentity.class);
-            suite.addTestSuite(TestClone.class);
 
             // excluded via pom
+            // suite.addTestSuite(TestClone.class);
             // suite.addTestSuite(TestDynamicStorageGenerator.class);
             // suite.addTestSuite(TestNoNoArgs.class);
             // suite.addTestSuite(TestSubclassedBehavior.class);
@@ -262,5 +274,25 @@ public class DynamicEnhancementSuite extends TestCase {
             // suite.addTestSuite(TestEntityOrderBy.class);
         }
         return suite;
+    }
+
+    /**
+     * Fails if the suite runs without the enhancer agent or on test classes
+     * that were enhanced at build time. In both cases the other tests do not
+     * exercise the class file transformer at all.
+     */
+    public void testAgentIsActive() throws IOException {
+        assertTrue("PCEnhancerAgent was not started, run the suite with -Ptest-dynamic-enhancer",
+            PCEnhancerAgent.getLoadSuccessful());
+        byte[] bytes;
+        try (InputStream in = AllFieldTypes.class.getResourceAsStream("AllFieldTypes.class")) {
+            assertNotNull("AllFieldTypes.class not found", in);
+            bytes = in.readAllBytes();
+        }
+        String classFile = new String(bytes, StandardCharsets.ISO_8859_1);
+        assertFalse("AllFieldTypes.class was enhanced at build time, run mvn clean first",
+            classFile.contains("org/apache/openjpa/enhance/PersistenceCapable"));
+        assertTrue("AllFieldTypes was not enhanced when it was loaded",
+            PersistenceCapable.class.isAssignableFrom(AllFieldTypes.class));
     }
 }
