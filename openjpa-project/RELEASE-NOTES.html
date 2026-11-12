@@ -84,7 +84,7 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   name keeps the case of the entity name, e.g. <code>Window</code> instead of
   <code>WINDOW</code>, which matters where table names are case sensitive. A
   schema that still has the earlier names no longer matches; set
-  <code>openjpa.Compatibility=UpdatedMySQLAndMariaDBReservedWords=false</code>
+  <code>openjpa.Compatibility=UpdatedReservedWords=false</code>
   to restore the names generated before this change: on MariaDB the naming
   of 4.1.x, apart from the other 4.2 changes to reserved words, and on MySQL
   the names of the words added by this change (OPENJPA-3074).

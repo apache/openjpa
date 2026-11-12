@@ -173,7 +173,7 @@ public class MariaDBDictionary extends AbstractMySQLDictionary {
     /**
      * MariaDB delimits a name that is a reserved word, as MySQL does, unless
      * the compatibility option
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> asks for the
+     * <code>UpdatedReservedWords=false</code> asks for the
      * earlier names, which append a <code>0</code> to such a name instead.
      */
     @Override

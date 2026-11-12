@@ -240,7 +240,7 @@ public class TestAbstractMySQLDictionary {
         DBIdentifier linear = mysql.getValidTableName(DBIdentifier.newTable("Linear"), new Schema());
         assertEquals("\"Linear_items\"", DBIdentifier.combine(linear, "items").getName());
 
-        mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        mariadb = configure(new MariaDBDictionary(), "UpdatedReservedWords=false");
         order = mariadb.getValidTableName(DBIdentifier.newTable("Order"), new Schema());
         assertEquals("ORDER0_items", DBIdentifier.combine(order, "items").getName());
     }
@@ -281,7 +281,7 @@ public class TestAbstractMySQLDictionary {
         assertEquals("\"Rank\"", validTableName(mariadb, "Rank"));
         assertEquals("\"rank\"", validColumnName(mariadb, "rank"));
 
-        mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        mariadb = configure(new MariaDBDictionary(), "UpdatedReservedWords=false");
         assertFalse(mariadb.reservedWordSet.contains("NTILE"));
         assertEquals("NTILE", validTableName(mariadb, "Ntile"));
         assertEquals("RANK", validColumnName(mariadb, "rank"));
@@ -290,7 +290,7 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> keeps the names
+     * <code>UpdatedReservedWords=false</code> keeps the names
      * an earlier release generated. The words that were reserved before,
      * such as <code>ROWS</code> of the SQL standard or the
      * <code>LIBRARY</code> that MySQL reserved already, are still delimited
@@ -298,7 +298,7 @@ public class TestAbstractMySQLDictionary {
      */
     @Test
     public void testCompatibilityKeepsTheEarlierNames() {
-        MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedReservedWords=false");
         assertEquals("RANK", validColumnName(mysql, "rank"));
         assertEquals("WINDOW", validColumnName(mysql, "window"));
         assertFalse(mysql.getInvalidColumnWordSet().contains("RANK"));
@@ -315,7 +315,7 @@ public class TestAbstractMySQLDictionary {
             assertFalse(word, mysql.reservedWordSet.contains(word));
         }
 
-        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedReservedWords=false");
         assertEquals("ROW_NUMBER", validColumnName(mariadb, "row_number"));
         assertEquals("OFFSET", validColumnName(mariadb, "offset"));
         assertEquals("OVER0", validColumnName(mariadb, "over"));

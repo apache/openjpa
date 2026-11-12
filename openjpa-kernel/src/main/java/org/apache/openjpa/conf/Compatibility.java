@@ -86,7 +86,7 @@ public class Compatibility {
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
     private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
-    private boolean _updatedMySQLAndMariaDBReservedWords = true; // OPENJPA-3074
+    private boolean _updatedReservedWords = true; // OPENJPA-3074
 
     /**
      * Whether to require exact identity value types when creating object
@@ -1046,49 +1046,27 @@ public class Compatibility {
     }
 
     /**
-     * Whether the MySQL and MariaDB dictionaries use the reserved words of
-     * the current servers and delimit them on MariaDB too. Defaults to true:
-     * <ul>
-     * <li><code>MySQLDictionary</code> treats the words that MySQL 8.0 and
-     * later reserve, such as <code>RANK</code>, <code>WINDOW</code> or
-     * <code>SYSTEM</code>, and the invalid column words that MySQL reserves
-     * in a table name too, such as <code>NTILE</code>, <code>DUAL</code> or
-     * <code>LIMIT</code>, as reserved words.</li>
-     * <li><code>MariaDBDictionary</code> treats the words that MariaDB
-     * reserves, such as <code>LINEAR</code>, <code>OFFSET</code>,
-     * <code>RETURNING</code> or <code>LIMIT</code>, and the names of
-     * built-in functions it reserves in a table name under the
-     * <code>IGNORE_SPACE</code> SQL mode, such as <code>NTILE</code> or
-     * <code>RANK</code>, as reserved words.</li>
-     * <li>Both delimit a table, column or other name that is a reserved word
-     * with back ticks and keep it, where <code>MariaDBDictionary</code>
-     * appended a <code>0</code> before, e.g. <code>ORDER0</code>. A column
-     * <code>LIMIT0</code> becomes <code>limit</code>, and a delimited
-     * default table name keeps the case of the entity name. The names built
-     * from such a name, such as default join tables and join columns, change
-     * alike, e.g. <code>ORDER0_ITEMS</code> becomes
-     * <code>Order_items</code>.</li>
-     * </ul>
-     * Set to false to keep the names and the SQL that an earlier release
-     * generated before this change for a schema that is still used under its
-     * original names: on MariaDB those of the reserved words, with no name
-     * delimited, as in OpenJPA 4.1.x apart from the other 4.2 changes to the
-     * reserved words; on MySQL those of the words added here, while the words
-     * that were reserved before are still delimited.
+     * Whether the dictionaries use the reserved words of the current database
+     * versions that were added in 4.2.0, and the naming that comes with them.
+     * Defaults to true. Set to false to keep the table and column names an
+     * earlier release generated, e.g. for a schema that is still used under
+     * its original names. Which words and names are affected is described by
+     * the dictionaries that honour this option, currently
+     * <code>MySQLDictionary</code> and <code>MariaDBDictionary</code>.
      *
      * @since 4.2.0
      */
-    public boolean getUpdatedMySQLAndMariaDBReservedWords() {
-        return _updatedMySQLAndMariaDBReservedWords;
+    public boolean getUpdatedReservedWords() {
+        return _updatedReservedWords;
     }
 
     /**
-     * Whether the MySQL and MariaDB dictionaries use the reserved words of
-     * the current servers and delimit them on MariaDB too.
+     * Whether the dictionaries use the reserved words of the current database
+     * versions that were added in 4.2.0.
      *
      * @since 4.2.0
      */
-    public void setUpdatedMySQLAndMariaDBReservedWords(boolean b) {
-        _updatedMySQLAndMariaDBReservedWords = b;
+    public void setUpdatedReservedWords(boolean b) {
+        _updatedReservedWords = b;
     }
 }

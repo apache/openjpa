@@ -205,11 +205,11 @@ public abstract class AbstractMySQLDictionary
      * {@link #invalidColumnWordSet invalid column words} and to the
      * {@link #reservedWordSet reserved words}, as far as they are missing
      * there (OPENJPA-3074). The compatibility option
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> removes the words
+     * <code>UpdatedReservedWords=false</code> removes the words
      * that were added here again, so that the names keep the form an earlier
      * release generated.
      *
-     * @see org.apache.openjpa.conf.Compatibility#getUpdatedMySQLAndMariaDBReservedWords()
+     * @see org.apache.openjpa.conf.Compatibility#getUpdatedReservedWords()
      */
     protected void addUpdatedReservedWords(Collection<String> words) {
         for (String word : words) {
@@ -228,7 +228,7 @@ public abstract class AbstractMySQLDictionary
      * valid column names, to the {@link #reservedWordSet reserved words}
      * only, as far as they are missing there (OPENJPA-3074). The
      * compatibility option
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> removes them
+     * <code>UpdatedReservedWords=false</code> removes them
      * again, as the {@link #addUpdatedReservedWords(Collection) updated
      * reserved words}.
      */
@@ -245,7 +245,7 @@ public abstract class AbstractMySQLDictionary
      * reserved words} and
      * {@link #addUpdatedReservedTableWords(Collection) reserved table words}
      * are in use, which the compatibility option
-     * <code>UpdatedMySQLAndMariaDBReservedWords=false</code> turns off. Known
+     * <code>UpdatedReservedWords=false</code> turns off. Known
      * once the configuration is set.
      */
     protected boolean usesUpdatedReservedWords() {
@@ -269,7 +269,7 @@ public abstract class AbstractMySQLDictionary
     @Override
     public void setConfiguration(Configuration conf) {
         if (conf instanceof OpenJPAConfiguration openjpaConf
-            && !openjpaConf.getCompatibilityInstance().getUpdatedMySQLAndMariaDBReservedWords()) {
+            && !openjpaConf.getCompatibilityInstance().getUpdatedReservedWords()) {
             _usesUpdatedReservedWords = false;
             invalidColumnWordSet.removeAll(_updatedInvalidColumnWords);
             reservedWordSet.removeAll(_updatedReservedWords);

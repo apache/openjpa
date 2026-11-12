@@ -279,7 +279,7 @@ public class MySQLDictionary
 
     /**
      * MySQL delimits a name that is a reserved word, also under the
-     * compatibility option <code>UpdatedMySQLAndMariaDBReservedWords=false</code>.
+     * compatibility option <code>UpdatedReservedWords=false</code>.
      */
     @Override
     protected boolean delimitsReservedWords() {
