@@ -51,7 +51,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class TestMySQLDictionary {
+class TestMySQLDictionary {
     @RegisterExtension
     public Mockery context = new JUnit5Mockery();
 
@@ -60,7 +60,7 @@ public class TestMySQLDictionary {
      * MariaDB dictionary sets for the whole JVM.
      */
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
     }
 
@@ -416,7 +416,7 @@ public class TestMySQLDictionary {
      * Before 5.7 MySQL has no fractions of a second in its temporal columns.
      */
     @Test
-    public void testWholeSecondTemporalTypesBefore57() throws Exception {
+    void wholeSecondTemporalTypesBefore57() throws Exception {
         MySQLDictionary dict = newConfiguredDictionary();
         dict.connectedConfiguration(connection(5, 6, "5.6.51", 8));
         assertEquals("DATETIME", dict.timestampTypeName);
@@ -430,7 +430,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testFractionalSecondTemporalTypesFrom57() throws Exception {
+    void fractionalSecondTemporalTypesFrom57() throws Exception {
         for (int[] version : new int[][] { { 5, 7 }, { 8, 0 }, { 8, 4 } }) {
             String name = version[0] + "." + version[1];
             MySQLDictionary dict = newConfiguredDictionary();
@@ -446,7 +446,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testNoXMLColumnBefore51() throws Exception {
+    void noXMLColumnBefore51() throws Exception {
         MySQLDictionary dict = newConfiguredDictionary();
         dict.connectedConfiguration(connection(5, 0, "5.0.96", 8));
         assertFalse(dict.supportsXMLColumn);
@@ -455,7 +455,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testNoSubselectsBefore41() throws Exception {
+    void noSubselectsBefore41() throws Exception {
         MySQLDictionary dict = newConfiguredDictionary();
         dict.connectedConfiguration(connection(4, 0, "4.0.27", 8));
         assertFalse(dict.supportsSubselect);
@@ -469,7 +469,7 @@ public class TestMySQLDictionary {
      * in the product version, which is parsed instead.
      */
     @Test
-    public void testProductVersionOfNonJDBC3Driver() throws Exception {
+    void productVersionOfNonJDBC3Driver() throws Exception {
         MySQLDictionary old = newConfiguredDictionary();
         old.connectedConfiguration(connection(2, 0, 0, "4.0.27-nt", 8));
         assertFalse(old.supportsSubselect);
@@ -482,7 +482,7 @@ public class TestMySQLDictionary {
     }
 
     @Test
-    public void testDriverBefore5DeserializesBlobs() throws Exception {
+    void driverBefore5DeserializesBlobs() throws Exception {
         MySQLDictionary dict = newConfiguredDictionary();
         dict.connectedConfiguration(connection(8, 0, "8.0.40", 4));
         assertTrue(dict.driverDeserializesBlobs);

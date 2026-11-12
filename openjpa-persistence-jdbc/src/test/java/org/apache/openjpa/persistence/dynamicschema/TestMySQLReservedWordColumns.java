@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +30,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Attributes named after words that MySQL 8.0 and later or MariaDB reserve -
@@ -36,15 +40,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * name it accepts, so that the table can be created, written to and queried
  * (OPENJPA-3074).
  */
-public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
+class TestMySQLReservedWordColumns extends SingleEMFTestCase {
 
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // other databases reserve other words, Derby e.g. WINDOW
-        setSupportedDatabases(MySQLDictionary.class, MariaDBDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+        return dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary;
+    }
+
+    @BeforeEach
+    public void setUp() {
         super.setUp(CLEAR_TABLES, RankedEntry.class, Window.class, Linear.class, Dual.class, Ntile.class);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -61,7 +66,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
         }
     }
 
-    public void testFind() {
+    @Test
+    void find() {
         try (EntityManager em = emf.createEntityManager()) {
             RankedEntry entry = em.find(RankedEntry.class, 2);
             assertEquals(20, entry.getRank());
@@ -73,7 +79,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
         }
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Integer> ids = em.createQuery("SELECT e.id FROM RankedEntry e WHERE e.rank = :rank "
                 + "ORDER BY e.rowNumber DESC", Integer.class)
@@ -92,7 +99,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
         }
     }
 
-    public void testUpdate() {
+    @Test
+    void update() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             int count = em.createQuery("UPDATE RankedEntry e SET e.rank = e.rank + 1 WHERE e.window = :window")
@@ -117,7 +125,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
      * name of a built-in function. A name given in <code>@Column</code> is
      * treated alike.
      */
-    public void testColumnNames() {
+    @Test
+    void columnNames() {
         DBDictionary dict = getDBDictionary();
         ClassMapping mapping = getMapping(RankedEntry.class);
         boolean mysql = !(dict instanceof MariaDBDictionary);
@@ -144,7 +153,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
      * reserve, and whose attributes are named after such words, can be
      * written to and queried, also with the words in the query.
      */
-    public void testReservedTableAndColumnNames() {
+    @Test
+    void reservedTableAndColumnNames() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(Linear.class, 1).setOffset(6);
@@ -177,7 +187,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
         }
     }
 
-    public void testReservedTableName() {
+    @Test
+    void reservedTableName() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(Window.class, 1).setLabel("changed");
@@ -196,7 +207,8 @@ public class TestMySQLReservedWordColumns extends SingleEMFTestCase {
      * delimited. MariaDB does not reserve <code>WINDOW</code>; it reserves
      * <code>NTILE</code> in a table name as the name of a built-in function.
      */
-    public void testTableName() {
+    @Test
+    void tableName() {
         DBDictionary dict = getDBDictionary();
         boolean mysql = !(dict instanceof MariaDBDictionary);
         assertEquals(mysql ? "\"WINDOW\"" : "WINDOW", tableName(Window.class));

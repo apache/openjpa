@@ -44,7 +44,7 @@ class TestStoreCharsAsNumbersDefaults {
      * MariaDB dictionary sets for the whole JVM.
      */
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
     }
 
