@@ -69,6 +69,25 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   through a generic superclass or interface; the general converter changes
   described in the Migration Considerations are not affected by this option
   (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
+  <li>MySQL and MariaDB: the dictionaries now know the words that MySQL
+  8.4 and 9.7 and MariaDB 10.11 and 12.3 reserve, such as <code>RANK</code>,
+  <code>WINDOW</code>, <code>LIMIT</code>, <code>DUAL</code> or, on MariaDB,
+  <code>OFFSET</code>, and both delimit a table or column whose name is a
+  reserved word with back ticks instead of renaming it, so that its table can
+  be created. On MySQL a column that got a <code>0</code> appended, such as
+  <code>LIMIT0</code>, is now the delimited <code>limit</code>; on MariaDB,
+  which did not delimit before, this holds for every reserved word, e.g. a
+  column <code>ORDER0</code> becomes <code>order</code> and a table
+  <code>USER0</code> becomes <code>User</code>, and so do the names built
+  from such a name, such as default join tables and join columns, e.g.
+  <code>ORDER0_ITEMS</code> becomes <code>Order_items</code>. A delimited default table
+  name keeps the case of the entity name, e.g. <code>Window</code> instead of
+  <code>WINDOW</code>, which matters where table names are case sensitive. A
+  schema that still has the earlier names no longer matches; set
+  <code>openjpa.Compatibility=UpdatedReservedWords=false</code>
+  to restore the names generated before this change: on MariaDB the naming
+  of 4.1.x, apart from the other 4.2 changes to reserved words, and on MySQL
+  the names of the words added by this change (OPENJPA-3074).
   </li>
   <li>An attribute whose type (a class, record or interface) is not
   <code>java.io.Serializable</code> and
@@ -469,6 +488,8 @@ in each release of OpenJPA.</P>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3071'>OPENJPA-3071</a>] -         Resolve type names of remote commit events through the metadata repository
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3072'>OPENJPA-3072</a>] -         TCPRemoteCommitProvider: only accept connections from the configured peers and limit receiving connections
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3074'>OPENJPA-3074</a>] -         Share the common code of MySQLDictionary and MariaDBDictionary in a superclass and add the MySQL 8 reserved words
     </li>
 </ul>
 

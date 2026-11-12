@@ -744,7 +744,7 @@ public class DBDictionary
 
         DBIdentifierRule columnNamingRule = new ColumnIdentifierRule(invalidColumnWordSet);
         namingRules.put(columnNamingRule.getName(), columnNamingRule);
-        // restoring default "empty" cfg
+        // restoring default "empty" cfg, switching the delimiting off before the words are removed
         IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
         rule.setDelimitReservedWords(false);
         rule.setReservedWords(Set.of());

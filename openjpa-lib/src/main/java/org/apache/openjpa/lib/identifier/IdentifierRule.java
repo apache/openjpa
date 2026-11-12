@@ -49,8 +49,10 @@ public class IdentifierRule {
     private boolean _mustBeginWithLetter = true;
     private boolean _onlyLettersDigitsUnderscores = true;
     private String _specialCharacters = "";
-    private Set<String> _reservedWords = null;
-    private boolean _delimitReservedWords = false;
+    // volatile: the default rule is shared by all dictionaries of the JVM,
+    // which may be configured by different threads
+    private volatile Set<String> _reservedWords = null;
+    private volatile boolean _delimitReservedWords = false;
     private String _wildcard = "%";
 
     public void setName(String name) {

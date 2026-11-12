@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -25,33 +26,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.sql.Types;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.kernel.exps.DateTimeExtractField;
-import org.apache.openjpa.kernel.exps.QueryExpressions;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
-import org.apache.openjpa.jdbc.schema.Index;
-import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
-import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
@@ -60,12 +47,10 @@ import org.apache.openjpa.util.StoreException;
  * Dictionary for MariaDB, based off the MySQLDictionary.
  *
  */
-public class MariaDBDictionary extends DBDictionary {
+public class MariaDBDictionary extends AbstractMySQLDictionary {
     private static final Localizer _loc = Localizer.forPackage(MariaDBDictionary.class);
 
     public static final String SELECT_HINT = "openjpa.hint.MariaDBSelectHint";
-
-    public static final String DELIMITER_BACK_TICK = "`";
 
     /**
      * The URL scheme of a MariaDB Connector/J replication connection.
@@ -80,84 +65,74 @@ public class MariaDBDictionary extends DBDictionary {
     private static final String COMPAT_VERSION_PREFIX = "5.5.5-";
 
     /**
-     * The MySQL table type to use when creating tables; defaults to innodb.
+     * The words that MariaDB reserves and that are missing from the generated
+     * list of invalid column words (OPENJPA-3074): those that MySQL 8.0 and
+     * later reserve as well, and those that only MariaDB reserves, such as
+     * <code>OFFSET</code>, <code>RETURNING</code> or <code>PORTION</code>.
+     * Taken from <code>INFORMATION_SCHEMA.KEYWORDS</code> of MariaDB 10.11
+     * and 12.3, and checked with an unquoted <code>CREATE TABLE</code>.
+     * MariaDB 12 no longer reserves <code>ACCESSIBLE</code> and
+     * <code>MASTER_SSL_VERIFY_SERVER_CERT</code>, MariaDB 10.11 does not
+     * reserve yet <code>CONVERSION</code>, <code>CURRENT_PATH</code>,
+     * <code>SQL_AFTER_GTIDS</code>, <code>SQL_BEFORE_GTIDS</code>,
+     * <code>TO_DATE</code> and <code>VECTOR</code>. They are reserved words
+     * as well.
      */
-    public String tableType = "innodb";
+    private static final List<String> UPDATED_RESERVED_WORDS = List.of(
+        "ACCESSIBLE", "CONVERSION", "CURRENT_PATH", "DELETE_DOMAIN_ID", "DO_DOMAIN_IDS", "IGNORE_DOMAIN_IDS",
+        "LINEAR", "MASTER_DEMOTE_TO_REPLICA", "MASTER_DEMOTE_TO_SLAVE", "MASTER_SSL_VERIFY_SERVER_CERT", "OFFSET",
+        "PAGE_CHECKSUM", "PARSE_VCOL_EXPR", "PORTION", "READ_WRITE", "REF_SYSTEM_ID", "RETURNING", "ROW_NUMBER",
+        "SQL_AFTER_GTIDS", "SQL_BEFORE_GTIDS", "STATS_AUTO_RECALC", "STATS_PERSISTENT", "STATS_SAMPLE_PAGES",
+        "TO_DATE", "VECTOR");
 
     /**
-     * Whether to use clobs; defaults to true. Set this to false if you have an
-     * old version of MySQL which does not handle clobs properly.
+     * The invalid column words that MariaDB reserves and that are missing
+     * from the reserved words, so that a table, rather than a column, named
+     * after one of them failed to be created (OPENJPA-3074). Taken from
+     * MariaDB 10.11 and 12.3 as above. They are reserved words now, which
+     * this dictionary delimits in table and column names.
      */
-    public boolean useClobs = true;
+    private static final List<String> UPDATED_RESERVED_TABLE_WORDS = List.of(
+        "ANALYZE", "ASENSITIVE", "BEFORE", "BIGINT", "CALL", "CONDITION", "CURRENT_ROLE", "DATABASES", "DAY_HOUR",
+        "DAY_MICROSECOND", "DAY_MINUTE", "DAY_SECOND", "DELAYED", "DETERMINISTIC", "DISTINCTROW", "DIV", "DUAL",
+        "EACH", "ELSEIF", "ENCLOSED", "ESCAPED", "EXIT", "EXPLAIN", "FLOAT8", "FORCE", "FULLTEXT", "HIGH_PRIORITY",
+        "HOUR_MICROSECOND", "HOUR_MINUTE", "HOUR_SECOND", "IF", "IGNORE", "INOUT", "INT3", "INT8", "ITERATE",
+        "KEYS", "KILL", "LEAVE", "LIMIT", "LINES", "LOCALTIME", "LOCALTIMESTAMP", "LOCK", "LONG", "LONGBLOB",
+        "LONGTEXT", "LOOP", "LOW_PRIORITY", "MAXVALUE", "MEDIUMBLOB", "MEDIUMTEXT", "MIDDLEINT",
+        "MINUTE_MICROSECOND", "MINUTE_SECOND", "MOD", "MODIFIES", "NO_WRITE_TO_BINLOG", "OPTIMIZE", "OPTIONALLY",
+        "OUT", "OVER", "PARTITION", "PURGE", "RANGE", "READS", "RECURSIVE", "REGEXP", "RELEASE", "RENAME", "REPEAT",
+        "REQUIRE", "RESIGNAL", "RETURN", "RLIKE", "SCHEMAS", "SECOND_MICROSECOND", "SENSITIVE", "SEPARATOR", "SHOW",
+        "SIGNAL", "SPATIAL", "SPECIFIC", "SQLEXCEPTION", "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS",
+        "SQL_SMALL_RESULT", "SSL", "STRAIGHT_JOIN", "TERMINATED", "TINYBLOB", "TINYINT", "TINYTEXT", "TRIGGER",
+        "UNDO", "UNLOCK", "USE", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VARBINARY", "VARCHARACTER", "WHILE",
+        "XOR", "YEAR_MONTH");
 
     /**
-     * Whether the driver automatically deserializes blobs.
+     * The names of built-in functions that MariaDB reserves in a table name
+     * under the <code>IGNORE_SPACE</code> SQL mode, which MariaDB Connector/J
+     * adds to the session's <code>sql_mode</code>: a table name followed by a
+     * blank and a parenthesis, as in <code>CREATE TABLE Ntile (</code> or
+     * <code>INSERT INTO Ntile (</code>, is taken for a function call
+     * (OPENJPA-3074). Taken from <code>INFORMATION_SCHEMA.SQL_FUNCTIONS</code>
+     * and <code>INFORMATION_SCHEMA.KEYWORDS</code> of MariaDB 10.11 and 12.3,
+     * and checked with an unquoted <code>CREATE TABLE</code> under
+     * <code>IGNORE_SPACE</code>, leaving out those that are reserved words
+     * already. MariaDB 10.11 does not know <code>ST_COLLECT</code> yet; it is
+     * a reserved word as well. A column of such a name is valid.
      */
-    public boolean driverDeserializesBlobs = false;
+    private static final List<String> IGNORE_SPACE_FUNCTION_WORDS = List.of(
+        "BIT_AND", "BIT_OR", "BIT_XOR", "CUME_DIST", "CURDATE", "CURTIME", "DATE_ADD", "DATE_SUB", "DENSE_RANK",
+        "FIRST_VALUE", "GROUP_CONCAT", "JSON_ARRAYAGG", "JSON_OBJECTAGG", "LAG", "LEAD", "MEDIAN", "MID", "NOW",
+        "NTH_VALUE", "NTILE", "PERCENTILE_CONT", "PERCENTILE_DISC", "PERCENT_RANK", "RANK", "STD", "STDDEV",
+        "STDDEV_POP", "STDDEV_SAMP", "ST_COLLECT", "SUBSTR", "VARIANCE", "VAR_POP", "VAR_SAMP");
 
     /**
-     * Whether to inline multi-table bulk-delete operations into MySQL's
-     * combined <code>DELETE FROM foo, bar, baz</code> syntax.
-     * Defaults to false, since this may fail in the presence of InnoDB tables
-     * with foreign keys.
-     * @link http://dev.mysql.com/doc/refman/5.0/en/delete.html
+     * The largest scale of a decimal column on MariaDB.
      */
-    public boolean optimizeMultiTableDeletes = false;
-
-    public static final String tinyBlobTypeName = "TINYBLOB";
-    public static final String mediumBlobTypeName = "MEDIUMBLOB";
-    public static final String longBlobTypeName = "LONGBLOB";
-    public static final String tinyTextTypeName = "TINYTEXT";
-    public static final String mediumTextTypeName = "MEDIUMTEXT";
-    public static final String longTextTypeName = "LONGTEXT";
+    private static final int MAX_DECIMAL_SCALE = 38;
 
     public MariaDBDictionary() {
         platform = "MariaDB";
-        validationSQL = "SELECT NOW()";
-        distinctCountColumnSeparator = ",";
-
-        supportsDeferredConstraints = false;
-        // Spec form CONSTRAINT <name> FOREIGN KEY / UNIQUE (...), as expected in
-        // generated schema scripts. MariaDB also accepts FOREIGN KEY <name> (...),
-        // but that form is not the standard one.
-        constraintNameMode = CONS_NAME_BEFORE;
-        supportsMultipleNontransactionalResultSets = false;
-        requiresAliasForSubselect = true; // new versions
-        requiresTargetForDelete = true;
-        supportsSelectStartIndex = true;
-        supportsSelectEndIndex = true;
-
-        datePrecision = MICRO;
-
-        concatenateFunction = "CONCAT({0},{1})";
-
-        maxTableNameLength = 64;
-        maxColumnNameLength = 64;
-        maxIndexNameLength = 64;
-        maxConstraintNameLength = 64;
-        maxIndexesPerTable = 32;
-        schemaCase = SCHEMA_CASE_PRESERVE;
-
-        supportsAutoAssign = true;
-        lastGeneratedKeyQuery = "SELECT LAST_INSERT_ID()";
-        autoAssignClause = "AUTO_INCREMENT";
-
-        clobTypeName = "TEXT";
-        longVarcharTypeName = "TEXT";
-        longVarbinaryTypeName = "LONG VARBINARY";
-        timestampTypeName = "DATETIME";
-        xmlTypeName = "TEXT";
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BOOL", "LONG VARBINARY", "MEDIUMBLOB", "LONGBLOB",
-            "TINYBLOB", "LONG VARCHAR", "MEDIUMTEXT", "LONGTEXT", "TEXT",
-            "TINYTEXT", "DOUBLE PRECISION", "ENUM", "SET", "DATETIME", "JSON",
-        }));
-        reservedWordSet.addAll(Arrays.asList(new String[]{
-            "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
-            "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
-            "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED",
-            "ZEROFILL", "INDEX",
-        }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
@@ -190,73 +165,35 @@ public class MariaDBDictionary extends DBDictionary {
             // we still add them for compat reasons
             "OPTION", "SELECT",
         }));
-
-        requiresSearchStringEscapeForLike = true;
-
-        // MariaDB silently ignores ESCAPE '' and keeps its default backslash
-        // escape, and rejects ESCAPE '' outright when sql_mode contains
-        // NO_BACKSLASH_ESCAPES, so "no escape character" has to be spelled
-        // with a character that cannot occur in a pattern (OPENJPA-3009)
-        searchStringNoEscape = "CHAR(0)";
-
-        // MariaDB requires double-escape for strings
-        searchStringEscape = "\\\\";
-
-        // a backslash in a string literal is an escape character unless
-        // sql_mode contains NO_BACKSLASH_ESCAPES. The sql_mode is not checked,
-        // because a session can change it at any time; a value with a
-        // backslash is bound as a parameter instead, which is correct either way
-        backslashEscapesInStringLiterals = true;
-
-        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
-
-        setLeadingDelimiter(DELIMITER_BACK_TICK);
-        setTrailingDelimiter(DELIMITER_BACK_TICK);
-
-        // the precision and scale of a decimal column are part of its DDL type,
-        // an unsized DECIMAL is DECIMAL(10,0) (OPENJPA-3062)
-        fixedSizeTypeNameSet.remove("NUMERIC");
-        fixedSizeTypeNameSet.remove("DECIMAL");
-
-        dateFractionDigits = 0;
-        supportsUnsizedCharOnCast = false;
-        // MariaDB has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
-        longCastTypeName = "SIGNED";
-        // MariaDB supports the CHAR data type, as MySQL does (OPENJPA-3001)
-        storeCharsAsNumbers = false;
+        addUpdatedReservedWords(UPDATED_RESERVED_WORDS);
+        addUpdatedReservedTableWords(UPDATED_RESERVED_TABLE_WORDS);
+        addUpdatedReservedTableWords(IGNORE_SPACE_FUNCTION_WORDS);
     }
 
     /**
-     * EXTRACT(WEEK) counts weeks from Sunday; mode 3 of WEEK gives the ISO week
-     * that JPA defines. EXTRACT(SECOND) returns the whole seconds only; the
-     * fraction of the second that JPA includes is added from
-     * EXTRACT(MICROSECOND).
+     * MariaDB delimits a name that is a reserved word, as MySQL does, unless
+     * the compatibility option
+     * <code>UpdatedReservedWords=false</code> asks for the
+     * earlier names, which append a <code>0</code> to such a name instead.
      */
     @Override
-    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
-        if (extField == DateTimeExtractField.WEEK) {
-            return "WEEK({1}, 3)";
-        }
-        if (extField == DateTimeExtractField.SECOND) {
-            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
-                + extractDateTimeFieldFunction.replace("{0}", "MICROSECOND") + " / 1000000.0)";
-        }
-        return super.getExtractDateTimeFieldFunction(extField);
+    protected boolean delimitsReservedWords() {
+        return usesUpdatedReservedWords();
+    }
+
+    @Override
+    protected String getSelectHint() {
+        return SELECT_HINT;
     }
 
     /**
-     * {@link java.sql.Time} has no fraction of a second, so a {@link LocalTime}
-     * is passed to and read from the driver as it is, keeping the fraction that
-     * a <code>TIME(6)</code> column or <code>EXTRACT(SECOND)</code> holds.
+     * MariaDB allows a scale of 38; an unsized decimal column still gets a
+     * scale of 30, the largest scale MySQL allows, which keeps the DDL the
+     * same on both.
      */
     @Override
-    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
-        stmnt.setObject(idx, val);
-    }
-
-    @Override
-    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
-        return rs.getObject(column, LocalTime.class);
+    protected int getMaxDecimalScale() {
+        return MAX_DECIMAL_SCALE;
     }
 
     @Override
@@ -275,25 +212,16 @@ public class MariaDBDictionary extends DBDictionary {
         } catch (IllegalArgumentException e) {
             // we don't understand the version format.
             // That is ok. We just take the default values.
-            if (log.isWarnEnabled())
+            if (log.isWarnEnabled()) {
                 log.warn(e.toString(), e);
+            }
         }
 
         supportsXMLColumn = true;
 
         if (maj > 10 || (maj == 10 && min > 1)) {
             // MariaDB supports fraction of a second
-            timestampTypeName = "DATETIME{0}";
-            fixedSizeTypeNameSet.remove(timestampTypeName);
-            fractionalTypeNameSet.add(timestampTypeName);
-
-            // Request microsecond precision for temporal columns so @Version
-            // Instant/LocalDateTime can detect concurrent updates within a
-            // single whole second. Matches PostgreSQL/Derby defaults.
-            dateFractionDigits = 6;
-
-            timeTypeName = "TIME{0}";
-            fractionalTypeNameSet.add(timeTypeName);
+            useFractionalSecondTemporalTypes();
         }
 
         // Before 11.1 MariaDB rejects a multi-table DELETE - the form that
@@ -448,147 +376,11 @@ public class MariaDBDictionary extends DBDictionary {
      */
     static int[] getMajorMinorVersions(String versionStr)
         throws IllegalArgumentException {
-        int beginIndex = 0;
-
         versionStr = versionStr.trim();
         if (versionStr.startsWith(COMPAT_VERSION_PREFIX)) {
-            versionStr = versionStr.substring(COMPAT_VERSION_PREFIX.length()).trim();
+            versionStr = versionStr.substring(COMPAT_VERSION_PREFIX.length());
         }
-        char[] charArr = versionStr.toCharArray();
-        for (int i = 0; i < charArr.length; i++) {
-            if (Character.isDigit(charArr[i])) {
-                beginIndex = i;
-                break;
-            }
-        }
-
-        int endIndex = charArr.length;
-        for (int i = beginIndex+1; i < charArr.length; i++) {
-            if (charArr[i] != '.' && !Character.isDigit(charArr[i])) {
-                endIndex = i;
-                break;
-            }
-        }
-
-        String[] arr = versionStr.substring(beginIndex, endIndex).split("\\.");
-        if (arr.length < 2)
-            throw new IllegalArgumentException();
-
-        int maj = Integer.parseInt(arr[0]);
-        int min = Integer.parseInt(arr[1]);
-        return new int[]{maj, min};
-    }
-
-    @Override
-    public String[] getCreateTableSQL(Table table) {
-        String[] sql = super.getCreateTableSQL(table);
-        if (!StringUtil.isEmpty(tableType))
-            sql[0] = sql[0] + " ENGINE = " + tableType;
-        return sql;
-    }
-
-    @Override
-    public String[] getDropIndexSQL(Index index) {
-        return new String[]{ "DROP INDEX " + getFullName(index) + " ON "
-            + getFullName(index.getTable(), false) };
-    }
-
-    /**
-     * Return <code>ALTER TABLE &lt;table name&gt; DROP PRIMARY KEY</code>.
-     */
-    @Override
-    public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
-        if (DBIdentifier.isNull(pk.getIdentifier()))
-            return new String[0];
-        return new String[]{ "ALTER TABLE "
-            + getFullName(pk.getTable(), false)
-            + " DROP PRIMARY KEY" };
-    }
-
-    /**
-     * Return <code>ALTER TABLE &lt;table name&gt; DROP FOREIGN KEY
-     * &lt;fk name&gt;</code>.
-     */
-    @Override
-    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
-        if (DBIdentifier.isNull(fk.getIdentifier())) {
-            DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
-            String[] retVal = (fkName == null) ?  new String[0] :
-                new String[]{ "ALTER TABLE "
-                + getFullName(fk.getTable(), false)
-                + " DROP FOREIGN KEY " + toDBName(fkName) };
-            return retVal;
-        }
-        return new String[]{ "ALTER TABLE "
-            + getFullName(fk.getTable(), false)
-            + " DROP FOREIGN KEY " + toDBName(fk.getIdentifier()) };
-    }
-
-    @Override
-    public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
-        String[] sql = super.getAddPrimaryKeySQL(pk);
-
-        // mysql requires that a column be declared NOT NULL before
-        // it can be made a primary key.
-        Column[] cols = pk.getColumns();
-        String[] ret = new String[cols.length + sql.length];
-        for (int i = 0; i < cols.length; i++) {
-            ret[i] = "ALTER TABLE " + getFullName(cols[i].getTable(), false)
-                + " CHANGE " + toDBName(cols[i].getIdentifier())
-                + " " + toDBName(cols[i].getIdentifier()) // name twice
-                + " " + getTypeName(cols[i]) + " NOT NULL";
-        }
-
-        System.arraycopy(sql, 0, ret, cols.length, sql.length);
-        return ret;
-    }
-
-    @Override
-    public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
-        // mysql >= 4 supports more-optimal delete syntax
-        if (!optimizeMultiTableDeletes)
-            return super.getDeleteTableContentsSQL(tables,conn);
-        else {
-            StringBuilder buf = new StringBuilder(tables.length * 8);
-            buf.append("DELETE FROM ");
-            for (int i = 0; i < tables.length; i++) {
-                buf.append(toDBName(tables[i].getFullIdentifier()));
-                if (i < tables.length - 1)
-                    buf.append(", ");
-            }
-            return new String[] { buf.toString() };
-        }
-    }
-
-    @Override
-    protected void appendSelectRange(SQLBuffer buf, long start, long end,
-        boolean subselect) {
-        buf.append(" LIMIT ").appendValue(start).append(", ");
-        if (end == Long.MAX_VALUE)
-            buf.appendValue(Long.MAX_VALUE);
-        else
-            buf.appendValue(end - start);
-    }
-
-    @Override
-    protected Column newColumn(ResultSet colMeta)
-        throws SQLException {
-        Column col = super.newColumn(colMeta);
-        if (col.isNotNull() && "0".equals(col.getDefaultString()))
-            col.setDefaultString(null);
-        return col;
-    }
-
-    @Override
-    public Object getBlobObject(ResultSet rs, int column, JDBCStore store)
-        throws SQLException {
-        // if the user has set a get-blob strategy explicitly or the driver
-        // does not automatically deserialize, delegate to super
-        if (useGetBytesForBlobs || useGetObjectForBlobs || !driverDeserializesBlobs)
-            return super.getBlobObject(rs, column, store);
-
-        // most mysql drivers deserialize on getObject
-        return rs.getObject(column);
+        return parseMajorMinorVersions(versionStr);
     }
 
     /**
@@ -622,87 +414,6 @@ public class MariaDBDictionary extends DBDictionary {
     }
 
     @Override
-    public int getPreferredType(int type) {
-        if (type == Types.CLOB && !useClobs) {
-            return Types.LONGVARCHAR;
-        }
-        else if (type == Types.TIME_WITH_TIMEZONE) {
-            // MariaDB doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
-            return Types.TIME;
-        }
-        else if (type == Types.TIMESTAMP_WITH_TIMEZONE) {
-            // MariaDB doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
-            return Types.TIMESTAMP;
-        }
-
-        return super.getPreferredType(type);
-    }
-
-    /**
-     * Append XML comparison.
-     *
-     * @param buf the SQL buffer to write the comparison
-     * @param op the comparison operation to perform
-     * @param lhs the left hand side of the comparison
-     * @param rhs the right hand side of the comparison
-     * @param lhsxml indicates whether the left operand maps to XML
-     * @param rhsxml indicates whether the right operand maps to XML
-     */
-    @Override
-    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
-        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
-        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
-        if (lhsxml)
-            appendXmlValue(buf, lhs);
-        else
-            lhs.appendTo(buf);
-        buf.append(" ").append(op).append(" ");
-        if (rhsxml)
-            appendXmlValue(buf, rhs);
-        else
-            rhs.appendTo(buf);
-    }
-
-    /**
-     * Append XML column value so that it can be used in comparisons.
-     *
-     * @param buf the SQL buffer to write the value
-     * @param val the value to be written
-     */
-    private void appendXmlValue(SQLBuffer buf, FilterValue val) {
-        buf.append("ExtractValue(").
-            append(val.getColumnAlias(val.getFieldMapping().getColumns()[0])).
-            append(",'/*/");
-        val.appendTo(buf);
-        buf.append("')");
-    }
-
-    /**
-     * Check to see if we have set the {@link #SELECT_HINT} in the
-     * fetch configuration, and if so, append the MySQL hint after the
-     * "SELECT" part of the query.
-     */
-    @Override
-    public String getSelectOperation(JDBCFetchConfiguration fetch) {
-        Object hint = fetch == null ? null : fetch.getHint(SELECT_HINT);
-        String select = "SELECT";
-        if (hint != null)
-            select += " " + hint;
-        return select;
-    }
-
-    @Override
-    protected Collection<String> getSelectTableAliases(Select sel) {
-        Set<String> result = new HashSet<>();
-        List<String> selects = sel.getIdentifierAliases();
-        for (String s : selects) {
-            String tableAlias = s.substring(0, s.indexOf('.'));
-            result.add(tableAlias);
-        }
-        return result;
-    }
-
-    @Override
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
         int state = super.matchErrorState(errorStates, ex);
 
@@ -727,113 +438,10 @@ public class MariaDBDictionary extends DBDictionary {
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;
         }
-        if (ex.getErrorCode() == 0 && ex.getSQLState() == null)
+        if (ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             return false;
+        }
         return super.isFatalException(subtype, ex);
-    }
-
-    /**
-     * The largest precision of a decimal column on MariaDB.
-     */
-    private static final int MAX_DECIMAL_PRECISION = 65;
-
-    /**
-     * The largest scale of a decimal column on MariaDB.
-     */
-    private static final int MAX_DECIMAL_SCALE = 38;
-
-    /**
-     * The scale of an unsized decimal column. MariaDB allows a scale of 38,
-     * 30 is the largest scale MySQL allows and keeps the DDL the same on both.
-     */
-    private static final int UNSIZED_DECIMAL_SCALE = 30;
-
-    /**
-     * OPENJPA-740 Special case for MySql special column types,
-     * like LONGTEXT, LONGBLOG etc..
-     * @see org.apache.openjpa.jdbc.sql.DBDictionary#getTypeName(org.apache.openjpa.jdbc.schema.Column)
-     */
-    @Override
-    public String getTypeName(Column col) {
-        // handle blobs differently, if the DBItentifierType is NULL (e.g. no column definition is set).
-        if (col.getType() == Types.BLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
-            if (col.getSize() <= 0)   // unknown size
-                return blobTypeName;  // return old default of 64KB
-            else if (col.getSize() <= 255)
-                return tinyBlobTypeName;
-            else if (col.getSize() <= 65535)
-                return blobTypeName;  // old default of 64KB
-            else if (col.getSize() <= 16777215)
-                return mediumBlobTypeName;
-            else
-                return longBlobTypeName;
-        } else if (col.getType() == Types.CLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
-            if (col.getSize() <= 0)   // unknown size
-                return clobTypeName;  // return old default of 64KB
-            else if (col.getSize() <= 255)
-                return tinyTextTypeName;
-            else if (col.getSize() <= 65535)
-                return clobTypeName;  // old default of 64KB
-            else if (col.getSize() <= 16777215)
-                return mediumTextTypeName;
-            else
-                return longTextTypeName;
-        } else if (isUnsizedDecimal(col)) {
-            return getUnsizedDecimalTypeName(col);
-        } else {
-            return super.getTypeName(col);
-        }
-    }
-
-    /**
-     * MariaDB reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code> as
-     * <code>DECIMAL(10,0)</code>, which rounds every value to an integer. A
-     * decimal column of a non integral Java type without a precision is
-     * created with the largest precision and the given scale, or a scale of
-     * 30 if none is given, so that the fraction of the value is kept. A scale
-     * above 38, which MariaDB rejects, is lowered to 38. A
-     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
-     * user is kept.
-     */
-    private String getUnsizedDecimalTypeName(Column col) {
-        String typeName = getTypeName(col.getType());
-        if (!"NUMERIC".equalsIgnoreCase(typeName) && !"DECIMAL".equalsIgnoreCase(typeName)) {
-            return super.getTypeName(col);
-        }
-        int scale = col.getDecimalDigits() > 0
-            ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
-        return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
-    }
-
-    @Override
-    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
-        FilterValue start) {
-        buf.append("LOCATE(");
-        find.appendTo(buf);
-        buf.append(", ");
-        str.appendTo(buf);
-        if (start != null) {
-            buf.append(", ");
-            start.appendTo(buf);
-        }
-        buf.append(")");
-    }
-
-    /**
-     * MariaDB / MySQL do not support ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
-     * Emulate via an auxiliary {@code &lt;expr&gt; IS NULL} sort key.
-     * <p>
-     * MariaDB's default NULL ordering places NULLs before non-NULLs when
-     * sorting ASC and after non-NULLs when sorting DESC. When the requested
-     * precedence already matches that default, nothing extra is emitted.
-     * Otherwise the last order term {@code &lt;expr&gt; ASC|DESC} is rewritten
-     * to {@code &lt;expr&gt; IS NULL &lt;sort&gt;, &lt;expr&gt; ASC|DESC}.
-     */
-    @Override
-    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
-        final String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST) ? "DESC" : "ASC";
-        emulateNullsPrecedence(ordering, nullPrecedence,
-                expr -> expr + " IS NULL " + nullSort + ", " + expr);
     }
 
     @Override
@@ -846,15 +454,5 @@ public class MariaDBDictionary extends DBDictionary {
         val = new Time(date.getTime());
 
         super.setTime(stmnt, idx, val, cal, col);
-    }
-
-    /**
-     * MariaDB Connector/J translates a JDBC escaped date-time literal into a string literal,
-     * so that COALESCE or CASE with a date-time column has a string result. A SQL
-     * standard typed literal keeps the date-time type.
-     */
-    @Override
-    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
-        return toTypedDateTimeLiteral(escape, parseType);
     }
 }

@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -41,6 +42,15 @@ import org.junit.Test;
  * form stays available with <code>ConstraintNameMode=mid</code>.
  */
 public class TestMySQLConstraintNames {
+
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @After
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testMySQLNamedConstraints() {

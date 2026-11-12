@@ -18,37 +18,17 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
-import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStore;
-import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.kernel.exps.DateTimeExtractField;
-import org.apache.openjpa.kernel.exps.QueryExpressions;
-import org.apache.openjpa.jdbc.schema.ForeignKey;
-import org.apache.openjpa.jdbc.schema.Index;
-import org.apache.openjpa.jdbc.schema.PrimaryKey;
-import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.StoreException;
 
@@ -56,7 +36,7 @@ import org.apache.openjpa.util.StoreException;
  * Dictionary for MySQL.
  */
 public class MySQLDictionary
-    extends DBDictionary {
+    extends AbstractMySQLDictionary {
 
     /**
      * The replication driver of Connector/J 5, removed in Connector/J 8.
@@ -81,89 +61,56 @@ public class MySQLDictionary
 
     public static final String SELECT_HINT = "openjpa.hint.MySQLSelectHint";
 
-    public static final String DELIMITER_BACK_TICK = "`";
+    /**
+     * The words that MySQL 8.0 and later reserve and that are missing from
+     * the generated list of invalid column words: those that came with window
+     * functions, common table expressions, <code>JSON_TABLE</code>,
+     * <code>LATERAL</code>, <code>QUALIFY</code> and
+     * <code>TABLESAMPLE</code>, <code>EXTERNAL</code> and <code>LIBRARY</code>
+     * of MySQL 9, and some that MySQL 5.7 reserved already
+     * (OPENJPA-3074). Taken from <code>INFORMATION_SCHEMA.KEYWORDS</code> of
+     * MySQL 8.4 and 9.7. They are reserved words as well, which this
+     * dictionary delimits in table and column names.
+     */
+    private static final List<String> UPDATED_RESERVED_WORDS = List.of(
+        "ACCESSIBLE", "CUBE", "CUME_DIST", "DENSE_RANK", "EMPTY", "EXCEPT", "EXTERNAL", "FIRST_VALUE",
+        "FUNCTION", "GROUPING", "GROUPS", "INTERSECT", "IO_AFTER_GTIDS", "IO_BEFORE_GTIDS", "JSON_TABLE",
+        "LAG", "LAST_VALUE", "LATERAL", "LEAD", "LIBRARY", "LINEAR", "NTH_VALUE", "OF", "OPTIMIZER_COSTS",
+        "OVER", "PERCENT_RANK", "QUALIFY", "RANK", "READ_WRITE", "RECURSIVE", "ROW", "ROW_NUMBER", "ROWS",
+        "STORED", "SYSTEM", "TABLESAMPLE", "VIRTUAL", "WINDOW");
 
     /**
-     * The MySQL table type to use when creating tables; defaults to innodb.
+     * The invalid column words that MySQL reserves and that are missing from
+     * the reserved words, so that a table, rather than a column, named after
+     * one of them failed to be created (OPENJPA-3074). Taken from
+     * <code>INFORMATION_SCHEMA.KEYWORDS</code> of MySQL 8.4 and 9.7, and
+     * checked with an unquoted <code>CREATE TABLE</code>. They are reserved
+     * words now, which this dictionary delimits in table and column names.
      */
-    public String tableType = "innodb";
+    private static final List<String> UPDATED_RESERVED_TABLE_WORDS = List.of(
+        "ANALYZE", "ASENSITIVE", "BEFORE", "BIGINT", "CALL", "CONDITION", "DATABASE", "DATABASES", "DAY_HOUR",
+        "DAY_MICROSECOND", "DAY_MINUTE", "DAY_SECOND", "DELAYED", "DETERMINISTIC", "DISTINCTROW", "DIV", "DUAL",
+        "EACH", "ELSEIF", "ENCLOSED", "ESCAPED", "EXIT", "EXPLAIN", "FLOAT8", "FORCE", "FULLTEXT", "GENERATED",
+        "HIGH_PRIORITY", "HOUR_MICROSECOND", "HOUR_MINUTE", "HOUR_SECOND", "IF", "IGNORE", "INOUT", "INT3", "INT8",
+        "ITERATE", "KEYS", "KILL", "LEAVE", "LIMIT", "LINES", "LOCALTIME", "LOCALTIMESTAMP", "LOCK", "LONG",
+        "LONGBLOB", "LONGTEXT", "LOOP", "LOW_PRIORITY", "MAXVALUE", "MEDIUMBLOB", "MEDIUMTEXT", "MIDDLEINT",
+        "MINUTE_MICROSECOND", "MINUTE_SECOND", "MOD", "MODIFIES", "NO_WRITE_TO_BINLOG", "NTILE", "OPTIMIZE",
+        "OPTIONALLY", "OUT", "PARTITION", "PURGE", "RANGE", "READS", "REGEXP", "RELEASE", "RENAME", "REPEAT",
+        "REQUIRE", "RESIGNAL", "RETURN", "RLIKE", "SCHEMAS", "SECOND_MICROSECOND", "SENSITIVE", "SEPARATOR", "SHOW",
+        "SIGNAL", "SPATIAL", "SPECIFIC", "SQLEXCEPTION", "SQLWARNING", "SQL_BIG_RESULT", "SQL_CALC_FOUND_ROWS",
+        "SQL_SMALL_RESULT", "SSL", "STRAIGHT_JOIN", "TERMINATED", "TINYBLOB", "TINYINT", "TINYTEXT", "TRIGGER",
+        "UNDO", "UNLOCK", "USE", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VARBINARY", "VARCHARACTER", "WHILE",
+        "XOR", "YEAR_MONTH");
 
     /**
-     * Whether to use clobs; defaults to true. Set this to false if you have an
-     * old version of MySQL which does not handle clobs properly.
+     * The largest scale of a decimal column on MySQL.
      */
-    public boolean useClobs = true;
-
-    /**
-     * Whether the driver automatically deserializes blobs.
-     */
-    public boolean driverDeserializesBlobs = false;
-
-    /**
-     * Whether to inline multi-table bulk-delete operations into MySQL's
-     * combined <code>DELETE FROM foo, bar, baz</code> syntax.
-     * Defaults to false, since this may fail in the presence of InnoDB tables
-     * with foreign keys.
-     * @link http://dev.mysql.com/doc/refman/5.0/en/delete.html
-     */
-    public boolean optimizeMultiTableDeletes = false;
-
-    public static final String tinyBlobTypeName = "TINYBLOB";
-    public static final String mediumBlobTypeName = "MEDIUMBLOB";
-    public static final String longBlobTypeName = "LONGBLOB";
-    public static final String tinyTextTypeName = "TINYTEXT";
-    public static final String mediumTextTypeName = "MEDIUMTEXT";
-    public static final String longTextTypeName = "LONGTEXT";
+    private static final int MAX_DECIMAL_SCALE = 30;
 
     public MySQLDictionary() {
         platform = "MySQL";
-        validationSQL = "SELECT NOW()";
-        distinctCountColumnSeparator = ",";
-
-        supportsDeferredConstraints = false;
-        // CONSTRAINT <name> FOREIGN KEY / UNIQUE (...): since MySQL 8.0.16 the name in
-        // FOREIGN KEY <name> (...) only names the backing index and the constraint gets
-        // a generated <table>_ibfk_<n> name, so a later DROP FOREIGN KEY <name> fails.
-        // Note that FK constraint names must be unique per database, not per table.
-        constraintNameMode = CONS_NAME_BEFORE;
-        supportsMultipleNontransactionalResultSets = false;
-        requiresAliasForSubselect = true; // new versions
-        requiresTargetForDelete = true;
         allowsBulkTargetInSubselect = false;
-        supportsSelectStartIndex = true;
-        supportsSelectEndIndex = true;
-
-        datePrecision = MICRO;
-
-        concatenateFunction = "CONCAT({0},{1})";
-
-        maxTableNameLength = 64;
-        maxColumnNameLength = 64;
-        maxIndexNameLength = 64;
-        maxConstraintNameLength = 64;
-        maxIndexesPerTable = 32;
-        schemaCase = SCHEMA_CASE_PRESERVE;
-
-        supportsAutoAssign = true;
-        lastGeneratedKeyQuery = "SELECT LAST_INSERT_ID()";
-        autoAssignClause = "AUTO_INCREMENT";
-
-        clobTypeName = "TEXT";
-        longVarcharTypeName = "TEXT";
-        longVarbinaryTypeName = "LONG VARBINARY";
-        timestampTypeName = "DATETIME";
-        xmlTypeName = "TEXT";
-        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BOOL", "LONG VARBINARY", "MEDIUMBLOB", "LONGBLOB",
-            "TINYBLOB", "LONG VARCHAR", "MEDIUMTEXT", "LONGTEXT", "TEXT",
-            "TINYTEXT", "DOUBLE PRECISION", "ENUM", "SET", "DATETIME", "JSON",
-        }));
-        reservedWordSet.addAll(Arrays.asList(new String[]{
-            "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
-            "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
-            "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED",
-            "ZEROFILL", "INDEX", "LIBRARY"
-        }));
+        reservedWordSet.add("LIBRARY");
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
@@ -195,74 +142,20 @@ public class MySQLDictionary
             // we still add them for compat reasons
             "INDEX", "SELECT"
         }));
+        addUpdatedReservedWords(UPDATED_RESERVED_WORDS);
+        addUpdatedReservedTableWords(UPDATED_RESERVED_TABLE_WORDS);
 
-        requiresSearchStringEscapeForLike = true;
-
-        // MySQL rejects ESCAPE '' when sql_mode contains
-        // NO_BACKSLASH_ESCAPES, and MariaDB ignores it altogether, so "no
-        // escape character" is spelled with a character that cannot occur in
-        // a pattern (OPENJPA-3009)
-        searchStringNoEscape = "CHAR(0)";
-
-        // MySQL requires double-escape for strings
-        searchStringEscape = "\\\\";
-
-        // a backslash in a string literal is an escape character unless
-        // sql_mode contains NO_BACKSLASH_ESCAPES. The sql_mode is not checked,
-        // because a session can change it at any time; a value with a
-        // backslash is bound as a parameter instead, which is correct either way
-        backslashEscapesInStringLiterals = true;
-
-        typeModifierSet.addAll(Arrays.asList(new String[] { "UNSIGNED", "ZEROFILL" }));
-
-        setLeadingDelimiter(DELIMITER_BACK_TICK);
-        setTrailingDelimiter(DELIMITER_BACK_TICK);
-
-        // the precision and scale of a decimal column are part of its DDL type,
-        // an unsized DECIMAL is DECIMAL(10,0) (OPENJPA-3062)
-        fixedSizeTypeNameSet.remove("NUMERIC");
-        fixedSizeTypeNameSet.remove("DECIMAL");
-
-        dateFractionDigits = 0;
-        supportsUnsizedCharOnCast = false;
         integerCastTypeName = "SIGNED";
-        // MySQL has no BIGINT cast target; SIGNED [INTEGER] yields a 64 bit signed value
-        longCastTypeName = "SIGNED";
-        // MySql supports CHAR data type
-        storeCharsAsNumbers = isStoreCharsAsNumbersExplicit();
-    }
-
-    /**
-     * EXTRACT(WEEK) counts weeks from Sunday; mode 3 of WEEK gives the ISO week
-     * that JPA defines. EXTRACT(SECOND) returns the whole seconds only; the
-     * fraction of the second that JPA includes is added from
-     * EXTRACT(MICROSECOND).
-     */
-    @Override
-    public String getExtractDateTimeFieldFunction(DateTimeExtractField extField) {
-        if (extField == DateTimeExtractField.WEEK) {
-            return "WEEK({1}, 3)";
-        }
-        if (extField == DateTimeExtractField.SECOND) {
-            return "(" + super.getExtractDateTimeFieldFunction(extField) + " + "
-                + extractDateTimeFieldFunction.replace("{0}", "MICROSECOND") + " / 1000000.0)";
-        }
-        return super.getExtractDateTimeFieldFunction(extField);
-    }
-
-    /**
-     * {@link java.sql.Time} has no fraction of a second, so a {@link LocalTime}
-     * is passed to and read from the driver as it is, keeping the fraction that
-     * a <code>TIME(6)</code> column or <code>EXTRACT(SECOND)</code> holds.
-     */
-    @Override
-    public void setLocalTime(PreparedStatement stmnt, int idx, LocalTime val, Column col) throws SQLException {
-        stmnt.setObject(idx, val);
     }
 
     @Override
-    public LocalTime getLocalTime(ResultSet rs, int column) throws SQLException {
-        return rs.getObject(column, LocalTime.class);
+    protected String getSelectHint() {
+        return SELECT_HINT;
+    }
+
+    @Override
+    protected int getMaxDecimalScale() {
+        return MAX_DECIMAL_SCALE;
     }
 
     @Override
@@ -279,14 +172,15 @@ public class MySQLDictionary
             try {
                 // The product version looks like 4.1.3-nt or 5.1.30
                 String productVersion = metaData.getDatabaseProductVersion();
-                int[] versions = getMajorMinorVersions(productVersion);
+                int[] versions = parseMajorMinorVersions(productVersion);
                 maj = versions[0];
                 min = versions[1];
             } catch (IllegalArgumentException e) {
                 // we don't understand the version format.
                 // That is ok. We just take the default values.
-                if (log.isWarnEnabled())
+                if (log.isWarnEnabled()) {
                     log.warn(e.toString(), e);
+                }
             }
         }
         if (maj < 4 || (maj == 4 && min < 1)) {
@@ -299,17 +193,7 @@ public class MySQLDictionary
         }
         if (maj > 5 || (maj == 5 && min >= 7)) {
             // from this version on MySQL supports fractions of a second
-            timestampTypeName = "DATETIME{0}";
-            fixedSizeTypeNameSet.remove(timestampTypeName);
-            fractionalTypeNameSet.add(timestampTypeName);
-
-            // Request microsecond precision for temporal columns so @Version
-            // Instant/LocalDateTime can detect concurrent updates within a
-            // single whole second. Matches PostgreSQL/Derby defaults.
-            dateFractionDigits = 6;
-
-            timeTypeName = "TIME{0}";
-            fractionalTypeNameSet.add(timeTypeName);
+            useFractionalSecondTemporalTypes();
         }
 
         if (metaData.getDriverMajorVersion() < 5) {
@@ -393,241 +277,18 @@ public class MySQLDictionary
         return types;
     }
 
-    private static int[] getMajorMinorVersions(String versionStr)
-        throws IllegalArgumentException {
-        int beginIndex = 0;
-
-        versionStr = versionStr.trim();
-        char[] charArr = versionStr.toCharArray();
-        for (int i = 0; i < charArr.length; i++) {
-            if (Character.isDigit(charArr[i])) {
-                beginIndex = i;
-                break;
-            }
-        }
-
-        int endIndex = charArr.length;
-        for (int i = beginIndex+1; i < charArr.length; i++) {
-            if (charArr[i] != '.' && !Character.isDigit(charArr[i])) {
-                endIndex = i;
-                break;
-            }
-        }
-
-        String[] arr = versionStr.substring(beginIndex, endIndex).split("\\.");
-        if (arr.length < 2)
-            throw new IllegalArgumentException();
-
-        int maj = Integer.parseInt(arr[0]);
-        int min = Integer.parseInt(arr[1]);
-        return new int[]{maj, min};
-    }
-
-    @Override
-    protected void configureNamingRules() {
-        super.configureNamingRules();
-        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-        rule.setDelimitReservedWords(true);
-        rule.setReservedWords(reservedWordSet);
-    }
-
-    @Override
-    public String[] getCreateTableSQL(Table table) {
-        String[] sql = super.getCreateTableSQL(table);
-        if (!StringUtil.isEmpty(tableType))
-            sql[0] = sql[0] + " ENGINE = " + tableType;
-        return sql;
-    }
-
-    @Override
-    public String[] getDropIndexSQL(Index index) {
-        return new String[]{ "DROP INDEX " + getFullName(index) + " ON "
-            + getFullName(index.getTable(), false) };
-    }
-
     /**
-     * Return <code>ALTER TABLE &lt;table name&gt; DROP PRIMARY KEY</code>.
+     * MySQL delimits a name that is a reserved word, also under the
+     * compatibility option <code>UpdatedReservedWords=false</code>.
      */
     @Override
-    public String[] getDropPrimaryKeySQL(PrimaryKey pk) {
-        if (DBIdentifier.isNull(pk.getIdentifier()))
-            return new String[0];
-        return new String[]{ "ALTER TABLE "
-            + getFullName(pk.getTable(), false)
-            + " DROP PRIMARY KEY" };
-    }
-
-    /**
-     * Return <code>ALTER TABLE &lt;table name&gt; DROP FOREIGN KEY
-     * &lt;fk name&gt;</code>.
-     */
-    @Override
-    public String[] getDropForeignKeySQL(ForeignKey fk, Connection conn) {
-        if (DBIdentifier.isNull(fk.getIdentifier())) {
-            DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
-            String[] retVal = (fkName == null) ?  new String[0] :
-                new String[]{ "ALTER TABLE "
-                + getFullName(fk.getTable(), false)
-                + " DROP FOREIGN KEY " + toDBName(fkName) };
-            return retVal;
-        }
-        return new String[]{ "ALTER TABLE "
-            + getFullName(fk.getTable(), false)
-            + " DROP FOREIGN KEY " + toDBName(fk.getIdentifier()) };
-    }
-
-    @Override
-    public String[] getAddPrimaryKeySQL(PrimaryKey pk) {
-        String[] sql = super.getAddPrimaryKeySQL(pk);
-
-        // mysql requires that a column be declared NOT NULL before
-        // it can be made a primary key.
-        Column[] cols = pk.getColumns();
-        String[] ret = new String[cols.length + sql.length];
-        for (int i = 0; i < cols.length; i++) {
-            ret[i] = "ALTER TABLE " + getFullName(cols[i].getTable(), false)
-                + " CHANGE " + toDBName(cols[i].getIdentifier())
-                + " " + toDBName(cols[i].getIdentifier()) // name twice
-                + " " + getTypeName(cols[i]) + " NOT NULL";
-        }
-
-        System.arraycopy(sql, 0, ret, cols.length, sql.length);
-        return ret;
-    }
-
-    @Override
-    public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
-        // mysql >= 4 supports more-optimal delete syntax
-        if (!optimizeMultiTableDeletes)
-            return super.getDeleteTableContentsSQL(tables,conn);
-        else {
-            StringBuilder buf = new StringBuilder(tables.length * 8);
-            buf.append("DELETE FROM ");
-            for (int i = 0; i < tables.length; i++) {
-                buf.append(toDBName(tables[i].getFullIdentifier()));
-                if (i < tables.length - 1)
-                    buf.append(", ");
-            }
-            return new String[] { buf.toString() };
-        }
-    }
-
-    @Override
-    protected void appendSelectRange(SQLBuffer buf, long start, long end,
-        boolean subselect) {
-        buf.append(" LIMIT ").appendValue(start).append(", ");
-        if (end == Long.MAX_VALUE)
-            buf.appendValue(Long.MAX_VALUE);
-        else
-            buf.appendValue(end - start);
-    }
-
-    @Override
-    protected Column newColumn(ResultSet colMeta)
-        throws SQLException {
-        Column col = super.newColumn(colMeta);
-        if (col.isNotNull() && "0".equals(col.getDefaultString()))
-            col.setDefaultString(null);
-        return col;
-    }
-
-    @Override
-    public Object getBlobObject(ResultSet rs, int column, JDBCStore store)
-        throws SQLException {
-        // if the user has set a get-blob strategy explicitly or the driver
-        // does not automatically deserialize, delegate to super
-        if (useGetBytesForBlobs || useGetObjectForBlobs || !driverDeserializesBlobs)
-            return super.getBlobObject(rs, column, store);
-
-        // most mysql drivers deserialize on getObject
-        return rs.getObject(column);
-    }
-
-    @Override
-    public int getPreferredType(int type) {
-        if (type == Types.CLOB && !useClobs) {
-            return Types.LONGVARCHAR;
-        }
-        else if (type == Types.TIME_WITH_TIMEZONE) {
-            // MySQL doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
-            return Types.TIME;
-        }
-        else if (type == Types.TIMESTAMP_WITH_TIMEZONE) {
-            // MySQL doesn't support SQL-2003 'WITH TIMEZONE' nor the respective JDBC types.
-            return Types.TIMESTAMP;
-        }
-
-        return super.getPreferredType(type);
-    }
-
-
-    /**
-     * Append XML comparison.
-     *
-     * @param buf the SQL buffer to write the comparison
-     * @param op the comparison operation to perform
-     * @param lhs the left hand side of the comparison
-     * @param rhs the right hand side of the comparison
-     * @param lhsxml indicates whether the left operand maps to XML
-     * @param rhsxml indicates whether the right operand maps to XML
-     */
-    @Override
-    public void appendXmlComparison(SQLBuffer buf, String op, FilterValue lhs,
-        FilterValue rhs, boolean lhsxml, boolean rhsxml) {
-        super.appendXmlComparison(buf, op, lhs, rhs, lhsxml, rhsxml);
-        if (lhsxml)
-            appendXmlValue(buf, lhs);
-        else
-            lhs.appendTo(buf);
-        buf.append(" ").append(op).append(" ");
-        if (rhsxml)
-            appendXmlValue(buf, rhs);
-        else
-            rhs.appendTo(buf);
-    }
-
-    /**
-     * Append XML column value so that it can be used in comparisons.
-     *
-     * @param buf the SQL buffer to write the value
-     * @param val the value to be written
-     */
-    private void appendXmlValue(SQLBuffer buf, FilterValue val) {
-        buf.append("ExtractValue(").
-            append(val.getColumnAlias(val.getFieldMapping().getColumns()[0])).
-            append(",'/*/");
-        val.appendTo(buf);
-        buf.append("')");
+    protected boolean delimitsReservedWords() {
+        return true;
     }
 
     @Override
     public int getBatchFetchSize(int batchFetchSize) {
         return Integer.MIN_VALUE;
-    }
-
-    /**
-     * Check to see if we have set the {@link #SELECT_HINT} in the
-     * fetch configuration, and if so, append the MySQL hint after the
-     * "SELECT" part of the query.
-     */
-    @Override
-    public String getSelectOperation(JDBCFetchConfiguration fetch) {
-        Object hint = fetch == null ? null : fetch.getHint(SELECT_HINT);
-        String select = "SELECT";
-        if (hint != null)
-            select += " " + hint;
-        return select;
-    }
-
-    @Override
-    protected Collection<String> getSelectTableAliases(Select sel) {
-        Set<String> result = new HashSet<>();
-        List<String> selects = sel.getIdentifierAliases();
-        for (String s : selects) {
-            String tableAlias = s.substring(0, s.indexOf('.'));
-            result.add(tableAlias);
-        }
-        return result;
     }
 
     @Override
@@ -638,8 +299,8 @@ public class MySQLDictionary
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
             if (sqle != null
-            		&& (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException") ||
-            				sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
+                && (sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")
+                    || sqle.toString().startsWith("com.mysql.cj.jdbc.exceptions.MySQLTimeoutException"))) {
                 if (conf != null && conf.getLockTimeout() != -1) {
                     state = StoreException.LOCK;
                 } else {
@@ -656,121 +317,9 @@ public class MySQLDictionary
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;
         }
-        if (ex.getErrorCode() == 0 && ex.getSQLState() == null)
+        if (ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             return false;
+        }
         return super.isFatalException(subtype, ex);
-    }
-
-    /**
-     * The largest precision of a decimal column on MySQL.
-     */
-    private static final int MAX_DECIMAL_PRECISION = 65;
-
-    /**
-     * The largest scale of a decimal column on MySQL.
-     */
-    private static final int MAX_DECIMAL_SCALE = 30;
-
-    /**
-     * The scale of an unsized decimal column, the largest scale MySQL allows.
-     */
-    private static final int UNSIZED_DECIMAL_SCALE = MAX_DECIMAL_SCALE;
-
-    /**
-     * OPENJPA-740 Special case for MySql special column types,
-     * like LONGTEXT, LONGBLOG etc..
-     * @see org.apache.openjpa.jdbc.sql.DBDictionary#getTypeName(org.apache.openjpa.jdbc.schema.Column)
-     */
-    @Override
-    public String getTypeName(Column col) {
-        // handle blobs differently, if the DBItentifierType is NULL (e.g. no column definition is set).
-        if (col.getType() == Types.BLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
-            if (col.getSize() <= 0)   // unknown size
-                return blobTypeName;  // return old default of 64KB
-            else if (col.getSize() <= 255)
-                return tinyBlobTypeName;
-            else if (col.getSize() <= 65535)
-                return blobTypeName;  // old default of 64KB
-            else if (col.getSize() <= 16777215)
-                return mediumBlobTypeName;
-            else
-                return longBlobTypeName;
-        } else if (col.getType() == Types.CLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
-            if (col.getSize() <= 0)   // unknown size
-                return clobTypeName;  // return old default of 64KB
-            else if (col.getSize() <= 255)
-                return tinyTextTypeName;
-            else if (col.getSize() <= 65535)
-                return clobTypeName;  // old default of 64KB
-            else if (col.getSize() <= 16777215)
-                return mediumTextTypeName;
-            else
-                return longTextTypeName;
-        } else if (isUnsizedDecimal(col)) {
-            return getUnsizedDecimalTypeName(col);
-        } else {
-            return super.getTypeName(col);
-        }
-    }
-
-    /**
-     * MySQL reads an unsized <code>NUMERIC</code> or <code>DECIMAL</code> as
-     * <code>DECIMAL(10,0)</code>, which rounds every value to an integer. A
-     * decimal column of a non integral Java type without a precision is
-     * created with the largest precision and the given scale, or a scale of
-     * 30 if none is given, so that the fraction of the value is kept. A scale
-     * above 30, which MySQL rejects, is lowered to 30. A
-     * <code>NumericTypeName</code> or <code>DecimalTypeName</code> set by the
-     * user is kept.
-     */
-    private String getUnsizedDecimalTypeName(Column col) {
-        String typeName = getTypeName(col.getType());
-        if (!"NUMERIC".equalsIgnoreCase(typeName) && !"DECIMAL".equalsIgnoreCase(typeName)) {
-            return super.getTypeName(col);
-        }
-        int scale = col.getDecimalDigits() > 0
-            ? Math.min(col.getDecimalDigits(), MAX_DECIMAL_SCALE) : UNSIZED_DECIMAL_SCALE;
-        return typeName + "(" + MAX_DECIMAL_PRECISION + ", " + scale + ")";
-    }
-
-    @Override
-    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
-        FilterValue start) {
-        buf.append("LOCATE(");
-        find.appendTo(buf);
-        buf.append(", ");
-        str.appendTo(buf);
-        if (start != null) {
-            buf.append(", ");
-            start.appendTo(buf);
-        }
-        buf.append(")");
-    }
-
-    /**
-     * MySQL / MariaDB do not support ANSI SQL {@code NULLS FIRST} / {@code NULLS LAST}.
-     * Emulate via an auxiliary {@code &lt;expr&gt; IS NULL} sort key.
-     * <p>
-     * MySQL's default NULL ordering places NULLs before non-NULLs when sorting
-     * ASC and after non-NULLs when sorting DESC. When the requested precedence
-     * already matches that default, nothing extra is emitted. Otherwise the
-     * last order term {@code &lt;expr&gt; ASC|DESC} is rewritten to
-     * {@code &lt;expr&gt; IS NULL &lt;sort&gt;, &lt;expr&gt; ASC|DESC}.
-     */
-    @Override
-    public void appendNullsPrecedence(SQLBuffer ordering, int nullPrecedence) {
-        final String nullSort = (nullPrecedence == QueryExpressions.NULLS_FIRST) ? "DESC" : "ASC";
-        emulateNullsPrecedence(ordering, nullPrecedence,
-                expr -> expr + " IS NULL " + nullSort + ", " + expr);
-    }
-
-    /**
-     * Connector/J translates a JDBC escaped date-time literal into a string literal,
-     * so that COALESCE or CASE with a date-time column has a string result. A SQL
-     * standard typed literal keeps the date-time type.
-     */
-    @Override
-    public String toJDBCEscapedDateTimeLiteral(String escape, int parseType) {
-        return toTypedDateTimeLiteral(escape, parseType);
     }
 }

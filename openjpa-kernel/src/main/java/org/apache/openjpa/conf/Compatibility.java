@@ -87,6 +87,7 @@ public class Compatibility {
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
     private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
+    private boolean _updatedReservedWords = true; // OPENJPA-3074
 
     /**
      * Whether to require exact identity value types when creating object
@@ -1081,5 +1082,30 @@ public class Compatibility {
      */
     public void setResolveConverterTypeHierarchy(boolean b) {
         _resolveConverterTypeHierarchy = b;
+    }
+
+    /**
+     * Whether the dictionaries use the reserved words of the current database
+     * versions that were added in 4.2.0, and the naming that comes with them.
+     * Defaults to true. Set to false to keep the table and column names an
+     * earlier release generated, e.g. for a schema that is still used under
+     * its original names. Which words and names are affected is described by
+     * the dictionaries that honour this option, currently
+     * <code>MySQLDictionary</code> and <code>MariaDBDictionary</code>.
+     *
+     * @since 4.2.0
+     */
+    public boolean getUpdatedReservedWords() {
+        return _updatedReservedWords;
+    }
+
+    /**
+     * Whether the dictionaries use the reserved words of the current database
+     * versions that were added in 4.2.0.
+     *
+     * @since 4.2.0
+     */
+    public void setUpdatedReservedWords(boolean b) {
+        _updatedReservedWords = b;
     }
 }

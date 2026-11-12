@@ -614,7 +614,7 @@ They now use `Locale.ROOT` (``Locale.ENGLISH`` for reserved word matching). This
 ==== Reserved word handling and MySQL delimiting
 
 Reserved word detection is now case-insensitive for all dictionaries, so generated (defaulted) column, table and sequence names that equal a reserved word in a different case may now receive a `0` suffix. [class]``H2Dictionary`` additionally feeds its H2 2.x keyword list into the naming rules.
-On MySQL ([class]``MySQLDictionary``, not [class]``MariaDBDictionary``) reserved word identifiers are now automatically delimited with back-ticks in all generated SQL, so previously failing names such as ``KEY``, `TEXT` or `LIBRARY` work without manual delimiting.
+On MySQL ([class]``MySQLDictionary``) and on MariaDB ([class]``MariaDBDictionary``, see <<jpa_4.2_MySQLMariaDBReservedWords>>) reserved word identifiers are now automatically delimited with back-ticks in all generated SQL, so previously failing names such as ``KEY``, `TEXT` or `LIBRARY` work without manual delimiting.
 Tools comparing SQL text must ignore the delimiters.
 Use explicit ``@Table``/``@Column`` names if an old generated name must be kept.
 See <<ref_guide_dbsetup_dbsupport_delim_id>>.
@@ -726,6 +726,38 @@ The case that needs care is a server upgrade under 4.2.0.
 An application that ran on MariaDB 10.2 or earlier has its counters in ``OPENJPA_SEQUENCES_TABLE``; once the server is 10.3 or later the same generator is backed by a sequence object, which `openjpa.jdbc.SynchronizeMappings` or the schema tool creates starting at the generator's `initialValue` and which therefore hands out identifiers that are already in use.
 Before upgrading the server, either create each sequence with `START WITH` above the highest identifier in use, or keep the existing counter by declaring the generator's `sequenceName` as a `value-table(PrimaryKeyValue=...)` plugin string, which <<jpa_4.2_SequenceGeneratorWithoutSequences>> leaves alone.
 Emptying the dictionary's `NextSequenceQuery` does not pin the old backing store, because an empty value is normalised to none and then set again for a 10.3 server.
+
+[[jpa_4.2_MySQLMariaDBReservedWords]]
+==== Names that MySQL and MariaDB reserve
+
+[class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now know the words that the servers reserve, taken from MySQL 8.4 and 9.7 and from MariaDB 10.11 and 12.3:
+
+* On MySQL, the words that MySQL 8.0 and later reserve: those that came with window functions and common table expressions - `RANK`, ``DENSE_RANK``, ``ROW_NUMBER``, ``LAG``, ``LEAD``, ``GROUPS``, ``WINDOW``, ``OVER``, ``CUME_DIST``, ``PERCENT_RANK``, ``FIRST_VALUE``, ``LAST_VALUE``, ``NTH_VALUE``, `RECURSIVE` and others - as well as ``SYSTEM``, ``EMPTY``, ``JSON_TABLE``, ``LATERAL``, ``ROW``, ``FUNCTION``, ``QUALIFY``, ``TABLESAMPLE``, the `LIBRARY` of MySQL 9 and a few that MySQL 5.7 reserved already, such as `LINEAR` or ``VIRTUAL``.
+* On both, the words that the earlier lists knew as invalid column names only and that the servers reserve in a table name as well, such as ``DUAL``, ``KEYS``, ``LIMIT``, ``RANGE``, ``LOCK``, ``RELEASE``, ``SHOW``, ``USE`` or ``LONG``, and on MySQL ``NTILE``.
+* On MariaDB, the words of MySQL 8.0 that MariaDB reserves as well - ``ACCESSIBLE``, ``LINEAR``, `READ_WRITE` and `ROW_NUMBER` - and those that only MariaDB reserves, such as ``OFFSET``, ``RETURNING``, ``PORTION``, ``VECTOR``, `TO_DATE` or ``STATS_PERSISTENT``. In a table name also the names of built-in functions, such as ``NTILE``, ``RANK``, `NOW` or ``GROUP_CONCAT``, which MariaDB reserves under the `IGNORE_SPACE` SQL mode that MariaDB Connector/J sets for its connections: `CREATE TABLE Ntile (...)` fails there.
+
+Both dictionaries delimit a table, column or other name that is a reserved word with back ticks in the SQL they generate - MariaDB now as MySQL does since <<jpa_4.2_ReservedWords>> - and keep the name, also when it is given explicitly in ``@Table``, `@Column` or ``orm.xml``; [class]``MariaDBDictionary`` no longer appends a `0` to it.
+So the table of an entity named ``Window``, `Linear` or ``Dual``, or with an attribute ``rank``, `limit` or ``offset``, can be created, written to and queried; before, `CREATE TABLE` and `INSERT` failed with a syntax error.
+
+A schema that an earlier release created can be affected in two ways:
+
+* A name that got a `0` appended is now the delimited word itself: a column ``LIMIT0``, `RANGE0` or `KEYS0` on MySQL and MariaDB becomes ``limit``, `range` or ``keys``, and on MariaDB every name that is a reserved word changes alike, e.g. a column `ORDER0` becomes `order` and a table `USER0` becomes ``User``.
+The names built from such a name change the same way: the default join and collection tables and join columns, e.g. the join table `ORDER0_ITEMS` of an entity `Order` on MariaDB becomes `Order_items` and its join column `ORDER_ID` becomes ``Order_ID``, and on MySQL the join table `LINEAR_ITEMS` of an entity `Linear` becomes ``Linear_items``.
+The schema no longer matches the mapping: reading fails with an unknown column or table, and `openjpa.jdbc.SynchronizeMappings` adds the new column or table next to the old one.
+* A delimited name keeps the case it is given in, for a default table name that of the entity, e.g. ``Window``, where an undelimited default name is upper case, e.g. ``WINDOW``; so does a name built from it, e.g. ``Linear_items``.
+Column names are case insensitive on MySQL and MariaDB, but table names are case sensitive on a server with ``lower_case_table_names=0``, the default on Linux: there a table `WINDOW` that an earlier release created on MySQL 5.7 is not the table ``Window``.
+
+To keep the earlier names, set `openjpa.Compatibility=UpdatedReservedWords=false`:
+
+* On MariaDB this restores the reserved words and the naming of OpenJPA 4.1.x: no name is delimited, and a name that is a reserved word gets a `0` appended. The other 4.2 changes of <<jpa_4.2_ReservedWords>> and <<jpa_4.2_Locale>> still apply.
+* On MySQL it removes the words listed above, and a name that is such a word is generated as in 4.1.x: ``LIMIT0`` or `NTILE0` for a column, an undelimited `RANK` or ``WINDOW``, which MySQL 8.0 and later reject. The words that were reserved before are still delimited, see <<jpa_4.2_ReservedWords>>.
+
+Alternatively give a single name explicitly in the earlier form, e.g. `@Column(name = "LIMIT0")` or ``@Table(name = "WINDOW")``, which is delimited as given.
+
+The rule that delimits the reserved words is applied when an identifier is created and is shared by all persistence units of the JVM: the MySQL or MariaDB dictionary that was configured last sets it, and any other dictionary resets it, that of MariaDB under `UpdatedReservedWords=false` included.
+With persistence units on MySQL or MariaDB and on another database in the same JVM, a name may therefore be delimited on the other database, or not delimited on MySQL or MariaDB; give the names that are reserved words explicitly in that case.
+
+[class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now share their common code in the new [class]``AbstractMySQLDictionary``. Their public fields, such as ``TableType``, ``UseClobs``, `DriverDeserializesBlobs` and ``OptimizeMultiTableDeletes``, keep their names and defaults and are still set in <<openjpa.jdbc.DBDictionary>>; they are now declared by the superclass, which is only observable through reflection on the declared members of the two classes.
 
 [[jpa_4.2_SQLServer]]
 ==== Microsoft SQL Server

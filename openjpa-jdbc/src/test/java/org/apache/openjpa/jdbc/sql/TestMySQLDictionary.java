@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Proxy;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -39,11 +40,13 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.kernel.exps.Literal;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.jdbc.ConfiguringConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -51,6 +54,15 @@ public class TestMySQLDictionary {
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
+
+    /**
+     * Puts back the delimiting of reserved words that a configured MySQL or
+     * MariaDB dictionary sets for the whole JVM.
+     */
+    @After
+    public void tearDown() {
+        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
+    }
 
     @Test
     public void testDBDictionaryGetBatchFetchSize() throws Exception {
@@ -399,5 +411,141 @@ public class TestMySQLDictionary {
                     default -> throw new UnsupportedOperationException(method.getName());
                 };
             });
+    }
+
+    /**
+     * Before 5.7 MySQL has no fractions of a second in its temporal columns.
+     */
+    @Test
+    public void testWholeSecondTemporalTypesBefore57() throws Exception {
+        MySQLDictionary dict = newConfiguredDictionary();
+        dict.connectedConfiguration(connection(5, 6, "5.6.51", 8));
+        assertEquals("DATETIME", dict.timestampTypeName);
+        assertEquals("TIME", dict.timeTypeName);
+        assertEquals(0, dict.dateFractionDigits);
+        assertFalse(dict.fractionalTypeNameSet.contains("DATETIME{0}"));
+        assertFalse(dict.fractionalTypeNameSet.contains("TIME{0}"));
+        assertTrue(dict.supportsXMLColumn);
+        assertTrue(dict.supportsSubselect);
+        assertFalse(dict.driverDeserializesBlobs);
+    }
+
+    @Test
+    public void testFractionalSecondTemporalTypesFrom57() throws Exception {
+        for (int[] version : new int[][] { { 5, 7 }, { 8, 0 }, { 8, 4 } }) {
+            String name = version[0] + "." + version[1];
+            MySQLDictionary dict = newConfiguredDictionary();
+            dict.connectedConfiguration(connection(version[0], version[1], name + ".0", 8));
+            assertEquals(name, "DATETIME{0}", dict.timestampTypeName);
+            assertEquals(name, "TIME{0}", dict.timeTypeName);
+            assertEquals(name, 6, dict.dateFractionDigits);
+            assertTrue(name, dict.fractionalTypeNameSet.contains("DATETIME{0}"));
+            assertTrue(name, dict.fractionalTypeNameSet.contains("TIME{0}"));
+            assertFalse(name, dict.fixedSizeTypeNameSet.contains("DATETIME{0}"));
+            assertTrue(name, dict.supportsXMLColumn);
+        }
+    }
+
+    @Test
+    public void testNoXMLColumnBefore51() throws Exception {
+        MySQLDictionary dict = newConfiguredDictionary();
+        dict.connectedConfiguration(connection(5, 0, "5.0.96", 8));
+        assertFalse(dict.supportsXMLColumn);
+        assertTrue(dict.supportsSubselect);
+        assertEquals("DATETIME", dict.timestampTypeName);
+    }
+
+    @Test
+    public void testNoSubselectsBefore41() throws Exception {
+        MySQLDictionary dict = newConfiguredDictionary();
+        dict.connectedConfiguration(connection(4, 0, "4.0.27", 8));
+        assertFalse(dict.supportsSubselect);
+        assertFalse(dict.allowsAliasInBulkClause);
+        assertFalse(dict.supportsForeignKeysComposite);
+        assertFalse(dict.supportsXMLColumn);
+    }
+
+    /**
+     * A driver that is not JDBC 3 compliant reports the server version only
+     * in the product version, which is parsed instead.
+     */
+    @Test
+    public void testProductVersionOfNonJDBC3Driver() throws Exception {
+        MySQLDictionary old = newConfiguredDictionary();
+        old.connectedConfiguration(connection(2, 0, 0, "4.0.27-nt", 8));
+        assertFalse(old.supportsSubselect);
+
+        MySQLDictionary current = newConfiguredDictionary();
+        current.connectedConfiguration(connection(2, 0, 0, "5.7.44-log", 8));
+        assertTrue(current.supportsSubselect);
+        assertEquals("DATETIME{0}", current.timestampTypeName);
+        assertEquals(6, current.dateFractionDigits);
+    }
+
+    @Test
+    public void testDriverBefore5DeserializesBlobs() throws Exception {
+        MySQLDictionary dict = newConfiguredDictionary();
+        dict.connectedConfiguration(connection(8, 0, "8.0.40", 4));
+        assertTrue(dict.driverDeserializesBlobs);
+    }
+
+    private static MySQLDictionary newConfiguredDictionary() {
+        MySQLDictionary dict = new MySQLDictionary();
+        Configurations.configureInstance(dict, new JDBCConfigurationImpl(), (String) null, "DBDictionary");
+        return dict;
+    }
+
+    /**
+     * A {@link Connection} of a JDBC 4 driver whose {@link DatabaseMetaData}
+     * reports the given MySQL server and driver versions.
+     */
+    private static Connection connection(int major, int minor, String productVersion, int driverMajor) {
+        return connection(4, major, minor, productVersion, driverMajor);
+    }
+
+    private static Connection connection(int jdbcMajor, int major, int minor, String productVersion,
+        int driverMajor) {
+        DatabaseMetaData metaData = (DatabaseMetaData) Proxy.newProxyInstance(
+            TestMySQLDictionary.class.getClassLoader(), new Class<?>[] { DatabaseMetaData.class },
+            (proxy, method, args) -> switch (method.getName()) {
+                case "getDatabaseProductName" -> "MySQL";
+                case "getDatabaseProductVersion" -> productVersion;
+                case "getDatabaseMajorVersion" -> major;
+                case "getDatabaseMinorVersion" -> minor;
+                case "getJDBCMajorVersion" -> jdbcMajor;
+                case "getJDBCMinorVersion" -> 0;
+                case "getDriverMajorVersion" -> driverMajor;
+                case "getDriverMinorVersion" -> 0;
+                case "getDriverName" -> "MySQL Connector/J";
+                case "getDriverVersion" -> driverMajor + ".0.0";
+                case "getIdentifierQuoteString" -> "`";
+                case "getURL" -> "jdbc:mysql://localhost/test";
+                case "toString" -> "metaData";
+                case "hashCode" -> System.identityHashCode(proxy);
+                case "equals" -> proxy == args[0];
+                default -> defaultValue(method.getReturnType());
+            });
+        return (Connection) Proxy.newProxyInstance(TestMySQLDictionary.class.getClassLoader(),
+            new Class<?>[] { Connection.class },
+            (proxy, method, args) -> switch (method.getName()) {
+                case "getMetaData" -> metaData;
+                case "toString" -> "connection";
+                case "hashCode" -> System.identityHashCode(proxy);
+                case "equals" -> proxy == args[0];
+                default -> defaultValue(method.getReturnType());
+            });
+    }
+
+    private static Object defaultValue(Class<?> type) {
+        if (type == boolean.class) {
+            return Boolean.FALSE;
+        }
+        if (type == int.class) {
+            return 0;
+        }
+        if (type == long.class) {
+            return 0L;
+        }
+        return null;
     }
 }
