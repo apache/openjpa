@@ -21,39 +21,35 @@ package org.apache.openjpa.lib.util.git;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TestGitUtils {
 
-    @Test
-    void testNull() {
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(null));
+    @ParameterizedTest(name = "#{index} convertGitInfoToPCEnhancerVersion('{0}') = -1")
+    @NullAndEmptySource
+    @ValueSource(strings = {"ZC614EM", "ZC614E", "1BC614Ems"})
+    void testNullAndBad(String input) {
+        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(input));
     }
 
-    @Test
-    void basic() {
-        long i = 0xBC614E;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614E"));
+    @ParameterizedTest(name = "#{index} convertGitInfoToPCEnhancerVersion('{0}') = {1}")
+    @MethodSource("validGitInfo")
+    void validGitInfo(String input, long expected) {
+        assertEquals(expected, GitUtils.convertGitInfoToPCEnhancerVersion(input));
     }
 
-    @Test
-    void basic2() {
-        int i = 0xfef543b;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("fef543b"));
-    }
-
-    @Test
-    void goodTrailingString() {
-        long i = 0xBC614E;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614Em"));
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614EM"));
-    }
-
-    @Test
-    void bad() {
-        long i = 0xBC614E;
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(i + "BC614Ems"));
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion("ZC614EM"));
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion("ZC614E"));
+    private static Stream<Arguments> validGitInfo() {
+        return Stream.of(
+            Arguments.of("BC614E", 0xBC614EL),
+            Arguments.of("BC614Em", 0xBC614EL),
+            Arguments.of("BC614EM", 0xBC614EL),
+            Arguments.of("fef543b", 0xfef543bL)
+        );
     }
 }

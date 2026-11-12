@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.lib.util;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Tests simple regex for use in in-memory query execution.
@@ -35,38 +35,35 @@ class TestSimpleRegex  {
         return re.matches(target);
     }
 
-    @Test
-    void wildcards() {
-        assertTrue(matchExpr("Hello", "Hello", false));
-        assertFalse(matchExpr("Hello", "Bye", false));
-        assertFalse(matchExpr("Hello", "ByeBye", false));
-        assertFalse(matchExpr("Hello", "Hellooo", false));
-        assertFalse(matchExpr("Hello", "HHello", false));
-        assertTrue(matchExpr("Hello", "H.llo", false));
-        assertTrue(matchExpr("Hello", "Hell.*", false));
-        assertTrue(matchExpr("Yo Hello", ".*ello", false));
-        assertTrue(matchExpr("Hello", ".*ello", false));
-        assertTrue(matchExpr("Hello", ".*ell.*", false));
-        assertTrue(matchExpr("Hellow", ".*ell.*", false));
-        assertTrue(matchExpr("Hello", "Hel.*lo", false));
-        assertTrue(matchExpr("HelYolo", "Hel.*lo", false));
-        assertTrue(matchExpr("Hello", "H.*lo", false));
-        assertFalse(matchExpr("Hellowe", "H.*lo", false));
-        assertTrue(matchExpr("Hello", "h.*lo", true));
-        assertFalse(matchExpr("Hello", "h.*lo", false));
-        assertTrue(matchExpr("The quick brown fox jumped over the lazy dog",
-            "The .*brown.*dog", false));
-        assertTrue(matchExpr("The quick brown fox jumped over the lazy dog",
-            "The .*br.wn.*d.g", false));
-        assertTrue(matchExpr("the quick BRown fox jumped over the lazy dog",
-            "The .*br.wn.*d.g", true));
-        assertFalse(matchExpr("The quick brown fox jumped over the lazy dog",
-            "The .*brown.*dogg", false));
-        assertFalse(matchExpr("The quick brown fox jumped over the lazy dog",
-            "TThe .*brown.*dogg", false));
-
-        assertFalse(matchExpr("Yo Hellow", ".*ello", false));
-        assertFalse(matchExpr("Hellow", ".*YoHello", false));
+    @ParameterizedTest(name = "#{index} matchExpr(\"{0}\", \"{1}\", {2}) = {3}")
+    @CsvSource({
+        "Hello, Hello, false, true",
+        "Hello, Bye, false, false",
+        "Hello, ByeBye, false, false",
+        "Hello, Hellooo, false, false",
+        "Hello, HHello, false, false",
+        "Hello, H.llo, false, true",
+        "Hello, Hell.*, false, true",
+        "Yo Hello, .*ello, false, true",
+        "Hello, .*ello, false, true",
+        "Hello, .*ell.*, false, true",
+        "Hellow, .*ell.*, false, true",
+        "Hello, Hel.*lo, false, true",
+        "HelYolo, Hel.*lo, false, true",
+        "Hello, H.*lo, false, true",
+        "Hellowe, H.*lo, false, false",
+        "Hello, h.*lo, true, true",
+        "Hello, h.*lo, false, false",
+        "The quick brown fox jumped over the lazy dog, The .*brown.*dog, false, true",
+        "The quick brown fox jumped over the lazy dog, The .*br.wn.*d.g, false, true",
+        "the quick BRown fox jumped over the lazy dog, The .*br.wn.*d.g, true, true",
+        "The quick brown fox jumped over the lazy dog, The .*brown.*dogg, false, false",
+        "The quick brown fox jumped over the lazy dog, TThe .*brown.*dogg, false, false",
+        "Yo Hellow, .*ello, false, false",
+        "Hellow, .*YoHello, false, false"
+    })
+    void wildcards(String target, String expr, boolean caseInsens, boolean expected) {
+        assertEquals(expected, matchExpr(target, expr, caseInsens));
     }
 
 }

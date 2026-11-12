@@ -20,12 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class StringUtilTest {
-	
+
 	private static final Logger logger = Logger.getLogger(StringUtilTest.class.getCanonicalName());
 
     @Test
@@ -84,15 +88,21 @@ class StringUtilTest {
         assertEquals("\u00dfhoi", StringUtil.capitalize("\u00dfhoi"));
     }
 
-    @Test
-    void stringEndsWith() {
-        assertFalse(StringUtil.endsWithIgnoreCase(null, "bla"));
-        assertFalse(StringUtil.endsWithIgnoreCase("bla", null));
-        assertTrue(StringUtil.endsWithIgnoreCase(null, null));
-        assertTrue(StringUtil.endsWithIgnoreCase(null, null));
-        assertTrue(StringUtil.endsWithIgnoreCase("I have a cAt", "Cat"));
-        assertFalse(StringUtil.endsWithIgnoreCase("at", "Cat"));
-        assertTrue(StringUtil.endsWithIgnoreCase("at", ""));
+    private static Stream<Arguments> stringEndsWithData() {
+        return Stream.of(
+            Arguments.of(null, "bla", false),
+            Arguments.of("bla", null, false),
+            Arguments.of(null, null, true),
+            Arguments.of("I have a cAt", "Cat", true),
+            Arguments.of("at", "Cat", false),
+            Arguments.of("at", "", true)
+        );
+    }
+
+    @ParameterizedTest(name = "#{index} endsWithIgnoreCase(\"{0}\", \"{1}\") = {2}")
+    @MethodSource("stringEndsWithData")
+    void stringEndsWith(String str, String suffix, boolean expected) {
+        assertEquals(expected, StringUtil.endsWithIgnoreCase(str, suffix));
     }
 
 

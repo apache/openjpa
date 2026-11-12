@@ -26,34 +26,28 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class TestXMLCaseConversions {
-	
+
 	private static final Logger logger = Logger.getLogger(TestXMLCaseConversions.class.getCanonicalName());
 
-    @Test
-    void toXMLName() {
-        assertEquals("easy-xml-conversion",
-            ConfigurationImpl.toXMLName("easyXmlConversion"));
-        assertEquals("initial-caps",
-            ConfigurationImpl.toXMLName("InitialCaps"));
-        assertEquals("nodash",
-            ConfigurationImpl.toXMLName("nodash"));
-        assertEquals("anothernodash",
-            ConfigurationImpl.toXMLName("Anothernodash"));
-        assertEquals("multiple-caps",
-            ConfigurationImpl.toXMLName("MUltipleCaps"));
-        assertEquals("trailing-multi-caps",
-            ConfigurationImpl.toXMLName("TrailingMultiCAPS"));
-        assertEquals("two-i-nner-caps",
-            ConfigurationImpl.toXMLName("TwoINnerCaps"));
-        assertEquals("four-inn-er-caps",
-            ConfigurationImpl.toXMLName("FourINNErCaps"));
-        assertEquals("inner-3-number",
-            ConfigurationImpl.toXMLName("Inner3Number"));
-        assertEquals("inner-03-number",
-            ConfigurationImpl.toXMLName("Inner03Number"));
+    @ParameterizedTest(name = "#{index} toXMLName(\"{0}\") = \"{1}\"")
+    @CsvSource({
+        "easyXmlConversion, easy-xml-conversion",
+        "InitialCaps, initial-caps",
+        "nodash, nodash",
+        "Anothernodash, anothernodash",
+        "MUltipleCaps, multiple-caps",
+        "TrailingMultiCAPS, trailing-multi-caps",
+        "TwoINnerCaps, two-i-nner-caps",
+        "FourINNErCaps, four-inn-er-caps",
+        "Inner3Number, inner-3-number",
+        "Inner03Number, inner-03-number"
+    })
+    void toXMLName(String input, String expected) {
+        assertEquals(expected, ConfigurationImpl.toXMLName(input));
     }
 
     public static void main(String[] args) throws IOException {

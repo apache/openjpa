@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,40 +36,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TestUUIDGenerator {
 
-    @Test
-    void uniqueString() {
+    private static final int ITERATIONS = 10_000;
+
+    @ParameterizedTest(name = "#{index} unique string for type {0}")
+    @ValueSource(ints = { UUIDGenerator.TYPE1, UUIDGenerator.TYPE4 })
+    void uniqueString(int type) {
         Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
+        for (int i = 0; i < ITERATIONS; i++) {
+            assertTrue(seen.add(UUIDGenerator.nextString(type)));
+        }
     }
 
-    @Test
-    void uniqueHex() {
+    @ParameterizedTest(name = "#{index} unique hex for type {0}")
+    @ValueSource(ints = { UUIDGenerator.TYPE1, UUIDGenerator.TYPE4 })
+    void uniqueHex(int type) {
         Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
-    }
-
-    @Test
-    void uniqueType4String() {
-        Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
-    }
-
-    @Test
-    void uniqueType4Hex() {
-        Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
+        for (int i = 0; i < ITERATIONS; i++) {
+            assertTrue(seen.add(UUIDGenerator.nextHex(type)));
+        }
     }
 
     @Test
     void uniqueMixedTypesHex() {
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 10000; i++) {
-            int type = (i % 2 == 0) ?
-                UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
+            int type = (i % 2 == 0) ? UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
             assertTrue(seen.add(UUIDGenerator.nextHex(type)));
         }
     }
