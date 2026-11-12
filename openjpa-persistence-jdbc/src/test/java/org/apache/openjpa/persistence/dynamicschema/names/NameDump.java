@@ -116,8 +116,8 @@ public final class NameDump {
         add("db2", "db2", null);
         add("mysql-delimitall", "mysql(DelimitIdentifiers=true)", null);
         add("derby-delimitall", "derby(DelimitIdentifiers=true)", null);
-        add("mysql-compat", "mysql", "UpdatedMySQLAndMariaDBReservedWords=false");
-        add("mariadb-compat", "mariadb", "UpdatedMySQLAndMariaDBReservedWords=false");
+        add("mysql-compat", "mysql", "UpdatedReservedWords=false");
+        add("mariadb-compat", "mariadb", "UpdatedReservedWords=false");
         add("mysql-nodelimsupport", "mysql(SupportsDelimitedIdentifiers=false)", null);
         // MariaDB 10.3 and later, which has sequences
         add("mariadb-seq", "mariadb(NextSequenceQuery=\"SELECT NEXTVAL({0})\")", null);

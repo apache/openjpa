@@ -412,7 +412,7 @@ public class TestAbstractMySQLDictionary {
             assertEquals("Item", mysql.normalize(DBIdentifier.newTable("Item")).getName());
         }
         // a dictionary that does not delimit reserved words leaves them alone
-        MySQLDictionary compat = configure(new MySQLDictionary(), "UpdatedMySQLAndMariaDBReservedWords=false");
+        MySQLDictionary compat = configure(new MySQLDictionary(), "UpdatedReservedWords=false");
         DBIdentifier window = DBIdentifier.newTable("Window");
         assertSame(window, compat.normalize(window));
         DerbyDictionary derby = configure(new DerbyDictionary(), null);
