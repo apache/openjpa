@@ -457,6 +457,31 @@ Migrate the columns and the data, or keep the old mapping with ``@Column(columnD
 Set `openjpa.Compatibility=ResolveConverterTypeHierarchy=false` (default ``true``) to restore the 4.1.x mapping for attributes whose converter declares its types through a generic superclass or interface: such an attribute keeps its serialized column, and such an `autoApply` converter, or one of a parameterized attribute type, is not applied.
 The option does not affect converters that implement `AttributeConverter` directly with concrete type arguments; the changes described in <<jpa_4.2_AttributeConverters>> apply to them either way.
 
+[[jpa_4.2_AutoApplyNonSerializable]]
+==== An auto-apply converter maps an attribute whose type is not serializable
+
+Without a mapping annotation of its own, an attribute is persistent by default only if its type is a basic type, an embeddable or serializable.
+An attribute of any other type, such as a value class, a record or an interface that does not extend [class]``java.io.Serializable``, was left out of the mapping with only a warning in 4.1.x, even when a `@Converter(autoApply=true)` was declared for its type, and its value was not stored.
+Jakarta Persistence 3.2 section 3.9 considers a converted attribute a basic attribute and applies an auto-apply converter to all attributes of its target type.
+Such an attribute is therefore now mapped as a basic attribute when an auto-apply converter is registered for its type: it gets a column of the converter's database type, its value is written and read through the converter, it can be used in queries, and the metamodel shows it as a basic [class]``SingularAttribute``.
+This applies to the attributes of entities and embeddables, with field as well as property access.
+
+Expect a new column for each such attribute.
+`openjpa.jdbc.SynchronizeMappings` adds it, a schema maintained by hand has to add it, and existing rows have no value in it, since 4.1.x never stored one.
+
+Identifier and version attributes, attributes annotated `@Enumerated` or `@Temporal` and attributes with a `@Convert` of their own are not mapped this way; in particular `@Convert(disableConversion=true)` on the attribute itself keeps such an attribute out of the mapping, as before.
+An attribute of a mapped superclass is mapped by the mapped superclass, so a class-level `@Convert(attributeName=..., disableConversion=true)` on an entity that inherits it does not keep it out of the mapping, and does not keep the auto-apply converter off it either.
+An attribute of such a type for which no auto-apply converter is registered is still left out of the mapping with a warning.
+An attribute of such a type that is declared `@Basic` failed in 4.1.x with ``isn't supported by declared persistence strategy "Basic"``; it is now mapped through the auto-apply converter of its type as well.
+
+The converter is registered from the classes of the persistence unit, so list it in `persistence.xml` like the entities.
+This also holds for build-time enhancement: a class that was enhanced while the converter was not known keeps the persistent fields it was enhanced with, so the attribute stays out of the mapping until the class is enhanced again with the converter listed.
+
+Set `openjpa.Compatibility=MapAutoApplyConvertedFields=false` (default ``true``) to restore the 4.1.x mapping (OPENJPA-3073).
+The enhancer decides which fields of a class are persistent, so the option has to be seen by the enhancer as well as at runtime: set it in `persistence.xml` rather than only in the properties passed to `createEntityManagerFactory` or as a system property, and enhance build-time enhanced classes again after changing it.
+A class that was enhanced with the default keeps such an attribute in the mapping even if the option is set to `false` at runtime only.
+The option does not affect attributes of a serializable type, which were persistent before and get their auto-apply converter as described in <<jpa_4.2_AttributeConverters>>, nor attributes declared ``@Basic``.
+
 [[jpa_4.2_AccessType]]
 ==== Access type determination and property accessors
 

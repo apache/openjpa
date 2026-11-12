@@ -82,6 +82,7 @@ public class Compatibility {
     private boolean _specCompliantSchemaGeneration = false; // OPENJPA-2940
     private boolean _materializeQueryResultList = true; // OPENJPA-2989
     private boolean _cleanupOwnedTablesOnBulkDelete = true; // OPENJPA-2990
+    private boolean _mapAutoApplyConvertedFields = true; // OPENJPA-3073
     private boolean _emulateNativeSequences = true; // OPENJPA-3014
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
@@ -969,6 +970,44 @@ public class Compatibility {
      */
     public void setFlushAfterInMemoryBulkOperation(boolean b) {
         _flushAfterInMemoryBulkOperation = b;
+    }
+
+    /**
+     * Whether an attribute without a mapping annotation of its own whose type
+     * is not serializable is mapped as a basic attribute when an auto-apply
+     * converter (<code>@Converter(autoApply = true)</code>) is registered for
+     * its type. Defaults to true, as Jakarta Persistence 3.2 section 3.9
+     * requires: a converted attribute is a basic attribute, and an auto-apply
+     * converter applies to all attributes of its target type. The attribute is
+     * stored in a column of the converter's database type.
+     *<p>
+     * Set to false to restore the OpenJPA 4.1.x mapping, in which such an
+     * attribute had no persistence strategy and was left out of the mapping
+     * with only a warning, so that its value was not stored. Attributes of a
+     * serializable type and attributes annotated with <code>@Basic</code> are
+     * not affected by this option.
+     *<p>
+     * The enhancer decides which fields of a class are persistent, so the
+     * option has to be set where the enhancer sees it as well, e.g. in
+     * <code>persistence.xml</code>, and build-time enhanced classes have to be
+     * enhanced again after it changes. A class enhanced with the default keeps
+     * such an attribute persistent when the option is set to false at runtime
+     * only.
+     *
+     * @since 4.2.0
+     */
+    public boolean getMapAutoApplyConvertedFields() {
+        return _mapAutoApplyConvertedFields;
+    }
+
+    /**
+     * Whether an attribute whose type is not serializable is mapped as a basic
+     * attribute when an auto-apply converter is registered for its type.
+     *
+     * @since 4.2.0
+     */
+    public void setMapAutoApplyConvertedFields(boolean b) {
+        _mapAutoApplyConvertedFields = b;
     }
 
     /**

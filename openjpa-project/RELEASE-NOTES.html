@@ -70,6 +70,19 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   described in the Migration Considerations are not affected by this option
   (<a href='https://issues.apache.org/jira/browse/OPENJPA-2944'>OPENJPA-2944</a>).
   </li>
+  <li>An attribute whose type (a class, record or interface) is not
+  <code>java.io.Serializable</code> and
+  that has no mapping annotation is now mapped as a basic attribute when a
+  <code>@Converter(autoApply = true)</code> is registered for its type, as
+  Jakarta Persistence 3.2 section 3.9 requires. In 4.1.x such an attribute
+  was left out of the mapping with only a warning and its value was not
+  stored. Applications with such attributes get a new column of the
+  converter's database type for each of them; set
+  <code>openjpa.Compatibility=MapAutoApplyConvertedFields=false</code> to
+  restore the 4.1.x mapping (OPENJPA-3073). Set the option in
+  <code>persistence.xml</code>, so that the enhancer sees it too, and enhance
+  build-time enhanced classes again after changing it.
+  </li>
 </ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
@@ -425,6 +438,8 @@ in each release of OpenJPA.</P>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3065'>OPENJPA-3065</a>] -         Enhancer runs into ConcurrentModificationException if run in Maven with -C
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3070'>OPENJPA-3070</a>] -         String values written as SQL literals do not always reach the database unchanged
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3073'>OPENJPA-3073</a>] -         Attribute of a non-Serializable type converted only by an autoApply converter is silently left out of the mapping
     </li>
 </ul>
 
