@@ -180,6 +180,22 @@ public class PersistenceMetaDataDefaults
      */
     public static PersistenceStrategy getPersistenceStrategy
         (FieldMetaData fmd, Member member, boolean ignoreTransient) {
+        return getPersistenceStrategy(fmd, member, ignoreTransient,
+            FieldMetaData.resolveConverterTypeHierarchy(
+                fmd == null ? null : fmd.getRepository()));
+    }
+
+    /**
+     * Return the code for the strategy of the given member. Return null if
+     * no strategy. The type arguments of a converter declared on the member
+     * are resolved through the converter's whole type hierarchy if
+     * <code>converterTypeHierarchy</code> is set.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
+     */
+    private static PersistenceStrategy getPersistenceStrategy
+        (FieldMetaData fmd, Member member, boolean ignoreTransient,
+        boolean converterTypeHierarchy) {
         if (member == null)
             return null;
         AnnotatedElement el = (AnnotatedElement) member;
@@ -285,7 +301,7 @@ public class PersistenceMetaDataDefaults
 
         // A declared converter is itself a persistence strategy: without this
         // the field is silently left out of the mapping (OPENJPA-3017).
-        if (convertsWholeValue(el, type)) {
+        if (convertsWholeValue(el, type, converterTypeHierarchy)) {
             return BASIC;
         }
 
@@ -349,6 +365,20 @@ public class PersistenceMetaDataDefaults
      * the strategy to that annotation.
      */
     public static boolean convertsWholeValue(AnnotatedElement el, Class type) {
+        return convertsWholeValue(el, type, true);
+    }
+
+    /**
+     * Whether the member carries a {@link Convert} whose converter declares
+     * the member's own type as its attribute type, as
+     * {@link #convertsWholeValue(AnnotatedElement, Class)} says, with the
+     * converter's type arguments resolved through its whole type hierarchy
+     * if <code>converterTypeHierarchy</code> is set.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
+     */
+    public static boolean convertsWholeValue(AnnotatedElement el, Class type,
+        boolean converterTypeHierarchy) {
         Convert convert = el.getAnnotation(Convert.class);
         if (convert == null || convert.disableConversion()) {
             return false;
@@ -363,7 +393,7 @@ public class PersistenceMetaDataDefaults
             return false;
         }
         Class<?> attrType =
-            FieldMetaData.resolveConverterTypeArgument(converter, 0);
+            FieldMetaData.resolveConverterTypeArgument(converter, 0, converterTypeHierarchy);
         return attrType != null && attrType != Object.class
             && attrType.isAssignableFrom(type);
     }
@@ -900,7 +930,8 @@ public class PersistenceMetaDataDefaults
             }
         }
 
-        PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient);
+        PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient,
+            FieldMetaData.resolveConverterTypeHierarchy(meta.getRepository()));
         if (strat == null) {
             if (isMappedByAutoApplyConverter(meta.getRepository(), (AnnotatedElement) member,
                 member instanceof Field field ? field.getType() : ((Method) member).getReturnType())) {

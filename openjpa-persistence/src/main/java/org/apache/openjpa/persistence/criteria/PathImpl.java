@@ -169,24 +169,28 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         PathImpl<?,?> corrJoin = getCorrelatedJoin(this);
         PathImpl<?,?> corrRoot = getCorrelatedRoot(subquery);
         if (_parent != null && q.isRegistered(_parent)) {
-            path = factory.newPath(q.getRegisteredVariable(_parent));
+            path = newPath(factory, q.getRegisteredVariable(_parent));
             path.setSchemaAlias(q.getAlias(_parent));
             path.get(_member.fmd, allowNull);
+            setTargetMetaData(path, _member.fmd);
         } else if (_parent != null && _parent._correlatedPath != null && q.isRegistered(_parent._correlatedPath)){
-            path = factory.newPath(q.getRegisteredVariable(_parent._correlatedPath));
+            path = newPath(factory, q.getRegisteredVariable(_parent._correlatedPath));
             path.setSchemaAlias(q.getAlias(_parent._correlatedPath));
             path.get(_member.fmd, allowNull);
+            setTargetMetaData(path, _member.fmd);
         } else if (corrJoin != null || corrRoot != null) {
             org.apache.openjpa.kernel.exps.Subquery subQ = subquery.getSubQ();
             path = factory.newPath(subQ);
             path.setMetaData(subQ.getMetaData());
             path.setSchemaAlias(q.getAlias(_parent));
             traversePath(q, _parent, path, _member.fmd);
+            setTargetMetaData(path, _member.fmd);
         } else if (_parent != null) {
             Value val = _parent.toValue(factory, q);
             if (val instanceof org.apache.openjpa.kernel.exps.Path) {
                 path = (org.apache.openjpa.kernel.exps.Path)val;
                 path.get(_member.fmd, allowNull);
+                setTargetMetaData(path, _member.fmd);
             } else {
                 val.setAlias(q.getAlias(this));
                 return val;
@@ -200,6 +204,36 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         }
         path.setAlias(q.getAlias(this));
         return path;
+    }
+
+    /**
+     * Creates a kernel path that starts at the given variable and carries the
+     * metadata of the type the variable is bound to, as the JPQL parser does.
+     */
+    private static org.apache.openjpa.kernel.exps.Path newPath(ExpressionFactory factory, Value var) {
+        org.apache.openjpa.kernel.exps.Path path = factory.newPath(var);
+        if (var.getMetaData() != null) {
+            path.setMetaData(var.getMetaData());
+        }
+        return path;
+    }
+
+    /**
+     * Sets the metadata of the given kernel path to the type the given field
+     * navigates to, as the JPQL parser does when it traverses a field. A field
+     * whose type has no metadata of its own (a basic or a multi-valued field)
+     * keeps the metadata the path already carries.
+     * The store relies on this metadata, for example to compare an entity with
+     * a composite primary key column by column (OPENJPA-2631, OPENJPA-2931).
+     */
+    private static void setTargetMetaData(org.apache.openjpa.kernel.exps.Path path, FieldMetaData fmd) {
+        if (fmd == null) {
+            return;
+        }
+        ClassMetaData meta = fmd.isEmbedded() ? fmd.getEmbeddedMetaData() : fmd.getDeclaredTypeMetaData();
+        if (meta != null) {
+            path.setMetaData(meta);
+        }
     }
 
     public PathImpl<?,?> getCorrelatedRoot(SubqueryImpl<?> subquery) {

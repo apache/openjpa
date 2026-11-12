@@ -220,6 +220,9 @@ public class PostgresDictionary extends DBDictionary {
 
         // PostgreSQL requires to escape search strings
         requiresSearchStringEscapeForLike = true;
+        // a backslash in a string literal is an escape character while
+        // standard_conforming_strings is off, which a session can change
+        backslashEscapesInStringLiterals = true;
         supportsUuidType = true;
         uuidTypeName = "UUID";
     }

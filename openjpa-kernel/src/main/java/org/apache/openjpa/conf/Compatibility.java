@@ -86,6 +86,7 @@ public class Compatibility {
     private boolean _emulateNativeSequences = true; // OPENJPA-3014
     private boolean _allowNestedCompoundSelection = false; // OPENJPA-2991
     private boolean _flushAfterInMemoryBulkOperation = true; // OPENJPA-2951
+    private boolean _resolveConverterTypeHierarchy = true; // OPENJPA-2944
 
     /**
      * Whether to require exact identity value types when creating object
@@ -1042,5 +1043,43 @@ public class Compatibility {
      */
     public void setEmulateNativeSequences(boolean b) {
         _emulateNativeSequences = b;
+    }
+
+    /**
+     * Whether the type arguments of an {@code AttributeConverter<X, Y>}
+     * are resolved through the whole type hierarchy of the converter class.
+     * Defaults to true: a converter that gets its attribute type {@code X} or
+     * its database type {@code Y} from a generic superclass, such as
+     * {@code Base<X, Y> implements AttributeConverter<X, Y>}, or from an
+     * interface that extends {@code AttributeConverter} maps its attribute to a column
+     * of the database type, and such a converter, like one whose attribute
+     * type is parameterized, is registered when it is declared
+     * <code>autoApply</code>.
+     *<p>
+     * Set to false to restore the OpenJPA 4.1.x mapping for attributes whose
+     * converter declares its types through a generic superclass or interface:
+     * only a class in the superclass chain of the converter that implements
+     * <code>AttributeConverter</code> directly with concrete type arguments is
+     * considered, so such a serializable attribute is mapped as a serialized
+     * object (a BLOB, BYTEA on PostgreSQL) as in 4.1.x, and an
+     * <code>autoApply</code> converter of that kind or of a parameterized
+     * attribute type is not applied, as 4.1.x ignored <code>autoApply</code>.
+     * Converters that implement <code>AttributeConverter</code> directly with
+     * concrete type arguments are not affected by this option.
+     *
+     * @since 4.2.0
+     */
+    public boolean getResolveConverterTypeHierarchy() {
+        return _resolveConverterTypeHierarchy;
+    }
+
+    /**
+     * Whether the type arguments of an <code>AttributeConverter</code> are
+     * resolved through the whole type hierarchy of the converter class.
+     *
+     * @since 4.2.0
+     */
+    public void setResolveConverterTypeHierarchy(boolean b) {
+        _resolveConverterTypeHierarchy = b;
     }
 }

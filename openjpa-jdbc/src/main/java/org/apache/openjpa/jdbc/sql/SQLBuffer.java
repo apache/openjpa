@@ -329,7 +329,11 @@ public final class SQLBuffer
             _sql.append(o);
         else {
             Class<?> type = Filters.wrap(o.getClass());
-            if (useParamToken || !validParamLiteralType(type)) {
+            String literal = null;
+            if (!useParamToken && validParamLiteralType(type)) {
+                literal = toLiteral(o, type);
+            }
+            if (literal == null) {
                 _sql.append(PARAMETER_TOKEN);
 
                 // initialize param and col lists; we hold off on col list until
@@ -361,25 +365,30 @@ public final class SQLBuffer
                 if (_cols != null)
                     _cols.add(col);
             } else {
-                if (type == String.class) {
-                    _sql.append("'" + o.toString().replace("'", "''") + "'");
-
-                } else if ( type == Character.class ) {
-                    if (_dict.storeCharsAsNumbers) {
-                        _sql.append(o);
-                    } else {
-                        _sql.append("'" + o.toString().replace("'", "''") + "'");
-                    }
-                } else if (type == Boolean.class) {
-                    Boolean b = (Boolean) o;
-                    // We store B(b)ooleans as ints. Convert
-                    _sql.append(_dict.getBooleanRepresentation().getRepresentation(b));
-                } else {
-                    _sql.append(o);
-                }
+                _sql.append(literal);
             }
         }
         return this;
+    }
+
+    /**
+     * Return the SQL literal for the given value of a type accepted by
+     * {@link #validParamLiteralType}, or null if the value has to be bound as
+     * a parameter because the dictionary cannot write it as a literal.
+     */
+    private String toLiteral(Object o, Class<?> type) {
+        if (type == Character.class && _dict.storeCharsAsNumbers) {
+            // the parameter is bound as a number or a string depending on the column
+            return null;
+        }
+        if (type == String.class || type == Character.class) {
+            return _dict.toStringLiteral(o.toString());
+        }
+        if (type == Boolean.class) {
+            // We store B(b)ooleans as ints. Convert
+            return String.valueOf(_dict.getBooleanRepresentation().getRepresentation((Boolean) o));
+        }
+        return o.toString();
     }
 
     private boolean validParamLiteralType(Class<?> type) {

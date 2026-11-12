@@ -27,7 +27,10 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -141,6 +144,61 @@ public class Serialization {
                 return super.resolveClass(desc);
             } catch (ClassNotFoundException e) {
                 throw notFound == null ? e : notFound;
+            }
+        }
+
+        /**
+         * Check the interface names of a dynamic proxy like class names, then
+         * define the proxy class in the first candidate loader that sees all
+         * interfaces. Non-public interfaces have to be seen through their own
+         * loader, as {@link ObjectInputStream#resolveProxyClass} does.
+         */
+        @Override
+        protected Class<?> resolveProxyClass(String[] interfaces) throws IOException, ClassNotFoundException {
+            for (String name : interfaces) {
+                BlacklistClassResolver.DEFAULT.check(name);
+            }
+
+            ClassNotFoundException notFound = null;
+            for (ClassLoader loader : getCandidateLoaders()) {
+                try {
+                    return getProxyClass(loader, interfaces);
+                } catch (ClassNotFoundException e) {
+                    if (notFound == null) {
+                        notFound = e;
+                    } else {
+                        notFound.addSuppressed(e);
+                    }
+                }
+            }
+
+            try {
+                return super.resolveProxyClass(interfaces);
+            } catch (ClassNotFoundException e) {
+                throw notFound == null ? e : notFound;
+            }
+        }
+
+        @SuppressWarnings("deprecation")
+        private static Class<?> getProxyClass(ClassLoader loader, String[] interfaces)
+            throws ClassNotFoundException {
+            ClassLoader nonPublicLoader = null;
+            Class<?>[] classes = new Class<?>[interfaces.length];
+            for (int i = 0; i < interfaces.length; i++) {
+                Class<?> cls = Class.forName(interfaces[i], false, loader);
+                if (!Modifier.isPublic(cls.getModifiers())) {
+                    if (nonPublicLoader != null && nonPublicLoader != cls.getClassLoader()) {
+                        throw new ClassNotFoundException(_loc.get("proxy-nonpublic-loaders",
+                            Arrays.toString(interfaces)).getMessage());
+                    }
+                    nonPublicLoader = cls.getClassLoader();
+                }
+                classes[i] = cls;
+            }
+            try {
+                return Proxy.getProxyClass(nonPublicLoader == null ? loader : nonPublicLoader, classes);
+            } catch (IllegalArgumentException e) {
+                throw new ClassNotFoundException(e.getMessage(), e);
             }
         }
 

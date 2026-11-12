@@ -312,7 +312,9 @@ public class PersistenceMetaDataFactory
                 continue;
 
             // Extract the entity attribute type from the generic interface
-            Class<?> entityType = getConverterEntityType(cls);
+            Class<?> entityType = repos.getConfiguration().getCompatibilityInstance()
+                .getResolveConverterTypeHierarchy()
+                ? getConverterEntityType(cls) : getDeclaredConverterEntityType(cls);
             if (entityType != null) {
                 repos.addAutoApplyConverter(entityType, cls);
             }
@@ -321,22 +323,36 @@ public class PersistenceMetaDataFactory
 
     /**
      * Extract the entity attribute type (first type parameter) from an
-     * AttributeConverter implementation.
+     * AttributeConverter implementation, erased to its raw class as for a
+     * converter given by {@code @Convert}, or null if it is not resolved.
      */
     private Class<?> getConverterEntityType(Class<?> converterClass) {
+        Class<?> entityType =
+            FieldMetaData.resolveConverterTypeArgument(converterClass, 0);
+        return entityType == Object.class ? null : entityType;
+    }
+
+    /**
+     * Extract the entity attribute type without resolving the type hierarchy:
+     * only from a class of the superclass chain that implements
+     * AttributeConverter directly, and only if the type is a plain class.
+     * Returns null otherwise, so that such an auto apply converter is not
+     * applied, as in OpenJPA 4.1.x.
+     *
+     * @see org.apache.openjpa.conf.Compatibility#getResolveConverterTypeHierarchy
+     */
+    private Class<?> getDeclaredConverterEntityType(Class<?> converterClass) {
         for (Type iface : converterClass.getGenericInterfaces()) {
-            if (iface instanceof ParameterizedType pt) {
-                if (pt.getRawType() == AttributeConverter.class) {
-                    Type entityArg = pt.getActualTypeArguments()[0];
-                    if (entityArg instanceof Class<?>)
-                        return (Class<?>) entityArg;
-                }
+            if (iface instanceof ParameterizedType pt
+                && pt.getRawType() == AttributeConverter.class
+                && pt.getActualTypeArguments()[0] instanceof Class<?> entityType) {
+                return entityType;
             }
         }
-        // Check superclass
         Class<?> superclass = converterClass.getSuperclass();
-        if (superclass != null && superclass != Object.class)
-            return getConverterEntityType(superclass);
+        if (superclass != null && superclass != Object.class) {
+            return getDeclaredConverterEntityType(superclass);
+        }
         return null;
     }
 

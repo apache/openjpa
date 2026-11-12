@@ -40,6 +40,9 @@ public class KubernetesTCPRemoteCommitProvider extends DynamicTCPRemoteCommitPro
 
     public KubernetesTCPRemoteCommitProvider() throws UnknownHostException {
         super();
+        // only ready pods are peers, but pods that are not ready (yet) can
+        // still commit and send events, which must not be rejected
+        setRestrictToPeers(false);
     }
 
     public String getNamespace() {

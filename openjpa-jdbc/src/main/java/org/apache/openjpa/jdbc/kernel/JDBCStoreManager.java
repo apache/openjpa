@@ -105,6 +105,10 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private boolean _active = false;
     private Log _log = null;
 
+    // whether the connection is a replication connection, which is
+    // read-only outside of a transaction so that the reads go to a replica
+    private boolean _replicated = false;
+
     // track the pending statements so we can cancel them
     private final List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<>());
 
@@ -182,6 +186,11 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
 
     @Override
     public void beginOptimistic() {
+        try {
+            makeWritable();
+        } catch (SQLException se) {
+            throw SQLExceptions.getStore(se, _dict);
+        }
     }
 
     @Override
@@ -192,6 +201,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     public void begin() {
         _active = true;
         try {
+            makeWritable();
             if ((!_ctx.isManaged() || !_conf.isConnectionFactoryModeManaged())
                 && _conn.getAutoCommit())
                 _conn.setAutoCommit(false);
@@ -1009,14 +1019,31 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         try {
             // connect if the connection is currently null, or if
             // the connection has been closed out from under us
-            if (_conn == null)
+            if (_conn == null) {
                 _conn = connectInternal();
+                _replicated = _dict.isReplicationConnection(_conn);
+                if (_replicated && !_ctx.isActive()) {
+                    // let the driver send the reads outside of a transaction
+                    // to a replica
+                    _conn.setReadOnly(true);
+                }
+            }
             if (ref)
                 _conn.ref();
         } catch (SQLException se) {
             throw SQLExceptions.getStore(se, _dict);
         } finally {
             _ctx.unlock();
+        }
+    }
+
+    /**
+     * Make a replication connection writable when a transaction begins, so
+     * that its writes, locks and reads go to the source.
+     */
+    private void makeWritable() throws SQLException {
+        if (_replicated && _conn != null && _conn.isReadOnly()) {
+            _conn.setReadOnly(false);
         }
     }
 
