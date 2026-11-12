@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.dynamicschema.names;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,13 +45,16 @@ public class TestNamesPerDictionary extends TestCase {
         Map<String, String> names = assertNamesPerDictionary("mysql", "derby");
 
         String mysql = names.get("mysql");
+        assertTrue(mysql, mysql.contains("MAPPING Partition table=\"Partition\"|`Partition`\n"));
         assertTrue(mysql, mysql.contains("MAPPING Window table=\"Window\"|`Window`\n"));
         assertTrue(mysql, mysql.contains("FIELD window col=\"window\"|`window`\n"));
         assertTrue(mysql, mysql.contains("FIELD user col=\"user_id\"|`user_id`\n"));
         assertTrue(mysql, mysql.contains("FIELD attributes table=\"Order_attributes\"|`Order_attributes`"));
 
         String derby = names.get("derby");
-        assertTrue(derby, derby.contains("MAPPING Window table=Window|Window\n"));
+        assertTrue(derby, derby.contains("MAPPING Partition table=Partition|Partition\n"));
+        // Derby reserves WINDOW as well, and renames it rather than delimiting it
+        assertTrue(derby, derby.contains("MAPPING Window table=WINDOW0|WINDOW0\n"));
         assertTrue(derby, derby.contains("FIELD window col=WINDOW0|WINDOW0\n"));
         assertTrue(derby, derby.contains("FIELD user col=USER_ID|USER_ID\n"));
         assertTrue(derby, derby.contains("FIELD attributes table=Order_attributes|Order_attributes"));
@@ -68,6 +72,27 @@ public class TestNamesPerDictionary extends TestCase {
         assertTrue(postgres, postgres.contains("MAPPING Order table=Order|Order\n"));
         assertTrue(postgres, postgres.contains("FIELD offset col=OFFSET0|OFFSET0\n"));
         assertTrue(postgres, postgres.contains("FIELD window col=WINDOW0|WINDOW0\n"));
+    }
+
+    /**
+     * The persistence units of all setups of {@link NameDump}, mapped after
+     * the dictionaries of all of them were configured, in either order, get
+     * the names they get alone, including those of Derby, which renames the
+     * words it reserves rather than delimiting them.
+     */
+    public void testAllSetups() {
+        List<String> keys = new ArrayList<>(NameDump.SETUPS.keySet());
+        Map<String, String> alone = new HashMap<>();
+        for (String key : keys) {
+            alone.put(key, NameDump.dumpInterleaved(List.of(key)).get(key));
+        }
+        for (int i = 0; i < 2; i++) {
+            Map<String, String> names = NameDump.dumpInterleaved(keys);
+            for (String key : keys) {
+                assertEquals(key, alone.get(key), names.get(key));
+            }
+            Collections.reverse(keys);
+        }
     }
 
     /**

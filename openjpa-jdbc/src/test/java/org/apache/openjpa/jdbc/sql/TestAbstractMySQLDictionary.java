@@ -348,16 +348,20 @@ public class TestAbstractMySQLDictionary {
             if (!mysqlFirst) {
                 mysql = configure(new MySQLDictionary(), null);
             }
-            assertEquals("\"Window\"", validTableName(mysql, "Window"));
+            assertEquals("\"Rank\"", validTableName(mysql, "Rank"));
             assertEquals("\"rank\"", validColumnName(mysql, "rank"));
-            assertEquals("WINDOW", validTableName(derby, "Window"));
+            assertEquals("RANK", validTableName(derby, "Rank"));
             assertEquals("RANK", validColumnName(derby, "rank"));
+            // Derby reserves WINDOW as well, and renames it rather than delimiting it
+            assertEquals("\"Window\"", validTableName(mysql, "Window"));
+            assertEquals("WINDOW0", validTableName(derby, "Window"));
 
-            DBIdentifier window = DBIdentifier.newTable("Window");
-            assertEquals("Window", window.getName());
-            assertSame(window, derby.normalize(window));
-            assertEquals("\"Window\"", mysql.normalize(window).getName());
-            assertEquals("Window", window.getName());
+            for (String name : new String[] {"Rank", "Window"}) {
+                DBIdentifier table = DBIdentifier.newTable(name);
+                assertSame(table, derby.normalize(table));
+                assertEquals("\"" + name + "\"", mysql.normalize(table).getName());
+                assertEquals(name, table.getName());
+            }
         }
         for (boolean mariadbFirst : new boolean[] {true, false}) {
             MariaDBDictionary mariadb = mariadbFirst ? configure(new MariaDBDictionary(), null) : null;
