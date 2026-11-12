@@ -1833,7 +1833,8 @@ class TestTypesafeCriteria extends CriteriaTest {
     }
 
 
-    //    public void testInMemoryAccessPath() {
+//    @Test
+//    void inMemoryAccessPath() {
 //        em.getTransaction().begin();
 //        // must have new/dirty managed instances to exercise the code path
 //        em.persist(new Customer());

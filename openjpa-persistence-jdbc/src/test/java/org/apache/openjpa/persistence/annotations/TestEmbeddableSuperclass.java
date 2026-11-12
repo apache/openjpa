@@ -45,7 +45,9 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
         deleteAll(EmbeddableSuperSub.class);
     }
 
-    /*public void testSuperclassEmbeddedOnly() {
+    /*
+    @Test
+    void superclassEmbeddedOnly() {
         ClassMapping cls = ((JDBCConfiguration) getConfiguration()).
             getMappingRepositoryInstance().getMapping(EmbeddableSuper.class,
             null, true);
@@ -53,7 +55,8 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
         assertEquals(NoneClassStrategy.getInstance(), cls.getStrategy());
     }
 
-    public void testSubclassMappingDefaultsAndOverrides() {
+    @Test
+    void subclassMappingDefaultsAndOverrides() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
@@ -82,7 +85,8 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
             assertTrue(fm.getStrategy() instanceof StringFieldStrategy);
     }
 
-    public void testSubclassDiscriminatorMapping() {
+    @Test
+    void subclassDiscriminatorMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
@@ -90,14 +94,16 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
             getName());
     }
 
-    public void testVersionOverrideMapping() {
+    @Test
+    void versionOverrideMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
         assertEquals("VERSVAL", cls.getVersion().getColumns()[0].getName());
     }
 
-    public void testRelationMappings() {
+    @Test
+    void relationMappings() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
             getMapping(EmbeddableSuperSub.class, null, true);
@@ -107,7 +113,7 @@ public class TestEmbeddableSuperclass extends AnnotationTestCase
         fm = cls.getFieldMapping("sup");
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
     }
-*/
+    */
     @Test
     void persistAndFind() {
         EmbeddableSuperSub parent = new EmbeddableSuperSub();

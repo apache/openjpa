@@ -26,24 +26,24 @@ import enhance.exclude.TestEntityA;
 import enhance.include.TestEntityB;
 import foo.TestEntityC;
 
-public class VerifyTest {
+class VerifyTest {
 
     @Test
-    public void testTestEntityBIsEnhanced() {
+    void entityBIsEnhanced() {
         if (!PersistenceCapable.class.isAssignableFrom(TestEntityB.class)) {
             fail("TestEntityB has not been enhanced");
         }
     }
 
     @Test
-    public void testTestEntityAIsNotEnhanced() {
+    void entityAIsNotEnhanced() {
         if (PersistenceCapable.class.isAssignableFrom(TestEntityA.class)) {
             fail("TestEntityA has been enhanced");
         }
     }
 
     @Test
-    public void testTestEntityCIsNotEnhanced() {
+    void entityCIsNotEnhanced() {
         if (PersistenceCapable.class.isAssignableFrom(TestEntityC.class)) {
             fail("TestEntityC has been enhanced");
         }

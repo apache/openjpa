@@ -75,7 +75,7 @@ public class TestNoSchemaManualDelimIdSeqGen extends SQLListenerTestCase {
     }
 
     // TODO: temp
-//    public void testDBCapability() {
+//    @Test void dBCapability() {
 //        Connection conn = (Connection)em.getConnection();
 //        try {
 //            DatabaseMetaData meta = conn.getMetaData();

@@ -772,7 +772,7 @@ public class TestProxyManager {
 
 
     //X @Test
-    public void testBeanClassProxy() throws Exception {
+    void beanClassProxy() throws Exception {
         Class cls = CustomBean.class;
         final String proxyClassName = ProxyManagerImpl.getProxyClassName(cls, false);
         final byte[] bytes = _mgr.generateProxyBeanBytecode(cls, false, proxyClassName);
@@ -923,7 +923,7 @@ public class TestProxyManager {
      */
     public static class CustomSortedSet extends TreeSet {
 
-        
+
         private static final long serialVersionUID = 1L;
     }
 
@@ -932,7 +932,7 @@ public class TestProxyManager {
      */
     public static class CustomComparatorSortedSet extends TreeSet {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         public CustomComparatorSortedSet() {
@@ -966,7 +966,7 @@ public class TestProxyManager {
      */
     public static class CustomSortedMap extends TreeMap {
 
-        
+
         private static final long serialVersionUID = 1L;
     }
 
@@ -975,7 +975,7 @@ public class TestProxyManager {
      */
     public static class CustomComparatorSortedMap extends TreeMap {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         public CustomComparatorSortedMap() {
@@ -1002,7 +1002,7 @@ public class TestProxyManager {
      */
     public static class CustomDate extends Timestamp {
 
-        
+
         private static final long serialVersionUID = 1L;
 
         public CustomDate(long time) {
@@ -1083,7 +1083,7 @@ public class TestProxyManager {
      */
     public static class CustomCalendar extends GregorianCalendar {
 
-        
+
         private static final long serialVersionUID = 1L;
     }
 }

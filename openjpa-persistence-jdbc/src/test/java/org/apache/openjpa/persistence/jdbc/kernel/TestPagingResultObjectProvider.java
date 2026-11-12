@@ -506,7 +506,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
         em.close();
     }
 
-  /*  public void testNonPagingRangeQuery()
+  /*  @Test void nonPagingRangeQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -554,7 +554,7 @@ public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
         em.close();
     }
 /*
-    public void testPagingRangeQuery()
+    @Test void pagingRangeQuery()
         throws Exception {
         initializePagingPCs();
 

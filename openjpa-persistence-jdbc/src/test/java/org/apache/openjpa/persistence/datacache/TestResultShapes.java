@@ -86,7 +86,7 @@ public class TestResultShapes extends AbstractTestCase {
     // FIXME Seetha Nov 3,2006
     // need to know about the 'this' parameter
 
-//	public void testCollectionOfCandidateClass()
+//	@Test void collectionOfCandidateClass()
 //	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");
@@ -99,7 +99,7 @@ public class TestResultShapes extends AbstractTestCase {
 //		rawHelper(false, CacheObjectAChild1.class, null, true);
 //	}
 //
-//	public void testUniqueCandidateClass()
+//	@Test void uniqueCandidateClass()
 //	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");

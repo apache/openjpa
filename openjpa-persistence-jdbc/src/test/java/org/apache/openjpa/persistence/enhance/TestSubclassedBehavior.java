@@ -430,37 +430,6 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         return em;
     }
 
-    /*
-     public void testCallbacks ()
-     {
-         fail ("##### unimplemented test");
-     }
-
-
-     public void testTransactionListeners ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testRemoteCommitListeners ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testCaching ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testRemote ()
-     {
-         fail ("#####");
-     }
-     */
-
     @Test
     void versionIncrementAndIdField() {
         // make sure that version increments happen correctly, and are
@@ -484,15 +453,6 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         endEm(pm);
     }
 
-    /*
-     public void testAutoAssignedFields ()
-     {
-         // make sure that auto-assigned field values get into the user-visible
-         // instance.
-         fail ("#####");
-     }
-     */
-
     @Test
     void jpaBasics() {
         EntityManager em = currentEntityManager();
@@ -504,31 +464,6 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         endTx(em);
         endEm(em);
     }
-
-    /*
-     public void testDetachmentAndAttachemnt ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testEmbeddedNonEnhanced ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testTransactionalNonEnhanced ()
-     {
-         fail ("#####");
-     }
-
-
-     public void testBulkTransactionalNonEnhanced ()
-     {
-         fail ("#####");
-     }
-     */
 
     @Test
     void singleValuedInverseManagement() {

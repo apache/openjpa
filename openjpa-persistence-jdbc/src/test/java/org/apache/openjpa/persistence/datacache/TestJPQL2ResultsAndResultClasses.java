@@ -297,7 +297,7 @@ public class TestJPQL2ResultsAndResultClasses extends AbstractTestCase {
     }
 
     //FIXME Seetha Dec 19,2006
-    /*public void testMath() {
+    /*@Test void math() {
         Broker broker = _factory.newBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL,"select avg(a.age) FROM "+

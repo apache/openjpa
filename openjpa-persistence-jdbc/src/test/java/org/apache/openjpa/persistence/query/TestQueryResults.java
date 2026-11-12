@@ -379,7 +379,7 @@ class TestQueryResults extends BaseQueryTest {
      * test complementing the original JDO test which uses the setUnique()
      * method available in JDO Query. OpenJPAQuery does not have such a method
      * and hence this test does not make sense.
-      public void testUniqueThrowsExceptionIfNonUniqueRange()
+      @Test void uniqueThrowsExceptionIfNonUniqueRange()
      {
          OpenJPAEntityManager em =
              (OpenJPAEntityManager) currentEntityManager();

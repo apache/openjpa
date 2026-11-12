@@ -69,7 +69,7 @@ class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * openjpaentitymanagers. Therefore it's been commented out.
      * FIX ME: aokeke
      */
-    /*    public void testConfigurationFreeze()
+    /*    @Test void configurationFreeze()
         {
             OpenJPAEntityManagerFactory pmf =
                 getOpenJPAEntityManagerFactory(_conf.toProperties(false));
@@ -92,7 +92,7 @@ class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * to openjpaentitymanagerfactories therefore it will be commented out.
      * FIX ME: aokeke
      */
-    /*public void testFactoryPooling() {
+    /*@Test void factoryPooling() {
         Properties props = new Properties();
         props.putAll(_conf.toProperties(false));
         OpenJPAEntityManagerFactory pmf1 =
@@ -179,7 +179,7 @@ class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
      * to openjpaentitymanagerfactories therefore it will be commented out.
      */
     /*
-    public void testFactorySerialization()
+    @Test void factorySerialization()
     throws Exception {
         OpenJPAEntityManagerFactory pmf1 =
             getOpenJPAEntityManagerFactory(_conf.toProperties(false));

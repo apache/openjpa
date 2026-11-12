@@ -50,7 +50,9 @@ public class TestEnumerated extends AnnotationTestCase
         deleteAll(AnnoTest1.class);
     }
 
-    /** public void testMapping() {
+    /**
+        @Test
+        void mapping() {
                   ClassMapping cls = (ClassMapping) getConfiguration().
                       getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class,
                       null, true);

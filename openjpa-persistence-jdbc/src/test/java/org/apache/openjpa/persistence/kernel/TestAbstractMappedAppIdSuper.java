@@ -35,7 +35,7 @@ public class TestAbstractMappedAppIdSuper extends BaseKernelTest {
 
 
     /* Fix Me - aokeke - Takes so much time to run */
-//    public void testQuerySubclassWithDifferentIdClass()
+//    @Test void querySubclassWithDifferentIdClass()
 //    throws Exception {
 //        ConcreteMappedAppIdSub pc = new ConcreteMappedAppIdSub();
 //        String pk = String.valueOf(System.currentTimeMillis());

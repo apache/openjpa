@@ -122,7 +122,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
 // FixMe: Both tests hangs on Mysql
-    /*public void testByteArray()
+    /*@Test void byteArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         Byte[] array = new Byte[max];
@@ -131,7 +131,7 @@ public class TestArrayValues2 extends BaseKernelTest {
         saveArray(array, false, false);
     }
 
-    public void testBytePrimitiveArray()
+    @Test void bytePrimitiveArray()
         throws Exception {
         int max = ((int) (Math.random() * 20)) + 5;
         byte[] array = new byte[max];
@@ -244,7 +244,7 @@ public class TestArrayValues2 extends BaseKernelTest {
     }
 
     /*Fix Me aokeke - Takes a lot of time to run */
-//    public void testFirstClassObjectArray()throws Exception
+//    @Test void firstClassObjectArray()throws Exception
 //    {
 //        int max = ((int) (Math.random() * 20)) + 5;
 //        ArraysTest[] array = new ArraysTest[max];

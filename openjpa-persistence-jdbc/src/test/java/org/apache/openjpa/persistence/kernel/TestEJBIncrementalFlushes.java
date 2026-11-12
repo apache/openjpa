@@ -45,7 +45,7 @@ public class TestEJBIncrementalFlushes extends AbstractTestCase {
         endEm(em);
     }
 
-//	public void testBasicJdoPreStore ()
+//	@Test void basicJdoPreStore ()
 //	{
 //		EntityManager em = getEm ();
 //		em.getTransaction ().begin ();

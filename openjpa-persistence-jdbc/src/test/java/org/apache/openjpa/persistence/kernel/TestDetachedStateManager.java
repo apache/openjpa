@@ -436,17 +436,13 @@ public class TestDetachedStateManager extends BaseKernelTest {
    //###
    // No time to get these working right now.  Have to figure out how to
    // enhance certain classes with different DetachState settings in autobuild.
-   public void testSerialization ()
-       throws Exception
-   {
-       doSerializationTest (false);
+   @Test void serialization() throws Exception {
+       doSerializationTest(false);
    }
 
 
-   public void testSerializationAuto ()
-       throws Exception
-   {
-       doSerializationTest (true);
+   @Test void serializationAuto() throws Exception {
+       doSerializationTest(true);
    }
     */
 

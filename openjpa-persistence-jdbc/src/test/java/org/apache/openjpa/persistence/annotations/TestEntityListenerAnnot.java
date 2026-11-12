@@ -253,7 +253,8 @@ public class TestEntityListenerAnnot extends AnnotationTestCase
 		endEm(em);
 	}
 	/*Fix Me: aokeke - should fail when persisting with invalid id*/
-//	public void testExceptionCauseTxRollback2()
+//	@Test
+//  void exceptionCauseTxRollback2()
 //	{
 //      OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 //		startTx(em);

@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.FileReader;
 import org.junit.jupiter.api.Test;
 
-public class ItDropSchemaTest {
+class ItDropSchemaTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -41,7 +41,7 @@ public class ItDropSchemaTest {
      * @throws Exception
      */
     @Test
-    public void testSqlGeneration() throws Exception
+    void sqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );
         BufferedReader in = new BufferedReader( new FileReader( sqlFile ) );

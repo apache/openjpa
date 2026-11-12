@@ -44,7 +44,9 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
 		super("annotationcactusapp");
 	}
 
-    /** public void testMapping() {
+    /**
+            @Test
+            void mapping() {
                   ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
                       getMappingRepositoryInstance().getMapping(TablePerClass2.class,
                       null, true);

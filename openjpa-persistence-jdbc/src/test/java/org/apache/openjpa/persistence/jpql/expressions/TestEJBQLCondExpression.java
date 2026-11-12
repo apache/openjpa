@@ -305,11 +305,6 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         endEm(em);
     }
 
-    /**
-     * TO BE TESTED LATER WITH A DIFF DATABASE
-     * public void testMemberOfExpr(){}
-     */
-
     @Test
     void existExpr() {
         EntityManager em = currentEntityManager();

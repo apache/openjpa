@@ -147,7 +147,7 @@ class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
-//    public void testCustomSequenceGenerator() {
+//    @Test void customSequenceGenerator() {
 //        EntityManager em = emf.createEntityManager();
 //
 //        GeneratedValues gv = new GeneratedValues();

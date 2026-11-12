@@ -124,7 +124,7 @@ class TestCheckConsistency extends BaseKernelTest {
 
     //FIXME jthomas
 /*
-            public void testInconsistentDatastoreTransaction() {
+            @Test void inconsistentDatastoreTransaction() {
                 OpenJPAEntityManager pm = getPM();
                 FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
                 pm.setOptimistic(false);
@@ -251,7 +251,7 @@ try {
     }
 //FIXME
     /*
-public void testInconsistentOptimisticTransactionWithoutRefresh() {
+@Test void inconsistentOptimisticTransactionWithoutRefresh() {
 OpenJPAEntityManager pm = getPM();
 pm.setRetainState(false);
 pm.setOptimistic(true);
@@ -307,7 +307,7 @@ try {
 
 //FIXME
 /*
-    public void testInconsistentOptimisticTransactionWithRefresh() {
+    @Test void inconsistentOptimisticTransactionWithRefresh() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
@@ -356,7 +356,7 @@ try {
 //FIXME
 
 /*
-public void testInconsistentOptimisticTransactionWithRollback() {
+@Test void inconsistentOptimisticTransactionWithRollback() {
 OpenJPAEntityManager pm = getPM();
 pm.setRetainState(false);
 pm.setOptimistic(true);

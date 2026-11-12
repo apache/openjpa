@@ -95,7 +95,7 @@ public class Test2EJBConcurrency extends AbstractTestCase {
     /**
      *	Test optimistic concurrency.
      */
-//	public void testOptConcurrency2 ()
+//	@Test void optConcurrency2 ()
 //		throws Exception
 //	{
 //		EntityManager em1 = currentEntityManager();

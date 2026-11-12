@@ -86,13 +86,6 @@ public class TestPropertiesMethods extends AbstractPersistenceTestCase {
         emf = null;
     }
 
-//    public void testProperties() {
-//        print("EMF Properties", emf.getProperties());
-//        print("EMF Supported Properties", emf.getSupportedProperties());
-//        print("EM Properties", em.getProperties());
-//        print("EM Supported Properties", emf.getSupportedProperties());
-//    }
-
     @Test
     void configurationPrefixes() {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();

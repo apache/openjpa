@@ -312,7 +312,7 @@ class TestProxies2 extends BaseKernelTest {
     }
 
     //    FIX ME: Moving fix to essex
-    /*public void testList() {
+    /*@Test void list() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -372,7 +372,7 @@ class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testListDisablesChangeTracking() {
+    @Test void listDisablesChangeTracking() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);

@@ -201,7 +201,7 @@ class TestOptimisticLockGroups extends BaseKernelTest {
 
 //        FIX ME: aokeke - test is taking so much resource and causing
 //        subsequent test to fail
-//        public void testNoLockGroupSuccess() {
+//        @Test void noLockGroupSuccess() {
 //        OpenJPAEntityManager pm1 = getPM(false, false);
 //        startTx(pm1,());
 //        LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class,oid);
@@ -339,7 +339,7 @@ class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm);
     }
 
-//    public void testKnownSubclass() {
+//    @Test void knownSubclass() {
 //        OpenJPAEntityManager pm = getPM(false, false);
 //        LockGroupPCKnownSubclass pc = new LockGroupPCKnownSubclass();
 //        pc.setDefaultLockGroupStringField("pc");

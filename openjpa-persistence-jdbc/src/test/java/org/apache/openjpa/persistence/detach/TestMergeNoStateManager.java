@@ -64,7 +64,7 @@ class TestMergeNoStateManager extends SingleEMFTestCase {
     /**
      * This test is commented out is it will fail.
      */
-    //    public void testOLE() throws Exception {
+    //    @Test void ole() throws Exception {
 //        OpenJPAEntityManagerSPI em = emf.createEntityManager();
 //        try {
 //            String updatedName = "updatedName_" + System.currentTimeMillis();

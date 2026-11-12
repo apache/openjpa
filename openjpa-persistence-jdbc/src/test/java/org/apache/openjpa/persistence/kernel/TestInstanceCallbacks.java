@@ -211,7 +211,7 @@ class TestInstanceCallbacks extends BaseKernelTest {
     /*
     // no JPA equivalent
 
-    public void testDetachAttach()
+    @Test void detachAttach()
     throws Exception {
         OpenJPAEntityManager pm = getPM();
         DetachAttachEvent pc = (DetachAttachEvent) pm.find
@@ -238,7 +238,7 @@ class TestInstanceCallbacks extends BaseKernelTest {
         endEm(pm,());
     }
 
-    public void testDetachAttachRelations() {
+    @Test void detachAttachRelations() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm,());
         DetachAttachEvent pc = (DetachAttachEvent) pm.find

@@ -47,7 +47,7 @@ class TestDiscriminator
 //        setUp(Entity1.class, Entity2.class, AnnoTest1.class, CLEAR_TABLES);
     }
 
-//    public void testNoDefaultJoinedDiscriminatorWithoutColumn() {
+//    @Test void noDefaultJoinedDiscriminatorWithoutColumn() {
 //        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
 //        ClassMapping cls = conf.getMappingRepositoryInstance().
 //            getMapping(Entity1.class, null, true);
@@ -74,7 +74,7 @@ class TestDiscriminator
             getName());
     }
 
-//    public void testDefaultFlatDiscriminator() {
+//    @Test void defaultFlatDiscriminator() {
 //        ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
 //            getMappingRepositoryInstance().getMapping(Entity2.class,
 //            null, true);

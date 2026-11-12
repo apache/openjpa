@@ -70,7 +70,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
             "openjpa.ConnectionRetainMode", "transaction");
     }
 
-    public void insert(LobEntity le) {
+    protected void doInsert(LobEntity le) {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(le);
@@ -79,14 +79,14 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     @Test
-    public void testInsert() {
-        insert(newLobEntity(createLobData(), 1));
+    public void insert() {
+        doInsert(newLobEntity(createLobData(), 1));
     }
 
     @Test
     public void insertAndSelect() throws Exception {
         String s = createLobData();
-        insert(newLobEntity(s, 1));
+        doInsert(newLobEntity(s, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -100,7 +100,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void insertNull() {
-        insert(newLobEntity(null, 1));
+        doInsert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -111,7 +111,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void update() throws Exception {
-        insert(newLobEntity(createLobData(), 1));
+        doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -129,7 +129,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void updateWithNull() {
-        insert(newLobEntity(createLobData(), 1));
+        doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -146,7 +146,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void updateANullObjectWithoutNull() throws Exception {
-        insert(newLobEntity(null, 1));
+        doInsert(newLobEntity(null, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -164,7 +164,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void delete() {
-        insert(newLobEntity(createLobData(), 1));
+        doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -193,7 +193,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     @Test
     public void lifeCycleLoadFlushModifyFlush() {
-        insert(newLobEntity(createLobData(), 1));
+        doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -207,7 +207,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     @Test
     public void readingMultipleTimesWithASingleConnection()
         throws Exception {
-        insert(newLobEntity(createLobData(), 1));
+        doInsert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = (LobEntity) em.find(getLobEntityClass(), 1);

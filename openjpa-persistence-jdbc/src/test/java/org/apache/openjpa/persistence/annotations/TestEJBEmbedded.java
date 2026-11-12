@@ -114,7 +114,8 @@ public class TestEJBEmbedded extends AnnotationTestCase
         startTx(em);
     }
 
-//    public void testMappingTransferAndOverride() {
+//    @Test
+//    void mappingTransferAndOverride() {
 //        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
 //        ClassMapping cls = conf.getMappingRepositoryInstance().getMapping
 //            (EmbedOwner.class, null, true);

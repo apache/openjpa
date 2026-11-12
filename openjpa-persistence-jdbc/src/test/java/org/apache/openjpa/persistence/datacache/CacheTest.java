@@ -436,35 +436,41 @@ public abstract class CacheTest extends AbstractTestCase {
 
     // FIXME Seetha Sep 25,2006
     /*
-      * public void testCollections() throws Exception { CacheObjectA parent =
-      * (CacheObjectA) em.find(CacheObjectA.class,ORIG_PARENT_NAME);
-      * assertEquals(1, parent.getRelatedCollection().size());
-      * em.refresh(parent); assertEquals(2,
-      * parent.getRelatedCollection().size()); }
-      */
+    @Test
+    void collections() throws Exception {
+        CacheObjectA parent =
+        (CacheObjectA) em.find(CacheObjectA.class,ORIG_PARENT_NAME);
+        assertEquals(1, parent.getRelatedCollection().size());
+        em.refresh(parent); assertEquals(2,
+        parent.getRelatedCollection().size());
+    }
+    */
 
     // FIXME Seetha Sep 25,2006
     /*
-      * public void testExpiredCollections() { CacheObjectA parent =
-      * (CacheObjectA) em.find(CacheObjectA.class,ORIG_PARENT_NAME);
-      * em.refresh(parent); Collection relatedOids = new HashSet();
-      * for (Iterator iter = parent.getRelatedCollection().iterator();
-      *     iter.hasNext();) {
-      * relatedOids.add(JDOHelper.getObjectId(iter.next())); }
-      *
-      * ClassMetaData meta = repos.getMetaData(CacheObjectA.class, null, true);
-      * DataCache cache = meta.getDataCache();
-      *  // drop the related data from the cache for (Iterator iter =
-      * relatedOids.iterator(); iter.hasNext();) cache.remove(iter.next());
-      *
-      * PersistenceManager pm2 = factory.getPersistenceManager(); try {
-      * assertTrue(cache.contains(parentOid)); parent = (CacheObjectA)
-      * pm2.getObjectById(parentOid, true);
-      *
-      * try { for (Iterator iter = relatedOids.iterator(); iter.hasNext();)
-      * assertFalse(cache.contains(iter.next())); } catch (AssertionFailedError
-      * e) { bug(467, "data cache can over-eagerly load relation data"); } }
-      * finally { close(pm2); } }
+        @Test
+        void testExpiredCollections() {
+            CacheObjectA parent =
+            (CacheObjectA) em.find(CacheObjectA.class,ORIG_PARENT_NAME);
+            em.refresh(parent); Collection relatedOids = new HashSet();
+            for (Iterator iter = parent.getRelatedCollection().iterator();
+                iter.hasNext();) {
+            relatedOids.add(JDOHelper.getObjectId(iter.next())); }
+
+            ClassMetaData meta = repos.getMetaData(CacheObjectA.class, null, true);
+            DataCache cache = meta.getDataCache();
+            // drop the related data from the cache for (Iterator iter =
+            relatedOids.iterator(); iter.hasNext();) cache.remove(iter.next());
+
+            PersistenceManager pm2 = factory.getPersistenceManager(); try {
+            assertTrue(cache.contains(parentOid)); parent = (CacheObjectA)
+            pm2.getObjectById(parentOid, true);
+
+            try { for (Iterator iter = relatedOids.iterator(); iter.hasNext();)
+            assertFalse(cache.contains(iter.next())); } catch (AssertionFailedError
+            e) { bug(467, "data cache can over-eagerly load relation data"); } }
+            finally { close(pm2); }
+        }
       */
 
     @Test
@@ -912,7 +918,7 @@ public abstract class CacheTest extends AbstractTestCase {
     // FIXME Seetha Sep 26,2006
     // not able to replace pm.newQuery(CacheObjectA.class);
     /*
-      * public void testQueryAggregates() { PersistenceManager pm =
+      * @Test void queryAggregates() { PersistenceManager pm =
       * factory.getPersistenceManager(); try { Query q =
       * pm.newQuery(CacheObjectA.class); q.setResult("max (age)"); Object o =
       * q.execute(); assertTrue("o must be instanceof Number", o instanceof
@@ -1360,7 +1366,7 @@ public abstract class CacheTest extends AbstractTestCase {
     // FIXME SEetha Sep 26,2006
     // not able to replace pm.newQuery(CacheObjectE.class);
     /*
-      * public void testAllegedQueryOrderingChanges() throws Exception { //
+      * @Test void allegedQueryOrderingChanges() throws Exception { //
       * inspired by tsc 3013. pcl: I have not been able to get this // test case
       * to actually fail. However, during analysis of // 3013's stack traces, I
       * discovered that the // QueryKey.equals() method did not deal with the
@@ -1457,9 +1463,8 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     @Test
-    public void testInterface() throws Exception {
-        OpenJPAEntityManager newEm =
-            (OpenJPAEntityManager) factory.createEntityManager();
+    void testInterface() throws Exception {
+        OpenJPAEntityManager newEm = (OpenJPAEntityManager) factory.createEntityManager();
         startTx(newEm);
         CacheObjectA a = (CacheObjectA) newEm.find(CacheObjectA.class, oid);
         CacheObjectC c = new CacheObjectC("blah");
@@ -1561,7 +1566,7 @@ public abstract class CacheTest extends AbstractTestCase {
 
     // FIXME Seetha Sep 26,2006
     /*
-      * public void testQueriesAfterModificationAreNotInCache() {
+      * @Test void queriesAfterModificationAreNotInCache() {
       * OpenJPAEntityManager em = (OpenJPAEntityManager)
       * factory.createEntityManager(); OpenJPAEntityManager em2 =
       * (OpenJPAEntityManager) factory.createEntityManager();

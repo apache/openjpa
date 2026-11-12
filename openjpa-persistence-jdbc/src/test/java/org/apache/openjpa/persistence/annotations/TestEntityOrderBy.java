@@ -52,14 +52,17 @@ public class TestEntityOrderBy extends AnnotationTestCase
 //            null, true);
     }
 
-    /*   public void testEmptyOrderBy() {
-           String dec = Order.ELEMENT + " asc";
-           assertEquals(dec, _meta.getField("strings").getOrderDeclaration());
-           assertEquals(dec, _meta.getField("pkRels").getOrderDeclaration());
-       }
-        public void testSpecifiedOrderBy() {
-           assertEquals("string desc", _meta.getField("stringRels").
-               getOrderDeclaration());
+    /*
+        @Test
+        void emptyOrderBy() {
+            String dec = Order.ELEMENT + " asc";
+            assertEquals(dec, _meta.getField("strings").getOrderDeclaration());
+            assertEquals(dec, _meta.getField("pkRels").getOrderDeclaration());
+        }
+        @Test
+        void specifiedOrderBy() {
+            assertEquals("string desc", _meta.getField("stringRels").
+                getOrderDeclaration());
        }
     */
     @Test

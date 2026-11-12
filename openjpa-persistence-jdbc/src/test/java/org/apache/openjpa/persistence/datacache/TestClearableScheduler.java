@@ -96,7 +96,7 @@ class TestClearableScheduler extends SingleEMFTestCase {
     }
 
 // Comment this test out while investigating OPENJPA-1692
-//    public void testMultithreadedInitialization() throws Exception {
+//    @Test void multithreadedInitialization() throws Exception {
 //        final OpenJPAConfiguration conf =  emf.getConfiguration();
 //        final List<DataCacheManager> dcms = new Vector<DataCacheManager>();
 //        Runnable r = new Runnable(){
@@ -154,7 +154,7 @@ class TestClearableScheduler extends SingleEMFTestCase {
     // }
     private class DummyCache extends ConcurrentDataCache {
 
-        
+
         private static final long serialVersionUID = 1L;
         int clearCount = 0;
 

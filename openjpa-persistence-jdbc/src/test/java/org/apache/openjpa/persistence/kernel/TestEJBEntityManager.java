@@ -63,7 +63,7 @@ public class TestEJBEntityManager extends AbstractTestCase {
      * closed.
      */
     /* Fix Me - aokeke - takes a lot of time to run */
-    // public void testClosed ()
+    // @Test void closed ()
     // {
     // EntityManager em = currentEntityManager();
     // startTx(em);

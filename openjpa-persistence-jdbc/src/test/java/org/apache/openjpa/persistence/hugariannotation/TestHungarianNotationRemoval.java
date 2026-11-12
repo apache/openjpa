@@ -81,7 +81,7 @@ class TestHungarianNotationRemoval extends SingleEMFTestCase {
         that would turn into duplicates. Even doing this will not be
         foolproof, as a duplicate column might come from a subclass or an
         embedded class.
-    public void testDuplicateColumnNameTruncation() {
+    @Test void duplicateColumnNameTruncation() {
 
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFieldDuplicates.class);

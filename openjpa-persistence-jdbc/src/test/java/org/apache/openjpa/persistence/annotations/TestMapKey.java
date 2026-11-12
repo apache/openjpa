@@ -60,7 +60,10 @@ public class TestMapKey extends AnnotationTestCase
 //            null, true);
     }
 
-    /** public void testDefaultMapKeyMapping() {
+    /**
+
+            @Test
+            void defaultMapKeyMapping() {
                   FieldMapping fm = _mapping.getFieldMapping("defaultMapKey");
                   assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
                   assertEquals("pk", fm.getKey().getValueMappedBy());
@@ -68,7 +71,8 @@ public class TestMapKey extends AnnotationTestCase
                       true).getField("pk"), fm.getKey().getValueMappedByMetaData());
               }
 
-              public void testNamedMapKeyMapping() {
+              @Test
+              void namedMapKeyMapping() {
                   FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
                   assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
                   assertEquals("basic", fm.getKey().getValueMappedBy());
@@ -76,7 +80,8 @@ public class TestMapKey extends AnnotationTestCase
                       true).getField("basic"), fm.getKey().getValueMappedByMetaData());
               }
 
-              public void testInverseOwnerMapKeyMapping() {
+              @Test
+              void inverseOwnerMapKeyMapping() {
                   FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
                   assertTrue(fm.getStrategy() instanceof
                       RelationMapInverseKeyFieldStrategy);

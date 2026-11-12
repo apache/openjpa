@@ -46,20 +46,20 @@ public class TestIsolationLevelOverride extends SQLListenerTestCase {
 
     @Test
     void isolationOverrideViaFetchPlan() {
-        testIsolationLevelOverride(false, false);
+        checkIsolationLevelOverride(false, false);
     }
 
     @Test
     void isolationOverrideViaHint() {
-        testIsolationLevelOverride(true, false);
+        checkIsolationLevelOverride(true, false);
     }
 
     @Test
     void isolationOverrideViaStringHint() {
-        testIsolationLevelOverride(true, true);
+        checkIsolationLevelOverride(true, true);
     }
 
-    public void testIsolationLevelOverride(boolean useHintsAndQueries,
+    private void checkIsolationLevelOverride(boolean useHintsAndQueries,
         boolean useStringHints) {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())

@@ -55,7 +55,7 @@ public class TestBigDecimals extends BaseKernelTest {
         }
     }
 //    FixMe aokeke: Passes but takes a long time --commenting for resource sake
-//    public void testBigBigDecimals()
+//    @Test void bigBigDecimals()
 //        throws Exception {
 //        try {
 //            BigDecimal bd = new BigDecimal("1234567890."

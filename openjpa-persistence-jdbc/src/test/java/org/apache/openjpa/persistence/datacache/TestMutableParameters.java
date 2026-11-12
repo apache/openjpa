@@ -117,11 +117,11 @@ public class TestMutableParameters
     //FIXME Seetha Nov 10,2006
     //need to find the JPQL query for :p_age contains
     /*
-    public void testMutatedSetParameter() {
+    @Test void mutatedSetParameter() {
         mutatedCollectionParameterHelper(true);
     }
 
-    public void testMutatedListParameter() {
+    @Test void mutatedListParameter() {
         mutatedCollectionParameterHelper(false);
     }
 
@@ -151,11 +151,11 @@ public class TestMutableParameters
         assertFalse(new Integer(initialSize).equals(new Integer(c.size())));
     }
 
-    public void testMutatedSetParameterDates() {
+    @Test void mutatedSetParameterDates() {
         mutatedCollectionParameterDatesHelper(true);
     }
 
-    public void testMutatedListParameterDates() {
+    @Test void mutatedListParameterDates() {
         mutatedCollectionParameterDatesHelper(false);
     }
 

@@ -34,7 +34,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 
 import org.junit.jupiter.api.Test;
 
-public class ItNonDefaultXmlTest {
+class ItNonDefaultXmlTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -59,7 +59,7 @@ public class ItNonDefaultXmlTest {
      * @throws Exception
      */
     @Test
-    public void testEnhancement() throws Exception
+    void enhancement() throws Exception
     {
         Class tec = Thread.currentThread().getContextClassLoader().loadClass( TEST_ENTITY_CLASS );
 
@@ -82,7 +82,7 @@ public class ItNonDefaultXmlTest {
      * @throws Exception
      */
     @Test
-    public void testSqlGeneration() throws Exception
+    void sqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );
         BufferedReader in = new BufferedReader( new FileReader( sqlFile ) );
@@ -95,7 +95,7 @@ public class ItNonDefaultXmlTest {
      * @throws Exception
      */
     @Test
-    public void testSchemaGeneration() throws Exception
+    void schemaGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SCHEMA_FILE );
         BufferedReader schemaGen = new BufferedReader( new FileReader( sqlFile ) );

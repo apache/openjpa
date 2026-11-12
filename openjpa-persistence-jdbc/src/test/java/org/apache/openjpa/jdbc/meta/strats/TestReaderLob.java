@@ -95,7 +95,7 @@ class TestReaderLob extends AbstractLobTest {
     @Test
     void insertAndUpdateMultiByteContent() throws Exception {
         String s = repeatString("\u00e4\u00f6\u00fc \u20ac\u00df, ", 2000);
-        insert(newLobEntity(s, 1));
+        doInsert(newLobEntity(s, 1));
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             LobEntity entity = em.find(ReaderLobEntity.class, 1);
@@ -113,7 +113,7 @@ class TestReaderLob extends AbstractLobTest {
 
     @Test
     void insertEmpty() throws Exception {
-        insert(newLobEntity("", 1));
+        doInsert(newLobEntity("", 1));
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             LobEntity entity = em.find(ReaderLobEntity.class, 1);

@@ -36,7 +36,7 @@ import org.apache.openjpa.tools.maven.testentity.TestEntity;
 
 import org.junit.jupiter.api.Test;
 
-public class ItDefaultSettingsTest {
+class ItDefaultSettingsTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -62,7 +62,7 @@ public class ItDefaultSettingsTest {
      * @throws Exception
      */
     @Test
-    public void testEnhancement() throws Exception
+    void enhancement() throws Exception
     {
         Class tec = Thread.currentThread().getContextClassLoader().loadClass( TEST_ENTITY_CLASS );
 
@@ -85,7 +85,7 @@ public class ItDefaultSettingsTest {
      * @throws Exception
      */
     @Test
-    public void testSqlGeneration() throws Exception
+    void sqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );
         BufferedReader in = new BufferedReader( new FileReader( sqlFile ) );
@@ -98,7 +98,7 @@ public class ItDefaultSettingsTest {
      * @throws Exception
      */
     @Test
-    public void testSchemaGeneration() throws Exception
+    void schemaGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SCHEMA_FILE );
         BufferedReader schemaGen = new BufferedReader( new FileReader( sqlFile ) );
@@ -120,7 +120,7 @@ public class ItDefaultSettingsTest {
      * @throws Exception
      */
     @Test
-    public void testPersistence() throws Exception
+    void persistence() throws Exception
 
     {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestUnit");

@@ -47,7 +47,8 @@ public class TestAnnotationBasics extends AnnotationTestCase {
         endEm(em);
     }
 /*
-    public void testVersionField() {
+    @Test
+    void versionField() {
         ClassMapping mapping = (ClassMapping) getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(Entity1.class,
             null, true);
@@ -56,4 +57,5 @@ public class TestAnnotationBasics extends AnnotationTestCase {
         String col = mapping.getVersion().getColumns()[0].getName();
         assertTrue(col, "VERSIONFIELD".equalsIgnoreCase(col));
     }
-*/}
+*/
+}
