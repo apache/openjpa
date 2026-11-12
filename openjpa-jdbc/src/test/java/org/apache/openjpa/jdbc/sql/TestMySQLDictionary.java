@@ -47,22 +47,12 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.junit5.JUnit5Mockery;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class TestMySQLDictionary {
     @RegisterExtension
     public Mockery context = new JUnit5Mockery();
-
-    /**
-     * Puts back the delimiting of reserved words that a configured MySQL or
-     * MariaDB dictionary sets for the whole JVM.
-     */
-    @AfterEach
-    void tearDown() {
-        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
-    }
 
     @Test
     void dBDictionaryGetBatchFetchSize() throws Exception {

@@ -95,7 +95,7 @@ class TestNamesPerDictionary {
         for (int i = 0; i < 2; i++) {
             Map<String, String> names = NameDump.dumpInterleaved(keys);
             for (String key : keys) {
-                assertEquals(key, alone.get(key), names.get(key));
+                assertEquals(alone.get(key), names.get(key), key);
             }
             Collections.reverse(keys);
         }
@@ -123,7 +123,7 @@ class TestNamesPerDictionary {
                 }
             }
             for (int i = 0; i < dumps.size(); i++) {
-                assertEquals(dumped.get(i), alone.get(dumped.get(i)), dumps.get(i).get(5, TimeUnit.MINUTES));
+                assertEquals(alone.get(dumped.get(i)), dumps.get(i).get(5, TimeUnit.MINUTES), dumped.get(i));
             }
         } finally {
             executor.shutdownNow();

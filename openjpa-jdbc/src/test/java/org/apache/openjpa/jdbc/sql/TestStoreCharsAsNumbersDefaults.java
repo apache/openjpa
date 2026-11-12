@@ -28,7 +28,6 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,15 +37,6 @@ import org.junit.jupiter.api.Test;
  * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060, OPENJPA-3028).
  */
 class TestStoreCharsAsNumbersDefaults {
-
-    /**
-     * Puts back the delimiting of reserved words that a configured MySQL or
-     * MariaDB dictionary sets for the whole JVM.
-     */
-    @AfterEach
-    void tearDown() {
-        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
-    }
 
     @Test
     void derbyStoresCharsAsCharByDefault() {
