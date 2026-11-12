@@ -72,6 +72,24 @@ public class Normalizer {
     }
 
     /**
+     * Normalizes a single part name with the given rule rather than the
+     * default rule, such as the rule of a dictionary that delimits its
+     * reserved words.
+     * @param name
+     * @param rule
+     * @since 4.2.0
+     */
+    public static String normalizeString(String name, IdentifierRule rule) {
+        if (StringUtil.isEmpty(name)) {
+            return name;
+        }
+        if (!normalizer.isDelimited(rule, name)) {
+            return normalizer.delimit(rule, name);
+        }
+        return name;
+    }
+
+    /**
      * Returns true if the name is delimited with default delimiters
      * @param name
      */

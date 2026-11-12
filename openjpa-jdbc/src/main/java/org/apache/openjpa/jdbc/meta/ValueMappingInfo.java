@@ -89,7 +89,14 @@ public class ValueMappingInfo extends MappingInfo {
     @Deprecated
     public ForeignKey getTypeJoin(final ValueMapping val, final String name,
         boolean inversable, boolean adapt) {
-        return getTypeJoin(val, DBIdentifier.newForeignKey(name), inversable, adapt);
+        return getTypeJoin(val, normalize(val, DBIdentifier.newForeignKey(name)), inversable, adapt);
+    }
+
+    /**
+     * Returns the given identifier as the dictionary of the value names it.
+     */
+    private static DBIdentifier normalize(ValueMapping val, DBIdentifier name) {
+        return val.getMappingRepository().getDBDictionary().normalize(name);
     }
 
     public ForeignKey getTypeJoin(final ValueMapping val, final DBIdentifier name,
@@ -138,7 +145,7 @@ public class ValueMappingInfo extends MappingInfo {
     @Deprecated
     public ForeignKey getInverseTypeJoin(final ValueMapping val,
         final String name, boolean adapt) {
-        return getInverseTypeJoin(val, DBIdentifier.newForeignKey(name), adapt);
+        return getInverseTypeJoin(val, normalize(val, DBIdentifier.newForeignKey(name)), adapt);
     }
 
     public ForeignKey getInverseTypeJoin(final ValueMapping val,
@@ -173,7 +180,7 @@ public class ValueMappingInfo extends MappingInfo {
     @Deprecated
     public Column[] getColumns(ValueMapping val, String name,
         Column[] tmplates, Table table, boolean adapt) {
-        return getColumns(val, DBIdentifier.newColumn(name), tmplates, table, adapt);
+        return getColumns(val, normalize(val, DBIdentifier.newColumn(name)), tmplates, table, adapt);
     }
 
     public Column[] getColumns(ValueMapping val, DBIdentifier name,
@@ -230,7 +237,7 @@ public class ValueMappingInfo extends MappingInfo {
      */
     @Deprecated
     public Unique getUnique(ValueMapping val, String name, boolean adapt) {
-        return getUnique(val, DBIdentifier.newConstraint(name), adapt);
+        return getUnique(val, normalize(val, DBIdentifier.newConstraint(name)), adapt);
     }
 
     public Unique getUnique(ValueMapping val, DBIdentifier name, boolean adapt) {
@@ -249,7 +256,7 @@ public class ValueMappingInfo extends MappingInfo {
      */
     @Deprecated
     public Index getIndex(ValueMapping val, String name, boolean adapt) {
-        return getIndex(val, DBIdentifier.newIndex(name), adapt);
+        return getIndex(val, normalize(val, DBIdentifier.newIndex(name)), adapt);
     }
 
     public Index getIndex(ValueMapping val, DBIdentifier name, boolean adapt) {
@@ -269,7 +276,7 @@ public class ValueMappingInfo extends MappingInfo {
     @Deprecated
     public Column getNullIndicatorColumn(ValueMapping val, String name,
         Table table, boolean adapt) {
-        return getNullIndicatorColumn(val, DBIdentifier.newColumn(name), table, adapt);
+        return getNullIndicatorColumn(val, normalize(val, DBIdentifier.newColumn(name)), table, adapt);
     }
 
     public Column getNullIndicatorColumn(ValueMapping val, DBIdentifier name,

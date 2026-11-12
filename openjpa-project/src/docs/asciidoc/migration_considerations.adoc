@@ -764,8 +764,8 @@ To keep the earlier names, set `openjpa.Compatibility=UpdatedReservedWords=false
 
 Alternatively give a single name explicitly in the earlier form, e.g. `@Column(name = "LIMIT0")` or ``@Table(name = "WINDOW")``, which is delimited as given.
 
-The rule that delimits the reserved words is applied when an identifier is created and is shared by all persistence units of the JVM: the MySQL or MariaDB dictionary that was configured last sets it, and any other dictionary resets it, that of MariaDB under `UpdatedReservedWords=false` included.
-With persistence units on MySQL or MariaDB and on another database in the same JVM, a name may therefore be delimited on the other database, or not delimited on MySQL or MariaDB; give the names that are reserved words explicitly in that case.
+Whether a reserved word is delimited is decided by the dictionary of each persistence unit, so persistence units on MySQL or MariaDB and on another database in the same JVM each get the names they get alone, whichever dictionary is configured first.
+The identifiers that are created without a dictionary, e.g. with `DBIdentifier.newColumn(String)`, do not delimit reserved words: a custom [class]``MappingDefaults`` or strategy that builds names from a name that may be a reserved word should pass the identifier through `DBDictionary.normalize(DBIdentifier)` first, as OpenJPA does, so that the name is delimited, keeps its case and is not renamed on MySQL and MariaDB.
 
 [class]``MySQLDictionary`` and [class]``MariaDBDictionary`` now share their common code in the new [class]``AbstractMySQLDictionary``. Their public fields, such as ``TableType``, ``UseClobs``, `DriverDeserializesBlobs` and ``OptimizeMultiTableDeletes``, keep their names and defaults and are still set in <<openjpa.jdbc.DBDictionary>>; they are now declared by the superclass, which is only observable through reflection on the declared members of the two classes.
 

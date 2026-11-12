@@ -27,6 +27,7 @@ import java.util.Locale;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -54,7 +55,7 @@ public class Schemas {
 
     public static DBIdentifier getNewTableSchemaIdentifier(JDBCConfiguration conf) {
         if (conf.getSchema() != null)
-            return DBIdentifier.newSchema(conf.getSchema());
+            return normalize(conf, DBIdentifier.newSchema(conf.getSchema()));
 
         String[] schemas = conf.getSchemasList();
         if (schemas.length == 0)
@@ -63,7 +64,16 @@ public class Schemas {
         if (names.length == 0 || StringUtil.isEmpty(names[0])) {
             return DBIdentifier.NULL;
         }
-        return DBIdentifier.newSchema(names[0]);
+        return normalize(conf, DBIdentifier.newSchema(names[0]));
+    }
+
+    /**
+     * Returns the given configured name as the dictionary of the
+     * configuration names it.
+     */
+    private static DBIdentifier normalize(JDBCConfiguration conf, DBIdentifier name) {
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        return dict == null ? name : dict.normalize(name);
     }
 
     /**

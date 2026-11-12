@@ -501,6 +501,10 @@ public abstract class MappingInfo implements Serializable {
         if (DBIdentifier.isNull(given) && (def == null || (!adapt
             && !repos.getMappingDefaults().defaultMissingInfo())))
             throw new MetaDataException(_loc.get("no-table", context));
+        // the given names may not be named for the dictionary yet
+        DBDictionary dict = repos.getDBDictionary();
+        given = dict.normalize(given);
+        schemaName = dict.normalize(schemaName);
 
         if (DBIdentifier.isNull(schemaName)) {
             //Check the configuration first for a set Schema to use
@@ -511,7 +515,7 @@ public abstract class MappingInfo implements Serializable {
             // and if available use it.
             if (schemaName != null && (schemaName.getType() == DBIdentifierType.NULL)) {
                 String name = repos.getMetaDataFactory().getDefaults().getDefaultSchema();
-                schemaName = (name != null ? DBIdentifier.newSchema(name) : schemaName);
+                schemaName = (name != null ? dict.normalize(DBIdentifier.newSchema(name)) : schemaName);
             }
         }
 
@@ -666,6 +670,8 @@ public abstract class MappingInfo implements Serializable {
         // to put the column in an unexpected table
         if (DBIdentifier.isNull(colName))
             colName = tmplate.getIdentifier();
+        // the template name was not named for the dictionary yet
+        colName = dict.normalize(colName);
         QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(colName);
         if (path.isUnqualifiedColumn()) {
             colName = path.getIdentifier();

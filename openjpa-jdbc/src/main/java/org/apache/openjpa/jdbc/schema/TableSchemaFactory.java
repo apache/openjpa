@@ -401,7 +401,9 @@ public class TableSchemaFactory
      * Creates the object-level representation of the sequence table.
      */
     private void buildTable() {
-        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(_table);
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        // the configured name is not named for the dictionary yet
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(dict.normalize(_table));
         DBIdentifier tableName = path.getIdentifier();
         DBIdentifier schemaName = path.getSchemaName();
         if (DBIdentifier.isEmpty(schemaName))
@@ -414,7 +416,6 @@ public class TableSchemaFactory
         Table table = schema.addTable(tableName);
         PrimaryKey pk = table.addPrimaryKey();
 
-        DBDictionary dict = _conf.getDBDictionaryInstance();
         _pkColumn = table.addColumn(dict.getValidColumnName
             (_pkColumnName, table));
         _pkColumn.setType(dict.getPreferredType(Types.TINYINT));

@@ -49,8 +49,8 @@ public class IdentifierRule {
     private boolean _mustBeginWithLetter = true;
     private boolean _onlyLettersDigitsUnderscores = true;
     private String _specialCharacters = "";
-    // volatile: the default rule is shared by all dictionaries of the JVM,
-    // which may be configured by different threads
+    // volatile: a rule, such as the normalizing rule of a dictionary, may be
+    // configured by one thread and used by others
     private volatile Set<String> _reservedWords = null;
     private volatile boolean _delimitReservedWords = false;
     private String _wildcard = "%";

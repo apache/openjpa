@@ -22,21 +22,19 @@ import static org.apache.openjpa.jdbc.sql.Columns.decimal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -335,19 +333,94 @@ public class TestAbstractMySQLDictionary {
     }
 
     /**
-     * The MySQL and MariaDB dictionaries make the default identifier rule of
-     * {@link Normalizer}, which all dictionaries of the JVM share, delimit
-     * their reserved words. Put it back for the tests that run after.
+     * Whether a reserved word is delimited is up to each dictionary rather
+     * than to the dictionary that was configured last in the JVM: a MySQL or
+     * MariaDB dictionary and a dictionary of another database, configured in
+     * either order, name the identifiers as each does alone, and the
+     * identifiers created without a dictionary do not delimit reserved words
+     * (OPENJPA-3076).
      */
-    @After
-    public void tearDown() {
-        resetDelimitingOfReservedWords();
+    @Test
+    public void testReservedWordsAreDelimitedPerDictionary() {
+        for (boolean mysqlFirst : new boolean[] {true, false}) {
+            MySQLDictionary mysql = mysqlFirst ? configure(new MySQLDictionary(), null) : null;
+            DerbyDictionary derby = configure(new DerbyDictionary(), null);
+            if (!mysqlFirst) {
+                mysql = configure(new MySQLDictionary(), null);
+            }
+            assertEquals("\"Rank\"", validTableName(mysql, "Rank"));
+            assertEquals("\"rank\"", validColumnName(mysql, "rank"));
+            assertEquals("RANK", validTableName(derby, "Rank"));
+            assertEquals("RANK", validColumnName(derby, "rank"));
+            // Derby reserves WINDOW as well, and renames it rather than delimiting it
+            assertEquals("\"Window\"", validTableName(mysql, "Window"));
+            assertEquals("WINDOW0", validTableName(derby, "Window"));
+
+            for (String name : new String[] {"Rank", "Window"}) {
+                DBIdentifier table = DBIdentifier.newTable(name);
+                assertSame(table, derby.normalize(table));
+                assertEquals("\"" + name + "\"", mysql.normalize(table).getName());
+                assertEquals(name, table.getName());
+            }
+        }
+        for (boolean mariadbFirst : new boolean[] {true, false}) {
+            MariaDBDictionary mariadb = mariadbFirst ? configure(new MariaDBDictionary(), null) : null;
+            PostgresDictionary postgres = configure(new PostgresDictionary(), null);
+            if (!mariadbFirst) {
+                mariadb = configure(new MariaDBDictionary(), null);
+            }
+            assertEquals("\"offset\"", validColumnName(mariadb, "offset"));
+            assertEquals("\"Order\"", validTableName(mariadb, "Order"));
+            assertEquals("OFFSET0", validColumnName(postgres, "offset"));
+            assertEquals("ORDER0", validTableName(postgres, "Order"));
+            assertEquals("Order", DBIdentifier.newTable("Order").getName());
+        }
     }
 
-    static void resetDelimitingOfReservedWords() {
-        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-        rule.setDelimitReservedWords(false);
-        rule.setReservedWords(Set.of());
+    /**
+     * The dictionary delimits the reserved words in every part of a
+     * qualified name, leaves constants and column definitions alone, and
+     * returns the identifier it is given, unchanged, if no part is such a
+     * word (OPENJPA-3076).
+     */
+    @Test
+    public void testNormalize() {
+        MySQLDictionary mysql = configure(new MySQLDictionary(), null);
+
+        DBIdentifier plain = DBIdentifier.newTable("Item");
+        assertSame(plain, mysql.normalize(plain));
+        DBIdentifier delimited = mysql.normalize(DBIdentifier.newTable("Window"));
+        assertSame(delimited, mysql.normalize(delimited));
+        assertSame(DBIdentifier.NULL, mysql.normalize(DBIdentifier.NULL));
+
+        DBIdentifier constant = DBIdentifier.newConstant("Window");
+        assertSame(constant, mysql.normalize(constant));
+        DBIdentifier definition = DBIdentifier.newColumnDefinition("Rank");
+        assertSame(definition, mysql.normalize(definition));
+
+        QualifiedDBIdentifier path = QualifiedDBIdentifier.getPath(DBIdentifier.newTable("Current.Window"));
+        DBIdentifier normalized = mysql.normalize(path);
+        assertEquals("\"Current\".\"Window\"", normalized.getName());
+        assertEquals("Current.Window", path.getName());
+        QualifiedDBIdentifier column = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("Item"),
+            DBIdentifier.newColumn("Rank"));
+        normalized = mysql.normalize(column);
+        assertEquals("Item.\"Rank\"", normalized.getName());
+        assertEquals("Item", ((QualifiedDBIdentifier) normalized).getObjectTableName().getName());
+        QualifiedDBIdentifier items = QualifiedDBIdentifier.getPath(DBIdentifier.newTable("Shop.Item"));
+        assertSame(items, mysql.normalize(items));
+
+        // the same name is normalized the same way again
+        for (int i = 0; i < 2; i++) {
+            assertEquals("\"Window\"", mysql.normalize(DBIdentifier.newTable("Window")).getName());
+            assertEquals("Item", mysql.normalize(DBIdentifier.newTable("Item")).getName());
+        }
+        // a dictionary that does not delimit reserved words leaves them alone
+        MySQLDictionary compat = configure(new MySQLDictionary(), "UpdatedReservedWords=false");
+        DBIdentifier window = DBIdentifier.newTable("Window");
+        assertSame(window, compat.normalize(window));
+        DerbyDictionary derby = configure(new DerbyDictionary(), null);
+        assertSame(path, derby.normalize(path));
     }
 
     private static <T extends DBDictionary> T configure(T dict, String compatibility) {

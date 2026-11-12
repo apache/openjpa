@@ -108,7 +108,8 @@ public class RelationStrategies {
      */
     public static void mapRelationToUnmappedPC(ValueMapping vm,
         String name, boolean adapt) {
-        mapRelationToUnmappedPC(vm, DBIdentifier.newColumn(name), adapt);
+        mapRelationToUnmappedPC(vm, vm.getMappingRepository().getDBDictionary().normalize(
+            DBIdentifier.newColumn(name)), adapt);
     }
 
     public static void mapRelationToUnmappedPC(ValueMapping vm,

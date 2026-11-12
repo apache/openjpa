@@ -46,7 +46,6 @@ import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,15 +53,6 @@ public class TestMySQLDictionary {
 
     @Rule
     public JUnitRuleMockery context = new JUnitRuleMockery();
-
-    /**
-     * Puts back the delimiting of reserved words that a configured MySQL or
-     * MariaDB dictionary sets for the whole JVM.
-     */
-    @After
-    public void tearDown() {
-        TestAbstractMySQLDictionary.resetDelimitingOfReservedWords();
-    }
 
     @Test
     public void testDBDictionaryGetBatchFetchSize() throws Exception {

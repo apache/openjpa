@@ -69,6 +69,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -85,6 +86,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
@@ -614,6 +616,14 @@ public class DBDictionary
     private DBIdentifierUtil namingUtil = null;
     private final Map<String, IdentifierRule> namingRules = new HashMap<>();
     private IdentifierRule defaultNamingRule = null;  // cached for performance
+    // decides whether a name is delimited when an identifier is named for
+    // this dictionary, see normalize(DBIdentifier)
+    private final DBIdentifierRule normalizingRule = new DBIdentifierRule();
+    // the names normalize(DBIdentifier) gave, by the name it was given, as
+    // it is called for every name written into SQL; bounded, as names may
+    // come from outside, such as the columns of a native query
+    private final Map<String, String> normalizedNames = new ConcurrentHashMap<>();
+    private static final int MAX_NORMALIZED_NAMES = 4096;
 
     /**
      * If a native query begins with any of the values found here then it will
@@ -741,6 +751,8 @@ public class DBDictionary
      * override this method, providing their own naming rules.
      */
     protected void configureNamingRules() {
+        // the normalizing rule is set up anew
+        normalizedNames.clear();
         // Add the default naming rule
         DBIdentifierRule defRule = new DBIdentifierRule(DBIdentifierType.DEFAULT, reservedWordSet);
         namingRules.put(defRule.getName(), defRule);
@@ -752,10 +764,85 @@ public class DBDictionary
 
         DBIdentifierRule columnNamingRule = new ColumnIdentifierRule(invalidColumnWordSet);
         namingRules.put(columnNamingRule.getName(), columnNamingRule);
-        // restoring default "empty" cfg, switching the delimiting off before the words are removed
-        IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
-        rule.setDelimitReservedWords(false);
-        rule.setReservedWords(Set.of());
+        // the default rule of Normalizer, which all dictionaries of the JVM
+        // share, is left alone: a dictionary that delimits reserved words
+        // does so with its own normalizing rule
+    }
+
+    /**
+     * The rule with which {@link #normalize(DBIdentifier)} decides whether a
+     * name is delimited. Like the default rule of {@link Normalizer} it
+     * delimits no reserved words, unless a dictionary sets them and switches
+     * their delimiting on in {@link #configureNamingRules()}.
+     *
+     * @since 4.2.0
+     */
+    protected IdentifierRule getNormalizingRule() {
+        return normalizingRule;
+    }
+
+    /**
+     * Returns the given identifier as it is named for this dictionary.
+     * Identifiers are created by {@link Normalizer}, which delimits a name
+     * that is no valid SQL identifier, but no reserved word, as the reserved
+     * words differ from database to database and the rule of
+     * {@link Normalizer} is shared by all dictionaries of the JVM. If the
+     * {@link #getNormalizingRule() normalizing rule} of this dictionary
+     * delimits reserved words, as on MySQL and MariaDB, a name of the
+     * identifier that is such a word is delimited, as if the identifier had
+     * been created with that rule: it keeps its case, and the names built from
+     * it are delimited too. Otherwise the identifier is returned as it is.
+     *
+     * @return the given identifier, or a delimited copy of it
+     * @since 4.2.0
+     */
+    public DBIdentifier normalize(DBIdentifier name) {
+        if (!normalizingRule.getDelimitReservedWords() || DBIdentifier.isNull(name)
+            || name.getType() == DBIdentifierType.CONSTANT
+            || name.getType() == DBIdentifierType.COLUMN_DEFINITION) {
+            return name;
+        }
+        if (name instanceof QualifiedDBIdentifier path) {
+            DBIdentifier schema = normalize(path.getSchemaName());
+            DBIdentifier table = normalize(path.getObjectTableName());
+            String base = normalizeName(path.getBaseName());
+            if (schema == path.getSchemaName() && table == path.getObjectTableName()
+                && Objects.equals(base, path.getBaseName())) {
+                return name;
+            }
+            QualifiedDBIdentifier sPath = path.clone();
+            // setting the name resets the schema and table names
+            sPath.setName(base);
+            sPath.setSchemaName(schema);
+            sPath.setObjectTableName(table);
+            return sPath;
+        }
+        String str = name.getName();
+        String normalized = normalizeName(str);
+        if (Objects.equals(str, normalized)) {
+            return name;
+        }
+        DBIdentifier sName = name.clone();
+        sName.setName(normalized);
+        return sName;
+    }
+
+    /**
+     * Returns the given single part name, delimited if the
+     * {@link #getNormalizingRule() normalizing rule} requires it.
+     */
+    private String normalizeName(String name) {
+        if (name == null) {
+            return null;
+        }
+        String normalized = normalizedNames.get(name);
+        if (normalized == null) {
+            normalized = Normalizer.normalizeString(name, normalizingRule);
+            if (normalizedNames.size() < MAX_NORMALIZED_NAMES) {
+                normalizedNames.put(name, normalized);
+            }
+        }
+        return normalized;
     }
 
     //////////////////////
@@ -6658,14 +6745,14 @@ public class DBDictionary
 
     public String toDBName(DBIdentifier name) {
         if (!getSupportsDelimitedIdentifiers())
-            return name.getName();
+            return normalize(name).getName();
         else
             return getNamingUtil().toDBName(name);
     }
 
     public String toDBName(DBIdentifier name, boolean delimit) {
         if (!getSupportsDelimitedIdentifiers())
-            return name.getName();
+            return (delimit ? normalize(name) : name).getName();
         else
             return getNamingUtil().toDBName(name, delimit);
     }

@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.meta.JavaTypes;
@@ -323,11 +324,12 @@ public class FieldMappingInfo
         Column tmplate = new Column();
         // Compatibility option determines what should be used for
         // the default order column name
-        boolean delimit = field.getMappingRepository().getDBDictionary().delimitAll();
+        DBDictionary dict = field.getMappingRepository().getDBDictionary();
+        boolean delimit = dict.delimitAll();
         if (field.getMappingRepository().getConfiguration()
             .getCompatibilityInstance().getUseJPA2DefaultOrderColumnName()) {
             // Use the same strategy as column to build the field name
-            DBIdentifier sName = DBIdentifier.newColumn(field.getName(), delimit);
+            DBIdentifier sName = dict.normalize(DBIdentifier.newColumn(field.getName(), delimit));
             sName = DBIdentifier.append(sName,"_ORDER");
             tmplate.setIdentifier(sName);
         } else {

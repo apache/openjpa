@@ -84,7 +84,8 @@ public abstract class MapTableFieldStrategy
     protected DBIdentifier getDefaultKeyColumnName() {
         if (field.getMappingRepository().getConfiguration().
             getCompatibilityInstance().getUseSpecDefaultMapKeyColumnName())
-            return DBIdentifier.newColumn(field.getName() + "_KEY");
+            return field.getMappingRepository().getDBDictionary().normalize(
+                DBIdentifier.newColumn(field.getName() + "_KEY"));
         return field.getMappingRepository().getDBDictionary().
             getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
     }

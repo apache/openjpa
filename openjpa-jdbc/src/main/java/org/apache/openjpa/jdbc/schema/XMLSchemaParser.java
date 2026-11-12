@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
@@ -241,7 +243,8 @@ public class XMLSchemaParser
         Iterator<String> cols;
         for (ForeignKeyInfo info : _fkInfos) {
             fkInfo = info;
-            toTable = _group.findTable(fkInfo.toTable);
+            toTable = _group.findTable(QualifiedDBIdentifier.getPath(
+                _dict.normalize(DBIdentifier.newTable(fkInfo.toTable))));
             if (toTable == null || toTable.getPrimaryKey() == null)
                 throwUserException(_loc.get("fk-totable", new Object[]
                         {fkInfo.fk, fkInfo.toTable, fkInfo.fk.getTable()}));
@@ -404,7 +407,7 @@ public class XMLSchemaParser
         // creates group if not set
         SchemaGroup group = getSchemaGroup();
 
-        String name = attrs.getValue("name");
+        DBIdentifier name = _dict.normalize(DBIdentifier.newSchema(attrs.getValue("name")));
         _schema = group.getSchema(name);
         if (_schema == null)
             _schema = group.addSchema(name);
@@ -415,7 +418,7 @@ public class XMLSchemaParser
     }
 
     private void startSequence(Attributes attrs) {
-        Sequence seq = _schema.addSequence(attrs.getValue("name"));
+        Sequence seq = _schema.addSequence(_dict.normalize(DBIdentifier.newSequence(attrs.getValue("name"))));
         Locator locator = getLocation().getLocator();
         if (locator != null) {
             seq.setLineNumber(locator.getLineNumber());
@@ -438,7 +441,7 @@ public class XMLSchemaParser
     }
 
     private void startTable(Attributes attrs) {
-        _table = _schema.addTable(attrs.getValue("name"));
+        _table = _schema.addTable(_dict.normalize(DBIdentifier.newTable(attrs.getValue("name"))));
         _table.setSource(getSourceFile(), SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
@@ -452,7 +455,7 @@ public class XMLSchemaParser
     }
 
     private void startColumn(Attributes attrs) {
-        Column col = _table.addColumn(attrs.getValue("name"));
+        Column col = _table.addColumn(_dict.normalize(DBIdentifier.newColumn(attrs.getValue("name"))));
         col.setType(_dict.getPreferredType(Schemas.getJDBCType
             (attrs.getValue("type"))));
         col.setTypeName(attrs.getValue("type-name"));
@@ -470,7 +473,7 @@ public class XMLSchemaParser
 
     private void startPrimaryKey(Attributes attrs) {
         _pk = new PrimaryKeyInfo();
-        _pk.pk = _table.addPrimaryKey(attrs.getValue("name"));
+        _pk.pk = _table.addPrimaryKey(_dict.normalize(DBIdentifier.newConstraint(attrs.getValue("name"))));
         _pk.pk.setLogical("true".equals(attrs.getValue("logical")));
 
         String val = attrs.getValue("column");
@@ -485,7 +488,7 @@ public class XMLSchemaParser
 
     private void startIndex(Attributes attrs) {
         _index = new IndexInfo();
-        _index.index = _table.addIndex(attrs.getValue("name"));
+        _index.index = _table.addIndex(_dict.normalize(DBIdentifier.newIndex(attrs.getValue("name"))));
         _index.index.setUnique("true".equals(attrs.getValue("unique")));
 
         String val = attrs.getValue("column");
@@ -500,7 +503,7 @@ public class XMLSchemaParser
 
     private void startUnique(Attributes attrs) {
         _unq = new UniqueInfo();
-        _unq.unq = _table.addUnique(attrs.getValue("name"));
+        _unq.unq = _table.addUnique(_dict.normalize(DBIdentifier.newConstraint(attrs.getValue("name"))));
         _unq.unq.setDeferred("true".equals(attrs.getValue("deferred")));
 
         String val = attrs.getValue("column");
@@ -515,7 +518,7 @@ public class XMLSchemaParser
 
     private void startForeignKey(Attributes attrs) {
         _fk = new ForeignKeyInfo();
-        _fk.fk = _table.addForeignKey(attrs.getValue("name"));
+        _fk.fk = _table.addForeignKey(_dict.normalize(DBIdentifier.newForeignKey(attrs.getValue("name"))));
 
         if ("true".equals(attrs.getValue("deferred")))
             _fk.fk.setDeferred(true);

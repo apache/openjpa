@@ -182,9 +182,12 @@ public class NativeJDBCSeq
 
     @Override
     public void endConfiguration() {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        // the configured names are not named for the dictionary yet
+        _seqName = dict.normalize(_seqName);
+        _schema = dict.normalize(_schema);
         buildSequence();
 
-        DBDictionary dict = _conf.getDBDictionaryInstance();
         String format = dict.nextSequenceQuery;
         if (format == null) {
             throw new MetaDataException(_loc.get("no-seq-sql", _seqName));

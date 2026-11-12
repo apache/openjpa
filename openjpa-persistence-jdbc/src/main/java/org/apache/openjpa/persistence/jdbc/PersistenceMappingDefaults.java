@@ -150,7 +150,7 @@ public class PersistenceMappingDefaults
 
         DBIdentifier sName = DBIdentifier.NULL;
         if (fm.isElementCollection())
-            sName = DBIdentifier.newTable(clm.getTypeAlias());
+            sName = dict.normalize(DBIdentifier.newTable(clm.getTypeAlias()));
         else
             sName = table.getIdentifier();
 
@@ -165,7 +165,7 @@ public class PersistenceMappingDefaults
             sName2 = rel.getTable().getIdentifier();
         }
         else {
-            sName2 = DBIdentifier.newTable(fm.getName().replace('$', '_'));
+            sName2 = dict.normalize(DBIdentifier.newTable(fm.getName().replace('$', '_')));
         }
 
         sName = DBIdentifier.combine(sName, sName2.getName());
@@ -209,9 +209,9 @@ public class PersistenceMappingDefaults
         FieldMapping[] inverses = fm.getInverseMappings();
         DBIdentifier sName = DBIdentifier.NULL;
         if (inverses.length > 0)
-            sName = DBIdentifier.newColumn(inverses[0].getName());
+            sName = dict.normalize(DBIdentifier.newColumn(inverses[0].getName()));
         else
-            sName = DBIdentifier.newColumn(fm.getDefiningMapping().getTypeAlias());
+            sName = dict.normalize(DBIdentifier.newColumn(fm.getDefiningMapping().getTypeAlias()));
         DBIdentifier targetName = ((Column) target).getIdentifier();
         DBIdentifier tempName = DBIdentifier.NULL;
         if ((sName.length() + targetName.length()) >= dict.maxColumnNameLength)
@@ -229,7 +229,7 @@ public class PersistenceMappingDefaults
     public void populateForeignKeyColumn(ValueMapping vm, String name,
         Table local, Table foreign, Column col, Object target, boolean inverse,
         int pos, int cols) {
-         populateForeignKeyColumn(vm, DBIdentifier.newColumn(name), local,
+         populateForeignKeyColumn(vm, dict.normalize(DBIdentifier.newColumn(name)), local,
             foreign, col, target, inverse, pos, cols);
     }
 
@@ -253,9 +253,9 @@ public class PersistenceMappingDefaults
                 sName = col.getIdentifier();
             } else {
                 if (elem)
-                    sName = DBIdentifier.newColumn(vm.getFieldMapping().getName());
+                    sName = dict.normalize(DBIdentifier.newColumn(vm.getFieldMapping().getName()));
                 if (isRemoveHungarianNotation())
-                    sName = DBIdentifier.newColumn(Normalizer.removeHungarianNotation(sName.getName()));
+                    sName = dict.normalize(DBIdentifier.newColumn(Normalizer.removeHungarianNotation(sName.getName())));
                 sName = DBIdentifier.combine(sName, ((Column)target).getIdentifier().getName());
 
                 // No need to check for uniqueness.
@@ -270,7 +270,7 @@ public class PersistenceMappingDefaults
         // check for version field and use its name as column name
         FieldMapping fm = vers.getClassMapping().getVersionFieldMapping();
         if (fm != null && cols.length == 1)
-            cols[0].setIdentifier(DBIdentifier.newColumn(fm.getName()));
+            cols[0].setIdentifier(dict.normalize(DBIdentifier.newColumn(fm.getName())));
         else
             super.populateColumns(vers, table, cols);
     }
