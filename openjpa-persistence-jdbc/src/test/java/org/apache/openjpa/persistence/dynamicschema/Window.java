@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 /**
- * An entity whose default table name is a word that MySQL 8.0 and later
- * reserve, which cannot be a table name as it is (OPENJPA-3074).
+ * An entity whose name and attribute names are words Derby rejects as
+ * unquoted identifiers (OPENJPA-3075). Its default table name is also a word
+ * that MySQL 8.0 and later reserve (OPENJPA-3074). The table and the
+ * collection table are named by the JPA mapping defaults.
  */
 @Entity
 public class Window {
@@ -31,7 +37,22 @@ public class Window {
     @Id
     private int id;
 
+    private String cursors;
+
+    private String window;
+
+    private String definer;
+
+    private String invoker;
+
+    private String xmlquery;
+
+    private boolean deterministic;
+
     private String label;
+
+    @ElementCollection
+    private List<String> panes = new ArrayList<>();
 
     public Window() {
     }
@@ -43,6 +64,62 @@ public class Window {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getCursors() {
+        return cursors;
+    }
+
+    public void setCursors(String cursors) {
+        this.cursors = cursors;
+    }
+
+    public String getWindow() {
+        return window;
+    }
+
+    public void setWindow(String window) {
+        this.window = window;
+    }
+
+    public String getDefiner() {
+        return definer;
+    }
+
+    public void setDefiner(String definer) {
+        this.definer = definer;
+    }
+
+    public String getInvoker() {
+        return invoker;
+    }
+
+    public void setInvoker(String invoker) {
+        this.invoker = invoker;
+    }
+
+    public String getXmlquery() {
+        return xmlquery;
+    }
+
+    public void setXmlquery(String xmlquery) {
+        this.xmlquery = xmlquery;
+    }
+
+    public boolean isDeterministic() {
+        return deterministic;
+    }
+
+    public void setDeterministic(boolean deterministic) {
+        this.deterministic = deterministic;
+    }
+
+    public List<String> getPanes() {
+        return panes;
     }
 
     public String getLabel() {

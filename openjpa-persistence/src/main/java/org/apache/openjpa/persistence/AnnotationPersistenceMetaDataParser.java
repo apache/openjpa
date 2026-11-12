@@ -2003,7 +2003,8 @@ public class AnnotationPersistenceMetaDataParser
         String seq = gen.sequenceName();
         // JPA spec: when sequenceName is not specified, use the generator name
         // as the database sequence name
-        if (StringUtil.isEmpty(seq)) {
+        boolean defaultSeq = StringUtil.isEmpty(seq);
+        if (defaultSeq) {
             seq = name;
         }
         // Do not normalize the sequence name if it appears to be a plugin
@@ -2035,6 +2036,7 @@ public class AnnotationPersistenceMetaDataParser
 
         meta.setSequencePlugin(Configurations.getPlugin(clsName, props));
         meta.setSequence(seq);
+        meta.setDefaultSequence(defaultSeq && seq != null);
         meta.setInitialValue(initial);
         meta.setAllocate(allocate);
         meta.setSchema(schema);

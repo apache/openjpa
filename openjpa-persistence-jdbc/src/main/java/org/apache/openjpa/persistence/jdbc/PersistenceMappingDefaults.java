@@ -125,9 +125,16 @@ public class PersistenceMappingDefaults
 
     @Override
     public String getTableName(ClassMapping cls, Schema schema) {
-        if (cls.getTypeAlias() != null)
-            return cls.getTypeAlias();
-        return ClassUtil.getClassName(cls.getDescribedType()).replace('$', '_');
+        String name;
+        if (cls.getTypeAlias() != null) {
+            name = cls.getTypeAlias();
+        } else {
+            name = ClassUtil.getClassName(cls.getDescribedType()).replace('$', '_');
+        }
+        // the entity name is used as it is, unless the database rejects it
+        DBIdentifier sName = DBIdentifier.newTable(name);
+        DBIdentifier validName = getValidDefaultTableName(sName);
+        return validName == sName ? name : validName.getName();
     }
 
     @Override
@@ -163,7 +170,17 @@ public class PersistenceMappingDefaults
 
         sName = DBIdentifier.combine(sName, sName2.getName());
 
-        return sName;
+        return getValidDefaultTableName(sName);
+    }
+
+    /**
+     * Make the given default table name valid if the database rejects it.
+     */
+    private DBIdentifier getValidDefaultTableName(DBIdentifier name) {
+        if (dict == null) {
+            return name;
+        }
+        return dict.getValidDefaultTableName(name);
     }
 
     private Table getTable(ClassMapping clm) {

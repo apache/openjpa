@@ -384,6 +384,24 @@ public class SequenceMapping extends SequenceMetaData {
         return name.append(seq).toString();
     }
 
+    /**
+     * A default sequence name, the generator name, is used as it is, unless
+     * the database rejects it.
+     *
+     * @see DBDictionary#getValidDefaultSequenceName(DBIdentifier)
+     */
+    @Override
+    protected String getConfiguredSequence() {
+        String seq = super.getConfiguredSequence();
+        if (!isDefaultSequence() || StringUtil.isEmpty(seq)
+            || !(getRepository().getConfiguration() instanceof JDBCConfiguration conf)) {
+            return seq;
+        }
+        DBIdentifier sName = DBIdentifier.newSequence(seq);
+        DBIdentifier validName = conf.getDBDictionaryInstance().getValidDefaultSequenceName(sName);
+        return validName == sName ? seq : validName.getName();
+    }
+
     @Override
     protected void addStandardProperties(StringBuilder props) {
         super.addStandardProperties(props);
