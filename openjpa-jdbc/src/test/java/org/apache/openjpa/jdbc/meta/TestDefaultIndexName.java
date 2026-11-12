@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -38,20 +38,20 @@ import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The default name of an index over several columns is built from the column
  * names without their delimiters (OPENJPA-3079).
  */
-public class TestDefaultIndexName {
+class TestDefaultIndexName {
 
     /**
      * Puts back the delimiting of reserved words that a configured MySQL
      * dictionary sets for the whole JVM.
      */
-    @After
+    @AfterEach
     public void tearDown() {
         IdentifierRule rule = Normalizer.getNamingConfiguration().getDefaultIdentifierRule();
         rule.setDelimitReservedWords(false);
@@ -59,7 +59,7 @@ public class TestDefaultIndexName {
     }
 
     @Test
-    public void testDerby() {
+    void derby() {
         DBDictionary dict = configure(new DerbyDictionary());
         assertIndex(dict, "I_SCORES_RANK_POINTS", "CREATE INDEX I_SCORES_RANK_POINTS ON SCORES (",
             "\"rank\"", "POINTS");
@@ -70,7 +70,7 @@ public class TestDefaultIndexName {
     }
 
     @Test
-    public void testMySQL() {
+    void mySQL() {
         DBDictionary dict = configure(new MySQLDictionary());
         assertIndex(dict, "I_SCORES_RANK_POINTS", "CREATE INDEX I_SCORES_RANK_POINTS ON SCORES (",
             "\"rank\"", "POINTS");
@@ -81,7 +81,7 @@ public class TestDefaultIndexName {
     }
 
     @Test
-    public void testPostgres() {
+    void postgres() {
         DBDictionary dict = configure(new PostgresDictionary());
         assertIndex(dict, "I_SCORES_RANK_POINTS", "CREATE INDEX I_SCORES_RANK_POINTS ON SCORES (",
             "\"rank\"", "POINTS");
@@ -95,7 +95,7 @@ public class TestDefaultIndexName {
      * A name that needs delimiters as a whole is delimited once.
      */
     @Test
-    public void testNameDelimitedAsWhole() {
+    void nameDelimitedAsWhole() {
         DBDictionary dict = configure(new DerbyDictionary());
         assertIndex(dict, "\"I_SCORES_my rank_POINTS\"",
             "CREATE INDEX \"I_SCORES_my rank_POINTS\" ON SCORES (", "\"my rank\"", "POINTS");
@@ -122,6 +122,6 @@ public class TestDefaultIndexName {
             idx.addColumn(col);
         }
         String sql = dict.getCreateIndexSQL(idx)[0];
-        assertTrue(sql, sql.startsWith(sqlPrefix));
+        assertTrue(sql.startsWith(sqlPrefix), sql);
     }
 }
