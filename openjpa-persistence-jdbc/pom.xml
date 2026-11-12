@@ -48,16 +48,59 @@
                 <openjpa.DynamicEnhancementAgent>true</openjpa.DynamicEnhancementAgent>
                 <!--
                     The agent must be attached via -javaagent: on JDK 9+ there is no tools.jar for the self-attach path to use.
-                    The kernel jar is used because it is already on the test classpath (fat jar will introduce a second copy of the OpenJPA classes)
+                    The agent jar built below only holds a manifest. PCEnhancerAgent is loaded by the system class loader
+                    from the test classpath, so this works in a reactor build without installing openjpa-kernel first and
+                    does not add a second copy of the OpenJPA classes.
                 -->
+                <enhancer.agent.jar>${project.build.directory}/enhancer-agent/openjpa-enhancer-agent.jar</enhancer.agent.jar>
                 <surefire.jvm.args>
                     -Dopenjpa.RuntimeUnenhancedClasses=unsupported
-                    -javaagent:${settings.localRepository}/org/apache/openjpa/openjpa-kernel/${project.version}/openjpa-kernel-${project.version}.jar
+                    -javaagent:${enhancer.agent.jar}
                     ${test.jvm.arguments}
                 </surefire.jvm.args>
             </properties>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <!--
+                                Test classes left over from a normal build are already enhanced and
+                                would not be compiled again. Remove them so the agent enhances at load time.
+                            -->
+                            <execution>
+                                <id>clean-enhanced-test-classes</id>
+                                <phase>generate-test-sources</phase>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${project.build.testOutputDirectory}" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>enhancer-agent-jar</id>
+                                <phase>process-test-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <jar destfile="${enhancer.agent.jar}" whenmanifestonly="create">
+                                            <manifest>
+                                                <attribute name="Premain-Class" value="org.apache.openjpa.enhance.PCEnhancerAgent" />
+                                                <attribute name="Can-Redefine-Classes" value="true" />
+                                                <attribute name="Can-Retransform-Classes" value="true" />
+                                            </manifest>
+                                        </jar>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
