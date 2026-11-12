@@ -33,9 +33,10 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for JPA schema generation annotations:
@@ -44,28 +45,10 @@ import org.junit.jupiter.api.Test;
  * - @SequenceGenerator name used as database sequence name (sequenceGenerator TCK test)
  */
 class TestSchemaGenAnnotations extends SingleEMFTestCase {
-
-    private File tempDir;
-
     @BeforeEach
     public void setUp() throws Exception {
-        tempDir = Files.createTempDirectory("openjpa-sga-test").toFile();
         setUp(SchemaGenDept.class, SchemaGenEmp.class,
               SchemaGenSecondary.class);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
-        if (tempDir != null) {
-            File[] files = tempDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    f.delete();
-                }
-            }
-            tempDir.delete();
-        }
     }
 
     /**
@@ -74,7 +57,7 @@ class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * in the create script.
      */
     @Test
-    void joinColumnForeignKeyConstraint() throws Exception {
+    void joinColumnForeignKeyConstraint(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -122,7 +105,7 @@ class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * column and FK constraint in the create script.
      */
     @Test
-    void secondaryTableGeneration() throws Exception {
+    void secondaryTableGeneration(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.simple;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -48,16 +47,13 @@ class TestNonEntityInPersistenceUnit {
 
     @BeforeEach
     void setUp() throws Exception {
-        Map<String, Object> props = new HashMap<>();
-        props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
-        props.put("openjpa.RuntimeUnenhancedClasses", "supported");
-        props.put("openjpa.DynamicEnhancementAgent", "false");
-        // Include both a real entity AND a non-entity exception class
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types="
+        Map<String, Object> props = Map.of(
+            "openjpa.jdbc.SynchronizeMappings", "buildSchema",
+            "openjpa.RuntimeUnenhancedClasses", "supported",
+            "openjpa.DynamicEnhancementAgent", "false",
+            "openjpa.MetaDataFactory", "jpa(Types="
                 + AllFieldTypes.class.getName() + ";"
-                + NotAnEntity.class.getName()
-                + ")");
+                + NotAnEntity.class.getName() + ")");
         emf = Persistence.createEntityManagerFactory("test", props);
     }
 
@@ -113,6 +109,7 @@ class TestNonEntityInPersistenceUnit {
             em.flush();
             em.getTransaction().commit();
         } catch (Exception e) {
+            e.printStackTrace();
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }

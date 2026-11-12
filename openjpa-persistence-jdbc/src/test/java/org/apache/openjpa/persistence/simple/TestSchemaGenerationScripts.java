@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -31,14 +30,16 @@ import java.util.Locale;
 import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests JPA schema generation script output via
@@ -46,11 +47,8 @@ import org.junit.jupiter.api.Test;
  */
 class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
-    private File tempDir;
-
     @BeforeEach
     public void setUp() throws Exception {
-        tempDir = Files.createTempDirectory("openjpa-schema-gen").toFile();
         // Use AllFieldTypes as a simple entity to generate DDL for
         setUp(AllFieldTypes.class);
     }
@@ -58,15 +56,9 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-        if (tempDir != null) {
-            File[] files = tempDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    f.delete();
-                }
-            }
-            tempDir.delete();
-        }
+        JDBCConfiguration conf = (JDBCConfiguration) createEMF().getConfiguration();
+        SchemaTool.clearDroppedTables(conf);   // forget the intentional drops
+        createEMF(AllFieldTypes.class);
     }
 
     /**
@@ -74,7 +66,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * generates DDL script files without touching the database.
      */
     @Test
-    void scriptsActionDropAndCreate() throws Exception {
+    void scriptsActionDropAndCreate(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "create.sql");
         File dropFile = new File(tempDir, "drop.sql");
 
@@ -108,7 +100,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that scripts.action=create generates only the create script.
      */
     @Test
-    void scriptsActionCreateOnly() throws Exception {
+    void scriptsActionCreateOnly(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "create_only.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -133,7 +125,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that file: URIs are properly resolved to file paths.
      */
     @Test
-    void fileUriScriptTarget() throws Exception {
+    void fileUriScriptTarget(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "uri_create.sql");
         File dropFile = new File(tempDir, "uri_drop.sql");
 
@@ -225,7 +217,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test that PrintWriter wrapping a File works (mirrors TCK pattern).
      */
     @Test
-    void printWriterToFile() throws Exception {
+    void printWriterToFile(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "pw_file_create.sql");
         File dropFile = new File(tempDir, "pw_file_drop.sql");
         PrintWriter pw1 = new PrintWriter(createFile);
@@ -289,7 +281,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * This mirrors the TCK annotation test pattern.
      */
     @Test
-    void fileUriScriptSource() throws Exception {
+    void fileUriScriptSource(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         // Step 1: Generate create and drop scripts to files
         File createFile = new File(tempDir, "source_create.sql");
         File dropFile = new File(tempDir, "source_drop.sql");
@@ -350,7 +342,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * which mirrors the TCK's global provider-specific property setting.
      */
     @Test
-    void tckAnnotationPattern() throws Exception {
+    void tckAnnotationPattern(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "tck_create.sql");
         File dropFile = new File(tempDir, "tck_drop.sql");
 
@@ -467,7 +459,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * actually drops the table. Mirrors the TCK annotation test pattern.
      */
     @Test
-    void generateSchemaDropScriptExecution() throws Exception {
+    void generateSchemaDropScriptExecution(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         // Step 1: Generate drop script (table already exists from setUp)
         File dropFile = new File(tempDir, "tck_drop.sql");
         EntityManagerFactory emf2 = createEMF(
@@ -529,7 +521,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * @JoinTable with @ForeignKey annotations.
      */
     @Test
-    void joinTableForeignKeyInScripts() throws Exception {
+    void joinTableForeignKeyInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "jt_create.sql");
         File dropFile = new File(tempDir, "jt_drop.sql");
 
@@ -581,7 +573,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * for entities with @Index annotations.
      */
     @Test
-    void indexAnnotationInScripts() throws Exception {
+    void indexAnnotationInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "index_create.sql");
         File dropFile = new File(tempDir, "index_drop.sql");
 
@@ -669,7 +661,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK orderColumnTest drop script expectations.
      */
     @Test
-    void dropScriptContainsForeignKeyDrop() throws Exception {
+    void dropScriptContainsForeignKeyDrop(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -717,7 +709,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK orderColumnTest create script expectations.
      */
     @Test
-    void orderColumnInCreateScript() throws Exception {
+    void orderColumnInCreateScript(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "oc_create.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -750,7 +742,7 @@ class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Mirrors the TCK secondaryTableTest expectations.
      */
     @Test
-    void secondaryTableInScripts() throws Exception {
+    void secondaryTableInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 
