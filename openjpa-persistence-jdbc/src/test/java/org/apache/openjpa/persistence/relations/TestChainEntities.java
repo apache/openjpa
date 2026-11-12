@@ -20,10 +20,12 @@ package org.apache.openjpa.persistence.relations;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestChainEntities extends SingleEMFTestCase {
 
 	/*

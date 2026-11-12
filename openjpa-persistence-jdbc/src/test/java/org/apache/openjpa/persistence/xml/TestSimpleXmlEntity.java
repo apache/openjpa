@@ -22,13 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestSimpleXmlEntity
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestSimpleXmlEntity extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {

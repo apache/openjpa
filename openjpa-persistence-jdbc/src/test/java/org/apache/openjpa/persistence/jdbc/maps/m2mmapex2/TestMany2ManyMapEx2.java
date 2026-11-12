@@ -29,12 +29,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
 
     public int numEmployees = 2;
@@ -43,8 +45,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
     public int numPhoneNumbersPerEmployee = 2;
 
     public Map<Integer, Employee> empMap = new HashMap<>();
-    public Map<Integer, PhoneNumber> phoneMap =
-        new HashMap<>();
+    public Map<Integer, PhoneNumber> phoneMap = new HashMap<>();
 
     public int empId = 1;
     public int phoneId = 1;

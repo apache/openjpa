@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestSerializedLobs extends AnnotationTestCase
 {
 

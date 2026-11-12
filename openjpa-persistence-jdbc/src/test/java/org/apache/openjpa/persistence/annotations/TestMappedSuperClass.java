@@ -24,20 +24,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        PartyId;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Site;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Site1;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Store;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Store1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.PartyId;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestMappedSuperClass extends AnnotationTestCase {
 
     public static Long pkey = 1500L;

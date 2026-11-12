@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.EntityNotFoundException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -56,6 +57,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
+@DynamicEnhancementTest
 public class TestDataCacheBehavesIdentical extends AbstractTestCase {
     private static OpenJPAEntityManagerFactorySPI emfWithDataCache;
     private static OpenJPAEntityManagerFactorySPI emfWithoutDataCache;

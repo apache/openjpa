@@ -32,6 +32,7 @@ import java.util.Collection;
 
 import jakarta.persistence.TypedQuery;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -41,6 +42,7 @@ import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestNamedQueries extends BaseQueryTest {
     @BeforeEach
     void setUp() {

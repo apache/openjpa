@@ -25,12 +25,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
 
     public TestEJBDeleteUpdateImpl() {

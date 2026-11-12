@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -29,10 +30,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestPrecisionMapping extends SingleEMFTestCase {
 
-    private static final String[] _DOUBLE_FIELDS =
-            { "primDbl", "dbl" };
+    private static final String[] _DOUBLE_FIELDS = { "primDbl", "dbl" };
     private static final String _BIG_DECIMAL_FIELD = "bigDecimal";
 
     @BeforeEach

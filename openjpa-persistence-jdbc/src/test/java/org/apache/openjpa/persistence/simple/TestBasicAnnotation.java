@@ -30,6 +30,7 @@ import java.util.Date;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
+@DynamicEnhancementTest
 class TestBasicAnnotation extends SingleEMFTestCase {
     private static String VAL_LOCAL_DATE = "2019-01-01";
     private static String VAL_LOCAL_TIME = "14:57:15";

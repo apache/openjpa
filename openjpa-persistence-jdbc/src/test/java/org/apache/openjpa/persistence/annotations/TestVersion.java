@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.Test;
 
    @author Steve Kim
   */
+@DynamicEnhancementTest
 @AllowFailure(message="excluded")
 public class TestVersion extends AnnotationTestCase
 {

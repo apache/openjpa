@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddedIdClass;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
+@DynamicEnhancementTest
 public class TestEmbeddedId extends AnnotationTestCase
 {
 

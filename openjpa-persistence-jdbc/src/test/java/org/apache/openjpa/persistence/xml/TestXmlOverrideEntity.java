@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -37,6 +38,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestXmlOverrideEntity extends SingleEMFTestCase {
 
     @BeforeEach

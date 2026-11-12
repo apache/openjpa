@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -33,8 +34,8 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestMapCollectionToBlob
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestMapCollectionToBlob extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {

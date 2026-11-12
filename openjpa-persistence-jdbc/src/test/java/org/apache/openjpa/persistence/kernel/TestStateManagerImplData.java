@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -42,6 +43,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestStateManagerImplData extends BaseKernelTest {
 
     ClassMetaData _meta;

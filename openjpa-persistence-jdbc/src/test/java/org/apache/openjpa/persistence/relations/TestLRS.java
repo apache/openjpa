@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityA;
@@ -39,8 +40,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-class TestLRS
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestLRS extends SingleEMFTestCase {
 
     private long id;
 

@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.TablePerClass1;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
+@DynamicEnhancementTest
 public class TestTablePerClassInheritance extends AnnotationTestCase
 {
 
@@ -57,7 +59,7 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
                       currentEntityManager()beddedMapping();
                   assertEquals("TPC_EMB_BASIC", embed.getFieldMapping("basic").
                       getColumns()[0].getName());
-     
+
                   ClassMapping sup = mapping.getPCSuperclassMapping();
                   assertEquals(TablePerClass1.class, sup.getDescribedType());
                   assertTrue(sup.getStrategy() instanceof FullClassStrategy);

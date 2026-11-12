@@ -26,6 +26,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
@@ -43,8 +44,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-class TestEagerBidiSQL
-    extends SQLListenerTestCase {
+@DynamicEnhancementTest
+class TestEagerBidiSQL extends SQLListenerTestCase {
 
     private long id1;
     private long id2;

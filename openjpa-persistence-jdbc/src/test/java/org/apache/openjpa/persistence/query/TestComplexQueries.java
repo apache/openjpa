@@ -30,6 +30,7 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.List;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.query.common.apps.ComplexA;
@@ -43,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
+@DynamicEnhancementTest
 public class TestComplexQueries extends BaseQueryTest {
     @BeforeEach
     void setUp() {

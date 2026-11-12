@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 @AllowFailure(message="excluded")
 public class TestEJBEmbedded extends AnnotationTestCase
 {

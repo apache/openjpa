@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests OPENJPA-199
  */
-class TestBulkUpdatesAndEmbeddedFields
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestBulkUpdatesAndEmbeddedFields extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {

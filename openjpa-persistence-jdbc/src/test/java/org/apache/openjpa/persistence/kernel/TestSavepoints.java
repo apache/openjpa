@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -46,6 +47,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestSavepoints extends BaseKernelTest {
     protected String getSavepointPlugin() {
         return "in-mem";

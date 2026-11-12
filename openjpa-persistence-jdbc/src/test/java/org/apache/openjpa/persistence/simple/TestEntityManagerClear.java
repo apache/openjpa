@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-class TestEntityManagerClear
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestEntityManagerClear extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {

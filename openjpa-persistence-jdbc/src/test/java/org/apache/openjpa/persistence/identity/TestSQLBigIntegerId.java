@@ -25,6 +25,7 @@ import java.math.BigInteger;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +33,8 @@ import org.junit.jupiter.api.Test;
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
  */
-class TestSQLBigIntegerId
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestSQLBigIntegerId extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

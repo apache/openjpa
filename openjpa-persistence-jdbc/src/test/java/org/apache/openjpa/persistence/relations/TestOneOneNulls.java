@@ -25,6 +25,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
  * or when explicitly set to null.
  *
  */
+@DynamicEnhancementTest
 class TestOneOneNulls extends SingleEMFTestCase {
 
     private long pid1;

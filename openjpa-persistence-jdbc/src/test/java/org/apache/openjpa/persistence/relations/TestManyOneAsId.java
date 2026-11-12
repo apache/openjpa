@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +35,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-class TestManyOneAsId
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestManyOneAsId extends SingleEMFTestCase {
 
     private long id;
     private long dsid;

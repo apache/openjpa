@@ -25,6 +25,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.models.library.Book;
@@ -37,8 +38,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestLibService extends SingleEMFTestCase
-        implements TransactionalEntityManagerFactory {
+@DynamicEnhancementTest
+public class TestLibService extends SingleEMFTestCase implements TransactionalEntityManagerFactory {
 
     private static EnumSet<AutoDetachType> txScope =
             EnumSet.allOf(AutoDetachType.class);

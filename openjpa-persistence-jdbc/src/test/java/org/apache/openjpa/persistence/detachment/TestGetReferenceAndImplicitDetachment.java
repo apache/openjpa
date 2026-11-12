@@ -23,14 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestGetReferenceAndImplicitDetachment
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestGetReferenceAndImplicitDetachment extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

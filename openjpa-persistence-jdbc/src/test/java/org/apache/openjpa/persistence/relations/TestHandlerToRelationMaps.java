@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.relations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerRelationMapTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -28,8 +29,8 @@ import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestHandlerToRelationMaps
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestHandlerToRelationMaps extends SingleEMTestCase {
 
     @BeforeEach
     public void setUp() {

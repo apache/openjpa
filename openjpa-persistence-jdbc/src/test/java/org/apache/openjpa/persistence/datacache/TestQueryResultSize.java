@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestQueryResultSize extends AbstractTestCase {
 
 	private static final Logger logger = Logger.getLogger(TestQueryResultSize.class.getCanonicalName());

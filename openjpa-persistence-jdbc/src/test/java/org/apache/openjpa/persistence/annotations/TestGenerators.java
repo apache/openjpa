@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Generator;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestGenerators extends AnnotationTestCase
 {
 

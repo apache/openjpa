@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat2;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestFlatInheritance extends AnnotationTestCase
 {
 

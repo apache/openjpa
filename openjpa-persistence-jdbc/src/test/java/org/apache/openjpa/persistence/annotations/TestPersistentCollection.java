@@ -27,6 +27,7 @@ import java.util.Set;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Albert Lee
  */
+@DynamicEnhancementTest
 class TestPersistentCollection extends SingleEMFTestCase {
 
     @BeforeEach

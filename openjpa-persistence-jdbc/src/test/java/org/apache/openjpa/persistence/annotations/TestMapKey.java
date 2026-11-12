@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.persistence.MapKey;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
+@DynamicEnhancementTest
 public class TestMapKey extends AnnotationTestCase
 {
 
@@ -65,7 +67,7 @@ public class TestMapKey extends AnnotationTestCase
                   assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
                       true).getField("pk"), fm.getKey().getValueMappedByMetaData());
               }
-     
+
               public void testNamedMapKeyMapping() {
                   FieldMapping fm = _mapping.getFieldMapping("namedMapKey");
                   assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
@@ -73,7 +75,7 @@ public class TestMapKey extends AnnotationTestCase
                   assertEquals(_mapping.getRepository().getMetaData(Flat1.class, null,
                       true).getField("basic"), fm.getKey().getValueMappedByMetaData());
               }
-     
+
               public void testInverseOwnerMapKeyMapping() {
                   FieldMapping fm = _mapping.getFieldMapping("inverseOwnerMapKey");
                   assertTrue(fm.getStrategy() instanceof

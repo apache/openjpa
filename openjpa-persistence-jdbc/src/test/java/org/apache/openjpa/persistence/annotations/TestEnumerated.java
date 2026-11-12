@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import jakarta.persistence.InheritanceType;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
+@DynamicEnhancementTest
 public class TestEnumerated extends AnnotationTestCase
 {
 
@@ -57,13 +59,13 @@ public class TestEnumerated extends AnnotationTestCase
                   assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
                   assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
                   assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
-     
+
                   fm = cls.getDeclaredFieldMapping("ordinalEnumeration");
                   assertNotNull(fm);
                   assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());
                   assertEquals(JavaTypes.OBJECT, fm.getTypeCode());
                   assertEquals(JavaTypes.SHORT, fm.getColumns()[0].getJavaType());
-     
+
                   fm = cls.getDeclaredFieldMapping("stringEnumeration");
                   assertNotNull(fm);
                   assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());

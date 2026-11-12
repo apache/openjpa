@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collection;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest2;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestOneToMany extends AnnotationTestCase
 {
 	public TestOneToMany()

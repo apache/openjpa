@@ -28,6 +28,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.ArtCourse;
 import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.Department;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEJBClauses extends AbstractTestCase {
 
     public TestEJBClauses() {

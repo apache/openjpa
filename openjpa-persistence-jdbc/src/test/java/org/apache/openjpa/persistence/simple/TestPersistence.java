@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +34,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Marc Prud'hommeaux
  */
-class TestPersistence
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestPersistence extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

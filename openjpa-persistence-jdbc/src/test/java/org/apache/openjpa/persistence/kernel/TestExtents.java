@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
@@ -41,6 +42,7 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestExtents extends BaseKernelTest {
 
     @BeforeEach

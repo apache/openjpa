@@ -39,6 +39,7 @@ import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.embed.Address;
 import org.apache.openjpa.persistence.embed.Geocode;
@@ -58,6 +59,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
+@DynamicEnhancementTest
 class TestMetamodel extends SingleEMFTestCase {
     private static MetamodelImpl model;
 

@@ -26,6 +26,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -42,8 +43,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kevin Sutter
  */
-class TestGenerationType
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestGenerationType extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

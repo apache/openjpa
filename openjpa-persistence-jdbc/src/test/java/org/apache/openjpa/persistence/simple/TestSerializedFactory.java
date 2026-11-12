@@ -29,6 +29,7 @@ import java.io.Serializable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author David Ezzio
  */
+@DynamicEnhancementTest
 class TestSerializedFactory extends SingleEMFTestCase {
 
     @BeforeEach

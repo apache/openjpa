@@ -30,6 +30,7 @@ import java.util.Set;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -39,8 +40,8 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestInverseEagerSQL
-    extends SQLListenerTestCase {
+@DynamicEnhancementTest
+public class TestInverseEagerSQL extends SQLListenerTestCase {
 
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 4;

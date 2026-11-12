@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
+@DynamicEnhancementTest
 @SuppressWarnings("unchecked")
 public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	private static String LIBRARY_NAME = "LIB";

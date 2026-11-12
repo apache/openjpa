@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Craig Russell
  */
-class TestEntityManagerMethodsThrowAfterClose
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestEntityManagerMethodsThrowAfterClose extends SingleEMTestCase {
 
     private AllFieldTypes aft = new AllFieldTypes();
 

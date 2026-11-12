@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.annotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbeddableSuperSub;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
+@DynamicEnhancementTest
 public class TestEmbeddableSuperclass extends AnnotationTestCase
 {
 

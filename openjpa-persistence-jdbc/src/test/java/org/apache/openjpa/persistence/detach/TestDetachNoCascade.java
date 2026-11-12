@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestDetachNoCascade extends SingleEMFTestCase {
     OpenJPAEntityManager em;
     int id = 0;

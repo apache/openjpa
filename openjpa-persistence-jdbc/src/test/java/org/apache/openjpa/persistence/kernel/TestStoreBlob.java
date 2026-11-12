@@ -32,11 +32,13 @@ package org.apache.openjpa.persistence.kernel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.BlobTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestStoreBlob extends BaseKernelTest {
     @BeforeEach
     void setUp() throws Exception {

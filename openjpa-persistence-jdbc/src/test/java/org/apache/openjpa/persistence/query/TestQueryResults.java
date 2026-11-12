@@ -26,6 +26,7 @@ import java.util.List;
 
 import jakarta.persistence.NoResultException;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Marc Prud'hommeaux
  */
+@DynamicEnhancementTest
 class TestQueryResults extends BaseQueryTest {
     @BeforeEach
     void setUp() {

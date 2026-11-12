@@ -23,12 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestLazyManyToOne extends SQLListenerTestCase {
 
     private int id;

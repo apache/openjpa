@@ -27,6 +27,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
@@ -35,6 +36,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEntityTypeExpression extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;

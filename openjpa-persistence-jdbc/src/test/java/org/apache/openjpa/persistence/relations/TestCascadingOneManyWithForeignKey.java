@@ -29,6 +29,7 @@ import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -40,8 +41,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-class TestCascadingOneManyWithForeignKey
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestCascadingOneManyWithForeignKey extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

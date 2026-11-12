@@ -20,14 +20,15 @@ package org.apache.openjpa.persistence.simple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestTableNamesDefaultToEntityNames
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestTableNamesDefaultToEntityNames extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

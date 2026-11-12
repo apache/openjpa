@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.Test;
  * @author Fay Wang
  *
  */
+@DynamicEnhancementTest
 @SuppressWarnings("unchecked")
 public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	private static String LIBRARY_NAME = "LIB";

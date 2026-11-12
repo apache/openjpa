@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,8 @@ import org.junit.jupiter.api.Test;
  *
  * @author Abe White
  */
-class TestTargetedIFaceRelations
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestTargetedIFaceRelations extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {

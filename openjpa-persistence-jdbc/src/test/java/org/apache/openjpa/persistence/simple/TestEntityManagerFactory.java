@@ -29,9 +29,11 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 class TestEntityManagerFactory {
 
     /*
@@ -50,25 +52,25 @@ class TestEntityManagerFactory {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
-		
+
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
 		assertNotNull(emf);
 		EntityManager em = emf.createEntityManager();
 		assertNotNull(em);
-		
+
 		String countJPQL = "SELECT COUNT(DISTINCT a) FROM AllFieldTypes AS a";
 		long count = em.createQuery(countJPQL, Long.class).getSingleResult();
 		assertEquals(0L, count);
-		
+
 		AllFieldTypes aft = new AllFieldTypes();
 		em.getTransaction().begin();
 		em.persist(aft);
 		em.getTransaction().commit();
-		
+
 		assertNotNull(aft.getUniqueId());
 		count = em.createQuery(countJPQL, Long.class).getSingleResult();
 		assertEquals(1l, count);
-		
+
 		em.close();
 		emf.close();
 	}

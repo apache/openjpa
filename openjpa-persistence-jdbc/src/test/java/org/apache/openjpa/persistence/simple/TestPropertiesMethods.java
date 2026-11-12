@@ -30,6 +30,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.AutoClearType;
@@ -49,8 +50,9 @@ import org.junit.jupiter.api.Test;
  * @author Pinaki Poddar
  *
  */
+@DynamicEnhancementTest
 public class TestPropertiesMethods extends AbstractPersistenceTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestPropertiesMethods.class.getCanonicalName());
     private static final String UNIT_NAME = "test";
     private OpenJPAEntityManagerFactory emf;

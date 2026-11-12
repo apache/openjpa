@@ -25,13 +25,14 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestManyEagerSQL
-    extends SQLListenerTestCase {
+@DynamicEnhancementTest
+class TestManyEagerSQL extends SQLListenerTestCase {
 
     @BeforeEach
     public void setUp() {
