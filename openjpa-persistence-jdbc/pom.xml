@@ -47,7 +47,8 @@
                 <build.enhance>false</build.enhance>
                 <openjpa.DynamicEnhancementAgent>true</openjpa.DynamicEnhancementAgent>
                 <!--
-                    The agent must be attached via -javaagent: on JDK 9+ there is no tools.jar for the self-attach path to use.
+                    The agent is attached via -javaagent, so the suite does not depend on self-attach (which needs
+                    -Djdk.attach.allowAttachSelf=true, see TestDynamicEnhancementAgent).
                     The agent jar built below only holds a manifest. PCEnhancerAgent is loaded by the system class loader
                     from the test classpath, so this works in a reactor build without installing openjpa-kernel first and
                     does not add a second copy of the OpenJPA classes.
