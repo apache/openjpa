@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
@@ -31,14 +31,14 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.meta.NoneMetaDataFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the table names the JPA mapping defaults derive from entity and field
  * names: names the database rejects are made valid, all others are used as
  * they are.
  */
-public class TestDefaultTableNames {
+class TestDefaultTableNames {
 
     /**
      * The described type of the mapping, whose type alias is set to the entity
@@ -88,7 +88,7 @@ public class TestDefaultTableNames {
     }
 
     @Test
-    public void testDerbyRejectedNames() {
+    void derbyRejectedNames() {
         setUp("derby");
         assertEquals(List.of("WINDOW0", "WINDOW0_items", "Window_items"), getTableNames("Window"));
         assertEquals(List.of("ORDER0", "ORDER0_items", "order_items"), getTableNames("order"));
@@ -96,7 +96,7 @@ public class TestDefaultTableNames {
     }
 
     @Test
-    public void testDerbyRejectedCombinedNames() {
+    void derbyRejectedCombinedNames() {
         setUp("derby");
         assertEquals(List.of("Session", "SESSION_USER0", "SESSION_USER0"), getTableNames("Session", "user"));
         assertEquals(List.of("System", "SYSTEM_USER0", "SYSTEM_USER0"), getTableNames("System", "user"));
@@ -104,7 +104,7 @@ public class TestDefaultTableNames {
     }
 
     @Test
-    public void testDerbyAcceptedNames() {
+    void derbyAcceptedNames() {
         setUp("derby");
         for (String name : List.of("Person", "Windows", "Action", "Count", "Session", "System")) {
             assertEquals(List.of(name, name + "_items", name + "_items"), getTableNames(name));
@@ -112,16 +112,16 @@ public class TestDefaultTableNames {
     }
 
     @Test
-    public void testOtherDictionaries() {
+    void otherDictionaries() {
         for (String dictionary : List.of("db2", "h2", "hsql", "mariadb", "mysql", "oracle", "postgres",
                 "sqlserver")) {
             setUp(dictionary);
             for (String name : List.of("Window", "Order", "User", "Session", "Person")) {
-                assertEquals(dictionary, name, getTableNames(name).get(0));
+                assertEquals(name, getTableNames(name).get(0), dictionary);
             }
             // the naming rule of MySQL and MariaDB delimits the names combined
             // from reserved words, so only names of other words are compared
-            assertEquals(dictionary, List.of("Person", "Person_items", "Person_items"), getTableNames("Person"));
+            assertEquals(List.of("Person", "Person_items", "Person_items"), getTableNames("Person"), dictionary);
         }
     }
 }
