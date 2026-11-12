@@ -48,3 +48,27 @@ jobs:
         run: mvn -P${{ matrix.profile }} -B clean install --file pom.xml
       - name: 'Remove snapshots before caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
+
+  # Runs DynamicEnhancementSuite with entities that are not enhanced at build time,
+  # so the enhancer agent has to enhance them when they are loaded. -Dtest keeps the
+  # upstream modules from running their own tests, which the build job covers.
+  dynamic-enhancer:
+    runs-on: ubuntu-latest
+    name: build (Java 21, test-dynamic-enhancer)
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Setup Java JDK
+        uses: actions/setup-java@v6.2.0
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: 'Cache Maven packages'
+        uses: actions/cache@v6.1.0
+        with:
+          path: ~/.m2
+          key: cache-21-test-dynamic-enhancer
+          restore-keys: cache-21-test-dynamic-enhancer
+      - name: 'Test with the dynamic enhancement agent'
+        run: mvn -Ptest-dynamic-enhancer -B clean test -pl openjpa-persistence-jdbc -am -Dtest=DynamicEnhancementSuite -Dsurefire.failIfNoSpecifiedTests=false --file pom.xml
+      - name: 'Remove snapshots before caching'
+        run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf

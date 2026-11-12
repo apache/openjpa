@@ -24,13 +24,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.instrument.Instrumentation;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.CodeSource;
-import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -51,9 +48,13 @@ import org.apache.openjpa.lib.util.Localizer;
 public class InstrumentationFactory {
     private static Instrumentation _inst;
     private static boolean _dynamicallyInstall = true;
+    private static boolean _attachAttempted = false;
     private static final String _name = InstrumentationFactory.class.getName();
     private static final Localizer _loc = Localizer.forPackage(
         InstrumentationFactory.class);
+    private static final String ATTACH_MODULE = "jdk.attach";
+    private static final String VIRTUAL_MACHINE_CLASS = "com.sun.tools.attach.VirtualMachine";
+    private static final String ALLOW_ATTACH_SELF = "jdk.attach.allowAttachSelf";
 
     /**
      * This method is not synchronized because when the agent is loaded from
@@ -93,21 +94,21 @@ public class InstrumentationFactory {
         if (!InstrumentationFactory.class.getClassLoader().equals(ClassLoader.getSystemClassLoader())) {
         	return null;
         }
-        JavaVendors vendor = JavaVendors.getCurrentVendor();
-        File toolsJar = null;
-        
-        // When running on IBM, the attach api classes are packaged in vm.jar which is a part
-        // of the default vm classpath.
-        if (!vendor.isIBM()) {
-            // If we can't find the tools.jar and we're not on IBM we can't load the agent.
-            toolsJar = findToolsJar(log);
-            if (toolsJar == null) {
-                return null;
-            }
+        // The attach is tried once. If it fails, the reason (no jdk.attach
+        // module, self-attach not allowed) does not change for this JVM.
+        if (_attachAttempted) {
+            return null;
         }
+        _attachAttempted = true;
 
-        Class<?> vmClass = loadVMClass(toolsJar, log, vendor);
+        Class<?> vmClass = loadVMClass(log);
         if (vmClass == null) {
+            return null;
+        }
+        if (!isAttachSelfAllowed()) {
+            if (log.isInfoEnabled()) {
+                log.info(_loc.get("dynamic-agent-no-self-attach", ALLOW_ATTACH_SELF));
+            }
             return null;
         }
         String agentPath = getAgentJar(log);
@@ -155,57 +156,6 @@ public class InstrumentationFactory {
         writer.close();
 
         return file.getAbsolutePath();
-    }
-
-    /**
-     * This private worker method attempts to find [java_home]/lib/tools.jar.
-     * Note: The tools.jar is a part of the SDK, it is not present in the JRE.
-     *
-     * @return If tools.jar can be found, a File representing tools.jar. <BR>
-     *         If tools.jar cannot be found, null.
-     */
-    private static File findToolsJar(Log log) {
-        String javaHome = System.getProperty("java.home");
-        File javaHomeFile = new File(javaHome);
-
-        File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-        if (!toolsJarFile.exists()) {
-            if (log.isTraceEnabled()) {
-                log.trace(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath());
-            }
-            // If we're on an IBM SDK, then remove /jre off of java.home and try again.
-            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre")) {
-                javaHomeFile = javaHomeFile.getParentFile();
-                toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-                if (!toolsJarFile.exists()) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
-                            toolsJarFile.getAbsolutePath());
-                    }
-                }
-            } else if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).indexOf("mac") >= 0) {
-                // If we're on a Mac, then change the search path to use ../Classes/classes.jar.
-                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home")) {
-                    javaHomeFile = javaHomeFile.getParentFile();
-                    toolsJarFile = new File(javaHomeFile, "Classes" + File.separator + "classes.jar");
-                    if (!toolsJarFile.exists()) {
-                        if (log.isTraceEnabled()) {
-                            log.trace(_name + ".findToolsJar() -- for Mac OS couldn't find " +
-                                toolsJarFile.getAbsolutePath());
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!toolsJarFile.exists()) {
-            return null;
-        } else {
-            if (log.isTraceEnabled()) {
-                log.trace(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
-            }
-            return toolsJarFile;
-        }
     }
 
     /**
@@ -272,71 +222,67 @@ public class InstrumentationFactory {
      *
      * @param log Log used if the agent cannot be loaded.
      * @param agentJar absolute path to the agent jar.
-     * @param vmClass VirtualMachine.class from tools.jar.
+     * @param vmClass VirtualMachine class from the jdk.attach module.
      */
     private static void loadAgent(Log log, String agentJar, Class<?> vmClass) {
         try {
-            // first obtain the PID of the currently-running process
-            // ### this relies on the undocumented convention of the
-            // RuntimeMXBean's
-            // ### name starting with the PID, but there appears to be no other
-            // ### way to obtain the current process' id, which we need for
-            // ### the attach process
-            RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
-            String pid = runtime.getName();
-            if (pid.indexOf("@") != -1)
-                pid = pid.substring(0, pid.indexOf("@"));
-
-            // JDK1.6: now attach to the current VM so we can deploy a new agent
-            // ### this is a Sun JVM specific feature; other JVMs may offer
-            // ### this feature, but in an implementation-dependent way
-            Object vm =
-                vmClass.getMethod("attach", new Class<?>[] { String.class })
-                    .invoke(null, new Object[] { pid });
-            // now deploy the actual agent, which will wind up calling
-            // agentmain()
-            vmClass.getMethod("loadAgent", new Class[] { String.class })
-                .invoke(vm, new Object[] { agentJar });
-            vmClass.getMethod("detach", new Class[] {}).invoke(vm,
-                new Object[] {});
+            String pid = String.valueOf(ProcessHandle.current().pid());
+            // attach to the current VM so we can deploy a new agent
+            Object vm = vmClass.getMethod("attach", String.class).invoke(null, pid);
+            try {
+                // now deploy the actual agent, which will wind up calling
+                // agentmain()
+                vmClass.getMethod("loadAgent", String.class).invoke(vm, agentJar);
+            } finally {
+                vmClass.getMethod("detach").invoke(vm);
+            }
         } catch (Throwable t) {
-            if (log.isTraceEnabled()) {
-                // Log the message from the exception. Don't log the entire
-                // stack as this is expected when running on a JDK that doesn't
-                // support the Attach API.
-                log.trace(_name + ".loadAgent() caught an exception. Message: "
-                    + t.getMessage());
+            if (t instanceof InvocationTargetException && t.getCause() != null) {
+                t = t.getCause();
+            }
+            // Log the message from the exception, the stack is not of
+            // interest.
+            if (log.isInfoEnabled()) {
+                log.info(_loc.get("dynamic-agent-attach-failed", t.toString()));
             }
         }
     }
 
     /**
-     * If <b>ibm</b> is false, this private method will create a new URLClassLoader and attempt to load the
-     * com.sun.tools.attach.VirtualMachine class from the provided toolsJar file.
+     * Load the com.sun.tools.attach.VirtualMachine class from the jdk.attach
+     * module. The module is not in the boot layer when the runtime image was
+     * created without it, or when the application runs as a named module and
+     * the JVM is started without --add-modules jdk.attach.
      *
-     * <p>
-     * If <b>ibm</b> is true, this private method will ignore the toolsJar parameter and load the
-     * com.ibm.tools.attach.VirtualMachine class.
-     *
-     *
-     * @return The AttachAPI VirtualMachine class <br>
-     *         or null if something unexpected happened.
+     * @return The Attach API VirtualMachine class <br>
+     *         or null if the jdk.attach module is not available.
      */
-    private static Class<?> loadVMClass(File toolsJar, Log log, JavaVendors vendor) {
-        try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            String cls = vendor.getVirtualMachineClassName();
-            if (!vendor.isIBM()) {
-                loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
+    static Class<?> loadVMClass(Log log) {
+        if (ModuleLayer.boot().findModule(ATTACH_MODULE).isEmpty()) {
+            if (log.isInfoEnabled()) {
+                log.info(_loc.get("dynamic-agent-no-attach-module", ATTACH_MODULE));
             }
-            return loader.loadClass(cls);
-        } catch (Exception e) {
-            if (log.isTraceEnabled()) {
-                log.trace(_name
-                    + ".loadVMClass() failed to load the VirtualMachine class");
-            }
+            return null;
         }
-        return null;
+        try {
+            return Class.forName(VIRTUAL_MACHINE_CLASS, false, ClassLoader.getSystemClassLoader());
+        } catch (ClassNotFoundException | LinkageError e) {
+            if (log.isInfoEnabled()) {
+                log.info(_loc.get("dynamic-agent-no-attach-module", ATTACH_MODULE));
+            }
+            return null;
+        }
+    }
+
+    /**
+     * The Attach API refuses to attach to the current VM unless the JVM was
+     * started with -Djdk.attach.allowAttachSelf=true (or an empty value).
+     *
+     * @return true if the JVM allows attaching to itself.
+     */
+    static boolean isAttachSelfAllowed() {
+        String allow = System.getProperty(ALLOW_ATTACH_SELF);
+        return allow != null && (allow.isEmpty() || Boolean.parseBoolean(allow));
     }
 
     /**

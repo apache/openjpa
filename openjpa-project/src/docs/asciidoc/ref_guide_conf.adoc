@@ -767,6 +767,7 @@ Therefore, only set this property to `true` if you have a long-running applicati
 *Default:* ``true``
 
 *Description:* The DynamicEnhancementAgent property controls whether or not OpenJPA will attempt to dynamically load the PCEnhancer javaagent.
+The agent is loaded through the Attach API of the `jdk.attach` module, which requires the JVM to be started with ``-Djdk.attach.allowAttachSelf=true``.
 
 See the reference guide for more information <<ref_guide_pc_enhance_dynamic>>
 

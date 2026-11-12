@@ -176,7 +176,18 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 [[ref_guide_pc_enhance_dynamic]]
 ===== Enhancing Dynamically at Runtime
 
-If a javaagent is not provided via the command line and OpenJPA is running on the Oracle 1.6 SDK or IBM 1.6 JDK (SR8+), OpenJPA will attempt to dynamically load the Enhancer that was mentioned in the previous section.
+If a javaagent is not provided via the command line, OpenJPA will attempt to dynamically load the Enhancer that was mentioned in the previous section.
+OpenJPA uses the Attach API of the `jdk.attach` module to load its agent into the running JVM.
+This requires that:
+
+* the OpenJPA classes are loaded by the system class loader,
+* the `jdk.attach` module is resolved at startup. This is the case for an application on the class path of a full JDK. An application that runs as a named module (`java -m`) needs `--add-modules jdk.attach`, and a runtime image created with `jlink` must contain the module, and
+* the JVM is started with `-Djdk.attach.allowAttachSelf=true`. Without this system property the JVM does not allow a process to attach to itself.
+
+On Java 21 and later the JVM prints a warning when an agent is loaded dynamically (JEP 451). Start the JVM with `-XX:+EnableDynamicAgentLoading` to suppress it.
+If one of the requirements is not met, OpenJPA logs an informational message once that names the missing setting and continues without the dynamic enhancer.
+Applications that enhance their classes at build time or with the javaagent do not need the dynamic enhancer and can set `openjpa.DynamicEnhancementAgent` to `false` to avoid this message.
+
 This support is provided as an ease of use feature and it is not recommended for use in a production system.
 Using this method of enhancement has the following caveats:
 
@@ -193,6 +204,18 @@ When then dynamic enhancer is loaded, the following informational message is log
 ----
 
 Setting the property openjpa.DynamicEnhancementAgent to false will disable this function.
+
+[[ref_guide_pc_enhance_dynamic_ex]]
+.Allowing the Dynamic Enhancer
+====
+
+[source, shell]
+----
+
+java -Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading com.xyz.Main
+----
+
+====
 
 [[ref_guide_pc_enhance_unenhanced_types]]
 ===== Omitting the OpenJPA enhancer
