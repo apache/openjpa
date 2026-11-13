@@ -23,6 +23,7 @@ import java.util.Map;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
 import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -107,6 +108,23 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         UnenhancedFactoryIdentifierEntity e = new UnenhancedFactoryIdentifierEntity();
         e.setId(7L);
         assertEquals(7L, emf.getPersistenceUnitUtil().getIdentifier(e));
+    }
+
+    public void testIdentifierAfterClose() {
+        createUnenhancedEMF(UnenhancedFactoryClosedEntity.class);
+        PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
+        emf.close();
+
+        // a closed factory must not prepare the type any more
+        UnenhancedFactoryClosedEntity e = new UnenhancedFactoryClosedEntity();
+        e.setId(3L);
+        try {
+            util.getIdentifier(e);
+            fail("getIdentifier() of an unprepared type on a closed factory must fail");
+        } catch (IllegalArgumentException expected) {
+            // the type is not manageable
+        }
+        assertFalse(PCRegistry.isRegistered(UnenhancedFactoryClosedEntity.class));
     }
 
     public void testNamedQueriesBeforeFirstEntityManager() {
