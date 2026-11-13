@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -32,6 +33,7 @@ import jakarta.persistence.Table;
 public class E {
 
 	@Id
+	@Column(length = 64)
 	private String eId;
 
 	private String name;

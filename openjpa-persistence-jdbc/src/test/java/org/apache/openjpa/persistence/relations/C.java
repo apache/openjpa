@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.relations;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 public class C {
 
 	@Id
+	@Column(length = 64)
 	private String cId;
 
 	@ManyToOne
