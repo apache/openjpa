@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.jpql.literals;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.BooleanRepresentationFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.Test;
 class TestLiteralInSQL extends SQLListenerTestCase {
     @Override
     protected boolean isSupported(DBDictionary dict) {
-        //Disable on Postgres for now....
         return dict instanceof PostgresDictionary || (dict instanceof H2Dictionary && dict.getMajorVersion() > 1);
     }
 
@@ -60,7 +60,9 @@ class TestLiteralInSQL extends SQLListenerTestCase {
         q.getResultList();
         // The literal should not be converted to a parameter marker since UseLiteralInSQL is true.
         // However, the literal should be converted to a 1 because we store boolean as int/smallint.
-        assertContainsSQL("booleanField = 1");
+        DBDictionary dict = getDBDictionary();
+        String val = BooleanRepresentationFactory.BOOLEAN.equals(dict.getBooleanRepresentation()) ? "true" : "1";
+        assertContainsSQL("booleanField = " + val);
 
     }
 }
