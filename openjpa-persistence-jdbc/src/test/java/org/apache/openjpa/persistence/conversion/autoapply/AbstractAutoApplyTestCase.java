@@ -64,6 +64,12 @@ public abstract class AbstractAutoApplyTestCase extends SingleEMFTestCase {
      * The entities are left to runtime enhancement: the build-time enhancer
      * of this module sees no persistence unit and so no auto-apply converter,
      * and an enhanced class keeps the persistent fields it was enhanced with.
+     *<p>
+     * The factory subclasses the unenhanced entities when it creates its first
+     * entity manager. Until that has happened once in the JVM, the metamodel
+     * of a new factory reports the entities as not enhanced, so an entity
+     * manager is opened here to make every test independent of the tests
+     * that ran before it.
      */
     protected void setUpUnit(List<Class<?>> types, Object... props) {
         List<Object> args = new ArrayList<>();
@@ -75,6 +81,7 @@ public abstract class AbstractAutoApplyTestCase extends SingleEMFTestCase {
         args.add("supported");
         args.addAll(List.of(props));
         setUp(args.toArray());
+        emf.createEntityManager().close();
     }
 
     /**

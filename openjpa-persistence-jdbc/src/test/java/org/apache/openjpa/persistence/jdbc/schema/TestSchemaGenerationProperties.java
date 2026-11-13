@@ -43,6 +43,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -86,6 +87,17 @@ class TestSchemaGenerationProperties extends BaseJDBCTest {
         SchemaTool schemaTool = new SchemaTool(conf, "drop");
         schemaTool.setSchemaGroup(tool.getSchemaGroup());
         schemaTool.run();
+    }
+
+    /**
+     * The drop scripts these tests run are tracked JVM-wide by SchemaTool, keyed by the
+     * persistence unit name, and the next plain buildSchema factory of the unit then skips
+     * creating those tables once. Forget them, so that a later test using TestConv gets its
+     * tables back. Runs before AbstractTestCase.tearDown() closes the factories.
+     */
+    @AfterEach
+    void forgetScriptDroppedTables() {
+        SchemaTool.clearDroppedTables((JDBCConfiguration) getConfiguration());
     }
 
     // TODO - Add validation when source uses script but no script is provided?.
