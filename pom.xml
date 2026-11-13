@@ -55,6 +55,13 @@
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
+        <!-- Test order: fixed by default, so that a failure can be reproduced. The master build (ci.yml) runs
+             the tests in random order with the run id as seed, to find tests that depend on each other; to
+             replay such a run: -Dtest.method.order='org.junit.jupiter.api.MethodOrderer$Random'
+             -Djunit.jupiter.execution.order.random.seed=<seed> -Dsurefire.runOrder=random
+             -Dsurefire.runOrder.random.seed=<seed> -->
+        <surefire.runOrder>alphabetical</surefire.runOrder>
+        <test.method.order>org.junit.jupiter.api.MethodOrderer$MethodName</test.method.order>
         <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
         <openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
         <!-- Commons DBCP settings passed in as openjpa.ConnectionProperties -->
@@ -1911,6 +1918,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
+                        <runOrder>${surefire.runOrder}</runOrder>
+                        <properties>
+                            <configurationParameters>junit.jupiter.testmethod.order.default=${test.method.order}</configurationParameters>
+                        </properties>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>

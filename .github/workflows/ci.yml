@@ -44,8 +44,14 @@ jobs:
           path: ~/.m2
           key: cache-${{ matrix.java }}-${{ matrix.profile }}
           restore-keys: cache-${{ matrix.java }}-${{ matrix.profile }}
+      # Random test order on master finds tests that depend on each other; the run id is the seed,
+      # see the test order properties in the root pom for how to replay a run
       - name: 'Build with Maven'
-        run: mvn -P${{ matrix.profile }} -B clean install --file pom.xml
+        run: >-
+          mvn -P${{ matrix.profile }} -B clean install --file pom.xml
+          '-Dtest.method.order=org.junit.jupiter.api.MethodOrderer$Random'
+          -Djunit.jupiter.execution.order.random.seed=${{ github.run_id }}
+          -Dsurefire.runOrder=random -Dsurefire.runOrder.random.seed=${{ github.run_id }}
       - name: 'Remove snapshots before caching'
         run: find ~/.m2 -name '*SNAPSHOT' | xargs rm -Rf
 
