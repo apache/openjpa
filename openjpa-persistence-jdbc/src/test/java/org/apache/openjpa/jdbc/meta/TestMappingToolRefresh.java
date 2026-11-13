@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -52,10 +53,15 @@ class TestMappingToolRefresh extends AbstractPersistenceTestCase {
                 "openjpa.jdbc.DBDictionary",
                 "(BitTypeName=CHAR(1),BooleanTypeName=CHAR(1),BooleanRepresentation=STRING_10)");
 
+        // stage 1 drops the table first: 'add' never changes the type of an existing column, so an
+        // EntityBoolChar table left by another test (e.g. TestJDBCSchemaManager) would keep its native
+        // BIT/BOOLEAN column and reject the STRING_10 value
+        Map<String, Object> createProps = new HashMap<>(emfProps);
+        createProps.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true, SchemaAction='drop,add')");
 
         {
             // stage 1. Create the DB and insert a line into it
-            OpenJPAEntityManagerFactorySPI openjpaEmf = createNamedOpenJPAEMF("test", null, emfProps);
+            OpenJPAEntityManagerFactorySPI openjpaEmf = createNamedOpenJPAEMF("test", null, createProps);
 
             OpenJPAEntityManagerSPI em = openjpaEmf.createEntityManager();
             assertNotNull(em);
