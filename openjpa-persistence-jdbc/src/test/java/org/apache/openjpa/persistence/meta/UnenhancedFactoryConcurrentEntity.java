@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.meta;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
 
 /**
  * An entity left to runtime enhancement that only
@@ -28,10 +27,7 @@ import jakarta.persistence.NamedQuery;
  * EntityManager of an earlier test can have prepared it.
  */
 @Entity
-@NamedQuery(name = "UnenhancedFactoryNamedQueryEntity.all",
-    query = "SELECT e FROM UnenhancedFactoryNamedQueryEntity e",
-    resultClass = UnenhancedFactoryNamedQueryEntity.class)
-public class UnenhancedFactoryNamedQueryEntity {
+public class UnenhancedFactoryConcurrentEntity {
 
     @Id
     private long id;

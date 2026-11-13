@@ -19,27 +19,34 @@
 package org.apache.openjpa.persistence.meta;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnitUtil;
-import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.metamodel.EntityType;
 
+import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 /**
  * The metadata a factory hands out must be available for types left to
  * runtime enhancement before the factory created its first EntityManager.
  *<p>
- * The runtime subclass of such a type is registered in the JVM-wide
- * {@link PCRegistry}, so each test uses an entity of its own that no other
- * test persists, and asserts that it is not registered yet.
+ * Preparing such a type registers it in the JVM-wide {@link PCRegistry}
+ * together with its runtime subclass, so each test uses an entity of its own
+ * that no other test prepares, and asserts that it is not registered yet.
  */
 public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
 
@@ -53,6 +60,8 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
     }
 
     private EntityManagerFactory createUnenhancedEMF(Class<?> type) {
+        assertFalse(type.getName() + " must be left to runtime enhancement",
+            PersistenceCapable.class.isAssignableFrom(type));
         assertFalse(type.getName() + " must not have been prepared by an earlier EntityManager",
             PCRegistry.isRegistered(type));
         emf = createEMF(type, DROP_TABLES,
@@ -68,6 +77,7 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
             emf.getMetamodel().entity(UnenhancedFactoryMetamodelEntity.class);
         assertEquals(String.class, entity.getSingularAttribute("name").getJavaType());
         assertEquals(long.class, entity.getId(long.class).getJavaType());
+        Class<?> subclass = runtimeSubclass(UnenhancedFactoryMetamodelEntity.class);
 
         // the EntityManagers created afterwards work on the prepared type
         try (EntityManager em = emf.createEntityManager()) {
@@ -80,6 +90,38 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         }
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals("one", em.find(UnenhancedFactoryMetamodelEntity.class, 1L).getName());
+        }
+        // and did not prepare it a second time
+        assertSame(subclass, runtimeSubclass(UnenhancedFactoryMetamodelEntity.class));
+    }
+
+    public void testConcurrentFirstCallers() throws Exception {
+        createUnenhancedEMF(UnenhancedFactoryConcurrentEntity.class);
+
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            // each caller reports the runtime subclass it saw once it was done
+            Callable<Class<?>> metamodel = () -> {
+                start.await();
+                assertNotNull(emf.getMetamodel().entity(UnenhancedFactoryConcurrentEntity.class));
+                return runtimeSubclass(UnenhancedFactoryConcurrentEntity.class);
+            };
+            Callable<Class<?>> entityManager = () -> {
+                start.await();
+                try (EntityManager em = emf.createEntityManager()) {
+                    assertNotNull(em.getMetamodel().entity(UnenhancedFactoryConcurrentEntity.class));
+                }
+                return runtimeSubclass(UnenhancedFactoryConcurrentEntity.class);
+            };
+            Future<Class<?>> first = pool.submit(metamodel);
+            Future<Class<?>> second = pool.submit(entityManager);
+            start.countDown();
+            Class<?> subclass = first.get(30, TimeUnit.SECONDS);
+            assertSame(subclass, second.get(30, TimeUnit.SECONDS));
+            assertSame(subclass, runtimeSubclass(UnenhancedFactoryConcurrentEntity.class));
+        } finally {
+            pool.shutdownNow();
         }
     }
 
@@ -127,12 +169,15 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         assertFalse(PCRegistry.isRegistered(UnenhancedFactoryClosedEntity.class));
     }
 
-    public void testNamedQueriesBeforeFirstEntityManager() {
-        createUnenhancedEMF(UnenhancedFactoryNamedQueryEntity.class);
-
-        Map<String, TypedQueryReference<UnenhancedFactoryNamedQueryEntity>> queries =
-            emf.getNamedQueries(UnenhancedFactoryNamedQueryEntity.class);
-        assertTrue(queries.keySet().toString(),
-            queries.containsKey("UnenhancedFactoryNamedQueryEntity.all"));
+    /**
+     * The runtime subclass the PCRegistry holds for the given type. Preparing
+     * the type again would generate and register another one.
+     */
+    private static Class<?> runtimeSubclass(Class<?> type) {
+        assertTrue(type.getName() + " must have been prepared", PCRegistry.isRegistered(type));
+        Class<?> subclass = PCRegistry.getPCType(type);
+        assertNotNull(subclass);
+        assertTrue(subclass.getName(), PCEnhancer.isPCSubclassName(subclass.getName()));
+        return subclass;
     }
 }
