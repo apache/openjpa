@@ -79,7 +79,11 @@ class TestFieldAccessWithNonStandardAccessors {
     @Test
     void propertyAccessEntityCanPersistAndFind() {
         Map<String, Object> props = new HashMap<>();
-        props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+        // Start from an empty FA_ORDER table: the Derby database under
+        // target/database survives between builds, so a row with id 99 left
+        // by an earlier run must not make the insert below fail.
+        props.put("openjpa.jdbc.SynchronizeMappings",
+            "buildSchema(SchemaAction='add,deleteTableContents')");
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + FieldAccessOrder.class.getName() + ")");
 

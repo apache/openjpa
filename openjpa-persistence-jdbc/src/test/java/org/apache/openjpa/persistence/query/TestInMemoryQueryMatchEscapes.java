@@ -35,7 +35,7 @@ class TestInMemoryQueryMatchEscapes
 
     @BeforeEach
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        setUp(CLEAR_TABLES, AllFieldTypes.class);
     }
 
     @Test

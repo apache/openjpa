@@ -45,7 +45,10 @@ class TestInheritedPropertyAccessPersist {
     @BeforeEach
     void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
-        props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+        // The tests insert fixed ids, so clear UTCK_PRODUCT before each test:
+        // the Derby database is file based and outlives the test run.
+        props.put("openjpa.jdbc.SynchronizeMappings",
+            "buildSchema(ForeignKeys=true,SchemaAction='add,deleteTableContents')");
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         props.put("openjpa.DynamicEnhancementAgent", "false");
         props.put("openjpa.MetaDataFactory",
@@ -88,7 +91,7 @@ class TestInheritedPropertyAccessPersist {
                 em.getTransaction().rollback();
             }
             fail("Persisting HardwareProduct with inherited @Id failed: "
-                + e.getMessage());
+                + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -124,7 +127,7 @@ class TestInheritedPropertyAccessPersist {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            fail("Persisting Product failed: " + e.getMessage());
+            fail("Persisting Product failed: " + e.getMessage(), e);
         } finally {
             em.close();
         }

@@ -71,6 +71,12 @@ class TestEntityManagerFactory {
 		count = em.createQuery(countJPQL, Long.class).getSingleResult();
 		assertEquals(1l, count);
 
+		// do not leave the row behind: its datastore id comes from the shared
+		// OPENJPA_SEQUENCE_TABLE, which other tests reset (deleteTableContents)
+		em.getTransaction().begin();
+		em.remove(aft);
+		em.getTransaction().commit();
+
 		em.close();
 		emf.close();
 	}
