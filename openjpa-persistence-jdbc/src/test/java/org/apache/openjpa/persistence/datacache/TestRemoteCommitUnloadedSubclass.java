@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.apache.openjpa.datacache.AbstractQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.TypesChangedEvent;
+import org.apache.openjpa.datacache.TypesChangedListener;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -84,9 +84,16 @@ class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
             assertEquals(1, cache.count());
 
             List<Collection<?>> changes = new ArrayList<>();
-            cache.addTypesChangedListener((TypesChangedEvent event) -> changes.add(event.getTypes()));
-            cache.afterCommit(new RemoteCommitEvent(RemoteCommitEvent.PAYLOAD_EXTENTS, null, null,
-                Arrays.asList(DOG), null));
+            // the query cache holds its listeners weakly, so keep the listener
+            // strongly reachable until the event has been delivered
+            TypesChangedListener listener = event -> changes.add(event.getTypes());
+            cache.addTypesChangedListener(listener);
+            try {
+                cache.afterCommit(new RemoteCommitEvent(RemoteCommitEvent.PAYLOAD_EXTENTS, null, null,
+                    Arrays.asList(DOG), null));
+            } finally {
+                cache.removeTypesChangedListener(listener);
+            }
 
             assertEquals(1, changes.size());
             assertEquals(1, changes.get(0).size());
