@@ -16,17 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.junit5;
+package org.apache.openjpa.junit.jupiter;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-@OpenJPASupport
-class OpenJPASupportTest {
-    @Test
-    void ensureEnhanced() {
-        assertTrue(PersistenceCapable.class.isAssignableFrom(MyEntity.class));
-    }
+@Entity
+public class MyEntity {
+    @Id
+    private long id;
 }

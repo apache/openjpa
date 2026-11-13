@@ -102,6 +102,11 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   <code>persistence.xml</code>, so that the enhancer sees it too, and enhance
   build-time enhanced classes again after changing it.
   </li>
+  <li>The JUnit extension <code>@OpenJPASupport</code> moved from the
+  artifact <code>openjpa-junit5</code> to <code>openjpa-junit-jupiter</code>
+  and from the package <code>org.apache.openjpa.junit5</code> to
+  <code>org.apache.openjpa.junit.jupiter</code>. It works with JUnit 5 and 6,
+  and its JUnit dependencies are now <code>provided</code>.</li>
 </ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.junit5.internal;
+package org.apache.openjpa.junit.jupiter.internal;
 
-import org.apache.openjpa.junit5.OpenJPASupport;
+import org.apache.openjpa.junit.jupiter.OpenJPASupport;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.platform.commons.support.AnnotationSupport;

@@ -187,7 +187,7 @@
         <module>openjpa-all</module>
         <module>openjpa-tools</module>
         <module>openjpa-features</module>
-        <module>openjpa-junit5</module>
+        <module>openjpa-junit-jupiter</module>
     </modules>
 
     <profiles>

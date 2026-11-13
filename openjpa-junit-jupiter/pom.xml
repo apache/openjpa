@@ -27,7 +27,7 @@
         <version>4.2.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>openjpa-junit5</artifactId>
+    <artifactId>openjpa-junit-jupiter</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA JUnit Jupiter</name>
     <description>OpenJPA JUnit Jupiter</description>

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.junit5;
+package org.apache.openjpa.junit.jupiter;
 
-import org.apache.openjpa.junit5.internal.OpenJPAExtension;
+import org.apache.openjpa.junit.jupiter.internal.OpenJPAExtension;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 
