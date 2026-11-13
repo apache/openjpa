@@ -38,13 +38,15 @@ class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
 
     @BeforeEach
     public void setUp() {
-        setUp(C.class, CM.class, D.class, E.class, VC.class,
-                VCS.class, CLEAR_TABLES);
+        setUp(C.class, CM.class, D.class,
+            E.class, VC.class, VCS.class,
+            //"openjpa.Log", "SQL=TRACE",
+            CLEAR_TABLES);
 
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            List<E> es = (List<E>) em.createQuery(
-                    "Select e from E e").getResultList();
+            List<E> es = em.createQuery("Select e from E e", E.class)
+                .getResultList();
             for (E e : es) {
                 em.remove(e);
             }
@@ -159,8 +161,8 @@ class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
     @Test
     void query() {
         EntityManager em = emf.createEntityManager();
-        List<E> es = (List<E>) em.createQuery(
-                "Select e from E e where e.name='E1'").getResultList();
+        List<E> es = em.createQuery("Select e from E e where e.name='E1'", E.class)
+            .getResultList();
         assertEquals(1, es.size());
         E e = (E) es.get(0);
         assertEquals("E1", e.getName());
@@ -170,9 +172,8 @@ class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
 
         // Get virtual container set and check that it has a reference to the
         // ensemble
-        List<VCS> vcss = (List<VCS>) em.createQuery(
-                "Select vcset from VCS vcset where vcset.vcsId='VCS1'")
-                .getResultList();
+        List<VCS> vcss = em.createQuery("Select vcset from VCS vcset where vcset.vcsId='VCS1'",
+            VCS.class).getResultList();
         assertEquals(1, vcss.size());
         assertEquals(e, ((VCS) vcss.get(0)).getE());
         em.close();
@@ -184,21 +185,18 @@ class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
         // deleted but not the ensemble itself
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        VCS vcset = (VCS) em.createQuery(
-                "Select vcset from VCS vcset where vcset.vcsId='VCS1'")
+        VCS vcset = em.createQuery("Select vcset from VCS vcset where vcset.vcsId='VCS1'", VCS.class)
                 .getSingleResult();
         em.remove(vcset);
         em.getTransaction().commit();
 
         // Get virtualContainer
-        List<VC> vcs = (List<VC>) em.createQuery(
-                "Select vc from VC vc where vc.vcId='VC1'")
+        List<VC> vcs = em.createQuery("Select vc from VC vc where vc.vcId='VC1'", VC.class)
                 .getResultList();
         assertEquals(0, vcs.size());
 
         // Make sure E and I are still there
-        List<E> es = (List<E>) em.createQuery(
-                "Select e from E e").getResultList();
+        List<E> es = em.createQuery("Select e from E e", E.class).getResultList();
         assertEquals(1, es.size());
     }
 
@@ -207,8 +205,7 @@ class TestRelationFieldAsPrimaryKeyAndForeignKey extends SingleEMFTestCase {
         if (!isTestsDisabled()) {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
-            List<E> es = (List<E>) em.createQuery(
-                    "Select e from E e").getResultList();
+            List<E> es = em.createQuery("Select e from E e", E.class).getResultList();
             for (E e : es) {
                 em.remove(e);
             }
