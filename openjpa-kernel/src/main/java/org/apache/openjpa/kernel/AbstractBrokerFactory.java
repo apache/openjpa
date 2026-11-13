@@ -266,8 +266,9 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     public void loadPersistentTypes(ClassLoader envLoader) {
         // if we've loaded the persistent types and the class name list
         // is empty, then we can simply return.
-        if (_persistentTypesLoaded && _pcClassNames.isEmpty())
+        if (_persistentTypesLoaded && _pcClassNames.isEmpty()) {
             return;
+        }
 
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
@@ -281,14 +282,15 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                     Collection<Class<?>> toRedefine = new ArrayList<>();
                     Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
                         loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
-                    if (clss.isEmpty())
+                    if (clss.isEmpty()) {
                         _pcClassNames = Collections.emptyList();
-                    else {
+                    } else {
                         Collection<String> c = new ArrayList<>(clss.size());
                         for (Class<?> cls : clss) {
                             c.add(cls.getName());
-                            if (needsSub(cls))
+                            if (needsSub(cls)) {
                                 toRedefine.add(cls);
+                            }
                         }
                         getPcClassLoaders().add(loader);
                         _pcClassNames = c;
@@ -315,8 +317,9 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
             for (String clsName : _pcClassNames) {
                 try {
                     Class<?> cls = Class.forName(clsName, true, loader);
-                    if (needsSub(cls))
+                    if (needsSub(cls)) {
                         toRedefine.add(cls);
+                    }
                 } catch (Throwable t) {
                     _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
                 }
