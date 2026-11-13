@@ -47,7 +47,9 @@ import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -466,12 +468,29 @@ public class EntityManagerFactoryImpl
                 "EntityManagerFactory is closed.");
         }
         if (_metaModel == null) {
+            preparePersistentTypes();
             MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
             mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
             _metaModel = new MetamodelImpl(mdr);
         }
         return _metaModel;
+    }
+
+    /**
+     * Prepare the persistent types the way the first broker of the factory
+     * does, so that metadata can be handed out before the first
+     * EntityManager: the runtime subclasses of unenhanced types only exist,
+     * and are only registered in the PCRegistry, once they were prepared.
+     * The broker factory prepares the types only once.
+     */
+    private void preparePersistentTypes() {
+        if (getConfiguration().getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
+            return;
+        }
+        if (_factory.getInnermostDelegate() instanceof AbstractBrokerFactory factory) {
+            factory.loadPersistentTypes(Thread.currentThread().getContextClassLoader());
+        }
     }
 
     @Override
@@ -761,6 +780,10 @@ public class EntityManagerFactoryImpl
      */
     @Override
     public Object getIdentifier(Object entity) {
+        if (!ImplHelper.isManageable(entity) && entity != null) {
+            // an unenhanced type is only manageable once it was prepared
+            preparePersistentTypes();
+        }
         if (!ImplHelper.isManageable(entity)) {
             throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
                     "getIdentifier", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
