@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -38,7 +45,9 @@ import jakarta.persistence.metamodel.EntityType;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The metadata a factory hands out must be available for types left to
@@ -48,11 +57,11 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
  * together with its runtime subclass, so each test uses an entity of its own
  * that no other test prepares, and asserts that it is not registered yet.
  */
-public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
+class TestFactoryMetaDataOfUnenhancedTypes extends AbstractPersistenceTestCase {
 
     private EntityManagerFactory emf;
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
@@ -60,17 +69,18 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
     }
 
     private EntityManagerFactory createUnenhancedEMF(Class<?> type) {
-        assertFalse(type.getName() + " must be left to runtime enhancement",
-            PersistenceCapable.class.isAssignableFrom(type));
-        assertFalse(type.getName() + " must not have been prepared by an earlier EntityManager",
-            PCRegistry.isRegistered(type));
+        assertFalse(PersistenceCapable.class.isAssignableFrom(type),
+            type.getName() + " must be left to runtime enhancement");
+        assertFalse(PCRegistry.isRegistered(type),
+            type.getName() + " must not have been prepared by an earlier EntityManager");
         emf = createEMF(type, DROP_TABLES,
             "openjpa.RuntimeUnenhancedClasses", "supported",
             "openjpa.DynamicEnhancementAgent", "false");
         return emf;
     }
 
-    public void testMetamodelBeforeFirstEntityManager() {
+    @Test
+    void metamodelBeforeFirstEntityManager() {
         createUnenhancedEMF(UnenhancedFactoryMetamodelEntity.class);
 
         EntityType<UnenhancedFactoryMetamodelEntity> entity =
@@ -95,7 +105,8 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         assertSame(subclass, runtimeSubclass(UnenhancedFactoryMetamodelEntity.class));
     }
 
-    public void testConcurrentFirstCallers() throws Exception {
+    @Test
+    void concurrentFirstCallers() throws Exception {
         createUnenhancedEMF(UnenhancedFactoryConcurrentEntity.class);
 
         CountDownLatch start = new CountDownLatch(1);
@@ -125,7 +136,8 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         }
     }
 
-    public void testCriteriaBuilderBeforeFirstEntityManager() {
+    @Test
+    void criteriaBuilderBeforeFirstEntityManager() {
         createUnenhancedEMF(UnenhancedFactoryCriteriaEntity.class);
 
         CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -135,16 +147,18 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         assertEquals(UnenhancedFactoryCriteriaEntity.class, root.getJavaType());
     }
 
-    public void testNamedEntityGraphsBeforeFirstEntityManager() {
+    @Test
+    void namedEntityGraphsBeforeFirstEntityManager() {
         createUnenhancedEMF(UnenhancedFactoryEntityGraphEntity.class);
 
         Map<String, EntityGraph<? extends UnenhancedFactoryEntityGraphEntity>> graphs =
             emf.getNamedEntityGraphs(UnenhancedFactoryEntityGraphEntity.class);
-        assertTrue(graphs.keySet().toString(),
-            graphs.containsKey("UnenhancedFactoryEntityGraphEntity.name"));
+        assertTrue(graphs.containsKey("UnenhancedFactoryEntityGraphEntity.name"),
+            graphs.keySet().toString());
     }
 
-    public void testIdentifierBeforeFirstEntityManager() {
+    @Test
+    void identifierBeforeFirstEntityManager() {
         createUnenhancedEMF(UnenhancedFactoryIdentifierEntity.class);
 
         UnenhancedFactoryIdentifierEntity e = new UnenhancedFactoryIdentifierEntity();
@@ -152,7 +166,8 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
         assertEquals(7L, emf.getPersistenceUnitUtil().getIdentifier(e));
     }
 
-    public void testIdentifierAfterClose() {
+    @Test
+    void identifierAfterClose() {
         createUnenhancedEMF(UnenhancedFactoryClosedEntity.class);
         PersistenceUnitUtil util = emf.getPersistenceUnitUtil();
         emf.close();
@@ -174,10 +189,10 @@ public class TestFactoryMetaDataOfUnenhancedTypes extends PersistenceTestCase {
      * the type again would generate and register another one.
      */
     private static Class<?> runtimeSubclass(Class<?> type) {
-        assertTrue(type.getName() + " must have been prepared", PCRegistry.isRegistered(type));
+        assertTrue(PCRegistry.isRegistered(type), type.getName() + " must have been prepared");
         Class<?> subclass = PCRegistry.getPCType(type);
         assertNotNull(subclass);
-        assertTrue(subclass.getName(), PCEnhancer.isPCSubclassName(subclass.getName()));
+        assertTrue(PCEnhancer.isPCSubclassName(subclass.getName()), subclass.getName());
         return subclass;
     }
 }
