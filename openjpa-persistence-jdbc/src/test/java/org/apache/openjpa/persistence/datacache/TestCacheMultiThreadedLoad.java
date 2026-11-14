@@ -26,8 +26,7 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
 @AllowFailure(message="surefire excluded")
-public class TestCacheMultiThreadedLoad
-    extends CacheLoadTest {
+public class TestCacheMultiThreadedLoad extends CacheLoadTest {
 
     public TestCacheMultiThreadedLoad() {
         // pared down iteration and thread count for running in the
@@ -40,5 +39,3 @@ public class TestCacheMultiThreadedLoad
         return true;
     }
 }
-
-

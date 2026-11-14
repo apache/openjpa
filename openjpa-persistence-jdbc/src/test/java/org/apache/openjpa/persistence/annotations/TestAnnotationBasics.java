@@ -18,30 +18,37 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Entity1;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestAnnotationBasics extends AnnotationTestCase {
 
-	public TestAnnotationBasics(String name)
+	public TestAnnotationBasics()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    public void testSingleFieldIdentity()
+    @Test
+    void singleFieldIdentity()
     {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         ClassMetaData meta = JPAFacadeHelper.getMetaData(em, Entity1.class);
-        assertTrue("Entity1 should use application identity",
-            ClassMetaData.ID_APPLICATION == meta.getIdentityType());
-        assertTrue("Entity1 should use single-field identity",
-            meta.isOpenJPAIdentity());
+        assertEquals(ClassMetaData.ID_APPLICATION, meta.getIdentityType(), "Entity1 should use application identity");
+        assertTrue(meta.isOpenJPAIdentity(),
+            "Entity1 should use single-field identity");
         endEm(em);
     }
 /*
-    public void testVersionField() {
+    @Test
+    void versionField() {
         ClassMapping mapping = (ClassMapping) getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(Entity1.class,
             null, true);
@@ -50,4 +57,5 @@ public class TestAnnotationBasics extends AnnotationTestCase {
         String col = mapping.getVersion().getColumns()[0].getName();
         assertTrue(col, "VERSIONFIELD".equalsIgnoreCase(col));
     }
-*/}
+*/
+}

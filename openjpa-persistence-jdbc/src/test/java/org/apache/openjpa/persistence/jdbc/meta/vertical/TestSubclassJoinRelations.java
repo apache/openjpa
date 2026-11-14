@@ -27,6 +27,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -39,28 +43,13 @@ import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub1;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub2;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub2;
 import org.apache.openjpa.persistence.jdbc.common.apps.Relations;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSubclassJoinRelations
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
+public class TestSubclassJoinRelations extends TestSQLListenerTestCase {
     private String _outer = "OUTER";
     private Object _oid = null;
-
-    /** Creates a new instance of TestSubclassJoinRelations */
-    public TestSubclassJoinRelations(String name)
-    {
-    	super(name);
-    }
-
-    public boolean skipTest() {
-        //FIXME
-        /*
-        return super.skipTest()
-            || ((JDBCConfiguration) getConfiguration()).
-            getDBDictionaryInstance().joinSyntax == Join.SYNTAX_TRADITIONAL;
-         */
-        return false;
-    }
 
     @Override
     public void setUpTestCase() {
@@ -112,7 +101,8 @@ public class TestSubclassJoinRelations
         pm.close();
     }
 
-    public void testNullOneOne()
+    @Test
+    void nullOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -127,7 +117,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testEagerNullOneOne()
+    @Test
+    void eagerNullOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("nullBase");
@@ -143,7 +134,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testEmptyBaseList()
+    @Test
+    void emptyBaseList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -159,7 +151,8 @@ public class TestSubclassJoinRelations
         assertSQL(_outer);
     }
 
-    public void testEagerEmptyBaseList()
+    @Test
+    void eagerEmptyBaseList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("emptyBaseList");
@@ -175,7 +168,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testBaseOneOne()
+    @Test
+    void baseOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -190,11 +184,12 @@ public class TestSubclassJoinRelations
         assertEquals(BaseSub2.class, sub2.getClass());
         pm.close();
 
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         assertSQL(_outer);
     }
 
-    public void testEagerBaseOneOne()
+    @Test
+    void eagerBaseOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("base");
@@ -213,7 +208,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testLeafOneOne()
+    @Test
+    void leafOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -232,7 +228,8 @@ public class TestSubclassJoinRelations
         assertNotSQL(_outer);
     }
 
-    public void testEagerLeafOneOne()
+    @Test
+    void eagerLeafOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("baseSub1Sub2");
@@ -251,7 +248,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testMidOneOne()
+    @Test
+    void midOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -270,7 +268,8 @@ public class TestSubclassJoinRelations
         assertSQL(_outer);
     }
 
-    public void testEagerMidOneOne()
+    @Test
+    void eagerMidOneOne()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("baseSub1");
@@ -289,7 +288,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testBaseList()
+    @Test
+    void baseList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -313,7 +313,8 @@ public class TestSubclassJoinRelations
         assertSQL(_outer);
     }
 
-    public void testEagerBaseList()
+    @Test
+    void eagerBaseList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("baseList");
@@ -337,7 +338,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testLeafList()
+    @Test
+    void leafList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -358,7 +360,8 @@ public class TestSubclassJoinRelations
         assertNotSQL(_outer);
     }
 
-    public void testEagerLeafList()
+    @Test
+    void eagerLeafList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("baseSub1Sub2List");
@@ -379,7 +382,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testMidList()
+    @Test
+    void midList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Relations rel = (Relations) pm.getObjectId(_oid);
@@ -404,7 +408,8 @@ public class TestSubclassJoinRelations
         assertSQL(_outer);
     }
 
-    public void testEagerMidList()
+    @Test
+    void eagerMidList()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         pm.getFetchPlan().addFetchGroup("baseSub1List");
@@ -429,7 +434,8 @@ public class TestSubclassJoinRelations
         assertEquals(0, sql.size());
     }
 
-    public void testProjections()
+    @Test
+    void projections()
         throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",Relations.class);

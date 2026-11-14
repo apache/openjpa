@@ -23,21 +23,28 @@ import jakarta.persistence.spi.LoadState;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestOpenJPA2330 extends SingleEMFTestCase {
+class TestOpenJPA2330 extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class);
     }
 
-    public void testOpenJPA2330() {
+    @Test
+    void openJPA2330() {
         try (final EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             EntityA a = new EntityA();
@@ -57,7 +64,8 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         }
     }
 
-    public void testOpenJPA2335() {
+    @Test
+    void openJPA2335() {
         EntityA a = new EntityA();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -88,15 +96,16 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             EntityA a2 = em.find(EntityA.class, a.getId());
-            Assert.assertNotNull(a2);
-            Assert.assertNotNull(a2.getBs());
-            Assert.assertEquals(4, a2.getBs().size());
+            assertNotNull(a2);
+            assertNotNull(a2.getBs());
+            assertEquals(4, a2.getBs().size());
 
             em.getTransaction().commit();
         }
     }
 
-    public void testOrthanRemoval() {
+    @Test
+    void orthanRemoval() {
         EntityA a = new EntityA("testA_forRemoval");
         EntityB b1 = new EntityB();
         b1.setName("b1");
@@ -110,22 +119,22 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
             em.persist(a);
             em.getTransaction().commit();
         }
-        assertNotNull("A should be persisted", a.getId());
-        assertNotNull("B1 should be persisted", b1.getId());
-        assertEquals("There should be 3 Bs in a", 3, a.getBs().size());
+        assertNotNull(a.getId(), "A should be persisted");
+        assertNotNull(b1.getId(), "B1 should be persisted");
+        assertEquals(3, a.getBs().size(), "There should be 3 Bs in a");
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             EntityA newA = em.find(EntityA.class, a.getId());
             EntityB newB = newA.getBs().iterator().next();
-            assertTrue("newB should be removed successfully", newA.getBs().remove(newB));
-            assertEquals("There should be 2 Bs in a after removal", 2, newA.getBs().size());
+            assertTrue(newA.getBs().remove(newB), "newB should be removed successfully");
+            assertEquals(2, newA.getBs().size(), "There should be 2 Bs in a after removal");
             em.merge(newA);
             em.getTransaction().commit();
         }
         try (EntityManager em = emf.createEntityManager()) {
             EntityA newA = em.find(EntityA.class, a.getId());
-            assertEquals("There should be 2 Bs in a", 2, newA.getBs().size());
-            assertNull("B1 must be deleted", em.find(EntityB.class, b1.getId()));
+            assertEquals(2, newA.getBs().size(), "There should be 2 Bs in a");
+            assertNull(em.find(EntityB.class, b1.getId()), "B1 must be deleted");
         }
     }
 }

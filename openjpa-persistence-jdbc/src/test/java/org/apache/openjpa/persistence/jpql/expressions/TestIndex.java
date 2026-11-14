@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,13 +48,15 @@ import org.apache.openjpa.persistence.jpql.entities.XMLUnorderedNameEntity;
 import org.apache.openjpa.persistence.proxy.TreeNode;
 import org.apache.openjpa.persistence.test.JPAEntityClassEnum;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPQL Index function on O2M, M2M and Element collections using annotations and XML.
  *
  * @author Catalina Wei, Albert Lee, Donald Woods
  */
-public class TestIndex extends SingleEMFTestCase {
+class TestIndex extends SingleEMFTestCase {
 
     private Log log = null;
 
@@ -100,7 +106,7 @@ public class TestIndex extends SingleEMFTestCase {
         return "JPQLIndex";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, TreeNode.class,
             OrderedElementEntity.class, UnorderedNameEntity.class,
@@ -114,7 +120,8 @@ public class TestIndex extends SingleEMFTestCase {
     }
 
     // original testcase by Catalina
-    public void testO2MTreeQueryIndex() {
+    @Test
+    void o2mTreeQueryIndex() {
         int[] fanOuts = {2,3,4};
         createTreeNodeEntities(fanOuts);
         EntityManager em = emf.createEntityManager();
@@ -129,32 +136,38 @@ public class TestIndex extends SingleEMFTestCase {
     }
 
     // Testcases added by Donald with code reused from annonxml tests by Albert
-    public void testO2MQueryIndex() {
+    @Test
+    void o2mQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
     }
 
-    public void testO2MXMLQueryIndex() {
+    @Test
+    void o2mxmlQueryIndex() {
         createEntities(JPQLIndexEntityClasses.XMLOrderedOneToManyEntity, XMLUnorderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.XMLOrderedOneToManyEntity, XMLUnorderedNameEntity.class);
     }
 
-    public void testM2MQueryIndex() {
+    @Test
+    void m2mQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
     }
 
-    public void testM2MXMLQueryIndex() {
+    @Test
+    void m2mxmlQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
     }
 
-    public void testElementQueryIndex() {
+    @Test
+    void elementQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedElementEntity, String.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedElementEntity, String.class);
     }
 
-    public void testElementXMLQueryIndex() {
+    @Test
+    void elementXMLQueryIndex() {
         createEntities(JPQLIndexEntityClasses.XMLOrderedElementEntity, String.class);
         verifyEntities(JPQLIndexEntityClasses.XMLOrderedElementEntity, String.class);
     }
@@ -246,10 +259,10 @@ public class TestIndex extends SingleEMFTestCase {
 
             // verify the entity was stored
             IOrderedEntity findEntity = em.find(entityClass, entityId);
-            assertNotNull("Found entity just created", findEntity);
-            assertEquals("Verify entity id = " + entityId, entityId.intValue(), findEntity.getId());
-            assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
-                findEntity.getClass().getName());
+            assertNotNull(findEntity, "Found entity just created");
+            assertEquals(entityId.intValue(), findEntity.getId(), "Verify entity id = " + entityId);
+            assertEquals(entityClass.getName(), findEntity.getClass().getName(),
+                "Verify entity name = " + entityClass.getName());
 
         } catch (Throwable t) {
             log.error(t);
@@ -312,10 +325,10 @@ public class TestIndex extends SingleEMFTestCase {
             // verify the entities were stored
             for (int i=0; i<Element_Names.length; i++) {
                 IOrderedEntity findEntity = em.find(entityClass, i);
-                assertNotNull("Found entity just created", findEntity);
-                assertEquals("Verify entity id = " + i, i, findEntity.getId());
-                assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
-                    findEntity.getClass().getName());
+                assertNotNull(findEntity, "Found entity just created");
+                assertEquals(i, findEntity.getId(), "Verify entity id = " + i);
+                assertEquals(entityClass.getName(), findEntity.getClass().getName(),
+                    "Verify entity name = " + entityClass.getName());
             }
         } catch (Throwable t) {
             log.error(t);
@@ -358,10 +371,10 @@ public class TestIndex extends SingleEMFTestCase {
             // verify the entity was stored
             log.trace("Verifing the entity was stored");
             IOrderedElements findEntity = em.find(entityClass, entityId);
-            assertNotNull("Found entity just created", findEntity);
-            assertEquals("Verify entity id = " + entityId, entityId.intValue(), findEntity.getId());
-            assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
-                findEntity.getClass().getName());
+            assertNotNull(findEntity, "Found entity just created");
+            assertEquals(entityId.intValue(), findEntity.getId(), "Verify entity id = " + entityId);
+            assertEquals(entityClass.getName(), findEntity.getClass().getName(),
+                "Verify entity name = " + entityClass.getName());
 
         } catch (Throwable t) {
             log.error(t);
@@ -423,15 +436,15 @@ public class TestIndex extends SingleEMFTestCase {
                 Query q = em.createQuery("select w from " + entityClassName
                     + " o join o.entities w where index(w) = " + idx);
                 List<E> res = (List<E>)q.getResultList();
-                assertEquals("  Verify query returns 1 element for index " + idx, 1, res.size());
+                assertEquals(1, res.size(), "  Verify query returns 1 element for index " + idx);
                 if (res.size() == 1) {
                     Object oo = res.get(0);
-                    assertEquals("  Verify element type is " + elementClass.getName(), elementClass.getName(),
-                        oo.getClass().getName());
+                    assertEquals(elementClass.getName(), oo.getClass().getName(),
+                        "  Verify element type is " + elementClass.getName());
                     try {
                         String name = (String) elementClass.getMethod("getName").invoke(oo);
-                        assertEquals("  Verify element value is '"
-                            + expectedEntityName + "'", expectedEntityName, name);
+                        assertEquals(expectedEntityName, name, "  Verify element value is '"
+                            + expectedEntityName + "'");
                     } catch (Exception e) {
                         log.error("  Caught unexpected exception:" + e.getMessage());
                         throw new RuntimeException(e);
@@ -474,15 +487,15 @@ public class TestIndex extends SingleEMFTestCase {
                 Query q = em.createQuery("select w from " + entityClassName
                     + " o join o.entities w where index(w) = " + idx);
                 List<E> res = (List<E>)q.getResultList();
-                assertEquals("  Verify query returns 1 element for index " + idx, 1, res.size());
+                assertEquals(1, res.size(), "  Verify query returns 1 element for index " + idx);
                 if (res.size() == 1) {
                     Object oo = res.get(0);
-                    assertEquals("  Verify element type is " + elementClass.getName(), elementClass.getName(),
-                        oo.getClass().getName());
+                    assertEquals(elementClass.getName(), oo.getClass().getName(),
+                        "  Verify element type is " + elementClass.getName());
                     try {
                         String name = (String) elementClass.getMethod("getName").invoke(oo);
-                        assertEquals("  Verify element value is '"
-                            + expectedEntityName + "'", expectedEntityName, name);
+                        assertEquals(expectedEntityName, name, "  Verify element value is '"
+                            + expectedEntityName + "'");
 
                         if (log.isTraceEnabled()) {
                             log.trace("Query " + elementClassName + " and verify 'entities' collection content");
@@ -490,15 +503,15 @@ public class TestIndex extends SingleEMFTestCase {
                         Query q2 = em.createQuery("select w from " + elementClassName
                             + " o join o.entities w where index(w) = " + idx2);
                         List<E> res2 = (List<E>)q.getResultList();
-                        assertEquals("  Verify query returns 1 entity for index " + idx2, 1, res2.size());
+                        assertEquals(1, res2.size(), "  Verify query returns 1 entity for index " + idx2);
                         if (res2.size() == 1) {
                             Object oo2 = res2.get(0);
-                            assertEquals("  Verify entity type is " + entityClass.getName(), entityClass.getName(),
-                                oo2.getClass().getName());
+                            assertEquals(entityClass.getName(), oo2.getClass().getName(),
+                                "  Verify entity type is " + entityClass.getName());
                             try {
                                 String name2 = (String) entityClass.getMethod("getName").invoke(oo2);
-                                assertEquals("  Verify entity value is '"
-                                    + expectedEntityName + "'", expectedEntityName, name);
+                                assertEquals(expectedEntityName, name, "  Verify entity value is '"
+                                    + expectedEntityName + "'");
                             } catch (Exception e) {
                                 log.error("  Caught unexpected exception:" + e.getMessage());
                                 throw new RuntimeException(e);
@@ -544,16 +557,16 @@ public class TestIndex extends SingleEMFTestCase {
                 Query q = em.createQuery("select w from " + entityClassName
                     + " o join o.elements w where index(w) = " + idx);
                 List<E> res = (List<E>)q.getResultList();
-                assertEquals("  Verify query returns 1 element for index " + idx, 1, res.size());
+                assertEquals(1, res.size(), "  Verify query returns 1 element for index " + idx);
                 if (res.size() == 1) {
                     Object oo = res.get(0);
-                    assertEquals("  Verify element type is String", String.class.getName(),
-                        oo.getClass().getName());
+                    assertEquals(String.class.getName(), oo.getClass().getName(),
+                        "  Verify element type is String");
                     String name;
                     try {
                         name = (String) oo.toString();
-                        assertEquals("  Verify element value is '"
-                            + expectedEntityName + "'", expectedEntityName, name);
+                        assertEquals(expectedEntityName, name, "  Verify element value is '"
+                            + expectedEntityName + "'");
                     } catch (Exception e) {
                         log.error("  Caught unexpected exception:" + e.getMessage());
                         throw new RuntimeException(e);

@@ -18,28 +18,32 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to get an EntityManager and perform some basic operations.
  *
  * @author Marc Prud'hommeaux
  */
-public class TestPersistence
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestPersistence extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, Place.class);
     }
 
-    public void testCreateEntityManager() {
+    @Test
+    void createEntityManager() {
         EntityManager em = emf.createEntityManager();
 
         EntityTransaction t = em.getTransaction();
@@ -49,14 +53,15 @@ public class TestPersistence
         t.rollback();
 
         // openjpa-facade test
-        assertTrue(em instanceof OpenJPAEntityManager);
+        assertInstanceOf(OpenJPAEntityManager.class, em);
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
         ojem.getFetchPlan().setMaxFetchDepth(1);
         assertEquals(1, ojem.getFetchPlan().getMaxFetchDepth());
         em.close();
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new AllFieldTypes());
@@ -64,7 +69,8 @@ public class TestPersistence
         em.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes aft = new AllFieldTypes();
@@ -89,7 +95,8 @@ public class TestPersistence
         em.close();
     }
 
-    public void testNewDeleteNew() {
+    @Test
+    void newDeleteNew() {
         EntityManager em = emf.createEntityManager();
 
         // create new
@@ -127,9 +134,4 @@ public class TestPersistence
         assertEquals("Lexington", place.getLocation());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestPersistence.class);
-    }
 }
-

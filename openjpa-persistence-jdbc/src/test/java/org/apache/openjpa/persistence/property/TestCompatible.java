@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.property;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>TestCompatibile</b> is used to test various backwards compatibility
@@ -38,9 +43,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * <li>N/A
  * </ul>
  */
-public class TestCompatible extends SingleEMFTestCase {
+class TestCompatible extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityContact.class,
               EmbeddableAddress.class,
@@ -48,7 +53,8 @@ public class TestCompatible extends SingleEMFTestCase {
               DROP_TABLES);
     }
 
-    public void testPrivateEmbbeddable() {
+    @Test
+    void privateEmbbeddable() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -82,17 +88,17 @@ public class TestCompatible extends SingleEMFTestCase {
         em = emf.createEntityManager();
         EntityContact contactFind = em.find(EntityContact.class, "Contact id");
         assertTrue(contactFind != null);
-        assertTrue(contactFind.getId().equals("Contact id"));
-        assertTrue(contactFind.getEmail().equals("Contact email address"));
-        assertTrue(contactFind.getPhone().equals("Contact phone number"));
-        assertTrue(contactFind.getType().equals("HOME"));
+        assertEquals("Contact id", contactFind.getId());
+        assertEquals("Contact email address", contactFind.getEmail());
+        assertEquals("Contact phone number", contactFind.getPhone());
+        assertEquals("HOME", contactFind.getType());
         assertTrue(contactFind.getAddress() != null);
-        assertTrue(contactFind.getAddress().getLine1().equals("Address line 1"));
-        assertTrue(contactFind.getAddress().getLine2().equals("Address line 2"));
-        assertTrue(contactFind.getAddress().getCity().equals("Address city"));
-        assertTrue(contactFind.getAddress().getState().equals("Address state"));
-        assertTrue(contactFind.getAddress().getZipCode().equals("Address zipcode"));
-        assertTrue(contactFind.getAddress().getCountry().equals("Address country"));
+        assertEquals("Address line 1", contactFind.getAddress().getLine1());
+        assertEquals("Address line 2", contactFind.getAddress().getLine2());
+        assertEquals("Address city", contactFind.getAddress().getCity());
+        assertEquals("Address state", contactFind.getAddress().getState());
+        assertEquals("Address zipcode", contactFind.getAddress().getZipCode());
+        assertEquals("Address country", contactFind.getAddress().getCountry());
 
         //
         // Remove the contact entity

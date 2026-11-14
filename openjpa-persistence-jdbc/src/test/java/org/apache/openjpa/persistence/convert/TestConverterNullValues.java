@@ -18,19 +18,25 @@
  */
 package org.apache.openjpa.persistence.convert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * An AttributeConverter is consulted for null values as well, so a converter
  * may map null to a default in either direction.
  */
-public class TestConverterNullValues extends SingleEMFTestCase {
+class TestConverterNullValues extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             ConvertNullEntity.class,
@@ -47,7 +53,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * A null attribute must be passed to convertToDatabaseColumn, so the
      * converter's substitute lands in the column.
      */
-    public void testNullAttributeIsConverted() {
+    @Test
+    void nullAttributeIsConverted() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(1, null));
@@ -68,7 +75,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * converter's substitute lands in the attribute. Also asserts that a null
      * returned by convertToDatabaseColumn still stores a null column value.
      */
-    public void testNullColumnIsConverted() {
+    @Test
+    void nullColumnIsConverted() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(2, NullDefaultConverter.ERASE));
@@ -88,7 +96,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * consulted on the store and load paths only. So "IS NULL", a null bound
      * to a parameter and "IS NOT NULL" stay consistent with each other.
      */
-    public void testNullInQueryMeansSqlNull() {
+    @Test
+    void nullInQueryMeansSqlNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         // column holds DB_DEFAULT, attribute reads back as null
@@ -110,8 +119,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
             ConvertNullEntity.class)
             .setParameter("v", null)
             .getResultList();
-        assertEquals("= :nullParam must agree with IS NULL",
-            List.of(5), toIds(res));
+        assertEquals(List.of(5),
+            toIds(res), "= :nullParam must agree with IS NULL");
         em.close();
     }
 
@@ -119,7 +128,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
      * A bulk update assigning null writes a null column value, whether the
      * null is a literal or a bound parameter.
      */
-    public void testNullBulkUpdateMeansSqlNull() {
+    @Test
+    void nullBulkUpdateMeansSqlNull() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertNullEntity(6, "a"));
@@ -137,8 +147,8 @@ public class TestConverterNullValues extends SingleEMFTestCase {
         em.clear();
 
         assertNull(rawValue(em, 6));
-        assertNull("SET x = :nullParam must agree with SET x = NULL",
-            rawValue(em, 7));
+        assertNull(rawValue(em, 7),
+            "SET x = :nullParam must agree with SET x = NULL");
         em.close();
     }
 

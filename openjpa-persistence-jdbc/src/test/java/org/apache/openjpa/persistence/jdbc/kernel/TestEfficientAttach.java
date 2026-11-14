@@ -42,19 +42,12 @@ import org.apache.openjpa.persistence.jdbc.common.apps.AttachC;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachD;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachE;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachF;
+import org.junit.jupiter.api.Test;
 
-public class TestEfficientAttach extends TestSQLListenerTestCase {
+class TestEfficientAttach extends TestSQLListenerTestCase {
 
-
-//    private boolean  = true;//Boolean.valueOf(bool);
-
-    /** Creates a new instance of TestEfficientAttach */
-    public TestEfficientAttach(String name)
-    {
-    	super(name);
-    }
-
-    public void testAttachWithDetachedStateManager() {
+    @Test
+    void attachWithDetachedStateManager() {
         Class[] clss = new Class[]{
             AttachA.class, AttachB.class, AttachC.class, AttachD.class,
             AttachE.class, AttachF.class,
@@ -114,10 +107,4 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         pm.close();
  */
     }
-
-
-    public static void main(String[] args) {
-        //main();
-    }
-
 }

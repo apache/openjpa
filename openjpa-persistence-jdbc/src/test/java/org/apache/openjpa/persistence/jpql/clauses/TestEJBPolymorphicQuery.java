@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,15 +28,17 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBPolymorphicQuery extends AbstractTestCase {
 
-    public TestEJBPolymorphicQuery(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBPolymorphicQuery() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
 
@@ -62,7 +67,8 @@ public class TestEJBPolymorphicQuery extends AbstractTestCase {
      * the hierarchy that the result is its instances and that of all its
      * subclass.
      */
-    public void testPolymorphicSelect() {
+    @Test
+    void polymorphicSelect() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from RuntimeTest1 o")
@@ -74,7 +80,8 @@ public class TestEJBPolymorphicQuery extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testPolymorphicDelete() {
+    @Test
+    void polymorphicDelete() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

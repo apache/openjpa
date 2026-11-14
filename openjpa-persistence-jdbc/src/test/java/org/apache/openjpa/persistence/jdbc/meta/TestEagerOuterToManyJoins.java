@@ -28,6 +28,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,24 +43,18 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEagerOuterToManyJoins
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-    /** Creates a new instance of TestEagerOuterToManyJoins */
-    public TestEagerOuterToManyJoins(String name) {
-    	super(name);
-    }
-
+public class TestEagerOuterToManyJoins extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     public boolean skipTest() {
-        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).
-                getDBDictionaryInstance();
+        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance();
         return !dict.supportsSubselect;
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
        deleteAll(HelperPC.class);
        deleteAll(EagerOuterJoinPC2.class);
@@ -66,11 +62,13 @@ public class TestEagerOuterToManyJoins
     }
 
 
-    public void testStringCollectionById() {
+    @Test
+    void stringCollectionById() {
         stringCollectionByIdTest(false);
     }
 
-    public void testEmptyStringCollectionById() {
+    @Test
+    void emptyStringCollectionById() {
         stringCollectionByIdTest(true);
     }
 
@@ -83,30 +81,34 @@ public class TestEagerOuterToManyJoins
         EagerOuterJoinPC pc = (EagerOuterJoinPC) pm.getObjectId(oid);
         assertEquals("1", pc.getName());
         if (empty)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("1.1"));
             assertTrue(pc.getStringCollection().contains("1.2"));
         }
         pm.close();
     }
 
-    public void testStringCollectionByQuery() {
+    @Test
+    void stringCollectionByQuery() {
         stringCollectionByQueryTest(0);
     }
 
-    public void testEmptyStringCollectionByQuery1() {
+    @Test
+    void emptyStringCollectionByQuery1() {
         stringCollectionByQueryTest(1);
     }
 
-    public void testEmptyStringCollectionByQuery2() {
+    @Test
+    void emptyStringCollectionByQuery2() {
         stringCollectionByQueryTest(2);
     }
 
-    public void testEmptyStringCollectionByQuery3() {
+    @Test
+    void emptyStringCollectionByQuery3() {
         stringCollectionByQueryTest(3);
     }
 
@@ -128,11 +130,11 @@ public class TestEagerOuterToManyJoins
         EagerOuterJoinPC pc = (EagerOuterJoinPC) itr.next();
         assertEquals("1", pc.getName());
         if ((empty & 1) > 0)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("1.1"));
             assertTrue(pc.getStringCollection().contains("1.2"));
         }
@@ -140,15 +142,15 @@ public class TestEagerOuterToManyJoins
         pc = (EagerOuterJoinPC) itr.next();
         assertEquals("2", pc.getName());
         if ((empty & 2) > 0)
-            assertEquals(pc.getStringCollection().toString(),
-                    0, pc.getStringCollection().size());
+            assertEquals(0,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
         else {
-            assertEquals(pc.getStringCollection().toString(),
-                    2, pc.getStringCollection().size());
+            assertEquals(2,
+                    pc.getStringCollection().size(), pc.getStringCollection().toString());
             assertTrue(pc.getStringCollection().contains("2.1"));
             assertTrue(pc.getStringCollection().contains("2.2"));
         }
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -177,7 +179,8 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testStringListById() {
+    @Test
+    void stringListById() {
         Object oid = insertStringList();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
 
@@ -192,7 +195,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testStringListByQuery() {
+    @Test
+    void stringListByQuery() {
         insertStringList();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -216,7 +220,7 @@ public class TestEagerOuterToManyJoins
         assertEquals(2, pc.getStringList().size());
         assertEquals("2.1", pc.getStringList().get(0));
         assertEquals("2.2", pc.getStringList().get(1));
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -241,11 +245,13 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testOneManyCollectionById() {
+    @Test
+    void oneManyCollectionById() {
         oneManyCollectionByIdTest(false);
     }
 
-    public void testEmptyOneManyCollectionById() {
+    @Test
+    void emptyOneManyCollectionById() {
         oneManyCollectionByIdTest(true);
     }
 
@@ -264,19 +270,23 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testOneManyCollectionByQuery() {
+    @Test
+    void oneManyCollectionByQuery() {
         oneManyCollectionByQueryTest(0);
     }
 
-    public void testEmptyOneManyCollectionByQuery1() {
+    @Test
+    void emptyOneManyCollectionByQuery1() {
         oneManyCollectionByQueryTest(1);
     }
 
-    public void testEmptyOneManyCollectionByQuery2() {
+    @Test
+    void emptyOneManyCollectionByQuery2() {
         oneManyCollectionByQueryTest(2);
     }
 
-    public void testEmptyOneManyCollectionByQuery3() {
+    @Test
+    void emptyOneManyCollectionByQuery3() {
         oneManyCollectionByQueryTest(3);
     }
 
@@ -308,7 +318,7 @@ public class TestEagerOuterToManyJoins
         else
             assertEquals(2, pc.getOneManyCollection().size());
 
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -350,7 +360,8 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testManyManyCollectionById() {
+    @Test
+    void manyManyCollectionById() {
         Object oid = insertManyManyCollection();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -362,7 +373,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testManyManyCollectionByQuery() {
+    @Test
+    void manyManyCollectionByQuery() {
         insertManyManyCollection();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -382,7 +394,7 @@ public class TestEagerOuterToManyJoins
         pc = (EagerOuterJoinPC) itr.next();
         assertEquals("2", pc.getName());
         assertEquals(2, pc.getManyManyCollection().size());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -415,11 +427,13 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testManyManyListById() {
+    @Test
+    void manyManyListById() {
         manyManyListByIdTest(false);
     }
 
-    public void testEmptyManyManyListById() {
+    @Test
+    void emptyManyManyListById() {
         manyManyListByIdTest(true);
     }
 
@@ -444,19 +458,23 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testManyManyListByQuery() {
+    @Test
+    void manyManyListByQuery() {
         manyManyListByQueryTest(0);
     }
 
-    public void testEmptyManyManyListByQuery1() {
+    @Test
+    void emptyManyManyListByQuery1() {
         manyManyListByQueryTest(1);
     }
 
-    public void testEmptyManyManyListByQuery2() {
+    @Test
+    void emptyManyManyListByQuery2() {
         manyManyListByQueryTest(2);
     }
 
-    public void testEmptyManyManyListByQuery3() {
+    @Test
+    void emptyManyManyListByQuery3() {
         manyManyListByQueryTest(3);
     }
 
@@ -499,7 +517,7 @@ public class TestEagerOuterToManyJoins
             assertEquals("2.2", hpc.getName());
         }
 
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -537,7 +555,8 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testTwoCollectionsInFetchGroupsById() {
+    @Test
+    void twoCollectionsInFetchGroupsById() {
         Object oid = insertTwoCollections();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -558,7 +577,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testTwoCollectionsInFetchGroupsByQuery() {
+    @Test
+    void twoCollectionsInFetchGroupsByQuery() {
         insertTwoCollections();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -597,7 +617,7 @@ public class TestEagerOuterToManyJoins
         hpc = (EagerOuterJoinPC2) pc.getManyManyList().get(1);
         assertEquals("2.2", hpc.getName());
 
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
@@ -634,7 +654,8 @@ public class TestEagerOuterToManyJoins
         return oid;
     }
 
-    public void testQueryRandomAccess() {
+    @Test
+    void queryRandomAccess() {
         insertManyStringList();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -658,7 +679,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testQueryRange() {
+    @Test
+    void queryRange() {
         insertManyStringList();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -698,7 +720,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testEagerToOneThenEagerToMany() {
+    @Test
+    void eagerToOneThenEagerToMany() {
         insertEagers();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -709,7 +732,7 @@ public class TestEagerOuterToManyJoins
         //FIXME jthomas
         //q.setOrdering("name ascending");
         Collection results = (Collection) q.getResultList();
-        assertEquals(new ArrayList(results).toString(), 2, results.size());
+        assertEquals(2, results.size(), new ArrayList(results).toString());
 
         Iterator itr = results.iterator();
         EagerOuterJoinPC2 ref = (EagerOuterJoinPC2) itr.next();
@@ -722,13 +745,14 @@ public class TestEagerOuterToManyJoins
 
         ref = (EagerOuterJoinPC2) itr.next();
         assertEquals("r2", ref.getName());
-        assertTrue(pc == ref.getRef());
+        assertSame(pc, ref.getRef());
 
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 
-    public void testEagerToManyThenEagerToOne() {
+    @Test
+    void eagerToManyThenEagerToOne() {
         insertEagers();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -755,7 +779,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testEagerToManyThenEagerToMany() {
+    @Test
+    void eagerToManyThenEagerToMany() {
         insertEagers();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -787,7 +812,8 @@ public class TestEagerOuterToManyJoins
         pm.close();
     }
 
-    public void testEagerToOneAndToManyThenEagerToOne() {
+    @Test
+    void eagerToOneAndToManyThenEagerToOne() {
         Object oid = insertEagers();
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -819,7 +845,7 @@ public class TestEagerOuterToManyJoins
             assertEquals("r1", ref.getName());
             assertEquals("h1", ref.getHelper().getStringField());
         }
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         pm.close();
     }
 

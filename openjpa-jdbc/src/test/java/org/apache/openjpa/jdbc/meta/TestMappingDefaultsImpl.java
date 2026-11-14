@@ -18,16 +18,15 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertNotEquals;
-
-public class TestMappingDefaultsImpl {
+class TestMappingDefaultsImpl {
 
 
     /**
@@ -35,7 +34,7 @@ public class TestMappingDefaultsImpl {
      * duplicate column names when populating the table with long column names.
      */
     @Test
-    public void testPopulateWithLongColumnNames() {
+    void populateWithLongColumnNames() {
         MappingDefaultsImpl mapping = new MappingDefaultsImpl();
         JDBCConfiguration conf = new JDBCConfigurationImpl(false, false);
         conf.setDBDictionary("oracle");
@@ -52,8 +51,8 @@ public class TestMappingDefaultsImpl {
         mr.setConfiguration(conf);
         Version version = new Version(new ClassMapping(String.class,mr));
         mapping.populateColumns(version, table, cols);
-        assertNotEquals("column names are conflicted : " + cols[0].getName(), cols[0].getName(), cols[1].getName());
-        assertNotEquals("column names are conflicted : " + cols[0].getName(), cols[0].getName(), cols[2].getName());
-        assertNotEquals("column names are conflicted : " + cols[1].getName(), cols[1].getName(), cols[2].getName());
+        assertNotEquals(cols[0].getName(), cols[1].getName(), "column names are conflicted : " + cols[0].getName());
+        assertNotEquals(cols[0].getName(), cols[2].getName(), "column names are conflicted : " + cols[0].getName());
+        assertNotEquals(cols[1].getName(), cols[2].getName(), "column names are conflicted : " + cols[1].getName());
     }
 }

@@ -29,23 +29,20 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestGetObjectsById extends BaseKernelTest {
+class TestGetObjectsById extends BaseKernelTest {
 
     private Object[] oids;
 
-    /**
-     * Creates a new instance of TestGetObjectsById
-     */
-    public TestGetObjectsById(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest5.class);
         deleteAll(RuntimeTest4.class);
 
@@ -72,7 +69,8 @@ public class TestGetObjectsById extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testGetObjectsByIdInvocation() {
+    @Test
+    void getObjectsByIdInvocation() {
         OpenJPAEntityManager pm = getPM();
         try {
             Object[] pcs = pm.findAll(Object.class, oids);

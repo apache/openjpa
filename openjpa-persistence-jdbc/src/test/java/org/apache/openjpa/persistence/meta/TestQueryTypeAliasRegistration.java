@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,11 +32,13 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
+class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
     private final int threads = 100;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(MdrTestEntity.class);
         assertNotNull(emf);
@@ -47,7 +52,8 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
      * at the same time. All threads should get data back and no threads should receive an
      * exception.
      */
-    public void testMultiThreadGetMetaDataAlias() throws Exception {
+    @Test
+    void multiThreadGetMetaDataAlias() throws Exception {
         try {
             List<Worker> workers = new ArrayList<>();
             Set<Exception> exceptions = new HashSet<>();
@@ -65,7 +71,7 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
                     exceptions.add(w.getException());
                 }
             }
-            assertTrue("Caught "  + exceptions.toString(), exceptions.size() == 0);
+            assertEquals(0, exceptions.size(), "Caught " + exceptions.toString());
         } finally {
             if (emf != null) {
                 emf.close();

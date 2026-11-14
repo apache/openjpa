@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +33,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Basic test to check FinderQuery caches.
@@ -60,7 +67,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         em.close();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
@@ -71,7 +78,8 @@ public class TestFinderCache extends SQLListenerTestCase {
         createTestData();
     }
 
-    public void testFinder() {
+    @Test
+    void finder() {
         //closeEMF(emf);  // close EMF provided by SingleEMFTestCase
         OpenJPAEntityManagerFactorySPI emf1 = createEMF("openjpa.jdbc.FinderCache", "false");
         run(1, Book.class, BOOK_IDS); // for warmup
@@ -82,7 +90,8 @@ public class TestFinderCache extends SQLListenerTestCase {
         closeEMF(emf2);
     }
 
-    public void testSQLEventListener() {
+    @Test
+    void sqlEventListener() {
         EntityManager em = emf.createEntityManager();
         int N = 3;
         sql.clear();

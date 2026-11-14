@@ -18,21 +18,26 @@
  */
 package org.apache.openjpa.persistence.jpql;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.util.EagerEmbed;
 import org.apache.openjpa.persistence.util.EagerEmbedRel;
 import org.apache.openjpa.persistence.util.EagerEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestOneToManySubQuery extends SingleEMFTestCase {
+class TestOneToManySubQuery extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, EagerEntity.class, EagerEmbed.class, EagerEmbedRel.class);
     }
 
-    public void test() {
+    @Test
+    void test() {
         EntityManager em = emf.createEntityManager();
         try {
             assertEquals(0, em.createQuery(

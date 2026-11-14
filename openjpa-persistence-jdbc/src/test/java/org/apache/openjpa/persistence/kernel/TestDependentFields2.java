@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +33,10 @@ import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.kernel.common.apps.DependentFieldsPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDependentFields2 extends BaseKernelTest {
+class TestDependentFields2 extends BaseKernelTest {
 
     private static final int COMMIT = 0;
     private static final int ROLLBACK = 1;
@@ -43,12 +52,8 @@ public class TestDependentFields2 extends BaseKernelTest {
     private Object _depMap = null;
     private Object _repeat = null;
 
-    public TestDependentFields2(String casename) {
-        super(casename);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         deleteAll(DependentFieldsPC.class);
 
         DependentFieldsPC root = new DependentFieldsPC();
@@ -87,32 +92,38 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDependentFieldsLoaded() {
+    @Test
+    void dependentFieldsLoaded() {
         delete(true, COMMIT);
         checkFields();
     }
 
-    public void testDependentFieldsLoadedWithRollback() {
+    @Test
+    void dependentFieldsLoadedWithRollback() {
         delete(true, ROLLBACK);
         checkFields();
     }
 
-    public void testDependentFieldsLoadedWithPreStore() {
+    @Test
+    void dependentFieldsLoadedWithPreStore() {
         delete(true, PRESTORE);
         checkFields();
     }
 
-    public void testDependentFieldsUnloaded() {
+    @Test
+    void dependentFieldsUnloaded() {
         delete(false, COMMIT);
         checkFields();
     }
 
-    public void testDependentFieldsUnloadedWithRollback() {
+    @Test
+    void dependentFieldsUnloadedWithRollback() {
         delete(false, ROLLBACK);
         checkFields();
     }
 
-    public void testDependentFieldsUnloadedWithPreStore() {
+    @Test
+    void dependentFieldsUnloadedWithPreStore() {
         delete(false, PRESTORE);
         checkFields();
     }
@@ -210,15 +221,18 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNullDeletesDependent() {
+    @Test
+    void testNullDeletesDependent() {
         nullDeletesDependent(COMMIT);
     }
 
-    public void testNullDeletesDependentWithRollback() {
+    @Test
+    void nullDeletesDependentWithRollback() {
         nullDeletesDependent(ROLLBACK);
     }
 
-    public void testNullDeletesDependentWithPreStore() {
+    @Test
+    void nullDeletesDependentWithPreStore() {
         nullDeletesDependent(PRESTORE);
     }
 
@@ -250,20 +264,23 @@ public class TestDependentFields2 extends BaseKernelTest {
             endTx(pm);
         }
 
-        assertTrue(!pm.isPersistent(depRel));
+        assertFalse(pm.isPersistent(depRel));
         assertNull(pm.find(DependentFieldsPC.class, _depRel));
         endEm(pm);
     }
 
-    public void testRemoveDeletesDependent() {
+    @Test
+    void testRemoveDeletesDependent() {
         removeDeletesDependent(COMMIT);
     }
 
-    public void testRemoveDeletesDependentWithRollback() {
+    @Test
+    void removeDeletesDependentWithRollback() {
         removeDeletesDependent(ROLLBACK);
     }
 
-    public void testRemoveDeletesDependentWithPreStore() {
+    @Test
+    void removeDeletesDependentWithPreStore() {
         removeDeletesDependent(PRESTORE);
     }
 
@@ -279,16 +296,16 @@ public class TestDependentFields2 extends BaseKernelTest {
             startTx(pm);
             pc = (DependentFieldsPC) pm.find(DependentFieldsPC.class, _root);
             list = pc.getDependentList();
-            assertEquals("list size =! 2", 2, list.size());
+            assertEquals(2, list.size(), "list size =! 2");
             depColl = (DependentFieldsPC) list.remove(0);
-            assertEquals("_depColl is not pm.getObjectId(depColl)", _depColl,
-                pm.getObjectId(depColl));
+            assertEquals(_depColl, pm.getObjectId(depColl),
+                "_depColl is not pm.getObjectId(depColl)");
 
             map = pc.getDependentMap();
-            assertEquals("map size =! 2", 2, map.size());
+            assertEquals(2, map.size(), "map size =! 2");
             depMap = (DependentFieldsPC) map.remove("key");
-            assertEquals("_depMap is not pm.getObjectId(depMap)", _depMap,
-                pm.getObjectId(depMap));
+            assertEquals(_depMap, pm.getObjectId(depMap),
+                "_depMap is not pm.getObjectId(depMap)");
 
             if (action == ROLLBACK) {
                 rollbackTx(pm);
@@ -314,20 +331,23 @@ public class TestDependentFields2 extends BaseKernelTest {
 //        assertTrue("depMap is persistence", !pm.isPersistent(depMap));
         assertNull(pm.find(DependentFieldsPC.class, _depMap));
 
-        assertNotNull("repeat is null",
-            pm.find(DependentFieldsPC.class, _repeat));
+        assertNotNull(pm.find(DependentFieldsPC.class, _repeat),
+            "repeat is null");
         endEm(pm);
     }
 
-    public void testMoveDependentInContainer() {
+    @Test
+    void testMoveDependentInContainer() {
         moveDependentInContainer(COMMIT);
     }
 
-    public void testMoveDependentInContainerWithRollback() {
+    @Test
+    void moveDependentInContainerWithRollback() {
         moveDependentInContainer(ROLLBACK);
     }
 
-    public void testMoveDependentInContainerWithPreStore() {
+    @Test
+    void moveDependentInContainerWithPreStore() {
         moveDependentInContainer(PRESTORE);
     }
 
@@ -382,15 +402,18 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testRefedDependentNotDeleted() {
+    @Test
+    void testRefedDependentNotDeleted() {
         refedDependentNotDeleted(COMMIT);
     }
 
-    public void testRefedDependentNotDeletedWithRollback() {
+    @Test
+    void refedDependentNotDeletedWithRollback() {
         refedDependentNotDeleted(ROLLBACK);
     }
 
-    public void testRefedDependentNotDeletedWithPreStore() {
+    @Test
+    void refedDependentNotDeletedWithPreStore() {
         refedDependentNotDeleted(PRESTORE);
     }
 
@@ -432,15 +455,18 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNullSharedDependent() {
+    @Test
+    void testNullSharedDependent() {
         nullSharedDependent(COMMIT);
     }
 
-    public void testNullSharedDependentWithRollback() {
+    @Test
+    void nullSharedDependentWithRollback() {
         nullSharedDependent(ROLLBACK);
     }
 
-    public void testNullSharedDependentWithPreStore() {
+    @Test
+    void nullSharedDependentWithPreStore() {
         nullSharedDependent(PRESTORE);
     }
 
@@ -493,11 +519,13 @@ public class TestDependentFields2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testClearMappedDependentOfDetached() {
+    @Test
+    void clearMappedDependentOfDetached() {
         clearDependentOfDetachedTest(true);
     }
 
-    public void testClearInverseKeyDependentOfDetached() {
+    @Test
+    void clearInverseKeyDependentOfDetached() {
         clearDependentOfDetachedTest(false);
     }
 

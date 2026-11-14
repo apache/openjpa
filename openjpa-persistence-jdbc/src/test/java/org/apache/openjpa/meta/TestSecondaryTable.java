@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSecondaryTable extends SingleEMFTestCase {
-    @Override
+class TestSecondaryTable extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(Parent.class, PChild.class, PChildBi.class
         // Hard code to 2.0 p.xml value. If the p.xml is 1.0, this value will be changed to false, and the test
@@ -33,7 +38,8 @@ public class TestSecondaryTable extends SingleEMFTestCase {
     /**
      * Added for OPENJPA-2247.
      */
-    public void testMappingInfo() {
+    @Test
+    void mappingInfo() {
         FieldMapping fm = getMapping(Parent.class).getFieldMapping("child");
         assertNotNull(fm);
         assertEquals("CHILD_REF", fm.getColumns()[0].getIdentifier().getName());

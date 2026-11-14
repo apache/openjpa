@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +39,14 @@ import org.apache.openjpa.util.asm.ClassNodeTracker;
 import org.apache.openjpa.util.asm.EnhancementClassLoader;
 import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.Type;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEnhancementWithMultiplePUs
+class TestEnhancementWithMultiplePUs
     extends AbstractCachedEMFTestCase {
 
-    public void testExplicitEnhancementWithClassNotInFirstPU() throws ClassNotFoundException {
+    @Test
+    void explicitEnhancementWithClassNotInFirstPU() throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Configurations.populateConfiguration(conf, new Options());
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
@@ -72,13 +78,14 @@ public class TestEnhancementWithMultiplePUs
 
     private ClassNodeTracker assertNotPC(ClassLoader loader, EnhancementProject project, String className) {
         ClassNodeTracker bc = project.loadClass(className, loader);
-        assertTrue(className + " must not be enhanced already; it was.",
-            bc.getClassNode().interfaces == null || !bc.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)));
+        assertTrue(bc.getClassNode().interfaces == null || !bc.getClassNode().interfaces.contains(Type.getInternalName(PersistenceCapable.class)),
+            className + " must not be enhanced already; it was.");
         return bc;
     }
 
-    public void testEnhancementOfSecondPUWithClassNotInFirstPU()
-        throws IOException {
+    @Test
+    void enhancementOfSecondPUWithClassNotInFirstPU()
+        throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = new Options();
         opts.setProperty("p",
@@ -114,8 +121,9 @@ public class TestEnhancementWithMultiplePUs
         assertTrue(written.contains(className));
     }
 
-    public void testEnhancementOfAllPUsWithinAResource()
-        throws IOException {
+    @Test
+    void enhancementOfAllPUsWithinAResource()
+        throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = new Options();
         opts.setProperty("p", "META-INF/persistence.xml");

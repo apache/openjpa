@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA TCK entity API requirements:
@@ -31,9 +37,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - getReference() throws IAE for non-entity, wrong PK type, null PK
  * - Constructor expression queries match constructors with primitive params
  */
-public class TestEntityAPIValidation extends SingleEMFTestCase {
+class TestEntityAPIValidation extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CoffeeBean.class, DROP_TABLES);
     }
@@ -44,7 +50,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * second argument is not a valid type for the entity's primary key.
      * Mirrors TCK entityAPITest4: Coffee has Integer PK, Long is not valid.
      */
-    public void testFindWithWrongPKTypeThrowsIAE() {
+    @Test
+    void findWithWrongPKTypeThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             // Long is not the declared PK type (Integer)
@@ -62,7 +69,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * find(Class, null) should throw IAE for the 4-arg find variant
      * (which is used by find with LockModeType or properties).
      */
-    public void testFindWithNullPKThrowsIAE() {
+    @Test
+    void findWithNullPKThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.find(CoffeeBean.class, null, LockModeType.NONE);
@@ -78,7 +86,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * getReference(Class, wrongType) should throw IAE.
      * Mirrors TCK getReferenceExceptionsTest pass2 with Long vs Integer PK.
      */
-    public void testGetReferenceWrongPKTypeLongThrowsIAE() {
+    @Test
+    void getReferenceWrongPKTypeLongThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             // Long is not a valid PK type for an Integer PK entity
@@ -95,7 +104,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * getReference() should throw IAE when first arg is not an entity.
      * Mirrors TCK getReferenceExceptionsTest pass1.
      */
-    public void testGetReferenceNonEntityThrowsIAE() {
+    @Test
+    void getReferenceNonEntityThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getReference(CoffeeBeanDTO.class, 1);
@@ -111,7 +121,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * getReference() should throw IAE when PK type is wrong.
      * Mirrors TCK getReferenceExceptionsTest pass2.
      */
-    public void testGetReferenceWrongPKTypeThrowsIAE() {
+    @Test
+    void getReferenceWrongPKTypeThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             // String is not a valid PK type for an Integer PK entity
@@ -128,7 +139,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * getReference() should throw IAE when PK is null.
      * Mirrors TCK getReferenceExceptionsTest pass3.
      */
-    public void testGetReferenceNullPKThrowsIAE() {
+    @Test
+    void getReferenceNullPKThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getReference(CoffeeBean.class, null);
@@ -146,7 +158,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * The constructor takes (Integer, String, float) but the query yields
      * (Integer, String, Float) -- the FillStrategy must handle boxing.
      */
-    public void testConstructorExpressionWithPrimitiveParam() {
+    @Test
+    void constructorExpressionWithPrimitiveParam() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -164,7 +177,7 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
                     + "WHERE c.price <> 0",
                 CoffeeBean.class).getResultList();
 
-            assertFalse("Should have results", result.isEmpty());
+            assertFalse(result.isEmpty(), "Should have results");
             assertEquals(1, result.size());
             assertEquals(Integer.valueOf(1), result.get(0).getId());
             assertEquals("espresso", result.get(0).getBrandName());
@@ -183,7 +196,8 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
      * Mirrors TCK entityAPITest16: SELECT NEW Bar(c.id, c.brandName, c.price).
      * The non-entity constructor takes (Integer, String, float).
      */
-    public void testConstructorExpressionNonEntityWithPrimitiveParam() {
+    @Test
+    void constructorExpressionNonEntityWithPrimitiveParam() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -198,7 +212,7 @@ public class TestEntityAPIValidation extends SingleEMFTestCase {
                     + "WHERE c.brandName = 'mocha'",
                 CoffeeBeanDTO.class).getResultList();
 
-            assertFalse("Should have results", result.isEmpty());
+            assertFalse(result.isEmpty(), "Should have results");
             assertEquals(1, result.size());
             assertEquals(Integer.valueOf(5), result.get(0).getId());
             assertEquals("mocha", result.get(0).getBrandName());

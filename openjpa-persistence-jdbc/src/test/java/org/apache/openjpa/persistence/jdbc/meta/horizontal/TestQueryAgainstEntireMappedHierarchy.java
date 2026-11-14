@@ -27,29 +27,27 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.horizontal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.Locale;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizD;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizJ;
 import org.apache.openjpa.persistence.jdbc.common.apps.HorizK;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestQueryAgainstEntireMappedHierarchy
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-    /** Creates a new instance of TestQueryAgainstEntireMappedHierarchy */
-    public TestQueryAgainstEntireMappedHierarchy(String name)
-    {
-    	super(name);
-    }
+public class TestQueryAgainstEntireMappedHierarchy extends TestSQLListenerTestCase {
 
     @Override
     public void setUpTestCase()
     {
         // this test depends on this fact
-        assertTrue(HorizJ.class.getSuperclass() == HorizD.class);
-        assertTrue(HorizK.class.getSuperclass() == HorizJ.class);
+        assertSame(HorizJ.class.getSuperclass(), HorizD.class);
+        assertSame(HorizK.class.getSuperclass(), HorizJ.class);
 
        deleteAll(HorizD.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
@@ -74,13 +72,14 @@ public class TestQueryAgainstEntireMappedHierarchy
         pm.close();
     }
 
-    public void testQueryAgainstEntireMappedHierarchy() {
+    @Test
+    void queryAgainstEntireMappedHierarchy() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         sql.clear();
         //FIXME jthomas
         //pm.newQuery(HorizD.class).execute();
         String lastStatement = (String) sql.get(sql.size() - 1);
-        assertTrue(lastStatement.toLowerCase(Locale.ROOT).indexOf("in (") == -1);
+        assertEquals(-1, lastStatement.toLowerCase(Locale.ROOT).indexOf("in ("));
         pm.close();
     }
 

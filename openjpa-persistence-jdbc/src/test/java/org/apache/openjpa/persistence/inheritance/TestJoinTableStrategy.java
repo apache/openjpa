@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.inheritance.entity.Department;
@@ -26,6 +28,8 @@ import org.apache.openjpa.persistence.inheritance.entity.FTEmployee;
 import org.apache.openjpa.persistence.inheritance.entity.Manager;
 import org.apache.openjpa.persistence.inheritance.entity.PTEmployee;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Originally reported in the context of entities of a inheritance hierarchy with
@@ -37,9 +41,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Fay Wang
  *
  */
-public class TestJoinTableStrategy extends SingleEMFTestCase {
+class TestJoinTableStrategy extends SingleEMFTestCase {
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Department.class, Employee.class,
 				PTEmployee.class, FTEmployee.class, Manager.class);
@@ -74,7 +78,8 @@ public class TestJoinTableStrategy extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testFindEntity() {
+    @Test
+    void findEntity() {
 		EntityManager em1 = emf.createEntityManager();
         Manager m = em1.find(Manager.class, 1);
         assertNotNull(m);

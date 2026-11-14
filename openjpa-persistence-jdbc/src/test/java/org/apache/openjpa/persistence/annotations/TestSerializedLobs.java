@@ -18,13 +18,19 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.AnnoTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -32,23 +38,25 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestSerializedLobs extends AnnotationTestCase
 {
 
-	public TestSerializedLobs(String name)
+	public TestSerializedLobs()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
     private static final Date DATE = new Date();
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(AnnoTest1.class);
     }
 
     // Serialized fields not being read properly
-    public void testSerialized() {
+    @Test
+    void serialized() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         AnnoTest1 pc1 = new AnnoTest1(1);
@@ -68,7 +76,8 @@ public class TestSerializedLobs extends AnnotationTestCase
         endEm(em);
     }
 
-    public void testBlob()
+    @Test
+    void blob()
         throws Exception {
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -115,7 +124,8 @@ public class TestSerializedLobs extends AnnotationTestCase
         endEm(em);
     }
 
-    public void testClob()
+    @Test
+    void clob()
         throws Exception {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);

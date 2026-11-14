@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.util.HashMap;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -26,8 +28,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.metamodel.Metamodel;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that non-entity classes (exceptions, ID classes, listeners) listed
@@ -38,27 +41,24 @@ import junit.framework.TestCase;
  * and causes MetaDataException in MetamodelImpl when getCriteriaBuilder()
  * or getMetamodel() is called.
  */
-public class TestNonEntityInPersistenceUnit extends TestCase {
+class TestNonEntityInPersistenceUnit {
 
     private EntityManagerFactory emf;
 
-    @Override
-    public void setUp() throws Exception {
-        Map<String, Object> props = new HashMap<>();
-        props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
-        props.put("openjpa.RuntimeUnenhancedClasses", "supported");
-        props.put("openjpa.DynamicEnhancementAgent", "false");
-        // Include both a real entity AND a non-entity exception class
-        props.put("openjpa.MetaDataFactory",
-            "jpa(Types="
+    @BeforeEach
+    void setUp() throws Exception {
+        Map<String, Object> props = Map.of(
+            "openjpa.jdbc.SynchronizeMappings", "buildSchema",
+            "openjpa.RuntimeUnenhancedClasses", "supported",
+            "openjpa.DynamicEnhancementAgent", "false",
+            "openjpa.MetaDataFactory", "jpa(Types="
                 + AllFieldTypes.class.getName() + ";"
-                + NotAnEntity.class.getName()
-                + ")");
+                + NotAnEntity.class.getName() + ")");
         emf = Persistence.createEntityManagerFactory("test", props);
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @AfterEach
+    void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
@@ -68,10 +68,11 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that getMetamodel() does not throw when a non-entity class
      * is listed in the persistence unit types.
      */
-    public void testGetMetamodelWithNonEntityClass() {
+    @Test
+    void getMetamodelWithNonEntityClass() {
         try {
             Metamodel metamodel = emf.getMetamodel();
-            assertNotNull("Metamodel should not be null", metamodel);
+            assertNotNull(metamodel, "Metamodel should not be null");
         } catch (Exception e) {
             fail("getMetamodel() should not throw when non-entity classes "
                 + "are in the persistence unit: " + e.getMessage());
@@ -82,10 +83,11 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that getCriteriaBuilder() does not throw when a non-entity
      * class is listed in the persistence unit types.
      */
-    public void testGetCriteriaBuilderWithNonEntityClass() {
+    @Test
+    void getCriteriaBuilderWithNonEntityClass() {
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
-            assertNotNull("CriteriaBuilder should not be null", cb);
+            assertNotNull(cb, "CriteriaBuilder should not be null");
         } catch (Exception e) {
             fail("getCriteriaBuilder() should not throw when non-entity "
                 + "classes are in the persistence unit: " + e.getMessage());
@@ -96,7 +98,8 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
      * Test that creating an EntityManager and persisting a real entity
      * works fine even when a non-entity class is in the persistence unit.
      */
-    public void testPersistRealEntityWithNonEntityInUnit() {
+    @Test
+    void persistRealEntityWithNonEntityInUnit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {
@@ -106,6 +109,7 @@ public class TestNonEntityInPersistenceUnit extends TestCase {
             em.flush();
             em.getTransaction().commit();
         } catch (Exception e) {
+            e.printStackTrace();
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }

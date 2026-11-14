@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +37,8 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * New test case.
@@ -41,15 +46,15 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 @AllowFailure(message="surefire excluded")
 public class TestPCParametersInQueries extends AbstractTestCase {
 
-    public TestPCParametersInQueries(String test) {
-        super(test, "datacachecactusapp");
+    public TestPCParametersInQueries() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
     private Object _eId;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CacheObjectA.class);
 
         Map propsMap = new HashMap();
@@ -70,7 +75,8 @@ public class TestPCParametersInQueries extends AbstractTestCase {
         broker.close();
     }
 
-    public void testPCParameter() {
+    @Test
+    void pCParameter() {
         Broker broker = _factory.newBroker();
         broker.begin();
         CacheObjectE e = (CacheObjectE) broker.find(_eId, true, null);
@@ -81,7 +87,7 @@ public class TestPCParametersInQueries extends AbstractTestCase {
         Collection c = (Collection) q.execute(new Object[]{ e });
         CacheTestHelper.iterate(c);
         Object o = c.iterator().next();
-        assertTrue(o instanceof CacheObjectJ);
+        assertInstanceOf(CacheObjectJ.class, o);
         CacheTestHelper.assertInCache(this, q, Boolean.TRUE, new Object[]{ e });
 
         q = broker.newQuery(JPQLParser.LANG_JPQL,
@@ -90,8 +96,8 @@ public class TestPCParametersInQueries extends AbstractTestCase {
 
         c = (Collection) q.execute(new Object[]{ e });
         Object o2 = c.iterator().next();
-        assertTrue(o2 instanceof CacheObjectJ);
-        assertTrue(o == o2);
+        assertInstanceOf(CacheObjectJ.class, o2);
+        assertSame(o, o2);
 
         broker.commit();
         broker.close();

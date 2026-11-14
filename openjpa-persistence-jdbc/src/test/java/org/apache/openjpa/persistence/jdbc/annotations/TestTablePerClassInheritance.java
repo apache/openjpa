@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test that InheritanceType.TABLE_PER_CLASS JPA mapping is translated
@@ -32,22 +36,22 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @author Abe White
  */
-public class TestTablePerClassInheritance
+class TestTablePerClassInheritance
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TablePerClass1.class, TablePerClass2.class, EmbedOwner.class,
             EmbedValue.class, CLEAR_TABLES);
     }
 
-    public void testMapping() {
+    @Test
+    void mapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(TablePerClass2.class,
             null, true);
-        assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
-        assertTrue(mapping.getDiscriminator().getStrategy()
-            instanceof NoneDiscriminatorStrategy);
+        assertInstanceOf(FullClassStrategy.class, mapping.getStrategy());
+        assertInstanceOf(NoneDiscriminatorStrategy.class, mapping.getDiscriminator().getStrategy());
         assertNull(mapping.getJoinForeignKey());
         assertNull(mapping.getJoinablePCSuperclassMapping());
         assertEquals("TPC_BASIC", mapping.getFieldMapping("basic").
@@ -59,9 +63,8 @@ public class TestTablePerClassInheritance
 
         ClassMapping sup = mapping.getPCSuperclassMapping();
         assertEquals(TablePerClass1.class, sup.getDescribedType());
-        assertTrue(sup.getStrategy() instanceof FullClassStrategy);
-        assertTrue(sup.getDiscriminator().getStrategy()
-            instanceof NoneDiscriminatorStrategy);
+        assertInstanceOf(FullClassStrategy.class, sup.getStrategy());
+        assertInstanceOf(NoneDiscriminatorStrategy.class, sup.getDiscriminator().getStrategy());
         assertEquals("TPC_BASIC", sup.getFieldMapping("basic").
             getColumns()[0].getName());
         embed = sup.getFieldMapping("embed").getEmbeddedMapping();
@@ -69,7 +72,8 @@ public class TestTablePerClassInheritance
             getColumns()[0].getName());
     }
 
-    public void testInsertAndRetrieve() {
+    @Test
+    void insertAndRetrieve() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         TablePerClass1 tpc1 = new TablePerClass1();

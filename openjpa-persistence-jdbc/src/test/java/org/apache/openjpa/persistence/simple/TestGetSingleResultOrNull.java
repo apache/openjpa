@@ -18,24 +18,32 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link jakarta.persistence.TypedQuery#getSingleResultOrNull()}
  * added in JPA 3.2.
  */
-public class TestGetSingleResultOrNull extends SingleEMFTestCase {
+class TestGetSingleResultOrNull extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
-    public void testReturnsNullWhenNoResult() {
+    @Test
+    void returnsNullWhenNoResult() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o WHERE o.intField = 99999",
@@ -45,7 +53,8 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testReturnsSingleResult() {
+    @Test
+    void returnsSingleResult() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e = new AllFieldTypes();
@@ -65,7 +74,8 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testReturnsNullValueFromProjection() {
+    @Test
+    void returnsNullValueFromProjection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e = new AllFieldTypes();
@@ -84,7 +94,8 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testThrowsNonUniqueResultException() {
+    @Test
+    void throwsNonUniqueResultException() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AllFieldTypes e1 = new AllFieldTypes();
@@ -109,7 +120,8 @@ public class TestGetSingleResultOrNull extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testOnClosedEntityManagerThrows() {
+    @Test
+    void onClosedEntityManagerThrows() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<AllFieldTypes> q = em.createQuery(
             "SELECT o FROM AllFieldTypes o", AllFieldTypes.class);

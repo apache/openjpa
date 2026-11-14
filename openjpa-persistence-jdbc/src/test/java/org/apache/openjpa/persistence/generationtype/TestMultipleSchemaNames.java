@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
@@ -40,24 +44,21 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMultipleSchemaNames extends SingleEMFTestCase {
-
+class TestMultipleSchemaNames extends SingleEMFTestCase {
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // Need to skip tests on some databases.
         // See createSchemas() comment at the bottom
-        setUnsupportedDatabases(
-                MariaDBDictionary.class,
-                MySQLDictionary.class,
-                OracleDictionary.class,
-                SQLServerDictionary.class,
-                SybaseDictionary.class);
-        if (isTestsDisabled()) {
-            // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
-            return;
-        }
+        return !Stream.of(MySQLDictionary.class, MariaDBDictionary.class, OracleDictionary.class,
+                    SQLServerDictionary.class, SybaseDictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         createSchemas();
 
         setUp(Dog1.class, Dog2.class, Dog3.class, Dog4.class,
@@ -149,7 +150,8 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testGeneratedAUTO() {
+    @Test
+    void generatedAUTO() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -180,23 +182,23 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         // we can't assert the id based on the order. For db2, we see the id
         // value in the right order
         assertTrue(dog1x.getId2() == 1 || dog1x.getId2() == 2);
-        assertEquals(dog1x.getName(), "helloDog1");
+        assertEquals("helloDog1", dog1x.getName());
         dog1x.setName("Dog1");
         dog1x.setDomestic(true);
         Dog1 dog11 = em.find(Dog1.class, kem.getObjectId(dog1a));
         assertTrue(dog11.getId2() == 1 || dog11.getId2() == 2);
-        assertEquals(dog11.getName(), "helloDog2");
+        assertEquals("helloDog2", dog11.getName());
         dog11.setName("Dog2");
         dog11.setDomestic(true);
         // update dog2
         Dog2 dog2x = em.find(Dog2.class, kem.getObjectId(dog2));
         assertTrue(dog2x.getId2() == 1 || dog2x.getId2() == 2);
-        assertEquals(dog2x.getName(), "helloDog3");
+        assertEquals("helloDog3", dog2x.getName());
         dog2x.setName("Dog3");
         dog2x.setDomestic(true);
         Dog2 dog21 = em.find(Dog2.class, kem.getObjectId(dog2a));
         assertTrue(dog21.getId2() == 1 || dog21.getId2() == 2);
-        assertEquals(dog21.getName(), "helloDog4");
+        assertEquals("helloDog4", dog21.getName());
         dog21.setName("Dog4");
         dog21.setDomestic(true);
 
@@ -226,7 +228,8 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testGeneratedTABLE() {
+    @Test
+    void generatedTABLE() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -276,48 +279,48 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
         DogTable dog1x = em.find(DogTable.class, kem.getObjectId(dog1));
         assertTrue(dog1x.getId2() == 20 || dog1x.getId2() == 21);
-        assertEquals(dog1x.getName(), "helloDog1");
+        assertEquals("helloDog1", dog1x.getName());
         dog1x.setName("Dog1");
         dog1x.setDomestic(true);
         DogTable dog11 = em.find(DogTable.class, kem.getObjectId(dog1a));
         assertTrue(dog11.getId2() == 20 || dog11.getId2() == 21);
-        assertEquals(dog11.getName(), "helloDog2");
+        assertEquals("helloDog2", dog11.getName());
         dog11.setName("Dog2");
         dog11.setDomestic(true);
 
         // update dog2
         DogTable2 dog2x = em.find(DogTable2.class, kem.getObjectId(dog2));
         assertTrue(dog2x.getId2() == 100 || dog2x.getId2() == 101);
-        assertEquals(dog2x.getName(), "helloDog3");
+        assertEquals("helloDog3", dog2x.getName());
         dog2x.setName("Dog3");
         dog2x.setDomestic(true);
         DogTable2 dog21 = em.find(DogTable2.class, kem.getObjectId(dog2a));
         assertTrue(dog21.getId2() == 100 || dog21.getId2() == 101);
-        assertEquals(dog21.getName(), "helloDog4");
+        assertEquals("helloDog4", dog21.getName());
         dog21.setName("Dog4");
         dog21.setDomestic(true);
 
         // update dog3
         DogTable3 dog3x = em.find(DogTable3.class, kem.getObjectId(dog3));
         assertTrue(dog3x.getId2() == 100 || dog3x.getId2() == 101);
-        assertEquals(dog3x.getName(), "helloDog5");
+        assertEquals("helloDog5", dog3x.getName());
         dog3x.setName("Dog5");
         dog3x.setDomestic(true);
         DogTable3 dog31 = em.find(DogTable3.class, kem.getObjectId(dog3a));
         assertTrue(dog31.getId2() == 100 || dog31.getId2() == 101);
-        assertEquals(dog31.getName(), "helloDog6");
+        assertEquals("helloDog6", dog31.getName());
         dog31.setName("Dog6");
         dog31.setDomestic(true);
 
         // update dog4
         DogTable4 dog4x = em.find(DogTable4.class, kem.getObjectId(dog4));
         assertTrue(dog4x.getId2() == 100 || dog4x.getId2() == 101);
-        assertEquals(dog4x.getName(), "helloDog7");
+        assertEquals("helloDog7", dog4x.getName());
         dog4x.setName("Dog7");
         dog4x.setDomestic(true);
         DogTable4 dog41 = em.find(DogTable4.class, kem.getObjectId(dog4a));
         assertTrue(dog41.getId2() == 100 || dog41.getId2() == 101);
-        assertEquals(dog41.getName(), "helloDog8");
+        assertEquals("helloDog8", dog41.getName());
         dog41.setName("Dog8");
         dog41.setDomestic(true);
 
@@ -371,7 +374,8 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testGeneratedIDENTITY() {
+    @Test
+    void generatedIDENTITY() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 
@@ -392,7 +396,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Dog3 dog31x = em.find(Dog3.class, kem.getObjectId(dog31));
         assertTrue((dog30x.getId() + 1 == dog31x.getId()) ||
             (dog30x.getId() == dog31x.getId() + 1));
-        assertEquals(dog30x.getName(), "Dog30");
+        assertEquals("Dog30", dog30x.getName());
 
         // Dog4 is a non-schema dog.
         em.getTransaction().begin();
@@ -409,7 +413,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         Dog4 dog41x = em.find(Dog4.class, kem.getObjectId(dog41));
         assertTrue((dog40x.getId() + 1 == dog41x.getId()) ||
             (dog40x.getId() == dog41x.getId() + 1));
-        assertEquals(dog40x.getName(), "Dog40");
+        assertEquals("Dog40", dog40x.getName());
 
         em.close();
     }

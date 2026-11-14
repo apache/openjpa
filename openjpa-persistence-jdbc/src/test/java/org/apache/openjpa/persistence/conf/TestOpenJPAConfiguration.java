@@ -18,6 +18,13 @@
  */
 package org.apache.openjpa.persistence.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -35,6 +42,7 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests the JDO configuration classes.</p>
@@ -42,18 +50,18 @@ import org.apache.openjpa.persistence.test.AllowFailure;
  * @author Marc Prud'hommeaux
  */
 @AllowFailure(message="excluded")
-public class TestOpenJPAConfiguration
-    extends AbstractTestCase {
+public class TestOpenJPAConfiguration extends AbstractTestCase {
 
-    public TestOpenJPAConfiguration(String test) {
-        super(test, "confcactusapp");
+    public TestOpenJPAConfiguration() {
+        super("confcactusapp");
     }
 
     /**
      * Test that you can set the connection factory and other properties as
      * objects.
      */
-    public void testSetObjects() {
+    @Test
+    void setObjects() {
         Map map = new HashMap();
         Object cfactory = new Object();
         Object cfactory2 = new Object();
@@ -69,8 +77,8 @@ public class TestOpenJPAConfiguration
         conf.fromProperties(map);
         assertEquals(cfactory, conf.getConnectionFactory());
         assertEquals(cfactory2, conf.getConnectionFactory2());
-        assertEquals(false, conf.getOptimistic());
-        assertEquals(false, conf.getPostLoadOnMerge());
+        assertFalse(conf.getOptimistic());
+        assertFalse(conf.getPostLoadOnMerge());
         assertEquals(503, conf.getLockTimeout());
         assertEquals(1500, conf.getQueryTimeout());
 
@@ -79,8 +87,8 @@ public class TestOpenJPAConfiguration
         assertEquals(conf, conf2);
 
         Map p = conf.toProperties(false);
-        assertTrue(!p.containsKey("openjpa.ConnectionFactory"));
-        assertTrue(!p.containsKey("openjpa.ConnectionFactory2"));
+        assertFalse(p.containsKey("openjpa.ConnectionFactory"));
+        assertFalse(p.containsKey("openjpa.ConnectionFactory2"));
         assertEquals("false", p.get("openjpa.Optimistic"));
         assertEquals("503", p.get("openjpa.LockTimeout"));
         assertEquals(p, conf2.toProperties(false));
@@ -91,7 +99,8 @@ public class TestOpenJPAConfiguration
         assertNotEquals(conf, conf3);
     }
 
-    public void testClassAliases()
+    @Test
+    void classAliases()
         throws Exception {
         OpenJPAConfiguration conf = getConfiguration();
         if (!(conf instanceof OpenJPAConfigurationImpl))
@@ -126,7 +135,8 @@ public class TestOpenJPAConfiguration
             fail(failures.toString());
     }
 
-    public void testBeanAccessors()
+    @Test
+    void beanAccessors()
         throws Exception {
         OpenJPAConfiguration conf = getConfiguration();
         OpenJPAConfigurationImpl simp = (OpenJPAConfigurationImpl) conf.clone();
@@ -149,20 +159,20 @@ public class TestOpenJPAConfiguration
                 assertNotNull(getter);
                 assertNotNull(setter);
 
-                assertNotNull("Missing attribute ("
+                assertNotNull(pds[i].getValue(Configuration.ATTRIBUTE_TYPE),
+                    "Missing attribute ("
                     + Configuration.ATTRIBUTE_TYPE
-                    + ") for property " + pds[i].getName(),
-                    pds[i].getValue(Configuration.ATTRIBUTE_TYPE));
+                    + ") for property " + pds[i].getName());
 
-                assertNotNull("Missing attribute ("
+                assertNotNull(pds[i].getValue(Configuration.ATTRIBUTE_CATEGORY),
+                    "Missing attribute ("
                     + Configuration.ATTRIBUTE_CATEGORY
-                    + ") for property " + pds[i].getName(),
-                    pds[i].getValue(Configuration.ATTRIBUTE_CATEGORY));
+                    + ") for property " + pds[i].getName());
 
-                assertNotNull("Missing attribute ("
+                assertNotNull(pds[i].getValue(Configuration.ATTRIBUTE_ORDER),
+                    "Missing attribute ("
                     + Configuration.ATTRIBUTE_ORDER
-                    + ") for property " + pds[i].getName(),
-                    pds[i].getValue(Configuration.ATTRIBUTE_ORDER));
+                    + ") for property " + pds[i].getName());
 
                 pds[i].getReadMethod().invoke(simp, (Object[]) null);
 
@@ -179,7 +189,8 @@ public class TestOpenJPAConfiguration
      * Tests that invalid plug-in values throw the appropriate exception
      * type.
      */
-    public void testInvalidPlugins() {
+    @Test
+    void invalidPlugins() {
         OpenJPAConfiguration config = new OpenJPAConfigurationImpl();
         config.setLog("log3j");
         try {
@@ -192,7 +203,8 @@ public class TestOpenJPAConfiguration
         }
     }
 
-    public void testInvalidConfigurationWarnings() {
+    @Test
+    void invalidConfigurationWarnings() {
         Properties props = new Properties();
         props.setProperty("openjpa.MaxxFetchDepth", "1");
 
@@ -224,7 +236,8 @@ public class TestOpenJPAConfiguration
      * Tests that invalid fixed-list values throw the appropriate exception
      * type.
      */
-    public void testInvalidNonPluginValues() {
+    @Test
+    void invalidNonPluginValues() {
         OpenJPAConfiguration config = new OpenJPAConfigurationImpl();
         try {
             config.setConnectionFactoryMode("aoeu");

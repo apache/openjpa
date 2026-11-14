@@ -13,6 +13,8 @@
  */
 package org.apache.openjpa.persistence.validation;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the new Bean Validation Factory support in the JPA 2.0 spec.
@@ -35,9 +39,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidationFactory extends SingleEMFTestCase {
+class TestValidationFactory extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, SimpleEntity.class);
     }
@@ -46,7 +50,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      * Scenario being tested:
      *   1) By default, ValidationFactory is null
      */
-    public void testValidationFactory1() {
+    @Test
+    void validationFactory1() {
         getLog().trace("testValidationFactory1() - Default is null");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -58,9 +63,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify default validation mode
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("Default ValidationFactory",
-            null,
-            conf.getValidationFactoryInstance());
+        assertNull(conf.getValidationFactoryInstance(),
+            "Default ValidationFactory");
         closeEMF(emf);
     }
 
@@ -69,7 +73,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   2) An invalid ValidationFactory with a mode of NONE will not
      *      cause an exception
      */
-    public void testValidationFactory2() {
+    @Test
+    void validationFactory2() {
         getLog().trace("testValidationFactory2() - ignored invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -88,9 +93,9 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify same "validation factory" object is returned
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("ValidationFactory",
-            this.getClass(),
-            conf.getValidationFactoryInstance());
+        assertEquals(this.getClass(),
+            conf.getValidationFactoryInstance(),
+            "ValidationFactory");
         closeEMF(emf);
     }
 
@@ -99,7 +104,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   3) An invalid ValidationFactory with a mode of AUTO will not
      *      cause an exception
      */
-    public void testValidationFactory3() {
+    @Test
+    void validationFactory3() {
         getLog().trace("testValidationFactory3() - optional invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -118,9 +124,9 @@ public class TestValidationFactory extends SingleEMFTestCase {
         // verify same "validation factory" object is returned
         OpenJPAConfiguration conf = emf.getConfiguration();
         assertNotNull(conf);
-        assertEquals("ValidationFactory",
-            this.getClass(),
-            conf.getValidationFactoryInstance());
+        assertEquals(this.getClass(),
+            conf.getValidationFactoryInstance(),
+            "ValidationFactory");
         closeEMF(emf);
     }
 
@@ -129,7 +135,8 @@ public class TestValidationFactory extends SingleEMFTestCase {
      *   4) An invalid ValidationFactory with a mode of CALLBACK will
      *      cause a fatal exception
      */
-    public void testValidationFactory4() {
+    @Test
+    void validationFactory4() {
         getLog().trace("testValidationFactory4() - required invalid factory");
         OpenJPAEntityManagerFactory emf = null;
 
@@ -151,9 +158,9 @@ public class TestValidationFactory extends SingleEMFTestCase {
             // verify validation mode
             OpenJPAConfiguration conf = emf.getConfiguration();
             assertNotNull(conf);
-            assertEquals("Validation mode",
-                String.valueOf(ValidationMode.CALLBACK),
-                conf.getValidationMode());
+            assertEquals(String.valueOf(ValidationMode.CALLBACK),
+                conf.getValidationMode(),
+                "Validation mode");
             fail("Expected an exception when ValidationMode=CALLBACK and " +
                 "an invalid ValidatorFactory is provided.");
         } catch (PersistenceException e) {

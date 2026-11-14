@@ -21,15 +21,17 @@ package org.apache.openjpa.persistence.detach;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDetachReloadProp extends SQLListenerTestCase {
+class TestDetachReloadProp extends SQLListenerTestCase {
     IntVersionEntity intVer;
     TimestampVersionEntity tsVer;
     NoVersionEntity noVer;
     int id;
     Compatibility compat;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(org.apache.openjpa.persistence.detach.IntVersionEntity.class,
             org.apache.openjpa.persistence.detach.TimestampVersionEntity.class,
@@ -60,12 +62,14 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
         em = null;
     }
 
-    public void testReloadTrue() {
+    @Test
+    void reloadTrue() {
         compat.setReloadOnDetach(true);
         detachProcessing();
     }
 
-    public void testReloadFalse() {
+    @Test
+    void reloadFalse() {
         compat.setReloadOnDetach(false);
         detachProcessing();
     }

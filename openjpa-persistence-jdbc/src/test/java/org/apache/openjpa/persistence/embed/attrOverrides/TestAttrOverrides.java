@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -26,6 +29,8 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAttrOverrides  extends SQLListenerTestCase {
     public int numPersons = 4;
@@ -33,7 +38,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
     public int eId = 1;
     public int pId = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, Customer.class,
             PropertyInfo.class, PropertyOwner.class, PropertyRecord.class,
@@ -44,7 +49,8 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.4 Example 2
      * Test AttributeOverride on embeddable fields
      */
-    public void testAttrOverride1() {
+    @Test
+    void attrOverride1() {
         sql.clear();
         createObj1();
         findObj1();
@@ -56,7 +62,8 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.4. Example 3
      * Test AttributeOverrides on embeddable Map field
      */
-    public void testAttrOverride2() {
+    @Test
+    void attrOverride2() {
         sql.clear();
         createObj2();
         findObj2();
@@ -68,7 +75,8 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
      * This is spec 10.1.35. Example 3
      * Test OrderBy on embeddable field
      */
-    public void testEmbeddableOrderBy() {
+    @Test
+    void embeddableOrderBy() {
         sql.clear();
         createObj3();
         findObj3();
@@ -102,10 +110,10 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         Customer p = em.find(Customer.class, 1);
         assertEquals(p.getId(), Integer.valueOf(1));
-        assertEquals(p.getAddress().getCity(), "city_1");
-        assertEquals(p.getAddress().getStreet(), "street_1");
-        assertEquals(p.getAddress().getState(), "state_1");
-        assertEquals(p.getName(), "name_1");
+        assertEquals("city_1", p.getAddress().getCity());
+        assertEquals("street_1", p.getAddress().getStreet());
+        assertEquals("state_1", p.getAddress().getState());
+        assertEquals("name_1", p.getName());
         em.close();
     }
 
@@ -179,13 +187,13 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         addr.setZipcode(zipcode);
         owner.setAddress(addr);
         PropertyRecord p = em.find(PropertyRecord.class, owner);
-        assertEquals(p.getOwner().getSsn(), "ssn_1");
-        assertEquals(p.getOwner().getAddress().getCity(), "city_1");
-        assertEquals(p.getOwner().getAddress().getStreet(), "street_1");
-        assertEquals(p.getOwner().getAddress().getState(), "state_1");
-        assertEquals(p.getOwner().getAddress().getZipcode().getZip(), "zip_1");
-        assertEquals(p.getOwner().getAddress().getZipcode().getPlusFour(),
-                "+4_1");
+        assertEquals("ssn_1", p.getOwner().getSsn());
+        assertEquals("city_1", p.getOwner().getAddress().getCity());
+        assertEquals("street_1", p.getOwner().getAddress().getStreet());
+        assertEquals("state_1", p.getOwner().getAddress().getState());
+        assertEquals("zip_1", p.getOwner().getAddress().getZipcode().getZip());
+        assertEquals(
+            "+4_1", p.getOwner().getAddress().getZipcode().getPlusFour());
 
         assertEquals(p.getParcels().size(), numPropertiesPerPersons);
         em.close();

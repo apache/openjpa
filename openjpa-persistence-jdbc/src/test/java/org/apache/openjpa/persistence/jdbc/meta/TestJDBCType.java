@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -42,19 +44,15 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
+import org.junit.jupiter.api.Test;
 
-public class TestJDBCType
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestJDBCType extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-    /** Creates a new instance of TestJDBCType */
-    public TestJDBCType(String name)
-    {
-    	super(name);
-    }
     /**
      * Tests that application identity classes are returned correctly.
      */
-    public void testSchemaGeneration() {
+    @Test
+    void schemaGeneration() {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
@@ -66,21 +64,20 @@ public class TestJDBCType
             if (dict.maxEmbeddedClobSize > 0) {
                 cls = mapping.getFieldMapping("toClob").getStrategy().
                     getClass();
-                assertTrue(cls.getName(),
-                    MaxEmbeddedClobFieldStrategy.class.isAssignableFrom(cls));
+                assertTrue(MaxEmbeddedClobFieldStrategy.class.isAssignableFrom(cls),
+                    cls.getName());
             } else {
                 cls = mapping.getFieldMapping("toClob").getHandler().
                     getClass();
-                assertTrue(cls.getName(),
-                    ClobValueHandler.class.isAssignableFrom(cls));
+                assertTrue(ClobValueHandler.class.isAssignableFrom(cls),
+                    cls.getName());
             }
         } else
-            assertTrue(mapping.getFieldMapping("toClob").getStrategy()
-                instanceof StringFieldStrategy);
+            assertInstanceOf(StringFieldStrategy.class, mapping.getFieldMapping("toClob").getStrategy());
 
         cls = mapping.getFieldMapping("toBlob").getHandler().getClass();
-        assertTrue(cls.getName(),
-            BlobValueHandler.class.isAssignableFrom(cls));
+        assertTrue(BlobValueHandler.class.isAssignableFrom(cls),
+            cls.getName());
 
         SchemaGroup schema = repos.getSchemaGroup();
         Table table = schema.getSchemas()[0].getTables()[0];

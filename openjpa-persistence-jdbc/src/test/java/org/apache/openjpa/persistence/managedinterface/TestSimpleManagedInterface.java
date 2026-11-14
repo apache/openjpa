@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.managedinterface;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
@@ -27,16 +31,19 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSimpleManagedInterface
+class TestSimpleManagedInterface
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleManagedInterface.class, SimpleEntity.class, CLEAR_TABLES);
     }
 
-    public void testMetaDataRepository() {
+    @Test
+    void metaDataRepository() {
         AbstractBrokerFactory bf =
             (AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf);
         bf.makeReadOnly();
@@ -49,7 +56,8 @@ public class TestSimpleManagedInterface
         assertEquals(SimpleManagedInterface.class, meta.getDescribedType());
     }
 
-    public void testInterfaceImplGeneration() {
+    @Test
+    void interfaceImplGeneration() {
         ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf))
             .makeReadOnly();
         // load metadata to trigger instance creation
@@ -58,7 +66,8 @@ public class TestSimpleManagedInterface
         assertEquals(SimpleManagedInterface.class, meta.getDescribedType());
     }
 
-    public void testBasicOperations() {
+    @Test
+    void basicOperations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         SimpleManagedInterface pc =
             em.createInstance(SimpleManagedInterface.class);
@@ -84,7 +93,8 @@ public class TestSimpleManagedInterface
         em.close();
     }
 
-    public void testJPQL() {
+    @Test
+    void jpql() {
         EntityManager em = emf.createEntityManager();
         assertEquals(0, em.createQuery("select o from SimpleManagedInterface o")
             .getResultList().size());

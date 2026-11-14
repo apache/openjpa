@@ -102,6 +102,11 @@ restore the behaviour of OpenJPA 4.1.x where one exists.</p>
   <code>persistence.xml</code>, so that the enhancer sees it too, and enhance
   build-time enhanced classes again after changing it.
   </li>
+  <li>The JUnit extension <code>@OpenJPASupport</code> moved from the
+  artifact <code>openjpa-junit5</code> to <code>openjpa-junit-jupiter</code>
+  and from the package <code>org.apache.openjpa.junit5</code> to
+  <code>org.apache.openjpa.junit.jupiter</code>. It works with JUnit 5 and 6,
+  and its JUnit dependencies are now <code>provided</code>.</li>
 </ul>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
@@ -484,6 +489,8 @@ in each release of OpenJPA.</P>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2940'>OPENJPA-2940</a>] -         Implement Jakarta Persistence 3.2
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2941'>OPENJPA-2941</a>] -         H2 should be upgraded to v2
+    </li>
+    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3007'>OPENJPA-3007</a>] -         Junit6 should be used for tests
     </li>
     <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-3011'>OPENJPA-3011</a>] -         Run the MySQL, MariaDB and PostgreSQL profiles on a schedule in CI
     </li>

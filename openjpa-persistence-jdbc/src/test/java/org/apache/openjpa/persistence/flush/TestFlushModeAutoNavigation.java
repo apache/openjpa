@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.flush;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that FlushModeType.AUTO correctly flushes dirty entities
@@ -34,9 +39,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Order->Customer->Spouse with FlushModeType.AUTO. The dirty Spouse
  * should be flushed before the query executes.
  */
-public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
+class TestFlushModeAutoNavigation extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
             UnenhancedFlushSpouse.class,
@@ -74,13 +79,14 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
      * Mirrors TCK flushModeTest5: modify Spouse.lastName,
      * query through Order->Customer->Spouse with FlushModeType.AUTO.
      */
-    public void testFlushModeAutoMultiHopNavigation() {
+    @Test
+    void flushModeAutoMultiHopNavigation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
         // Find and modify Spouse
         UnenhancedFlushSpouse s4 = em.find(UnenhancedFlushSpouse.class, "4");
-        assertNotNull("Spouse 4 should exist", s4);
+        assertNotNull(s4, "Spouse 4 should exist");
         assertEquals("Mullen", s4.getLastName());
         s4.setLastName("Miller");
 
@@ -92,8 +98,8 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
             .setFlushMode(FlushModeType.AUTO)
             .getResultList();
 
-        assertEquals("Should find 1 order (order 11) via the updated spouse",
-            1, result.size());
+        assertEquals(1,
+            result.size(), "Should find 1 order (order 11) via the updated spouse");
         assertEquals("11", result.get(0).getId());
 
         em.getTransaction().rollback();
@@ -104,14 +110,15 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
      * Mirrors TCK flushModeTest3: modify Customer.name,
      * query through Order->Customer with FlushModeType.AUTO.
      */
-    public void testFlushModeAutoSingleHopNavigation() {
+    @Test
+    void flushModeAutoSingleHopNavigation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
         // Find and modify Customer
         UnenhancedFlushCustomer cust =
             em.find(UnenhancedFlushCustomer.class, "10");
-        assertNotNull("Customer 10 should exist", cust);
+        assertNotNull(cust, "Customer 10 should exist");
         cust.setName("Michael Bouschen");
 
         // Query through single-hop navigation with AUTO flush
@@ -122,8 +129,8 @@ public class TestFlushModeAutoNavigation extends SingleEMFTestCase {
             .setFlushMode(FlushModeType.AUTO)
             .getResultList();
 
-        assertEquals("Should find 1 order via the updated customer name",
-            1, result.size());
+        assertEquals(1,
+            result.size(), "Should find 1 order via the updated customer name");
         assertEquals("11", result.get(0).getId());
 
         em.getTransaction().rollback();

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,18 +30,18 @@ import java.util.Set;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.Magazine;
 import org.apache.openjpa.persistence.query.Publisher;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.textui.TestRunner;
-
-
-public class TestInverseEagerSQL
-    extends SQLListenerTestCase {
+@DynamicEnhancementTest
+public class TestInverseEagerSQL extends SQLListenerTestCase {
 
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 4;
@@ -45,7 +49,7 @@ public class TestInverseEagerSQL
     public int _nPeople = 3;
     public int _nPhones = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             EntityAInverseEager.class, EntityA1InverseEager.class,
@@ -159,7 +163,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testOneToManyInverseEagerQuery() {
+    @Test
+    void oneToManyInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -185,7 +190,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testOneToOneInverseEagerQuery() {
+    @Test
+    void oneToOneInverseEagerQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -209,7 +215,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testOneToManyInheritanceQuery() {
+    @Test
+    void oneToManyInheritanceQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -270,7 +277,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testOneToManyEagerInverseLazyQuery() {
+    @Test
+    void oneToManyEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -301,7 +309,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testManyToManyEagerEagerInverseLazyQuery() {
+    @Test
+    void manyToManyEagerEagerInverseLazyQuery() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -331,7 +340,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testTargetOrphanRemoval() {
+    @Test
+    void targetOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -382,7 +392,8 @@ public class TestInverseEagerSQL
         em.close();
     }
 
-    public void testSourceOrphanRemoval() {
+    @Test
+    void sourceOrphanRemoval() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -402,9 +413,4 @@ public class TestInverseEagerSQL
         assertEquals(numOrdersPerCustomer * (numCustomers - 1), count);
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestInverseEagerSQL.class);
-    }
 }
-

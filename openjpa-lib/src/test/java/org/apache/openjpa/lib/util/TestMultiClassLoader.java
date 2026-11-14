@@ -17,27 +17,26 @@
  * under the License.
  */
 package org.apache.openjpa.lib.util;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URL;
 
-import org.junit.Test;
-import org.junit.Before;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link MultiClassLoader}.
  *
  * @author Abe White
  */
-public class TestMultiClassLoader {
+class TestMultiClassLoader {
 
     private ClassLoader SYSTEM_LOADER = MultiClassLoader.class.getClassLoader();
 
     private MultiClassLoader _loader = new MultiClassLoader();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         _loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         _loader.addClassLoader(SYSTEM_LOADER);
     }
@@ -46,25 +45,25 @@ public class TestMultiClassLoader {
      * Tests basic add/remove functionality.
      */
     @Test
-    public void testBasic() {
+    void basic() {
         assertEquals(2, _loader.size());
-        assertTrue(!_loader.isEmpty());
-        assertTrue(_loader.getClassLoaders()[0] == SYSTEM_LOADER);
+        assertFalse(_loader.isEmpty());
+        assertSame(_loader.getClassLoaders()[0], SYSTEM_LOADER);
         assertEquals(Thread.currentThread().getContextClassLoader(),
             _loader.getClassLoaders()[1]);
-        assertTrue(_loader.getClassLoader(0) == SYSTEM_LOADER);
-        assertTrue(!_loader.addClassLoader(MultiClassLoader.THREAD_LOADER));
+        assertSame(_loader.getClassLoader(0), SYSTEM_LOADER);
+        assertFalse(_loader.addClassLoader(MultiClassLoader.THREAD_LOADER));
 
         FooLoader foo = new FooLoader();
         assertTrue(_loader.addClassLoader(foo));
-        assertTrue(!_loader.addClassLoader(foo));
+        assertFalse(_loader.addClassLoader(foo));
         assertEquals(3, _loader.size());
         assertEquals(foo, _loader.getClassLoaders()[2]);
 
         assertTrue(_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
-        assertTrue(!_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
+        assertFalse(_loader.removeClassLoader(MultiClassLoader.THREAD_LOADER));
         assertEquals(2, _loader.size());
-        assertTrue(_loader.getClassLoaders()[0] == SYSTEM_LOADER);
+        assertSame(_loader.getClassLoaders()[0], SYSTEM_LOADER);
         assertEquals(foo, _loader.getClassLoaders()[1]);
 
         assertTrue(_loader.removeClassLoader(foo));
@@ -75,13 +74,13 @@ public class TestMultiClassLoader {
         loader2.addClassLoader(MultiClassLoader.THREAD_LOADER);
         loader2.addClassLoader(SYSTEM_LOADER);
         assertTrue(_loader.addClassLoaders(loader2));
-        assertTrue(!_loader.addClassLoaders(loader2));
+        assertFalse(_loader.addClassLoaders(loader2));
         FooLoader foo2 = new FooLoader();
         loader2.addClassLoader(foo);
         loader2.addClassLoader(foo2);
         assertTrue(_loader.addClassLoaders(1, loader2));
         ClassLoader[] loaders = _loader.getClassLoaders();
-        assertTrue(loaders[0] == SYSTEM_LOADER);
+        assertSame(loaders[0], SYSTEM_LOADER);
         assertEquals(Thread.currentThread().getContextClassLoader(),
             loaders[3]);
         assertEquals(foo, loaders[1]);
@@ -93,7 +92,7 @@ public class TestMultiClassLoader {
      * Test finding resources.
      */
     @Test
-    public void testGetResource() {
+    void getResource() {
         assertNull(_loader.getResource("foo"));
         _loader.addClassLoader(new FooLoader());
         assertNotNull(_loader.getResource("foo"));

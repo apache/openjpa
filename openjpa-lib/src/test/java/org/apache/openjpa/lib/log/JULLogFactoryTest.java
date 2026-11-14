@@ -18,19 +18,19 @@
  */
 package org.apache.openjpa.lib.log;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collection;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class JULLogFactoryTest {
+class JULLogFactoryTest {
     @Test
-    public void log() {
+    void log() {
         final JULLogFactory factory = new JULLogFactory();
         final String logger = getClass().getName() + "__log";
         final Logger jul = Logger.getLogger(logger);

@@ -26,6 +26,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -34,9 +37,9 @@ import java.util.Date;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-
-import org.junit.Assert;
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestFieldRange extends BaseKernelTest {
 
@@ -48,24 +51,14 @@ public class TestFieldRange extends BaseKernelTest {
             + "''''''''''''\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
             + "!@@#$\\%^&\"*()-=\\|+_/?.>,<~`";
 
-    /**
-     * Creates a new instance of TestFieldRange
-     */
-    public TestFieldRange() {
-    }
-
-    public TestFieldRange(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
-        super.setUp();
         deleteAll(AllFieldTypesTest.class);
     }
 
-    public void testSaveState()
+    @Test
+    void saveState()
         throws Exception {
         allFieldSaveState(
             (int) 259645,
@@ -91,7 +84,7 @@ public class TestFieldRange extends BaseKernelTest {
      * FixMe: Hangs for some mysterious reason. aokeke
      */
 
-//    public void testLargeNumbers()
+    //    @Test void largeNumbers()
 //    throws Exception {
 //        try {
 //            allFieldSaveState(
@@ -120,7 +113,8 @@ public class TestFieldRange extends BaseKernelTest {
      * to be equivalent to null. This is arguably a bug, but
      * not a killer one.
      */
-    public void testLargeNumbersNegative()
+    @Test
+    void largeNumbersNegative()
         throws Exception {
         allFieldSaveState(
             (int) (Integer.MIN_VALUE + 1),
@@ -138,7 +132,8 @@ public class TestFieldRange extends BaseKernelTest {
             randomBigDecimal());
     }
 
-    public void testDoubleAndFloatPrecision()
+    @Test
+    void doubleAndFloatPrecision()
         throws Exception {
         allFieldSaveState(
             (int) (0),
@@ -156,7 +151,8 @@ public class TestFieldRange extends BaseKernelTest {
             randomBigDecimal());
     }
 
-    public void testZeroNumbers()
+    @Test
+    void zeroNumbers()
         throws Exception {
         allFieldSaveState(
             (int) (0),
@@ -174,17 +170,20 @@ public class TestFieldRange extends BaseKernelTest {
             new BigDecimal("0.0"));
     }
 
-    public void testLowDate()
+    @Test
+    void lowDate()
         throws Exception {
         dateTest(0);
     }
 
-    public void testCurDate()
+    @Test
+    void curDate()
         throws Exception {
         dateTest(System.currentTimeMillis());
     }
 
-    public void testHighDate()
+    @Test
+    void highDate()
         throws Exception {
         try {
             // postgres will sometimes store the String "invalid" if the
@@ -207,7 +206,8 @@ public class TestFieldRange extends BaseKernelTest {
     /**
      * Some date instances that have been known to have problems.
      */
-    public void testProblematicDates()
+    @Test
+    void problematicDates()
         throws Exception {
         dateTest(1047744639);        // pointbase had probs with this
     }
@@ -305,21 +305,21 @@ public class TestFieldRange extends BaseKernelTest {
         AllFieldTypesTest retrievedObject =
             (AllFieldTypesTest) pm.find(AllFieldTypesTest.class, testID);
 
-        assertEquals("Field type int", testint,
-            retrievedObject.getTestint());
-        assertEquals("Field type short", testshort,
-            retrievedObject.getTestshort());
-        assertEquals("Field type boolean", testboolean,
-            retrievedObject.getTestboolean());
-        assertEquals("Field type char", testchar,
-            retrievedObject.getTestchar());
-        assertEquals("Field type long", testlong,
-            retrievedObject.getTestlong());
+        assertEquals(testint, retrievedObject.getTestint(),
+            "Field type int");
+        assertEquals(testshort, retrievedObject.getTestshort(),
+            "Field type short");
+        assertEquals(testboolean, retrievedObject.getTestboolean(),
+            "Field type boolean");
+        assertEquals(testchar, retrievedObject.getTestchar(),
+            "Field type char");
+        assertEquals(testlong, retrievedObject.getTestlong(),
+            "Field type long");
 
-        assertEquals("Field type byte", testbyte,
-            retrievedObject.getTestbyte());
-        assertEquals("Field type String", testString,
-            retrievedObject.getTestString());
+        assertEquals(testbyte, retrievedObject.getTestbyte(),
+            "Field type byte");
+        assertEquals(testString, retrievedObject.getTestString(),
+            "Field type String");
 
         int i1 = (int) (testDate.getTime() / 1000);
         int i2 = (int) (retrievedObject.getTestDate().getTime() / 1000);
@@ -350,8 +350,7 @@ public class TestFieldRange extends BaseKernelTest {
         if ((testDateDay != retrievedObjectDay) ||
             (testDateMonth != retrievedObjectMonth) ||
             (testDateYear != retrievedObjectYear)) {
-            Assert
-                .fail("Field type Date not stored properly. One or more of "
+            fail("Field type Date not stored properly. One or more of "
                 + "the components of the date (day, month or year) "
                 + "do not match. \n" + " Value that should be stored : "
                 + testDate.toGMTString() + ". \nValue that is actually"
@@ -359,22 +358,22 @@ public class TestFieldRange extends BaseKernelTest {
         }
         //assertEquals ("Field type Object", testObject,
         //retrievedObject.getTestObject ());
-        assertEquals("Field type BigInteger", testBigInteger,
-            retrievedObject.getTestBigInteger());
+        assertEquals(testBigInteger, retrievedObject.getTestBigInteger(),
+            "Field type BigInteger");
 
         try {
-            assertEquals("Field type BigDecimal (BigInteger part)",
-                testBigDecimal.toBigInteger(),
-                retrievedObject.getTestBigDecimal().toBigInteger());
+            assertEquals(testBigDecimal.toBigInteger(),
+                retrievedObject.getTestBigDecimal().toBigInteger(),
+                "Field type BigDecimal (BigInteger part)");
 
-            assertEquals("Field type BigDecimal",
-                testBigDecimal,
-                retrievedObject.getTestBigDecimal());
+            assertEquals(testBigDecimal,
+                retrievedObject.getTestBigDecimal(),
+                "Field type BigDecimal");
 
-            assertEquals("Field type float", testfloat,
-                retrievedObject.getTestfloat(), 0.01f);
-            assertEquals("Field type double", testdouble,
-                retrievedObject.getTestdouble(), 0.01d);
+            assertEquals(testfloat, retrievedObject.getTestfloat(),
+                0.01f, "Field type float");
+            assertEquals(testdouble, retrievedObject.getTestdouble(),
+                0.01d, "Field type double");
         } catch (AssertionFailedError afe) {
             bug(3, afe,
                 "Doubles and Floats lose precision in some data stores");

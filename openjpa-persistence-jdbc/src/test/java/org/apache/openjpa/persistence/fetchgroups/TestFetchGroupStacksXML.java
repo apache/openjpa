@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.fetchgroups;
 
-public class TestFetchGroupStacksXML extends TestFetchGroupStacks {
-    @Override
+import org.junit.jupiter.api.BeforeEach;
+
+class TestFetchGroupStacksXML extends TestFetchGroupStacks {
+    @BeforeEach
     public void setUp() {
         super.setUp();
     }

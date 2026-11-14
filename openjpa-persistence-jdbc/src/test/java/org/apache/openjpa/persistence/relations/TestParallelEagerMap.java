@@ -18,21 +18,26 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestParallelEagerMap extends SingleEMFTestCase {
+class TestParallelEagerMap extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, MapKeyParent.class, MapKeyChild.class,
             "openjpa.jdbc.EagerFetchMode", "parallel");
     }
 
-    public void testParentNotNull() {
+    @Test
+    void parentNotNull() {
 
         MapKeyParent[] parents = { new MapKeyParent(), new MapKeyParent() };
         for (MapKeyParent parent : parents) {
@@ -63,7 +68,7 @@ public class TestParallelEagerMap extends SingleEMFTestCase {
         em.close();
 
         for (MapKeyChild child : parent2.getChildren().values()) {
-            assertNotNull("Parent should not be null", child.getParent());
+            assertNotNull(child.getParent(), "Parent should not be null");
         }
     }
 }

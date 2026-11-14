@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,24 +40,16 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSCompoundPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.LRSPCIntf;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestLRSProxies
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
+class TestLRSProxies extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object _oid = null;
     private Object _coid = null;
 
-    public TestLRSProxies(String casename) {
-        super(casename);
-    }
-
-
-    /** Creates a new instance of TestLRSProxies */
-    public TestLRSProxies() {
-    }
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(LRSPC.class);
        deleteAll(LRSCompoundPC.class);
 
@@ -124,22 +118,26 @@ public class TestLRSProxies
         pm.close();
     }
 
-    public void testStringSet() {
+    @Test
+    void stringSet() {
         stringCollectionTest(_oid, true, true);
         stringCollectionTest(_coid, true, true);
     }
 
-    public void testStringSetRetain() {
+    @Test
+    void stringSetRetain() {
         stringCollectionTest(_oid, false, true);
         stringCollectionTest(_coid, false, true);
     }
 
-    public void testStringCollection() {
+    @Test
+    void stringCollection() {
         stringCollectionTest(_oid, true, false);
         stringCollectionTest(_coid, true, false);
     }
 
-    public void testStringCollectionRetain() {
+    @Test
+    void stringCollectionRetain() {
         stringCollectionTest(_oid, false, false);
         stringCollectionTest(_coid, false, false);
     }
@@ -191,10 +189,10 @@ public class TestLRSProxies
 
     private void assertStringCollectionChanged(Collection set, boolean isSet) {
         assertEquals(4, set.size());
-        assertTrue(!set.contains("val1"));
+        assertFalse(set.contains("val1"));
         assertTrue(set.contains("val2"));
         assertTrue(set.contains("val3"));
-        assertTrue(!set.contains("val4"));
+        assertFalse(set.contains("val4"));
         assertTrue(set.contains("val5"));
         assertTrue(set.contains("val6"));
         if (!isSet) {
@@ -203,18 +201,20 @@ public class TestLRSProxies
             assertEquals("val3", itr.next());
             assertEquals("val5", itr.next());
             assertEquals("val6", itr.next());
-            assertTrue(!itr.hasNext());
+            assertFalse(itr.hasNext());
             //FIXME jthomas
             //KodoJDOHelper.close(itr);
         }
     }
 
-    public void testStringMap() {
+    @Test
+    void stringMap() {
         stringMapTest(_oid, true);
         stringMapTest(_coid, true);
     }
 
-    public void testStringMapRetain() {
+    @Test
+    void stringMapRetain() {
         stringMapTest(_oid, false);
         stringMapTest(_coid, false);
     }
@@ -283,22 +283,26 @@ public class TestLRSProxies
         //KodoJDOHelper.close(itr);
     }
 
-    public void testRelSet() {
+    @Test
+    void relSet() {
         relCollectionTest(_oid, true, true);
         relCollectionTest(_coid, true, true);
     }
 
-    public void testRelSetRetain() {
+    @Test
+    void relSetRetain() {
         relCollectionTest(_oid, false, true);
         relCollectionTest(_coid, false, true);
     }
 
-    public void testRelCollection() {
+    @Test
+    void relCollection() {
         relCollectionTest(_oid, true, false);
         relCollectionTest(_coid, true, false);
     }
 
-    public void testRelCollectionRetain() {
+    @Test
+    void relCollectionRetain() {
         relCollectionTest(_oid, false, false);
         relCollectionTest(_coid, false, false);
     }
@@ -316,7 +320,7 @@ public class TestLRSProxies
         ordered.add(itr.next());
         ordered.add(itr.next());
         ordered.add(itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         //FIXME
         //KodoJDOHelper.close(itr);
         itr = ordered.iterator();
@@ -361,7 +365,7 @@ public class TestLRSProxies
         ordered.add(itr.next());
         ordered.add(itr.next());
         ordered.add(itr.next());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         //FIXME
         //KodoJDOHelper.close(itr);
         itr = ordered.iterator();
@@ -377,12 +381,14 @@ public class TestLRSProxies
         assertFalse(set.contains(pc));
     }
 
-    public void testRelMap() {
+    @Test
+    void relMap() {
         relMapTest(_oid, true);
         relMapTest(_coid, true);
     }
 
-    public void testRelMapRetain() {
+    @Test
+    void relMapRetain() {
         relMapTest(_oid, false);
         relMapTest(_coid, false);
     }
@@ -463,7 +469,8 @@ public class TestLRSProxies
         //KodoJDOHelper.close(itr);
     }
 
-    public void testTransfer() {
+    @Test
+    void transfer() {
         // cannot transfer an lrs from one field to another
 
         OpenJPAEntityManager pm = getEm(true, true);
@@ -486,7 +493,8 @@ public class TestLRSProxies
         pm.close();
     }
 
-    public void testShare() {
+    @Test
+    void share() {
         OpenJPAEntityManager pm = getEm(true, true);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
         LRSPC map1 = (LRSPC) pc.getRelMap().get("key1");
@@ -496,7 +504,7 @@ public class TestLRSProxies
         Map map = pc.getRelMap();
         map1.setRelMap(map);
         endTx(pm);
-        assertTrue(pc.getRelMap() != map1.getRelMap());
+        assertNotSame(pc.getRelMap(), map1.getRelMap());
         assertEquals(3, map1.getRelMap().size());
         assertTrue(map1.getRelMap().containsValue(map1));
         pm.close();
@@ -509,7 +517,8 @@ public class TestLRSProxies
         pm.close();
     }
 
-    public void testRollback() {
+    @Test
+    void rollback() {
         //FIXME
         //PersistenceManagerFactory factory = getPMFactory(new String[]{
         //    "openjpa.RestoreMutableValues", "true",
@@ -527,7 +536,8 @@ public class TestLRSProxies
         factory.close();
     }
 
-    public void testReplace() {
+    @Test
+    void replace() {
         OpenJPAEntityManager pm = getEm(false, false);
         startTx(pm);
         LRSPC pc = (LRSPC) pm.getObjectId(_oid);
@@ -550,8 +560,9 @@ public class TestLRSProxies
         pm.close();
     }
 
-    public void testAdd()
-    throws Exception {
+    @Test
+    void add()
+        throws Exception {
 /*
         //FIXME
         //KodoPersistenceManagerFactory pmf = getPMFactory(new String []{

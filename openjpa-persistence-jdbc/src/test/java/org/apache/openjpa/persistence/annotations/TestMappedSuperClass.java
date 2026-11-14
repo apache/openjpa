@@ -18,22 +18,23 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        PartyId;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Site;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Site1;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Store;
-import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
-        Store1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.PartyId;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Site1;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store;
+import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Store1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestMappedSuperClass extends AnnotationTestCase {
 
     public static Long pkey = 1500L;
@@ -41,24 +42,26 @@ public class TestMappedSuperClass extends AnnotationTestCase {
     public static int ikey = 1501;
     public static PartyId pid = new PartyId(pstr, ikey);
 
-    public TestMappedSuperClass(String name) {
-        super(name, "annotationMappedSuperclassApp");
+    public TestMappedSuperClass() {
+        super("annotationMappedSuperclassApp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(Store.class);
         deleteAll(Site.class);
         deleteAll(Site1.class);
         deleteAll(Store1.class);
     }
 
-    public void testMappedSuperClassSameKeys() {
+    @Test
+    void mappedSuperClassSameKeys() {
         createSite();
         createStore();
     }
 
-    public void testMappedSuperClassIdClass() {
+    @Test
+    void mappedSuperClassIdClass() {
         createSite1();
         createStore1();
     }

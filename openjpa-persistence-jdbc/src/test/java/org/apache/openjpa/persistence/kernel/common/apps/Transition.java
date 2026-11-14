@@ -29,8 +29,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
-import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
-
 /**
  * Represents a graph edge.
  * Used in testing {@linkplain TestIndirectRecursion}.

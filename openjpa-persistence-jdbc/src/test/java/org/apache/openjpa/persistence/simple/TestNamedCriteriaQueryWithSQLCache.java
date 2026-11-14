@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -32,6 +34,8 @@ import jakarta.persistence.criteria.Subquery;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A criteria query registered by {@code addNamedQuery()} is identified by the
@@ -40,9 +44,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * or replaying it a second time would rebuild it by parsing that rendering as
  * JPQL.
  */
-public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
+class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, AllFieldTypes.class,
             "openjpa.jdbc.QuerySQLCache", "true");
@@ -71,7 +75,8 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
     /**
      * A quoted string literal is rendered unescaped by the CQL toString().
      */
-    public void testReplayWithQuotedLiteralIsNotCachedByItsRendering() {
+    @Test
+    void replayWithQuotedLiteralIsNotCachedByItsRendering() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -85,7 +90,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
                 TypedQuery<AllFieldTypes> replay = em.createNamedQuery(
                     "cached_literal_query", AllFieldTypes.class);
                 List<AllFieldTypes> result = replay.getResultList();
-                assertEquals("replay " + i, 1, result.size());
+                assertEquals(1, result.size(), "replay " + i);
                 assertEquals("it's cached", result.get(0).getStringField());
             }
         } finally {
@@ -99,7 +104,8 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * cached entry - here setting a lock mode, which the prepared SQL cannot
      * carry - recreates the query by parsing that rendering as JPQL.
      */
-    public void testReplayWithQuotedLiteralUnderLockMode() {
+    @Test
+    void replayWithQuotedLiteralUnderLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -136,7 +142,8 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * query must not pick up that entry and rebuild itself from its own
      * identifier as JPQL.
      */
-    public void testJpqlCachedUnderTheSameTextDoesNotHijackReplayUnderLockMode() {
+    @Test
+    void jpqlCachedUnderTheSameTextDoesNotHijackReplayUnderLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -179,7 +186,8 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * cache, which is the other way into the rebuilding of the query from its
      * identifier.
      */
-    public void testJpqlCachedUnderTheSameTextDoesNotHijackReplayWithNullParameter() {
+    @Test
+    void jpqlCachedUnderTheSameTextDoesNotHijackReplayWithNullParameter() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -214,7 +222,8 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
      * A subquery is rendered without the enclosing parenthesis by the CQL
      * toString().
      */
-    public void testReplayWithSubqueryIsNotCachedByItsRendering() {
+    @Test
+    void replayWithSubqueryIsNotCachedByItsRendering() {
         EntityManager em = emf.createEntityManager();
         try {
             CriteriaBuilder cb = emf.getCriteriaBuilder();
@@ -231,7 +240,7 @@ public class TestNamedCriteriaQueryWithSQLCache extends SingleEMFTestCase {
                 TypedQuery<AllFieldTypes> replay = em.createNamedQuery(
                     "cached_subquery_query", AllFieldTypes.class);
                 List<AllFieldTypes> result = replay.getResultList();
-                assertEquals("replay " + i, 1, result.size());
+                assertEquals(1, result.size(), "replay " + i);
                 assertEquals(99, result.get(0).getIntField());
             }
         } finally {

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,14 +33,17 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestConstraintViolation extends AbstractPersistenceTestCase {
+class TestConstraintViolation extends AbstractPersistenceTestCase {
 
     EntityManagerFactory emf2 = null;
     Log log = null;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Map<String, String> props = new HashMap<>();
         props.put("jakarta.persistence.validation.group.pre-remove", "jakarta.validation.groups.Default");
 
@@ -57,7 +62,8 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         em.close();
     }
 
-    public void testPersistNormalValidation() {
+    @Test
+    void persistNormalValidation() {
         EntityManager em = emf2.createEntityManager();
 
         // Persist with successful validations
@@ -96,7 +102,8 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
-    public void testPersistImageNullValidation() {
+    @Test
+    void persistImageNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
         // Persist with null filename in Image
@@ -132,7 +139,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
                 assertEquals("Image file name must not be null.", cv.getMessage());
                 assertEquals("Image", cv.getRootBeanClass().getSimpleName());
                 assertEquals("Image", cv.getLeafBean().getClass().getSimpleName());
-                assertTrue(cv.getLeafBean().getClass() == cv.getRootBeanClass());
+                assertSame(cv.getLeafBean().getClass(), cv.getRootBeanClass());
                 assertEquals("fileName", cv.getPropertyPath().toString());
                 assertNull(cv.getInvalidValue());
             }
@@ -143,7 +150,8 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
-    public void testPersistEmbedCityNullValidation() {
+    @Test
+    void persistEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
         // Persist with null city name in location
@@ -180,7 +188,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
                 assertEquals("Image", cv.getRootBeanClass().getSimpleName());
                 // The violation occurred on a leaf bean (embeddable)
                 assertEquals("Location", cv.getLeafBean().getClass().getSimpleName());
-                assertTrue(cv.getLeafBean().getClass() != cv.getRootBeanClass());
+                assertNotSame(cv.getLeafBean().getClass(), cv.getRootBeanClass());
                 assertEquals("location.city", cv.getPropertyPath().toString());
                 assertNull(cv.getInvalidValue());
             }
@@ -191,7 +199,8 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
-    public void testRemoveEmbedCityNullValidation() {
+    @Test
+    void removeEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
         // Remove with null city name in location
@@ -207,15 +216,13 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         img.setFileName("Winter_01.gif");
         img.setLocation(loc);
 
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             em.getTransaction().begin();
             log.trace("------------------------------------------------");
-            log.trace("** Create normal Image/location" );
+            log.trace("** Create normal Image/location");
             em.persist(img);
             em.getTransaction().commit();
-        } catch (ConstraintViolationException cve) {
-            fail();
-        }
+        });
 
         try {
             em.getTransaction().begin();
@@ -239,7 +246,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
                 assertEquals("Image", cv.getRootBeanClass().getSimpleName());
                 // The violation occurred on a leaf bean (embeddable)
                 assertEquals("Location", cv.getLeafBean().getClass().getSimpleName());
-                assertTrue(cv.getLeafBean().getClass() != cv.getRootBeanClass());
+                assertNotSame(cv.getLeafBean().getClass(), cv.getRootBeanClass());
                 assertEquals("location.city", cv.getPropertyPath().toString());
                 assertNull(cv.getInvalidValue());
             }
@@ -250,7 +257,8 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         }
     }
 
-    public void testFlushEmbedCityNullValidation() {
+    @Test
+    void flushEmbedCityNullValidation() {
         EntityManager em = emf2.createEntityManager();
 
         // set invalid zipCode in location and flush testing pre-update
@@ -266,15 +274,13 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
         img.setFileName("Winter_01.gif");
         img.setLocation(loc);
 
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             em.getTransaction().begin();
             log.trace("------------------------------------------------");
-            log.trace("** Create normal Image/location" );
+            log.trace("** Create normal Image/location");
             em.persist(img);
             em.getTransaction().commit();
-        } catch (ConstraintViolationException cve) {
-            fail();
-        }
+        });
 
         try {
             em.getTransaction().begin();
@@ -297,7 +303,7 @@ public class TestConstraintViolation extends AbstractPersistenceTestCase {
                 assertEquals("Image", cv.getRootBeanClass().getSimpleName());
                 // The violation occurred on a leaf bean (embeddable)
                 assertEquals("Location", cv.getLeafBean().getClass().getSimpleName());
-                assertTrue(cv.getLeafBean().getClass() != cv.getRootBeanClass());
+                assertNotSame(cv.getLeafBean().getClass(), cv.getRootBeanClass());
                 assertEquals("location.zipCode", cv.getPropertyPath().toString());
                 assertEquals("abcde", cv.getInvalidValue());
             }

@@ -18,21 +18,27 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEmbedded extends SQLListenerTestCase {
-    @Override
+class TestEmbedded extends SQLListenerTestCase {
+    @BeforeEach
     public void setUp() {
         super.setUp(BaseEntity.class, Address.class, Geocode.class,
                 CLEAR_TABLES);
     }
 
-    public void testInsertEmbedded() {
+    @Test
+    void insertEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Address a = new Address();
@@ -59,7 +65,8 @@ public class TestEmbedded extends SQLListenerTestCase {
      * JIRA Ref: OPENJPA-733
      * Authors: Chris Tillman, Jeremy Bauer
      */
-    public void testDetachedQueryEmbedded() {
+    @Test
+    void detachedQueryEmbedded() {
         Address a = new Address();
         a.setStreetAddress("456 Main St");
         a.setCity("New York");
@@ -76,10 +83,11 @@ public class TestEmbedded extends SQLListenerTestCase {
                 "select address from Address address" +
                 " where address.streetAddress = '456 Main St'").get(0);
 
-        assertEquals(a2.getGeocode().getLatitude(),1.0f);
+        assertEquals(1.0f, a2.getGeocode().getLatitude());
     }
 
-    public void testDeleteEmbeddedDoesNotSelectBeforeDelete() {
+    @Test
+    void deleteEmbeddedDoesNotSelectBeforeDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] streets = {"S1", "S2", "S3"};
@@ -137,7 +145,7 @@ public class TestEmbedded extends SQLListenerTestCase {
             }
             em.close();
         }
-        assertEquals(address.getGeocode().getLatitude(),1.0f);
+        assertEquals(1.0f, address.getGeocode().getLatitude());
     }
 
     private List<Address> queryAddresses(String query) {

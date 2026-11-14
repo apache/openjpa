@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.jdbc.procedure.derby;
 
-import static junit.framework.Assert.fail;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+
+import org.junit.jupiter.api.Assertions;
 
 public final class Procedures {
     public static boolean simpleCalled;
@@ -48,12 +48,10 @@ public final class Procedures {
     }
 
     public static void mapping(ResultSet[] r0, ResultSet[] r1) {
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             Connection c = DriverManager.getConnection("jdbc:default:connection");
             r0[0] = c.createStatement().executeQuery("SELECT * FROM EntityWithStoredProcedure order by id");
             r1[0] = c.createStatement().executeQuery("SELECT * FROM EntityWithStoredProcedure where id = 2");
-        } catch (final Exception ex) {
-            fail(ex.getMessage());
-        }
+        });
     }
 }

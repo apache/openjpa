@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.detach.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +32,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * These test verify the use of cascade-detach via orm.xml through
@@ -35,13 +41,14 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  * persistent.  Detach is called iteratively on a full graph and cascade
  * behavior is verified.
  */
-public class TestDetachXML extends AbstractPersistenceTestCase {
+class TestDetachXML extends AbstractPersistenceTestCase {
 
     /*
      * Test the use of cascade-detach with all relationship types.  All entities
      * in the graph should be detached when any entity is detached.
      */
-    public void testDetach() throws Exception {
+    @Test
+    void detach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachXMLPU",
@@ -60,7 +67,8 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * base object should become detached and no other entities should be
      * detached.
      */
-    public void testNoDetach()  throws Exception {
+    @Test
+    void noDetach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("NoDetachXMLPU",
@@ -78,7 +86,8 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
      * Test the use of cascade-all with all relationship types.  All entities
      * in the graph should be detached when a single entity is detached.
      */
-    public void testAllDetach()  throws Exception {
+    @Test
+    void allDetach() throws Exception {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("DetachAllXMLPU",
@@ -190,11 +199,6 @@ public class TestDetachXML extends AbstractPersistenceTestCase {
 
         try {
             clear(emf1);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf1);
         }

@@ -18,17 +18,21 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that @SequenceGenerators container annotation is properly parsed.
  * Corresponds to TCK sequenceGeneratorTest.
  */
-public class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
+class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SeqGenEntity.class, CLEAR_TABLES);
     }
@@ -37,7 +41,8 @@ public class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
      * Test that a sequence generator defined via @SequenceGenerators
      * is properly recognized by the metadata repository.
      */
-    public void testSequenceGeneratorsAnnotation() {
+    @Test
+    void sequenceGeneratorsAnnotation() {
         MetaDataRepository repos = emf.getConfiguration()
             .getMetaDataRepositoryInstance();
         // Ensure the class metadata is resolved (which triggers annotation parsing)
@@ -47,7 +52,7 @@ public class TestSequenceGeneratorsParsing extends SingleEMFTestCase {
         // doesn't support native sequences).
         SequenceMetaData seqMeta = repos.getCachedSequenceMetaData(
             "TEST_SEQ_GEN");
-        assertNotNull("@SequenceGenerators should be parsed and "
-            + "sequence metadata should be available", seqMeta);
+        assertNotNull(seqMeta, "@SequenceGenerators should be parsed and "
+            + "sequence metadata should be available");
     }
 }

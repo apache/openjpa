@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +38,12 @@ import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestDistributedKodoDataCache extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestDistributedKodoDataCache.class.getCanonicalName());
 
     // We want more than 1 instance of each type of class.
@@ -49,12 +55,12 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
 
     private Object spec_oid;
 
-    public TestDistributedKodoDataCache(String test) {
-        super(test, "datacachecactusapp");
+    public TestDistributedKodoDataCache() {
+        super("datacachecactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
     }
@@ -118,19 +124,23 @@ public class TestDistributedKodoDataCache extends AbstractTestCase {
         }
     }
 
-    public void testNormalTransAndDataCacheDelete() {
+    @Test
+    void normalTransAndDataCacheDelete() {
         coreTestTransAndChange(new performAsDelete(), false, true);
     }
 
-    public void testNormalTransAndDataCacheModify() {
+    @Test
+    void normalTransAndDataCacheModify() {
         coreTestTransAndChange(new performAsModify(), false, false);
     }
 
-    public void testLargeTransAndDataCacheDelete() {
+    @Test
+    void largeTransAndDataCacheDelete() {
         coreTestTransAndChange(new performAsDelete(), true, true);
     }
 
-    public void testLargeTransAndDataCacheModify() {
+    @Test
+    void largeTransAndDataCacheModify() {
         coreTestTransAndChange(new performAsModify(), true, false);
     }
 

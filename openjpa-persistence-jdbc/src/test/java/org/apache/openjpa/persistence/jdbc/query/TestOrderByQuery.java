@@ -19,6 +19,9 @@
 package org.apache.openjpa.persistence.jdbc.query;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +31,8 @@ import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.jdbc.query.domain.IndoorGame;
 import org.apache.openjpa.persistence.jdbc.query.domain.Scrabble;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests ORDER BY clause can work with TABLE_PER_CLASS strategy.
@@ -39,7 +44,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestOrderByQuery extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
     	super.setUp(DROP_TABLES, Game.class, IndoorGame.class,
     			Scrabble.class, Chess.class);
@@ -65,7 +70,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 
-    public void testOrderByAliasAscending() {
+    @Test
+    void orderByAliasAscending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name ASC";
         EntityManager em = emf.createEntityManager();
 
@@ -73,7 +79,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
         assertOrdering(names.toArray(new String[names.size()]), true);
     }
 
-    public void testOrderByConcatAliasDescending() {
+    @Test
+    void orderByConcatAliasDescending() {
         String jpql = "SELECT CONCAT(p.name, '123') as cname " +
             "FROM Game p ORDER BY cname DESC";
         EntityManager em = emf.createEntityManager();
@@ -82,7 +89,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
         assertOrdering(names.toArray(new String[names.size()]), false);
     }
 
-    public void testOrderByAliasDescending() {
+    @Test
+    void orderByAliasDescending() {
         String jpql = "SELECT p.name as name FROM Game p ORDER BY name DESC";
         EntityManager em = emf.createEntityManager();
 
@@ -90,7 +98,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
         assertOrdering(names.toArray(new String[names.size()]), false);
     }
 
-    public void testOrderByQueryAscending() {
+    @Test
+    void orderByQueryAscending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
 
@@ -98,7 +107,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     	assertOrdering(getNames(persons), true);
     }
 
-    public void testOrderByQueryDescending() {
+    @Test
+    void orderByQueryDescending() {
     	String jpql = "SELECT p FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
 
@@ -106,7 +116,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     	assertOrdering(getNames(persons), false);
     }
 
-    public void testOrderByQueryProjectionAscending() {
+    @Test
+    void orderByQueryProjectionAscending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name ASC";
     	EntityManager em = emf.createEntityManager();
 
@@ -114,7 +125,8 @@ public class TestOrderByQuery extends SingleEMFTestCase {
     	assertOrdering(names.toArray(new String[names.size()]), true);
     }
 
-    public void testOrderByQueryProjectionDescending() {
+    @Test
+    void orderByQueryProjectionDescending() {
     	String jpql = "SELECT p.name FROM Game p ORDER BY p.name DESC";
     	EntityManager em = emf.createEntityManager();
 

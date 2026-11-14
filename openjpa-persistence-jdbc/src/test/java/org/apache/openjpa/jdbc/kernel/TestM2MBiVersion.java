@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestM2MBiVersion extends SingleEMFTestCase {
     public static String SALESID = "SALES";
@@ -33,7 +37,7 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     public static String EMPLOYEE2ID = "EMPLOYEE2";
     public static String EMPLOYEE3ID = "EMPLOYEE3";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
                 M2MBiDepartment.class,
@@ -78,7 +82,8 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
 
     }
 
-    public void testNonRelationalFieldInverseSideVersionUpdate() {
+    @Test
+    void nonRelationalFieldInverseSideVersionUpdate() {
         EntityManager em = emf.createEntityManager();
 
         M2MBiDepartment sales = em.find(M2MBiDepartment.class, SALESID);
@@ -110,7 +115,8 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
 
     }
 
-    public void testNonRelationalFieldOwnerSideVersionUpdate() {
+    @Test
+    void nonRelationalFieldOwnerSideVersionUpdate() {
         // Change only non-relation fields on Employee.
         // Version number of Employee should be updated.
         // Version number of Department should not change.
@@ -145,7 +151,8 @@ public class TestM2MBiVersion extends SingleEMFTestCase {
     }
 
 
-    public void testRelationalFieldBothSidesVersionUpdate() {
+    @Test
+    void relationalFieldBothSidesVersionUpdate() {
         // Move Employee from old Department to new Department.
         // Update both sides of the relationship.
         // Since there is a bidirectional ManyToMany relationship

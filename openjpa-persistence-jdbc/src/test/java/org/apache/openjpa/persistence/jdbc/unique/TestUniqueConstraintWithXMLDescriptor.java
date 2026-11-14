@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests unique constraints specified via XML Descriptor for primary/secondary
@@ -38,8 +42,8 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *
  */
 public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
-	@Override
-	public void setUp(Object... props) {
+    @Override
+    public void setUp(Object... props) {
 		super.setUp(DROP_TABLES, UniqueA.class, UniqueB.class);
 	}
 
@@ -48,7 +52,8 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		return "test-unique-constraint";
 	}
 
-	public void testMapping() {
+    @Test
+    void mapping() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		em.getTransaction().commit();
@@ -56,7 +61,7 @@ public class TestUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
 		// The above should trigger schema definition
 
 		List<String> sqls = super.sql;
-		assertFalse("No SQL DDL registered", sqls.isEmpty());
+		assertFalse(sqls.isEmpty(), "No SQL DDL registered");
 
 		// Following verification techniques is fragile as databases DDL
 		// syntax vary greatly on UNIQUE CONSTRAINT

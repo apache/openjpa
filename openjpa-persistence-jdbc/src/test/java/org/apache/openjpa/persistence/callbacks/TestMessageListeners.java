@@ -18,14 +18,20 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMessageListeners extends SingleEMFTestCase {
+class TestMessageListeners extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES);
     }
@@ -35,7 +41,8 @@ public class TestMessageListeners extends SingleEMFTestCase {
         return "listener-pu";
     }
 
-    public void testUpdateInPrePersist() {
+    @Test
+    void updateInPrePersist() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access
@@ -49,19 +56,19 @@ public class TestMessageListeners extends SingleEMFTestCase {
 
             // Create and persist a new Message entity
             Message message = new Message("Hello Persistence!");
-            assertNull("Test message's created field to be null.", message
-                .getCreated());
-            assertNull("Test message's updated field to be null.", message
-                .getUpdated());
+            assertNull(message
+                .getCreated(), "Test message's created field to be null.");
+            assertNull(message
+                .getUpdated(), "Test message's updated field to be null.");
 
             em.persist(message);
 
             // Pre-persist invoked, created and updated fields set
             assertStatus(1, 0, 0, 0, 0, 0, 0);
-            assertNotNull("Test message's created field being set.", message
-                .getCreated());
-            assertNotNull("Test message's updated field being set.", message
-                .getUpdated());
+            assertNotNull(message
+                .getCreated(), "Test message's created field being set.");
+            assertNotNull(message
+                .getUpdated(), "Test message's updated field being set.");
 
             em.flush();
             // Post-persist invoked
@@ -74,12 +81,12 @@ public class TestMessageListeners extends SingleEMFTestCase {
                 + message.getId());
             Message m = (Message) q.getSingleResult();
 
-            assertEquals("Test first expected message.", "Hello Persistence!",
-                m.getMessage());
-            assertNotNull("Test message's created field being set.", m
-                .getCreated());
-            assertNotNull("Test message's updated field being set.", m
-                .getUpdated());
+            assertEquals("Hello Persistence!", m.getMessage(),
+                "Test first expected message.");
+            assertNotNull(m
+                .getCreated(), "Test message's created field being set.");
+            assertNotNull(m
+                .getUpdated(), "Test message's updated field being set.");
 
             // query trigger a load because em is cleared.
             assertStatus(1, 1, 0, 0, 0, 0, 1);
@@ -96,7 +103,8 @@ public class TestMessageListeners extends SingleEMFTestCase {
         }
     }
 
-    public void testUpdateInPreUpdate() {
+    @Test
+    void updateInPreUpdate() {
         // Create a new EntityManager from the EntityManagerFactory. The
         // EntityManager is the main object in the persistence API, and is
         // used to create, delete, and query objects, as well as access
@@ -110,49 +118,49 @@ public class TestMessageListeners extends SingleEMFTestCase {
 
             // Create and persist a new Message entity
             Message message = new Message("Hello Persistence!");
-            assertNull("Test message's created field to be null.", message
-                .getCreated());
-            assertNull("Test message's updated field to be null.", message
-                .getUpdated());
+            assertNull(message
+                .getCreated(), "Test message's created field to be null.");
+            assertNull(message
+                .getUpdated(), "Test message's updated field to be null.");
 
             em.persist(message);
 
             // Pre-persist invoked, created and updated fields set
             assertStatus(1, 0, 0, 0, 0, 0, 0);
-            assertNotNull("Test message's created field being set.", message
-                .getCreated());
-            assertNotNull("Test message's updated field being set.", message
-                .getUpdated());
+            assertNotNull(message
+                .getCreated(), "Test message's created field being set.");
+            assertNotNull(message
+                .getUpdated(), "Test message's updated field being set.");
 
             // Perform a simple query to get the Message
             Query q = em.createQuery("select m from Message m where m.id="
                 + message.getId());
             Message m = (Message) q.getSingleResult();
-            assertEquals("Test first expected message.", "Hello Persistence!",
-                m.getMessage());
-            assertNotNull("Test message's created field being set.", m
-                .getCreated());
-            assertNotNull("Test message's updated field being set.", m
-                .getUpdated());
+            assertEquals("Hello Persistence!", m.getMessage(),
+                "Test first expected message.");
+            assertNotNull(m
+                .getCreated(), "Test message's created field being set.");
+            assertNotNull(m
+                .getUpdated(), "Test message's updated field being set.");
 
             // Query cause flush to occur, hence fire the postPersist event
             assertStatus(1, 1, 0, 0, 0, 0, 0);
 
             // Create and persist another new Message entity
             message = new Message("Hello Persistence 2!");
-            assertNull("Test message's created field to be null.", message
-                .getCreated());
-            assertNull("Test message's updated field to be null.", message
-                .getUpdated());
+            assertNull(message
+                .getCreated(), "Test message's created field to be null.");
+            assertNull(message
+                .getUpdated(), "Test message's updated field to be null.");
 
             em.persist(message);
 
             // Pre-persist invoked, created and updated fields set
             assertStatus(2, 1, 0, 0, 0, 0, 0);
-            assertNotNull("Test message's created field being set.", message
-                .getCreated());
-            assertNotNull("Test message's updated field being set.", message
-                .getUpdated());
+            assertNotNull(message
+                .getCreated(), "Test message's created field being set.");
+            assertNotNull(message
+                .getUpdated(), "Test message's updated field being set.");
 
             em.getTransaction().commit();
 

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,15 +27,17 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A sign in front of an arithmetic primary, as in
  * {@code arithmetic_factor ::= [{+ | -}] arithmetic_primary}, evaluated by the
  * database and in memory. The result has the type of the operand.
  */
-public class TestUnarySign extends SingleEMFTestCase {
+class TestUnarySign extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, SignedOperands.class);
         try (EntityManager em = emf.createEntityManager()) {
@@ -44,7 +48,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testUnaryMinusOnPath() {
+    @Test
+    void unaryMinusOnPath() {
         Object[] row = single("SELECT -n.intA, -n.intB, -n.shortA, -n.longA, -n.decA, -n.doubleA "
             + "FROM SignedOperands n WHERE n.id = 1");
         assertValue(Integer.valueOf(-7), row[0]);
@@ -55,20 +60,23 @@ public class TestUnarySign extends SingleEMFTestCase {
         assertValue(Double.valueOf(-1.5), row[5]);
     }
 
-    public void testUnaryPlusOnPath() {
+    @Test
+    void unaryPlusOnPath() {
         Object[] row = single("SELECT +n.intA, +n.longA, +n.decA FROM SignedOperands n WHERE n.id = 1");
         assertValue(Integer.valueOf(7), row[0]);
         assertValue(Long.valueOf(10), row[1]);
         assertDecimal(new BigDecimal("25.5"), row[2]);
     }
 
-    public void testUnaryMinusOnNegativeValue() {
+    @Test
+    void unaryMinusOnNegativeValue() {
         Object[] row = single("SELECT -n.intA, -n.longA FROM SignedOperands n WHERE n.id = 2");
         assertValue(Integer.valueOf(4), row[0]);
         assertValue(Long.valueOf(20), row[1]);
     }
 
-    public void testUnaryMinusOnParenthesizedExpression() {
+    @Test
+    void unaryMinusOnParenthesizedExpression() {
         Object[] row = single("SELECT -(n.intA + n.intB), -(n.intA - n.longA), -n.intA * 2, "
             + "n.intA - -n.intB FROM SignedOperands n WHERE n.id = 1");
         assertValue(Integer.valueOf(-10), row[0]);
@@ -77,14 +85,16 @@ public class TestUnarySign extends SingleEMFTestCase {
         assertValue(Integer.valueOf(10), row[3]);
     }
 
-    public void testUnaryMinusOnCase() {
+    @Test
+    void unaryMinusOnCase() {
         Object[] row = single("SELECT -CASE WHEN n.intA > 0 THEN n.intA ELSE n.intB END, "
             + "-ABS(n.intA) FROM SignedOperands n WHERE n.id = 2");
         assertValue(Integer.valueOf(-5), row[0]);
         assertValue(Integer.valueOf(-4), row[1]);
     }
 
-    public void testUnaryMinusOnAggregate() {
+    @Test
+    void unaryMinusOnAggregate() {
         try (EntityManager em = emf.createEntityManager()) {
             Object[] row = (Object[]) em.createQuery("SELECT -SUM(n.intA), -MAX(n.longA) "
                 + "FROM SignedOperands n HAVING -SUM(n.intA) < 0").getSingleResult();
@@ -93,7 +103,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testUnaryMinusInWhere() {
+    @Test
+    void unaryMinusInWhere() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Long> ids = em.createQuery("SELECT n.id FROM SignedOperands n WHERE -n.intA < 0",
                 Long.class).getResultList();
@@ -107,7 +118,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testUnaryMinusOnParameterKeepsType() {
+    @Test
+    void unaryMinusOnParameterKeepsType() {
         assertValue(Long.valueOf(-7), selectNegated(7L));
         assertValue(Integer.valueOf(-4), selectNegated(4));
         assertValue(Long.valueOf(-5000000000L), selectNegated(5000000000L));
@@ -118,7 +130,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         assertValue(Integer.valueOf(-4), selectNegated(4));
     }
 
-    public void testUnaryMinusOnParameterInWhere() {
+    @Test
+    void unaryMinusOnParameterInWhere() {
         try (EntityManager em = emf.createEntityManager()) {
             String jpql = "SELECT n.id FROM SignedOperands n WHERE n.doubleA = -:value";
             assertEquals(List.of(2L), em.createQuery(jpql, Long.class)
@@ -140,7 +153,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testUnaryMinusInOrderBy() {
+    @Test
+    void unaryMinusInOrderBy() {
         try (EntityManager em = emf.createEntityManager()) {
             List<Long> ids = em.createQuery("SELECT n.id FROM SignedOperands n ORDER BY -n.intA",
                 Long.class).getResultList();
@@ -151,7 +165,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testSignedLiterals() {
+    @Test
+    void signedLiterals() {
         Object[] row = single("SELECT n.intA - -1, n.intA -1, n.intA - - 1, -1, n.intA + -1.5 "
             + "FROM SignedOperands n WHERE n.id = 1");
         assertValue(Integer.valueOf(8), row[0]);
@@ -161,7 +176,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         assertDecimal(new BigDecimal("5.5"), row[4]);
     }
 
-    public void testUnaryMinusInMemory() {
+    @Test
+    void unaryMinusInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             List<?> candidates = em.createQuery("SELECT n FROM SignedOperands n WHERE n.id = 1")
                 .getResultList();
@@ -182,7 +198,8 @@ public class TestUnarySign extends SingleEMFTestCase {
         }
     }
 
-    public void testUnaryMinusInMemoryWithParameterAndCase() {
+    @Test
+    void unaryMinusInMemoryWithParameterAndCase() {
         try (EntityManager em = emf.createEntityManager()) {
             List<?> candidates = em.createQuery("SELECT n FROM SignedOperands n").getResultList();
             org.apache.openjpa.persistence.QueryImpl<?> q = query(em, candidates,
@@ -232,6 +249,6 @@ public class TestUnarySign extends SingleEMFTestCase {
 
     private static void assertDecimal(BigDecimal expected, Object actual) {
         assertEquals(BigDecimal.class, actual.getClass());
-        assertEquals(expected + " <> " + actual, 0, expected.compareTo((BigDecimal) actual));
+        assertEquals(0, expected.compareTo((BigDecimal) actual), expected + " <> " + actual);
     }
 }

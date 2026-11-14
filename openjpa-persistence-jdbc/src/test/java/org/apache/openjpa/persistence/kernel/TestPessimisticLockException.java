@@ -18,35 +18,34 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PessimisticLockException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestPessimisticLockException extends SQLListenerTestCase {
     int pKey = 1;
     static boolean doSleep = true;
 
     @Override
-    public void setUp() throws Exception {
-        super.setUp(PessimisticLockEntity.class);
+    protected boolean isSupported(DBDictionary dict) {
+        // This test has only been verified on DB2 and Oracle.
+        return dict instanceof DB2Dictionary;
     }
 
-    /*
-     * This test has only been verified on DB2 and Oracle.
-     */
-    protected boolean skipTest() {
-        if (emf.getConfiguration() instanceof JDBCConfiguration) {
-            DBDictionary inst = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
-            return !((inst instanceof DB2Dictionary));
-        }
-        return true;
+    @BeforeEach
+    public void setUp() throws Exception {
+        super.setUp(PessimisticLockEntity.class);
     }
 
     /*
@@ -54,7 +53,8 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
      * when they both request one at the same time.  See JIRA OPENJPA-2547 for a more
      * detailed description of this test.
      */
-    public void testPessimisticLockException() {
+    @Test
+    void pessimisticLockException() {
         if (!skipTest()) {
 
             populate();
@@ -151,7 +151,8 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
      * won't occur.....in a multi-threaded env this delay could cause another thread to get the lock over this
      * one when the refresh occurs at the same time.
      */
-    public void testSQLCount() {
+    @Test
+    void sqlCount() {
         if (!skipTest()) {
 
             populate();
@@ -167,7 +168,7 @@ public class TestPessimisticLockException extends SQLListenerTestCase {
             plEnt.setName("test");
             em.getTransaction().commit();
             em.close();
-            assertEquals("There should only be 3 SQL statements", 3, getSQLCount());
+            assertEquals(3, getSQLCount(), "There should only be 3 SQL statements");
         }
     }
 

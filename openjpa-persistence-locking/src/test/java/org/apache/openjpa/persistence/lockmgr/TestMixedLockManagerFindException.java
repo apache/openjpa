@@ -22,12 +22,14 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.persistence.TransactionRequiredException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 em.find(LockMode) exception behaviors with "mixed" lock manager.
  */
 public class TestMixedLockManagerFindException extends SequencedActionsTest {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -38,7 +40,8 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
     /**
      * TransactionRequiredException if there is no transaction
      */
-    public void testFindTxReqExceptions() {
+    @Test
+    void findTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -78,7 +81,8 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
      * IllegalArgumentException if the instance is not an entity or is a
      *      detached entity
      */
-    public void testFindIllegalArgrumentExceptions() {
+    @Test
+    void findIllegalArgrumentExceptions() {
         // Test invalid entity argument throws IllegalArgumentException.
         Object[][] threadMainInvEntityIllegalArgTest = {
             {Act.CreateEm},
@@ -197,7 +201,8 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
      * database lock. If these checks fail, the
      * OptimisticLockException will be thrown.
      */
-    public void testLockOptimisticLockExceptions() {
+    @Test
+    void lockOptimisticLockExceptions() {
         commonLockOptimisticLockExceptions(
             LockModeType.NONE, true, false);
 //        commonLockOptimisticLockExceptions(

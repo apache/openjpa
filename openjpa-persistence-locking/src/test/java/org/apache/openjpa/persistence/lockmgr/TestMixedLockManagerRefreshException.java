@@ -20,13 +20,15 @@ package org.apache.openjpa.persistence.lockmgr;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.TransactionRequiredException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 em.refresh(LockMode) exception behaviors with "mixed"
  * lock manager.
  */
-public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
-    @Override
+class TestMixedLockManagerRefreshException extends SequencedActionsTest {
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -37,7 +39,8 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
     /**
      * TransactionRequiredException if there is no transaction
      */
-    public void testRefreshNoTxReqExceptions() {
+    @Test
+    void refreshNoTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -76,7 +79,8 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
     /**
      * TransactionRequiredException if there is no transaction
      */
-    public void testRefreshTxReqExceptions() {
+    @Test
+    void refreshTxReqExceptions() {
         Object[][] threadMainTxReqTest = {
             {Act.CreateEm},
             {Act.Find},
@@ -116,7 +120,8 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
      * IllegalArgumentException if the instance is not an entity or is a
      *      detached entity
      */
-    public void testRefreshIllegalArgrumentExceptions() {
+    @Test
+    void refreshIllegalArgrumentExceptions() {
         // Test invalid entity argument throws IllegalArgumentException.
         Object[][] threadMainInvEntityIllegalArgTest = {
             {Act.CreateEm},

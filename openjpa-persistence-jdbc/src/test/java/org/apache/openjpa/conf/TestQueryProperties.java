@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +31,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.QTimeout;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the following JPA 2.0 Persistence Unit Properties scenarios:
@@ -43,11 +49,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestQueryProperties extends SingleEMFTestCase {
+class TestQueryProperties extends SingleEMFTestCase {
 
     private Map<String,String> props = null;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         // setup using a simple entity
         super.setUp(QTimeout.class, CLEAR_TABLES);
@@ -57,7 +63,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
         props.put("jakarta.persistence.query.timeout", "7000");
     }
 
-    public void testNoProperties() {
+    @Test
+    void noProperties() {
         getLog().trace("testNoProperties() - no properties in persistence.xml");
         OpenJPAEntityManagerFactory emf1 = null, emf2 = null;
         OpenJPAEntityManager em1 = null, em2 = null;
@@ -83,10 +90,10 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify no config properties from persistence.xml
             OpenJPAConfiguration conf1 = emf1.getConfiguration();
             assertNotNull(conf1);
-            assertEquals("Expected no default lock timeout", lTime.intValue(),
-                conf1.getLockTimeout());
-            assertEquals("Expected no default query timeout", qTime.intValue(),
-                conf1.getQueryTimeout());
+            assertEquals(lTime.intValue(), conf1.getLockTimeout(),
+                "Expected no default lock timeout");
+            assertEquals(qTime.intValue(), conf1.getQueryTimeout(),
+                "Expected no default query timeout");
             // verify Query receives no properties
             em1 = emf1.createEntityManager();
             assertNotNull(em1);
@@ -97,11 +104,11 @@ public class TestQueryProperties extends SingleEMFTestCase {
             assertFalse(hints.containsKey("jakarta.persistence.query.timeout"));
             // verify default config values of no timeouts
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected no default lock timeout", lTime.intValue(),
-                timeout.intValue());
+            assertEquals(lTime.intValue(), timeout.intValue(),
+                "Expected no default lock timeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected no default query timeout", qTime.intValue(),
-                timeout.intValue());
+            assertEquals(qTime.intValue(), timeout.intValue(),
+                "Expected no default query timeout");
 
             //=============
             // Test for 2a)
@@ -111,10 +118,10 @@ public class TestQueryProperties extends SingleEMFTestCase {
             assertNotNull(conf2);
             lTime = 12000;
             qTime = 7000;
-            assertEquals("Expected Map updated lock timeout", lTime.intValue(),
-                conf2.getLockTimeout());
-            assertEquals("Expected Map updated query timeout", qTime.intValue(),
-                conf2.getQueryTimeout());
+            assertEquals(lTime.intValue(), conf2.getLockTimeout(),
+                "Expected Map updated lock timeout");
+            assertEquals(qTime.intValue(), conf2.getQueryTimeout(),
+                "Expected Map updated query timeout");
             // Verify Query receives the properties
             em2 = emf2.createEntityManager();
             assertNotNull(em2);
@@ -143,11 +150,11 @@ public class TestQueryProperties extends SingleEMFTestCase {
             */
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected Map updated lock timeout", lTime.intValue(),
-                timeout.intValue());
+            assertEquals(lTime.intValue(), timeout.intValue(),
+                "Expected Map updated lock timeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected Map updated query timeout", qTime.intValue(),
-                timeout.intValue());
+            assertEquals(qTime.intValue(), timeout.intValue(),
+                "Expected Map updated query timeout");
 
             //=============
             // Test for 4a)
@@ -161,19 +168,19 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify getHints values were updated
             timeout = (Integer) hints.get("jakarta.persistence.lock.timeout");
             assertEquals(
-                "Expected setHint updated jakarta.persistence.lock.timeout",
-                lTime.intValue(), timeout.intValue());
+                lTime.intValue(),
+                timeout.intValue(), "Expected setHint updated jakarta.persistence.lock.timeout");
             timeout = (Integer) hints.get("jakarta.persistence.query.timeout");
             assertEquals(
-                "Expected setHint updated jakarta.persistence.query.timeout",
-                qTime.intValue(), timeout.intValue());
+                qTime.intValue(),
+                timeout.intValue(), "Expected setHint updated jakarta.persistence.query.timeout");
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected setHint updated lockTimeout",
-                lTime.intValue(), timeout.intValue());
+            assertEquals(lTime.intValue(),
+                timeout.intValue(), "Expected setHint updated lockTimeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected setHint updated queryTimeout",
-                qTime.intValue(), timeout.intValue());
+            assertEquals(qTime.intValue(),
+                timeout.intValue(), "Expected setHint updated queryTimeout");
         } finally {
             // cleanup
             closeEMF(emf1);
@@ -181,7 +188,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
         }
     }
 
-    public void testWithProperties() {
+    @Test
+    void withProperties() {
         getLog().trace("testWithProperties() - properties in persistence.xml");
         OpenJPAEntityManagerFactory emf1 = null, emf2 = null;
         OpenJPAEntityManager em1 = null, em2 = null;
@@ -207,10 +215,10 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify properties in persistence.xml
             OpenJPAConfiguration conf1 = emf1.getConfiguration();
             assertNotNull(conf1);
-            assertEquals("Default PU lock timeout", lTime.intValue(),
-                conf1.getLockTimeout());
-            assertEquals("Default PU query timeout.", qTime.intValue(),
-                conf1.getQueryTimeout());
+            assertEquals(lTime.intValue(), conf1.getLockTimeout(),
+                "Default PU lock timeout");
+            assertEquals(qTime.intValue(), conf1.getQueryTimeout(),
+                "Default PU query timeout.");
             // verify Query receives the properties
             em1 = emf1.createEntityManager();
             assertNotNull(em1);
@@ -219,11 +227,11 @@ public class TestQueryProperties extends SingleEMFTestCase {
             //     See explanation and commented out test in testNoProperties()
             // verify timeout properties supplied in persistence.xml
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected default PU lock timeout", lTime.intValue(),
-                timeout.intValue());
+            assertEquals(lTime.intValue(), timeout.intValue(),
+                "Expected default PU lock timeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected default PU query timeout", qTime.intValue(),
-                timeout.intValue());
+            assertEquals(qTime.intValue(), timeout.intValue(),
+                "Expected default PU query timeout");
 
             //=============
             // Test for 2b)
@@ -233,10 +241,10 @@ public class TestQueryProperties extends SingleEMFTestCase {
             assertNotNull(conf2);
             lTime = 12000;
             qTime = 7000;
-            assertEquals("Expected Map updated lock timeout", lTime.intValue(),
-                conf2.getLockTimeout());
-            assertEquals("Expected Map updated query timeout", qTime.intValue(),
-                conf2.getQueryTimeout());
+            assertEquals(lTime.intValue(), conf2.getLockTimeout(),
+                "Expected Map updated lock timeout");
+            assertEquals(qTime.intValue(), conf2.getQueryTimeout(),
+                "Expected Map updated query timeout");
             // Verify Query receives the properties
             em2 = emf2.createEntityManager();
             assertNotNull(em2);
@@ -245,11 +253,11 @@ public class TestQueryProperties extends SingleEMFTestCase {
             //     See explanation and commented out test in testNoProperties()
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected Map updated lockTimeout", lTime.intValue(),
-                timeout.intValue());
+            assertEquals(lTime.intValue(), timeout.intValue(),
+                "Expected Map updated lockTimeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected Map updated queryTimeout", qTime.intValue(),
-                timeout.intValue());
+            assertEquals(qTime.intValue(), timeout.intValue(),
+                "Expected Map updated queryTimeout");
 
             //=============
             // Test for 3)
@@ -260,12 +268,12 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify getHints values were updated
             hints = q.getHints();
             timeout = Integer.valueOf((String) hints.get("jakarta.persistence.query.timeout"));
-            assertEquals("Expected QueryHints updated query timeout",
-                qTime.intValue(), timeout.intValue());
+            assertEquals(qTime.intValue(),
+                timeout.intValue(), "Expected QueryHints updated query timeout");
             // verify internal config value was updated
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected QueryHints updated queryTimeout",
-                qTime.intValue(), timeout.intValue());
+            assertEquals(qTime.intValue(),
+                timeout.intValue(), "Expected QueryHints updated queryTimeout");
 
             //=============
             // Test for 4b)
@@ -278,18 +286,18 @@ public class TestQueryProperties extends SingleEMFTestCase {
             // verify getHints values were updated
             hints = q.getHints();
             timeout = (Integer) hints.get("jakarta.persistence.lock.timeout");
-            assertEquals("Expected setHint updated lock timeout",
-                lTime.intValue(), timeout.intValue());
+            assertEquals(lTime.intValue(),
+                timeout.intValue(), "Expected setHint updated lock timeout");
             timeout = (Integer) hints.get("jakarta.persistence.query.timeout");
-            assertEquals("Expected setHint updated query timeout",
-                qTime.intValue(), timeout.intValue());
+            assertEquals(qTime.intValue(),
+                timeout.intValue(), "Expected setHint updated query timeout");
             // verify internal config values were updated
             timeout = q.getFetchPlan().getLockTimeout();
-            assertEquals("Expected setHint updated lockTimeout",
-                lTime.intValue(), timeout.intValue());
+            assertEquals(lTime.intValue(),
+                timeout.intValue(), "Expected setHint updated lockTimeout");
             timeout = q.getFetchPlan().getQueryTimeout();
-            assertEquals("Expected setHint updated queryTimeout",
-                qTime.intValue(), timeout.intValue());
+            assertEquals(qTime.intValue(),
+                timeout.intValue(), "Expected setHint updated queryTimeout");
         } finally {
             // cleanup
             closeEMF(emf1);

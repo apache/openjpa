@@ -28,27 +28,22 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.LockGroupPC;
 import org.apache.openjpa.persistence.kernel.common.apps.LockGroupPC2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestOptimisticLockGroups extends BaseKernelTest {
+class TestOptimisticLockGroups extends BaseKernelTest {
 
     private Object oid;
 
-    /**
-     * Creates a new instance of TestOptimisticLockGroups
-     */
-    public TestOptimisticLockGroups() {
-    }
-
-    public TestOptimisticLockGroups(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(LockGroupPC.class);
 
         OpenJPAEntityManager pm = getPM(false, false);
@@ -60,7 +55,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDefaultLockGroupFailure1() {
+    @Test
+    void defaultLockGroupFailure1() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -83,7 +79,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm2);
     }
 
-    public void testDefaultLockGroupFailure2() {
+    @Test
+    void defaultLockGroupFailure2() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -106,7 +103,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm2);
     }
 
-    public void testNonDefaultLockGroupFailure1() {
+    @Test
+    void nonDefaultLockGroupFailure1() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -129,7 +127,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm2);
     }
 
-    public void testNonDefaultLockGroupFailure2() {
+    @Test
+    void nonDefaultLockGroupFailure2() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -152,7 +151,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm2);
     }
 
-    public void testMultipleLockGroupSuccess1() {
+    @Test
+    void multipleLockGroupSuccess1() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -179,7 +179,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm3);
     }
 
-    public void testMultipleLockGroupSuccess2() {
+    @Test
+    void multipleLockGroupSuccess2() {
         OpenJPAEntityManager pm1 = getPM(false, false);
         startTx(pm1);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -200,7 +201,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
 
 //        FIX ME: aokeke - test is taking so much resource and causing
 //        subsequent test to fail
-//        public void testNoLockGroupSuccess() {
+//        @Test void noLockGroupSuccess() {
 //        OpenJPAEntityManager pm1 = getPM(false, false);
 //        startTx(pm1,());
 //        LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class,oid);
@@ -221,7 +222,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
 //        endEm(pm2);
 //    }
 
-    public void testAttachDetachSuccess()
+    @Test
+    void attachDetachSuccess()
         throws Exception {
         OpenJPAEntityManager pm1 = getPM(false, false);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -256,7 +258,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm2);
     }
 
-    public void testAttachDetachFailure()
+    @Test
+    void attachDetachFailure()
         throws Exception {
         OpenJPAEntityManager pm1 = getPM(false, false);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
@@ -302,7 +305,8 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         }
     }
 
-    public void testLockGroupNone() {
+    @Test
+    void lockGroupNone() {
         OpenJPAEntityManager pm = getPM(false, false);
 //        pm.begin();
         deleteAll(LockGroupPC2.class, pm);
@@ -335,7 +339,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         endEm(pm);
     }
 
-//    public void testKnownSubclass() {
+//    @Test void knownSubclass() {
 //        OpenJPAEntityManager pm = getPM(false, false);
 //        LockGroupPCKnownSubclass pc = new LockGroupPCKnownSubclass();
 //        pc.setDefaultLockGroupStringField("pc");

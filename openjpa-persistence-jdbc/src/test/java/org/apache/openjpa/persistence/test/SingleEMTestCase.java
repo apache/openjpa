@@ -25,6 +25,8 @@ import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * A base test case that can be used to easily test scenarios where there
@@ -34,12 +36,11 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
  *
  * @author Marc Prud'hommeaux
  */
-public abstract class SingleEMTestCase
-    extends SingleEMFTestCase {
+public abstract class SingleEMTestCase extends SingleEMFTestCase {
 
     protected OpenJPAEntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(new Object[0]);
     }
@@ -58,7 +59,7 @@ public abstract class SingleEMTestCase
         em = emf.createEntityManager();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEM(em);
         em = null;

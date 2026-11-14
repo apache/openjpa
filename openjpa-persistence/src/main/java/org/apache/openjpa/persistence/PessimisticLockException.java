@@ -23,7 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
@@ -35,9 +34,7 @@ import org.apache.openjpa.util.StoreException;
  *
  * @since 2.0.0
  */
-public class PessimisticLockException
-    extends jakarta.persistence.PessimisticLockException
-    implements Serializable, ExceptionInfo {
+public class PessimisticLockException extends jakarta.persistence.PessimisticLockException implements ExceptionInfo {
 
     private static final long serialVersionUID = 1L;
     private transient boolean _fatal = true;

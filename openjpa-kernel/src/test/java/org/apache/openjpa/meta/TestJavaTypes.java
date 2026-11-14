@@ -19,15 +19,15 @@
 package org.apache.openjpa.meta;
 
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-public class TestJavaTypes {
+class TestJavaTypes {
     TypesHolder _types = new TypesHolder();
 
     @Test
-    public void testIsPrimitiveDefault() {
+    void isPrimitiveDefault() {
         assertTrue(JavaTypes.isPrimitiveDefault(_types.getBoolean(), JavaTypes.BOOLEAN));
         assertTrue(JavaTypes.isPrimitiveDefault(_types.getChar(), JavaTypes.CHAR));
         assertTrue(JavaTypes.isPrimitiveDefault(_types.getDouble(), JavaTypes.DOUBLE));

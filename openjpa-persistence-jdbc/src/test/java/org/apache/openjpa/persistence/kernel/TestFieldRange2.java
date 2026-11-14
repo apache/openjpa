@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,8 +35,9 @@ import java.util.Date;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestFieldRange2 extends BaseKernelTest {
 
@@ -46,24 +49,14 @@ public class TestFieldRange2 extends BaseKernelTest {
             + "''''''''''''\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
             + "!@@#$\\%^&\"*()-=\\|+_/?.>,<~`";
 
-    /**
-     * Creates a new instance of TestFieldRange
-     */
-    public TestFieldRange2() {
-    }
-
-    public TestFieldRange2(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
-        super.setUp();
         deleteAll(AllFieldTypesTest.class);
     }
 
-    public void testSaveState()
+    @Test
+    void saveState()
         throws Exception {
         allFieldSaveState(
             (int) 259645,
@@ -176,51 +169,51 @@ public class TestFieldRange2 extends BaseKernelTest {
         AllFieldTypesTest retrievedObject =
             (AllFieldTypesTest) pm.find(AllFieldTypesTest.class, testID);
 
-        assertEquals("Field type int", testint,
-            retrievedObject.getTestint());
-        assertEquals("Field type short", testshort,
-            retrievedObject.getTestshort());
-        assertEquals("Field type boolean", testboolean,
-            retrievedObject.getTestboolean());
-        assertEquals("Field type char", testchar,
-            retrievedObject.getTestchar());
-        assertEquals("Field type long", testlong,
-            retrievedObject.getTestlong());
+        assertEquals(testint, retrievedObject.getTestint(),
+            "Field type int");
+        assertEquals(testshort, retrievedObject.getTestshort(),
+            "Field type short");
+        assertEquals(testboolean, retrievedObject.getTestboolean(),
+            "Field type boolean");
+        assertEquals(testchar, retrievedObject.getTestchar(),
+            "Field type char");
+        assertEquals(testlong, retrievedObject.getTestlong(),
+            "Field type long");
 
-        assertEquals("Field type byte", testbyte,
-            retrievedObject.getTestbyte());
-        assertEquals("Field type String", testString,
-            retrievedObject.getTestString());
+        assertEquals(testbyte, retrievedObject.getTestbyte(),
+            "Field type byte");
+        assertEquals(testString, retrievedObject.getTestString(),
+            "Field type String");
 
         int i1 = (int) (testDate.getTime() / 1000);
         int i2 = (int) (retrievedObject.getTestDate().getTime() / 1000);
 
         //System.out.println("i1 : " + i1 + "\ni2 : " + i2);
-        assertEquals("Field type Date: "
+        assertEquals((int) (testDate.getTime() / 1000),
+            (int) (retrievedObject.getTestDate().getTime() / 1000),
+            "Field type Date: "
             + testDate.getTime() + "!="
             + retrievedObject.getTestDate().getTime()
             + "[" + new Date(testDate.getTime()) + " != "
-            + new Date(retrievedObject.getTestDate().getTime()) + "]",
-            (int) (testDate.getTime() / 1000),
-            (int) (retrievedObject.getTestDate().getTime() / 1000));
+            + new Date(retrievedObject.getTestDate().getTime()) + "]");
         //assertEquals ("Field type Object", testObject,
         //retrievedObject.getTestObject ());
-        assertEquals("Field type BigInteger", testBigInteger,
-            retrievedObject.getTestBigInteger());
+        assertEquals(testBigInteger, retrievedObject.getTestBigInteger(),
+            "Field type BigInteger");
 
         try {
-            assertEquals("Field type BigDecimal (BigInteger part)",
-                testBigDecimal.toBigInteger(),
-                retrievedObject.getTestBigDecimal().toBigInteger());
+            assertEquals(testBigDecimal.toBigInteger(),
+                retrievedObject.getTestBigDecimal().toBigInteger(),
+                "Field type BigDecimal (BigInteger part)");
 
-            assertEquals("Field type BigDecimal",
-                testBigDecimal,
-                retrievedObject.getTestBigDecimal());
+            assertEquals(testBigDecimal,
+                retrievedObject.getTestBigDecimal(),
+                "Field type BigDecimal");
 
-            assertEquals("Field type float", testfloat,
-                retrievedObject.getTestfloat(), 0.01f);
-            assertEquals("Field type double", testdouble,
-                retrievedObject.getTestdouble(), 0.01d);
+            assertEquals(testfloat, retrievedObject.getTestfloat(),
+                0.01f, "Field type float");
+            assertEquals(testdouble, retrievedObject.getTestdouble(),
+                0.01d, "Field type double");
         } catch (AssertionFailedError afe) {
             bug(3, afe,
                 "Doubles and Floats lose precision in some data stores");

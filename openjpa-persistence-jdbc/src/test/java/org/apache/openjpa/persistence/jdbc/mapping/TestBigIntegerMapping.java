@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashMap;
@@ -38,6 +41,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A <code>BigInteger</code> with more than 19 digits must survive a round
@@ -45,7 +50,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * with "Numeric value out of range", as the column was created as
  * <code>BIGINT</code> (OPENJPA-3058).
  */
-public class TestBigIntegerMapping extends SingleEMFTestCase {
+class TestBigIntegerMapping extends SingleEMFTestCase {
 
     private static final BigInteger WIDE_ID = new BigInteger("123456789012345678901234567890");
     private static final BigInteger WIDE_AMOUNT = new BigInteger("-98765432109876543210987654321");
@@ -53,7 +58,7 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
     private BigInteger id;
     private BigInteger amount;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, BigIntegerEntity.class, BigIntegerRefEntity.class);
 
@@ -79,7 +84,8 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
         }
     }
 
-    public void testValueIsKeptOnFind() {
+    @Test
+    void valueIsKeptOnFind() {
         try (EntityManager em = emf.createEntityManager()) {
             BigIntegerEntity e = em.find(BigIntegerEntity.class, id);
             assertNotNull(e);
@@ -88,7 +94,8 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
         }
     }
 
-    public void testValueIsKeptOnUpdate() {
+    @Test
+    void valueIsKeptOnUpdate() {
         BigInteger updated = amount.add(BigInteger.ONE);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -100,7 +107,8 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
         }
     }
 
-    public void testValueIsComparedInQuery() {
+    @Test
+    void valueIsComparedInQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             List<BigInteger> ids = em.createQuery("SELECT e.id FROM BigIntegerEntity e "
                 + "WHERE e.amount = :amount", BigInteger.class)
@@ -116,7 +124,8 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
         }
     }
 
-    public void testForeignKeyToBigIntegerId() {
+    @Test
+    void foreignKeyToBigIntegerId() {
         try (EntityManager em = emf.createEntityManager()) {
             BigIntegerRefEntity ref = em.find(BigIntegerRefEntity.class, 1L);
             assertNotNull(ref.getTarget());
@@ -131,7 +140,8 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
         }
     }
 
-    public void testColumnTypesOnH2() throws SQLException {
+    @Test
+    void columnTypesOnH2() throws Exception {
         if (!(getDictionary() instanceof H2Dictionary)) {
             return;
         }
@@ -147,16 +157,17 @@ public class TestBigIntegerMapping extends SingleEMFTestCase {
                 }
             }
         }
-        assertEquals(cols.toString(), Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT.ID"));
-        assertEquals(cols.toString(), Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT.AMOUNT"));
-        assertEquals(cols.toString(), Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT_REF.TARGET_ID"));
+        assertEquals(Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT.ID"), cols.toString());
+        assertEquals(Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT.AMOUNT"), cols.toString());
+        assertEquals(Integer.valueOf(Types.NUMERIC), cols.get("MAP_BIGINT_REF.TARGET_ID"), cols.toString());
     }
 
     /**
      * Tables created by earlier releases keep their <code>BIGINT</code>
      * columns, which still hold values in the range of a <code>long</code>.
      */
-    public void testExistingBigintColumnsOnH2() throws SQLException {
+    @Test
+    void existingBigintColumnsOnH2() throws Exception {
         if (!(getDictionary() instanceof H2Dictionary)) {
             return;
         }

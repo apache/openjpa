@@ -27,6 +27,9 @@ import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -36,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * doesn't result in a NPE.
  *
  */
-public class TestDataCacheStoreManager extends SingleEMFTestCase {
+class TestDataCacheStoreManager extends SingleEMFTestCase {
     Object[] p =
         new Object[] { CLEAR_TABLES, CachedEntityStatistics.class,
                 "openjpa.DataCache", "true(EnableStatistics=true)",
@@ -48,7 +51,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
     private DataCacheManager dcm;
     private OpenJPAStateManager sm;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(p);
 
@@ -68,7 +71,7 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
         sm = (OpenJPAStateManager) ((PersistenceCapable) p).pcGetStateManager();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         dcm.startCaching(CachedEntityStatistics.class.getName());
         em.close();
@@ -76,11 +79,13 @@ public class TestDataCacheStoreManager extends SingleEMFTestCase {
         super.tearDown();
     }
 
-    public void testExists() {
+    @Test
+    void exists() {
         dsm.exists(sm, null);
     }
 
-    public void testsyncVersion() {
+    @Test
+    void testsyncVersion() {
         dsm.syncVersion(sm, null);
     }
 }

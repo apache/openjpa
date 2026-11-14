@@ -18,19 +18,25 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDataStoreActions
+class TestDataStoreActions
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
 
-    public void testDataStoreActions() {
+    @Test
+    void dataStoreActions() {
         OpenJPAQuery q = em.createQuery("select o from AllFieldTypes o");
         String[] sql = q.getDataStoreActions(null);
         assertEquals(1, sql.length);

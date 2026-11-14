@@ -19,10 +19,14 @@
 package org.apache.openjpa.persistence.entityoperation;
 
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.entityoperation.common.apps.
         CascadesEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test EJB persistence cascade options.</p>
@@ -31,16 +35,17 @@ import org.apache.openjpa.persistence.entityoperation.common.apps.
  */
 public class TestCascades extends AbstractTestCase {
 
-    public TestCascades(String name) {
-        super(name, "entityopcactusapp");
+    public TestCascades() {
+        super("entityopcactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CascadesEntity.class);
     }
 
-    public void testNoCascadePersist ()
+    @Test
+    void noCascadePersist()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -57,7 +62,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistIsImmediate ()
+    @Test
+    void cascadePersistIsImmediate()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -76,7 +82,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadePersistFlushWithDeletedCausesException ()
+    @Test
+    void noCascadePersistFlushWithDeletedCausesException()
      {
          CascadesEntity rel = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -104,7 +111,7 @@ public class TestCascades extends AbstractTestCase {
          {
          }
 
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
          endEm(em);
 
          em = (OpenJPAEntityManager)currentEntityManager();
@@ -124,13 +131,14 @@ public class TestCascades extends AbstractTestCase {
          catch (Exception re)
          {
          }
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
 
          endEm(em);
      }
 
 
-     public void testCascadePersistFlushWithDeleted ()
+    @Test
+    void cascadePersistFlushWithDeleted()
      {
          CascadesEntity rel = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -149,7 +157,7 @@ public class TestCascades extends AbstractTestCase {
          em.remove (rel);
          em.persist (ent);
          endTx(em);
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
          endEm(em);
 
          em = (OpenJPAEntityManager)currentEntityManager();
@@ -161,7 +169,7 @@ public class TestCascades extends AbstractTestCase {
          em.remove (rel);
          em.persist (ent);
          endTx(em);
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
 
          endEm(em);
 
@@ -172,7 +180,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadePersistFlushWithTransientCausesException ()
+    @Test
+    void noCascadePersistFlushWithTransientCausesException()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -192,7 +201,7 @@ public class TestCascades extends AbstractTestCase {
          }
 
 
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
          endEm(em);
 
          ent = new CascadesEntity ();
@@ -211,12 +220,13 @@ public class TestCascades extends AbstractTestCase {
          catch (Exception re)
          {
          }
-         assertTrue (!em.getTransaction().isActive ());
+         assertFalse (em.getTransaction().isActive ());
          endEm(em);
      }
 
 
-     public void testNoCascadePersistFlushWithPersistent ()
+    @Test
+    void noCascadePersistFlushWithPersistent()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -251,7 +261,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistFlushWithTransient ()
+    @Test
+    void cascadePersistFlushWithTransient()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -284,7 +295,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadePersistFlushWithPersistent ()
+    @Test
+    void cascadePersistFlushWithPersistent()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -317,7 +329,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeCircleThroughPersistent ()
+    @Test
+    void cascadeCircleThroughPersistent()
      {
          CascadesEntity ent = new CascadesEntity ();
          OpenJPAEntityManager em = (OpenJPAEntityManager)currentEntityManager();
@@ -345,7 +358,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeDelete ()
+    @Test
+    void noCascadeDelete()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -392,7 +406,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testDeepCascadeDelete ()
+    @Test
+    void deepCascadeDelete()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -469,7 +484,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCircularCascadeDelete ()
+    @Test
+    void circularCascadeDelete()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -509,7 +525,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeRefresh ()
+    @Test
+    void noCascadeRefresh()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -549,7 +566,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCircularCascadeRefresh ()
+    @Test
+    void circularCascadeRefresh()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -653,7 +671,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachClean ()
+    @Test
+    void noCascadeAttachClean()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -678,13 +697,13 @@ public class TestCascades extends AbstractTestCase {
          em = (OpenJPAEntityManager)currentEntityManager();
          startTx(em);
          ent = em.merge (ent);
-         assertTrue (!em.isDirty (ent));
+         assertFalse (em.isDirty (ent));
          assertEquals ("ent", ent.getName ());
          assertEquals (id, ent.getId ());
-         assertTrue (ent.getNone () != rel);
+         assertNotSame (ent.getNone (), rel);
          rel = ent.getNone ();
          assertNotNull (rel);
-         assertTrue (!em.isDirty (rel));
+         assertFalse (em.isDirty (rel));
          assertEquals (1, ent.getNoneCollection ().size ());
          assertEquals (rel, ent.getNoneCollection ().iterator ().next ());
 
@@ -696,7 +715,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachClean ()
+    @Test
+    void cascadeAttachClean()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -725,15 +745,15 @@ public class TestCascades extends AbstractTestCase {
          em = (OpenJPAEntityManager)currentEntityManager();
          startTx(em);
          ent = em.merge (ent);
-         assertTrue (!em.isDirty (ent));
+         assertFalse (em.isDirty (ent));
          assertEquals ("ent", ent.getName ());
          assertEquals (id, ent.getId ());
-         assertTrue (rel1 != ent.getAll ());
+         assertNotSame (rel1, ent.getAll ());
          rel1 = ent.getAll ();
-         assertTrue (!em.isDirty (rel1));
+         assertFalse (em.isDirty (rel1));
          assertEquals (1, ent.getAllCollection ().size ());
          rel2 = ent.getAllCollection ().iterator ().next ();
-         assertTrue (!em.isDirty (rel2));
+         assertFalse (em.isDirty (rel2));
 
          assertTrue (em.isPersistent (rel1));
          assertEquals (rel1Id, rel1.getId ());
@@ -746,7 +766,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachDirtyFields ()
+    @Test
+    void noCascadeAttachDirtyFields()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -772,13 +793,13 @@ public class TestCascades extends AbstractTestCase {
          em = (OpenJPAEntityManager)currentEntityManager();
          startTx(em);
          ent = em.merge (ent);
-         assertTrue (!em.isDirty (ent));
+         assertFalse (em.isDirty (ent));
          assertEquals ("ent", ent.getName ());
          assertEquals (id, ent.getId ());
-         assertTrue (ent.getNone () != rel);
+         assertNotSame (ent.getNone (), rel);
          rel = ent.getNone ();
          assertNotNull (rel);
-         assertTrue (!em.isDirty (rel));
+         assertFalse (em.isDirty (rel));
          assertEquals (relId, rel.getId ());
          assertEquals (1, ent.getNoneCollection ().size ());
          assertEquals (rel, ent.getNoneCollection ().iterator ().next ());
@@ -791,7 +812,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachDirtyFields ()
+    @Test
+    void cascadeAttachDirtyFields()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -823,9 +845,9 @@ public class TestCascades extends AbstractTestCase {
          startTx(em);
          ent = em.merge (ent);
          assertEquals ("ent", ent.getName ());
-         assertTrue (!em.isDirty (ent));
+         assertFalse (em.isDirty (ent));
          assertEquals (id, ent.getId ());
-         assertTrue (rel1 != ent.getAll ());
+         assertNotSame (rel1, ent.getAll ());
          rel1 = ent.getAll ();
          assertTrue (em.isDirty (rel1));
          assertEquals (1, ent.getAllCollection ().size ());
@@ -843,7 +865,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeAttachDirtyRelations ()
+    @Test
+    void noCascadeAttachDirtyRelations()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -879,11 +902,11 @@ public class TestCascades extends AbstractTestCase {
          assertTrue (em.isDirty (ent));
          assertEquals ("ent", ent.getName ());
          assertEquals (id, ent.getId ());
-         assertTrue (ent.getNone () != rel);
-         assertTrue (ent.getNone () != other);
+         assertNotSame (ent.getNone (), rel);
+         assertNotSame (ent.getNone (), other);
          other = ent.getNone ();
          assertNotNull (other);
-         assertTrue (!em.isDirty (other));
+         assertFalse (em.isDirty (other));
          assertEquals (otherId, other.getId ());
          assertEquals (1, ent.getNoneCollection ().size ());
          assertEquals (other, ent.getNoneCollection ().iterator ().next ());
@@ -897,7 +920,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testCascadeAttachDirtyRelations ()
+    @Test
+    void cascadeAttachDirtyRelations()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel1 = new CascadesEntity ();
@@ -942,8 +966,8 @@ public class TestCascades extends AbstractTestCase {
          assertEquals ("ent", ent.getName ());
          assertTrue (em.isDirty (ent));
          assertEquals (id, ent.getId ());
-         assertTrue (rel1 != ent.getAll ());
-         assertTrue (other1 != ent.getAll ());
+         assertNotSame (rel1, ent.getAll ());
+         assertNotSame (other1, ent.getAll ());
          other1 = ent.getAll ();
          assertTrue (em.isDirty (other1));
          assertEquals (1, ent.getAllCollection ().size ());
@@ -961,7 +985,8 @@ public class TestCascades extends AbstractTestCase {
      }
 
 
-     public void testNoCascadeReferenceIsPreLoadedReference ()
+    @Test
+    void noCascadeReferenceIsPreLoadedReference()
      {
          CascadesEntity ent = new CascadesEntity ();
          CascadesEntity rel = new CascadesEntity ();
@@ -993,7 +1018,8 @@ public class TestCascades extends AbstractTestCase {
          endEm(em);
      }
 
-    public void testNoCascadeNewCausesException() {
+    @Test
+    void noCascadeNewCausesException() {
         CascadesEntity ent = new CascadesEntity();
         CascadesEntity rel = new CascadesEntity();
         ent.setNone(rel);
@@ -1043,7 +1069,8 @@ public class TestCascades extends AbstractTestCase {
         endEm(em);
     }
 
-	public void testCascadeNewPersisted ()
+    @Test
+    void cascadeNewPersisted()
 	{
 		CascadesEntity ent = new CascadesEntity ();
 		CascadesEntity rel1 = new CascadesEntity ();
@@ -1073,8 +1100,8 @@ public class TestCascades extends AbstractTestCase {
 		startTx(em);
 		ent = em.merge (ent);
 		assertTrue (em.isDirty (ent));
-		assertTrue (rel1 != ent.getAll ());
-		assertTrue (other1 != ent.getAll ());
+		assertNotSame (rel1, ent.getAll ());
+		assertNotSame (other1, ent.getAll ());
 		other1 = ent.getAll ();
 		assertEquals ("other1", other1.getName ());
 		assertTrue (em.isNewlyPersistent (other1));
@@ -1087,7 +1114,8 @@ public class TestCascades extends AbstractTestCase {
 	}
 
 
-	public void testCascadesDeleteNonPersistent ()
+    @Test
+    void cascadesDeleteNonPersistent()
 	{
 		CascadesEntity all = new CascadesEntity ();
 		CascadesEntity none = new CascadesEntity ();

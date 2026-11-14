@@ -33,20 +33,13 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.NoClassColumn;
+import org.junit.jupiter.api.Test;
 
 
-public class TestNoClassColumn
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestNoClassColumn extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-    /** Creates a new instance of TestNoClassColumn */
-    public TestNoClassColumn() {
-    }
-
-    public TestNoClassColumn(String test) {
-        super(test);
-    }
-
-    public void testQuery() {
+    @Test
+    void query() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("",NoClassColumn.class);
         //FIXME jthomas

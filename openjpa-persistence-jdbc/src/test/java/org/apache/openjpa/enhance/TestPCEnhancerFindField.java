@@ -18,16 +18,16 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.xbean.asm9.tree.ClassNode;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestPCEnhancerFindField
-    extends TestCase {
+public class TestPCEnhancerFindField {
 
     private String field;
 
@@ -38,7 +38,8 @@ public class TestPCEnhancerFindField
             return field;
     }
 
-    public void testPCEnhancerFindField() throws Exception {
+    @Test
+    void pCEnhancerFindField() throws Exception {
         ClassNode classNode = AsmHelper.readClassNode(this.getClass().getClassLoader(), TestPCEnhancerFindField.class.getName());
 
         Method meth = TestPCEnhancerFindField.class.getMethod("myMethod");

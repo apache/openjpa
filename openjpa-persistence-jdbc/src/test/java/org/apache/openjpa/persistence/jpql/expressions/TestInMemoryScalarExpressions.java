@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -46,6 +52,8 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestInMemoryScalarExpressions extends AbstractTestCase {
 
@@ -57,12 +65,12 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      */
     private String expectedShannonName = "Shannon ";
 
-    public TestInMemoryScalarExpressions(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestInMemoryScalarExpressions() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
@@ -108,7 +116,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * OPENJPA-2956: NULLS FIRST and NULLS LAST were ignored in memory, which
      * left two of the four combinations with the wrong order.
      */
-    public void testNullPrecedenceInMemory() {
+    @Test
+    void nullPrecedenceInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -133,7 +142,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * OPENJPA-2956: a set operation cannot be evaluated in memory, and must
      * say so rather than return a wrong result.
      */
-    public void testSetOperationInMemoryIsRejected() {
+    @Test
+    void setOperationInMemoryIsRejected() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -151,8 +161,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
                 sb.append(t.getMessage()).append(' ');
             }
             String msg = sb.toString();
-            assertTrue("must be rejected, not merely fail: " + msg,
-                msg.contains("cannot be evaluated in-memory"));
+            assertTrue(msg.contains("cannot be evaluated in-memory"),
+                "must be rejected, not merely fail: " + msg);
         } finally {
             endEm(em);
         }
@@ -162,7 +172,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * OPENJPA-3042: EXTRACT(WEEK) evaluated in memory returned the day of the
      * week instead of the ISO-8601 week of the year.
      */
-    public void testExtractWeekInMemory() {
+    @Test
+    void extractWeekInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -187,7 +198,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * OPENJPA-3042: every field of EXTRACT evaluated in memory, for each
      * temporal type a persistent attribute or a parameter can hold.
      */
-    public void testExtractFieldsInMemory() {
+    @Test
+    void extractFieldsInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -248,7 +260,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * OPENJPA-3042: EXTRACT(DATE) and EXTRACT(TIME) evaluated in memory, for
      * each temporal type a persistent attribute or a parameter can hold.
      */
-    public void testExtractDateAndTimeInMemory() {
+    @Test
+    void extractDateAndTimeInMemory() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e").getResultList();
 
@@ -290,7 +303,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
      * default locale, so the default locale is set to one whose weeks are
      * not the ISO-8601 ones.
      */
-    public void testExtractWeekInMemoryMatchesDatabase() {
+    @Test
+    void extractWeekInMemoryMatchesDatabase() {
         EntityManager em = currentEntityManager();
         DBDictionary dict = ((JDBCConfiguration) ((OpenJPAEntityManagerSPI) em)
             .getConfiguration()).getDBDictionaryInstance();
@@ -308,7 +322,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
             for (int i = 0; i < dates.length; i++) {
                 Object[] db = (Object[]) em.createQuery("SELECT EXTRACT(WEEK FROM {d '"
                     + dates[i] + "'}), e.userid FROM CompUser e").getResultList().get(0);
-                assertEquals("WEEK of " + dates[i], weeks[i], ((Number) db[0]).intValue());
+                assertEquals(weeks[i], ((Number) db[0]).intValue(), "WEEK of " + dates[i]);
                 assertExtract(em, rsall, "WEEK", LocalDate.parse(dates[i]), weeks[i]);
             }
         } finally {
@@ -324,8 +338,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
                 "SELECT EXTRACT(" + field + " FROM :d) FROM CompUser e");
         ((QueryImpl) q1.getDelegate()).setCandidateCollection(candidates);
         q1.setParameter("d", value);
-        assertEquals(field + " of " + value + " (" + value.getClass().getName() + ")",
-            expected, q1.getResultList().get(0));
+        assertEquals(expected,
+            q1.getResultList().get(0), field + " of " + value + " (" + value.getClass().getName() + ")");
     }
 
     private Object first(EntityManager em, List candidates, String jpql) {
@@ -335,7 +349,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         return q1.getResultList().get(0);
     }
 
-    public void testCoalesceExpressions() {
+    @Test
+    void coalesceExpressions() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -350,13 +365,14 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(0);
-        assertEquals("the name is not famzy", "Famzy", result[0]);
+        assertEquals("Famzy", result[0], "the name is not famzy");
         assertEquals("Unknown", result[1]);
 
         endEm(em);
     }
 
-    public void testNullIfExpressions() {
+    @Test
+    void nullIfExpressions() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -373,13 +389,14 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(2);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
-        assertNull("is not null", result[1]);
+        assertEquals(expectedShannonName, result[0], "the name is not shannon ");
+        assertNull(result[1], "is not null");
 
         endEm(em);
     }
 
-    public void testSimpleCaseExpression() {
+    @Test
+    void simpleCaseExpression() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -398,13 +415,14 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(5);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
-        assertEquals("is not 'us'", "us", result[1]);
+        assertEquals(expectedShannonName, result[0], "the name is not shannon ");
+        assertEquals("us", result[1], "is not 'us'");
 
         endEm(em);
     }
 
-    public void testGeneralCaseExpression() {
+    @Test
+    void generalCaseExpression() {
         EntityManager em = currentEntityManager();
         List rsall = em.createQuery("SELECT e from CompUser e")
             .getResultList();
@@ -424,8 +442,8 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(3);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
-        assertEquals("not 30", "30", result[1].toString());
+        assertEquals(expectedShannonName, result[0], "the name is not shannon ");
+        assertEquals("30", result[1].toString(), "not 30");
 
         endEm(em);
     }

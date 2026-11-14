@@ -27,16 +27,19 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMultiTableSelfCollection
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMultiTableSelfCollection extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private Object a1oid;
     private Object a2oid;
     private Object a3oid;
@@ -47,16 +50,8 @@ public class TestMultiTableSelfCollection
     private Object c3oid;
     private Object c4oid;
 
-    public TestMultiTableSelfCollection(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestMultiTableSelfCollection */
-    public TestMultiTableSelfCollection() {
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(MultiA.class);
 
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
@@ -116,7 +111,8 @@ public class TestMultiTableSelfCollection
         pm.close();
     }
 
-    public void testSelfCollections() {
+    @Test
+    void selfCollections() {
         OpenJPAEntityManager pm = (OpenJPAEntityManager)currentEntityManager();
 
         // check that all the sets are the right size, and equal where
@@ -160,41 +156,41 @@ public class TestMultiTableSelfCollection
 
         assertTrue(a1.getMultiCs().contains(c1));
         assertTrue(a1.getMultiCs().contains(c2));
-        assertTrue(!a1.getMultiCs().contains(c3));
-        assertTrue(!a1.getMultiCs().contains(c4));
+        assertFalse(a1.getMultiCs().contains(c3));
+        assertFalse(a1.getMultiCs().contains(c4));
 
         assertTrue(a2.getMultiCs().contains(c1));
         assertTrue(a2.getMultiCs().contains(c2));
-        assertTrue(!a2.getMultiCs().contains(c3));
-        assertTrue(!a2.getMultiCs().contains(c4));
+        assertFalse(a2.getMultiCs().contains(c3));
+        assertFalse(a2.getMultiCs().contains(c4));
 
-        assertTrue(!a3.getMultiCs().contains(c1));
-        assertTrue(!a3.getMultiCs().contains(c2));
+        assertFalse(a3.getMultiCs().contains(c1));
+        assertFalse(a3.getMultiCs().contains(c2));
         assertTrue(a3.getMultiCs().contains(c3));
         assertTrue(a3.getMultiCs().contains(c4));
 
-        assertTrue(!a4.getMultiCs().contains(c1));
-        assertTrue(!a4.getMultiCs().contains(c2));
+        assertFalse(a4.getMultiCs().contains(c1));
+        assertFalse(a4.getMultiCs().contains(c2));
         assertTrue(a4.getMultiCs().contains(c3));
         assertTrue(a4.getMultiCs().contains(c4));
 
         assertTrue(c1.getMultiAs().contains(a1));
         assertTrue(c1.getMultiAs().contains(a2));
-        assertTrue(!c1.getMultiAs().contains(a3));
-        assertTrue(!c1.getMultiAs().contains(a4));
+        assertFalse(c1.getMultiAs().contains(a3));
+        assertFalse(c1.getMultiAs().contains(a4));
 
         assertTrue(c2.getMultiAs().contains(a1));
         assertTrue(c2.getMultiAs().contains(a2));
-        assertTrue(!c2.getMultiAs().contains(a3));
-        assertTrue(!c2.getMultiAs().contains(a4));
+        assertFalse(c2.getMultiAs().contains(a3));
+        assertFalse(c2.getMultiAs().contains(a4));
 
-        assertTrue(!c3.getMultiAs().contains(a1));
-        assertTrue(!c3.getMultiAs().contains(a2));
+        assertFalse(c3.getMultiAs().contains(a1));
+        assertFalse(c3.getMultiAs().contains(a2));
         assertTrue(c3.getMultiAs().contains(a3));
         assertTrue(c3.getMultiAs().contains(a4));
 
-        assertTrue(!c4.getMultiAs().contains(a1));
-        assertTrue(!c4.getMultiAs().contains(a2));
+        assertFalse(c4.getMultiAs().contains(a1));
+        assertFalse(c4.getMultiAs().contains(a2));
         assertTrue(c4.getMultiAs().contains(a3));
         assertTrue(c4.getMultiAs().contains(a4));
 

@@ -16,8 +16,13 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -26,13 +31,13 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that a {@link MappingTool#ACTION_REFRESH} uses the right
  * types for new columns and takes any mapping in DBDictionary into account.
  */
-public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
+class TestMappingToolRefresh extends AbstractPersistenceTestCase {
 
     /**
      * First we create a schema mapping with boolean representation as CHAR(1).
@@ -41,17 +46,22 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
      * This should result in an empty diff.
      */
     @Test
-    public void testSchemaCreation() throws Exception {
+    void schemaCreation() throws Exception {
         Map<String, Object> emfProps = getPropertiesMap(EntityBoolChar.class,
                 "openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true, SchemaAction='add,deleteTableContents')",
                 "openjpa.jdbc.DBDictionary",
                 "(BitTypeName=CHAR(1),BooleanTypeName=CHAR(1),BooleanRepresentation=STRING_10)");
 
+        // stage 1 drops the table first: 'add' never changes the type of an existing column, so an
+        // EntityBoolChar table left by another test (e.g. TestJDBCSchemaManager) would keep its native
+        // BIT/BOOLEAN column and reject the STRING_10 value
+        Map<String, Object> createProps = new HashMap<>(emfProps);
+        createProps.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true, SchemaAction='drop,add')");
 
         {
             // stage 1. Create the DB and insert a line into it
-            OpenJPAEntityManagerFactorySPI openjpaEmf = createNamedOpenJPAEMF("test", null, emfProps);
+            OpenJPAEntityManagerFactorySPI openjpaEmf = createNamedOpenJPAEMF("test", null, createProps);
 
             OpenJPAEntityManagerSPI em = openjpaEmf.createEntityManager();
             assertNotNull(em);

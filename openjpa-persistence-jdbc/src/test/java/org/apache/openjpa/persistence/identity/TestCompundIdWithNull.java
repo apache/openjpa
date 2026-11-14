@@ -18,15 +18,24 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.sql.Connection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that compound identity can consists of null component column value.
@@ -44,18 +53,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-public class TestCompundIdWithNull extends SingleEMFTestCase {
+class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
 
     @Override
-    public void setUp() throws Exception {
+    protected boolean isSupported(DBDictionary dict) {
         // Only run on Derby because we use DDL specific to Derby
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+        return dict instanceof DerbyDictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         // do not use CLEAR_TABLES or DROP_TABLES
         super.setUp(SimpleCompoundIdTestEntity.class, ComplexCompoundIdTestEntity.class, TypeEntity.class);
         if (!tablesCreated) {
@@ -64,7 +72,8 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
         }
     }
 
-    public void testSimpleCompoundIdTestEntity() throws Exception  {
+    @Test
+    void simpleCompoundIdTestEntity() throws Exception  {
             EntityManager em = emf.createEntityManager();
             String jpql = "SELECT o FROM SimpleCompoundIdTestEntity o ORDER BY o.secondId";
             List<SimpleCompoundIdTestEntity> list = em.createQuery(jpql,SimpleCompoundIdTestEntity.class)
@@ -73,21 +82,22 @@ public class TestCompundIdWithNull extends SingleEMFTestCase {
             assertEquals(Long.valueOf(123), list.get(0).getSecondId());
 
             SimpleCompoundIdTestEntity secondResult = list.get(1);
-            assertNotNull("BUG (JIRA-1397)! Result list contains null in second element", secondResult);
+            assertNotNull(secondResult, "BUG (JIRA-1397)! Result list contains null in second element");
             assertNull(secondResult.getSecondId());
             em.close();
     }
 
 
-    public void testComplexCompoundIdTestEntity() throws Exception  {
+    @Test
+    void complexCompoundIdTestEntity() throws Exception  {
         EntityManager em = emf.createEntityManager();
         String jpql = "SELECT o FROM ComplexCompoundIdTestEntity o ORDER BY o.type";
         List<ComplexCompoundIdTestEntity> list = em.createQuery(jpql,ComplexCompoundIdTestEntity.class)
             .getResultList();
         assertEquals(2, list.size());
         ComplexCompoundIdTestEntity secondResult = list.get(1);
-        assertNotNull("Result list contains null in second element", secondResult);
-        assertNull("Result list's second record secondId field was not null", secondResult.getType());
+        assertNotNull(secondResult, "Result list contains null in second element");
+        assertNull(secondResult.getType(), "Result list's second record secondId field was not null");
         em.close();
     }
 

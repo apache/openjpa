@@ -18,12 +18,14 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -31,7 +33,7 @@ import static org.junit.Assert.*;
  *
  * @author Abe White
  */
-public class TestOptions {
+class TestOptions {
 
     private Options _opts = null;
 
@@ -40,8 +42,8 @@ public class TestOptions {
         "-range2", "10", "-fieldVal", "20", "-FieldVal2", "30",
         "-inner.nullInner.range1", "10,100", "arg1", "arg2", "arg3" };
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Properties defs = new Properties();
         defs.setProperty("default", "value");
         _opts = new Options(defs);
@@ -52,7 +54,7 @@ public class TestOptions {
      * Test command-line parsing.
      */
     @Test
-    public void testCmdLineParsing() {
+    void cmdLineParsing() {
         assertEquals(3, _args.length);
         assertEquals("arg1", _args[0]);
         assertEquals("arg2", _args[1]);
@@ -77,7 +79,7 @@ public class TestOptions {
      * Tests the setting of option values into bean objects.
      */
     @Test
-    public void testSetObject() {
+    void setObject() {
         Inner inner = new Inner();
         _opts.setInto(inner);
 

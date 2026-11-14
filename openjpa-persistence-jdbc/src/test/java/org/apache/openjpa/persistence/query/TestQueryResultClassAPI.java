@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,10 +31,12 @@ import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest2;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest4;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestQueryResultClassAPI extends SingleEMFTestCase {
+class TestQueryResultClassAPI extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(QueryTest1.class, QueryTest2.class, QueryTest4.class,
             "openjpa.jdbc.QuerySQLCache", "true",
@@ -55,14 +59,15 @@ public class TestQueryResultClassAPI extends SingleEMFTestCase {
     }
 
 
-    public void testQueryWithResultClass() {
+    @Test
+    void queryWithResultClass() {
         EntityManager em = emf.createEntityManager();
         String jpql = "SELECT o FROM QueryTest1 o";
 
         Query query = em.createQuery(jpql, QueryTest1.class);
 
         List rs = query.getResultList();
-        assertTrue(rs.get(0) instanceof QueryTest1);
+        assertInstanceOf(QueryTest1.class, rs.get(0));
         PreparedQuery pq = getPreparedQueryCache().get(jpql);
         assertNotNull(pq);
 
@@ -70,16 +75,16 @@ public class TestQueryResultClassAPI extends SingleEMFTestCase {
         PreparedQuery pq2 = getPreparedQueryCache().get(jpql);
         assertEquals(pq, pq2);
         rs = query2.getResultList();
-        assertTrue(rs.get(0) instanceof QueryTest1);
+        assertInstanceOf(QueryTest1.class, rs.get(0));
 
         jpql = "SELECT o.datum FROM QueryTest1 o";
         query = em.createQuery(jpql, java.util.Date.class);
         rs = query.getResultList();
-        assertTrue(rs.get(0) instanceof java.util.Date);
+        assertInstanceOf(java.util.Date.class, rs.get(0));
 
         query = em.createNamedQuery("named", QueryTest1.class);
         rs = query.getResultList();
-        assertTrue(rs.get(0) instanceof QueryTest1);
+        assertInstanceOf(QueryTest1.class, rs.get(0));
 
         em.close();
     }

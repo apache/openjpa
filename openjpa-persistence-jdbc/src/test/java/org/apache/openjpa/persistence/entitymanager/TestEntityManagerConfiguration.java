@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.entitymanager;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,14 +30,17 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEntityManagerConfiguration extends SingleEMFTestCase {
-    @Override
+class TestEntityManagerConfiguration extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class);
     }
 
-    public void testEMConfig001() {
+    @Test
+    void eMConfig001() {
         Map propMap = new HashMap();
         EntityManager em = emf.createEntityManager(propMap);
 
@@ -42,7 +48,8 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertTrue(eml.getQuerySQLCache());
     }
 
-    public void testEMConfig002() {
+    @Test
+    void eMConfig002() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "true(EnableStatistics=true)");
         EntityManager em = emf.createEntityManager(propMap);
@@ -51,7 +58,8 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertTrue(eml.getQuerySQLCache());
     }
 
-    public void testEMConfig003() {
+    @Test
+    void eMConfig003() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "false");
         EntityManager em = emf.createEntityManager(propMap);
@@ -60,7 +68,8 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertFalse(eml.getQuerySQLCache());
     }
 
-    public void testEMConfig004() {
+    @Test
+    void eMConfig004() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "false(EnableStatistics=true)");
         EntityManager em = emf.createEntityManager(propMap);
@@ -69,7 +78,8 @@ public class TestEntityManagerConfiguration extends SingleEMFTestCase {
         assertFalse(eml.getQuerySQLCache());
     }
 
-    public void testEMConfig005() {
+    @Test
+    void eMConfig005() {
         Map propMap = new HashMap();
         propMap.put("openjpa.jdbc.QuerySQLCache", "notabool");
         EntityManager em = emf.createEntityManager(propMap);

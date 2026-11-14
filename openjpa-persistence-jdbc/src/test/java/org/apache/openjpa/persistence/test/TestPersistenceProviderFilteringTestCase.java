@@ -22,49 +22,58 @@ import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.ProviderUtil;
+
 import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Map;
 
 /*
- * This tests that OpenJPA should not be doing anything if another provider is specified.
- */
-public class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCase {
+* This tests that OpenJPA should not be doing anything if another provider is specified.
+*/
+class TestPersistenceProviderFilteringTestCase extends SQLListenerTestCase {
 
     private final String persistenceUnitName = "test";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, EntityA.class, EntityB.class, EntityC.class);
 
     }
 
-    public void testGenerateSchemaNoProvider() {
+    @Test
+    void generateSchemaNoProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
-    public void testGenerateSchemaOpenJPAProvider() {
+    @Test
+    void generateSchemaOpenJPAProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", PersistenceProviderImpl.class.getName());
         assertTrue(ppi.generateSchema(persistenceUnitName, map));
     }
 
-    public void testGenerateSchemaEclipseProvider() {
+    @Test
+    void generateSchemaEclipseProvider() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", "org.eclipse.persistence.jpa.PersistenceProvider");
         assertFalse(ppi.generateSchema(persistenceUnitName, map));
     }
 
-    public void testGenerateSchemaFakeProviderClass() {
+    @Test
+    void generateSchemaFakeProviderClass() {
         final PersistenceProviderImpl ppi = new PersistenceProviderImpl();
         final Map<Object, Object> map = new HashMap<>();
         map.put("jakarta.persistence.provider", FakeProvider.class);

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.openjpa2018;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -29,20 +31,23 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test verifies that select IN statements with
  * arrays and Collections are fine.
  */
-public class OpenJPA2018Test extends SingleEMTestCase
+class OpenJPA2018Test extends SingleEMTestCase
 {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(User2018.class, CLEAR_TABLES);
     }
 
-    public void testInCriteriaWithArray() {
+    @Test
+    void inCriteriaWithArray() {
         em.getTransaction().begin();
         try {
             User2018 user = new User2018();
@@ -61,13 +66,14 @@ public class OpenJPA2018Test extends SingleEMTestCase
             }
 
             List<User2018> result = query.getResultList();
-            assertTrue(!result.isEmpty());
+            assertFalse(result.isEmpty());
         } finally {
             em.getTransaction().commit();
         }
     }
 
-    public void testInJpqlWithArray() {
+    @Test
+    void inJpqlWithArray() {
         em.getTransaction().begin();
         try {
             User2018 user = new User2018();
@@ -79,13 +85,14 @@ public class OpenJPA2018Test extends SingleEMTestCase
             query.setParameter("userIds", new Long[] { user.id, 123456789L });
 
             List<User2018> result = query.getResultList();
-            assertTrue(!result.isEmpty());
+            assertFalse(result.isEmpty());
         } finally {
             em.getTransaction().commit();
         }
     }
 
-    public void testInCriteriaWithCollection() {
+    @Test
+    void inCriteriaWithCollection() {
         em.getTransaction().begin();
         try {
             User2018 user = new User2018();
@@ -104,13 +111,14 @@ public class OpenJPA2018Test extends SingleEMTestCase
             }
 
             List<User2018> result = query.getResultList();
-            assertTrue(!result.isEmpty());
+            assertFalse(result.isEmpty());
         } finally {
             em.getTransaction().commit();
         }
     }
 
-    public void testInJpqlWithCollection() {
+    @Test
+    void inJpqlWithCollection() {
         em.getTransaction().begin();
         try {
             User2018 user = new User2018();
@@ -122,14 +130,15 @@ public class OpenJPA2018Test extends SingleEMTestCase
             query.setParameter("userIds", Arrays.asList(user.id, 123456789L));
 
             List<User2018> result = query.getResultList();
-            assertTrue(!result.isEmpty());
+            assertFalse(result.isEmpty());
         } finally {
             em.getTransaction().commit();
         }
     }
 
 
-    public void testId() {
+    @Test
+    void id() {
         em.getTransaction().begin();
         try {
             User2018 user = new User2018();
@@ -148,7 +157,7 @@ public class OpenJPA2018Test extends SingleEMTestCase
             }
 
             List<User2018> result = query.getResultList();
-            assertTrue(!result.isEmpty());
+            assertFalse(result.isEmpty());
         } finally {
             em.getTransaction().commit();
         }

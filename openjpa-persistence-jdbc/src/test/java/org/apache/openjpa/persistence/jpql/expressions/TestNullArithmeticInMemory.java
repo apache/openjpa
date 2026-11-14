@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +31,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Arithmetic with a null operand evaluated in memory yields null, as it does
@@ -34,13 +40,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-3050">OPENJPA-3050</A>
  */
-public class TestNullArithmeticInMemory extends SingleEMFTestCase {
+class TestNullArithmeticInMemory extends SingleEMFTestCase {
 
     private static final String ARITHMETIC = "SELECT -n.intB, 0 - n.intB, n.intA + n.intB, "
         + "n.intA * n.intB, n.intA / n.intB, MOD(n.intA, n.intB), n.longA - n.intB, "
         + "-n.decA, n.decA + 1, n.doubleA * n.decA FROM SignedOperands n WHERE n.id = 1";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, SignedOperands.class);
         try (EntityManager em = emf.createEntityManager()) {
@@ -51,21 +57,24 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
         }
     }
 
-    public void testArithmeticWithNullOperandInDatabase() {
+    @Test
+    void arithmeticWithNullOperandInDatabase() {
         try (EntityManager em = emf.createEntityManager()) {
             Object[] row = (Object[]) em.createQuery(ARITHMETIC).getSingleResult();
             assertAllNull(row);
         }
     }
 
-    public void testArithmeticWithNullOperandInMemory() {
+    @Test
+    void arithmeticWithNullOperandInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             Object[] row = (Object[]) inMemory(em, ARITHMETIC).get(0);
             assertAllNull(row);
         }
     }
 
-    public void testNumericFunctionsWithNullOperandInMemory() {
+    @Test
+    void numericFunctionsWithNullOperandInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             Object[] row = (Object[]) inMemory(em, "SELECT ABS(n.intB), SQRT(n.intB), "
                 + "SIGN(n.intB), CEILING(n.decA), FLOOR(n.decA), EXP(n.decA), LN(n.decA), "
@@ -75,7 +84,8 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
         }
     }
 
-    public void testNullResultInsideCoalesceInMemory() {
+    @Test
+    void nullResultInsideCoalesceInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             // a function nested in another expression must return null itself,
             // at the top level a failure on null is turned into null anyway
@@ -86,13 +96,14 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
                 + "COALESCE(LN(n.decA), 13) FROM SignedOperands n WHERE n.id = 1").get(0);
             for (int i = 0; i < row.length; i++) {
                 String column = "column " + i + " of " + Arrays.toString(row);
-                assertNotNull(column, row[i]);
-                assertEquals(column, i + 5, ((Number) row[i]).intValue());
+                assertNotNull(row[i], column);
+                assertEquals(i + 5, ((Number) row[i]).intValue(), column);
             }
         }
     }
 
-    public void testNullOperandDoesNotMatchInMemory() {
+    @Test
+    void nullOperandDoesNotMatchInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             // with the null operand taken as zero, the row with intB = null
             // matched just like the row with intB = 0
@@ -107,7 +118,8 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
         }
     }
 
-    public void testAggregatesSkipNullInMemory() {
+    @Test
+    void aggregatesSkipNullInMemory() {
         try (EntityManager em = emf.createEntityManager()) {
             Object[] row = (Object[]) inMemory(em, "SELECT SUM(n.intB), AVG(n.decA), "
                 + "SUM(n.intA) FROM SignedOperands n").get(0);
@@ -121,7 +133,8 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
      * An update over a candidate collection evaluates the new values with the
      * in-memory expressions.
      */
-    public void testBulkUpdateOverCandidatesKeepsNull() {
+    @Test
+    void bulkUpdateOverCandidatesKeepsNull() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             List<?> candidates = em.createQuery("SELECT n FROM SignedOperands n").getResultList();
@@ -138,7 +151,8 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
      * A bulk update the database dictionary cannot express is executed in
      * memory by the JDBC store query.
      */
-    public void testBulkUpdateInMemoryByStoreKeepsNull() {
+    @Test
+    void bulkUpdateInMemoryByStoreKeepsNull() {
         DBDictionary dict = getDBDictionary();
         boolean supportsSubselect = dict.supportsSubselect;
         dict.supportsSubselect = false;
@@ -177,7 +191,7 @@ public class TestNullArithmeticInMemory extends SingleEMFTestCase {
 
     private static void assertAllNull(Object[] row) {
         for (int i = 0; i < row.length; i++) {
-            assertNull("column " + i + " of " + Arrays.toString(row), row[i]);
+            assertNull(row[i], "column " + i + " of " + Arrays.toString(row));
         }
     }
 

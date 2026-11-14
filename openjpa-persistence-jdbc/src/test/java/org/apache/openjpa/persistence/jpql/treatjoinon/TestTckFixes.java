@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +31,8 @@ import jakarta.persistence.FlushModeType;
 import jakarta.persistence.PersistenceUnitUtil;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for 5 scattered TCK test fixes:
@@ -35,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * 4. @SequenceGenerators container annotation parsing
  * 5. UUID type support (cannot test on Derby, PostgreSQL-specific)
  */
-public class TestTckFixes extends SingleEMFTestCase {
+class TestTckFixes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TProduct.class, TSoftwareProduct.class,
             TLineItem.class, TOrder.class,
@@ -107,7 +114,8 @@ public class TestTckFixes extends SingleEMFTestCase {
      * return software products, not hardware products.
      * Corresponds to TCK treatJoinClassTest.
      */
-    public void testTreatJoinDiscriminator() {
+    @Test
+    void treatJoinDiscriminator() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -121,8 +129,8 @@ public class TestTckFixes extends SingleEMFTestCase {
         assertEquals(2, results.size());
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software B"));
-        assertFalse("Hardware should be excluded by TREAT",
-            results.contains("Hardware X"));
+        assertFalse(results.contains("Hardware X"),
+            "Hardware should be excluded by TREAT");
 
         em.getTransaction().commit();
         em.close();
@@ -134,7 +142,8 @@ public class TestTckFixes extends SingleEMFTestCase {
      * related entities, FlushMode.AUTO should flush before the query.
      * Corresponds to TCK flushModeTest5.
      */
-    public void testFlushModeAutoNavigatedQuery() {
+    @Test
+    void flushModeAutoNavigatedQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -153,8 +162,8 @@ public class TestTckFixes extends SingleEMFTestCase {
 
         // FlushMode.AUTO should flush the pending change, making
         // the modified value visible to the query
-        assertEquals("FlushMode.AUTO should flush before navigated query",
-            1, results.size());
+        assertEquals(1,
+            results.size(), "FlushMode.AUTO should flush before navigated query");
         assertEquals("John", results.get(0).getName());
 
         em.getTransaction().rollback();
@@ -167,7 +176,8 @@ public class TestTckFixes extends SingleEMFTestCase {
      * new (not yet persisted) entities with a manually-set id.
      * Corresponds to TCK getIdentifierTest.
      */
-    public void testGetIdentifierUnmanagedEntity() {
+    @Test
+    void getIdentifierUnmanagedEntity() {
         // Create a new entity with a manually-set id (not persisted)
         TProduct product = new TProduct();
         // TProduct uses @GeneratedValue, but we can test with a persisted one
@@ -183,7 +193,7 @@ public class TestTckFixes extends SingleEMFTestCase {
 
         // After persist+flush, getIdentifier should return the generated id
         Object id = puu.getIdentifier(p);
-        assertNotNull("getIdentifier should return non-null for persisted entity", id);
+        assertNotNull(id, "getIdentifier should return non-null for persisted entity");
 
         em.getTransaction().rollback();
         em.close();
@@ -193,7 +203,8 @@ public class TestTckFixes extends SingleEMFTestCase {
      * Test PersistenceUnitUtil.getIdentifier for a detached entity.
      * After detaching, getIdentifier should still return the id.
      */
-    public void testGetIdentifierDetachedEntity() {
+    @Test
+    void getIdentifierDetachedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -210,7 +221,7 @@ public class TestTckFixes extends SingleEMFTestCase {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         Object id = puu.getIdentifier(p);
         // For detached entities, the id should still be available
-        assertNotNull("getIdentifier should return non-null for detached entity", id);
+        assertNotNull(id, "getIdentifier should return non-null for detached entity");
 
         em.close();
     }

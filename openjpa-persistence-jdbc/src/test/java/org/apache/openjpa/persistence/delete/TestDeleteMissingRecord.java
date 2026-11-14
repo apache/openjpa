@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.delete;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.OptimisticLockException;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Deleting an entity whose database row has already been removed (e.g. by a
@@ -38,7 +42,7 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  * row (BatchingPreparedStatementManagerImpl.flushSingleRow) and a batch of
  * several rows (BatchingPreparedStatementManagerImpl.checkUpdateCount).
  */
-public class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
+class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
 
     private EntityManagerFactory newEmf(int batchLimit) {
         return createEMF(
@@ -48,27 +52,33 @@ public class TestDeleteMissingRecord extends AbstractPersistenceTestCase {
             CLEAR_TABLES);
     }
 
-    public void testUnversionedDeleteMissingRecordUnbatched() {
+    @Test
+    void unversionedDeleteMissingRecordUnbatched() {
         assertUnversionedDeleteTolerated(0, 1);
     }
 
-    public void testVersionedDeleteMissingRecordUnbatched() {
+    @Test
+    void versionedDeleteMissingRecordUnbatched() {
         assertVersionedDeleteThrows(0, 1);
     }
 
-    public void testUnversionedDeleteMissingRecordSingleRowBatch() {
+    @Test
+    void unversionedDeleteMissingRecordSingleRowBatch() {
         assertUnversionedDeleteTolerated(100, 1);
     }
 
-    public void testVersionedDeleteMissingRecordSingleRowBatch() {
+    @Test
+    void versionedDeleteMissingRecordSingleRowBatch() {
         assertVersionedDeleteThrows(100, 1);
     }
 
-    public void testUnversionedDeleteMissingRecordMultiRowBatch() {
+    @Test
+    void unversionedDeleteMissingRecordMultiRowBatch() {
         assertUnversionedDeleteTolerated(100, 2);
     }
 
-    public void testVersionedDeleteMissingRecordMultiRowBatch() {
+    @Test
+    void versionedDeleteMissingRecordMultiRowBatch() {
         assertVersionedDeleteThrows(100, 2);
     }
 

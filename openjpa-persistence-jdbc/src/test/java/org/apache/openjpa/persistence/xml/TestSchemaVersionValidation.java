@@ -18,18 +18,20 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.util.GeneralException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TestSchemaVersionValidation {
+class TestSchemaVersionValidation {
     /**
      * Verify a pu can be created with a version 2.0 persistence.xml
      */
     @Test
-    public void test2_0PersistenceXml() {
+    void test2_0PersistenceXml() {
         doCreateEmf("XSDTest", "persistence-2_0.xml", false);
     }
 
@@ -42,9 +44,10 @@ public class TestSchemaVersionValidation {
     // JREs fail differently for this test. Detection and
     // assertion of a JRE specific failure has shown to be error prone
     // so only a generic exception is detected.
-    @Test(expected = Exception.class)
-    public void testBad2_0PersistenceXml() {
-        doCreateEmf(null, "persistence-2_0-no-pu.xml", false);
+    @Test
+    void bad20PersistenceXml() {
+        assertThrows(Exception.class, () ->
+            doCreateEmf(null, "persistence-2_0-no-pu.xml", false));
     }
 
     /**
@@ -52,7 +55,7 @@ public class TestSchemaVersionValidation {
      * can parse a version 1.0 orm.xml
      */
     @Test
-    public void test2_0Persistence1_0OrmXml() {
+    void test2_0Persistence1_0OrmXml() {
         doCreateEmf("XSDTest", "persistence-2_0-orm-1_0.xml");
     }
 
@@ -61,7 +64,7 @@ public class TestSchemaVersionValidation {
      * parse a version 2.0 orm.xml
      */
     @Test
-    public void test2_0Persistence2_0OrmXml() {
+    void test2_0Persistence2_0OrmXml() {
         doCreateEmf("XSDTest", "persistence-2_0-orm-2_0.xml");
     }
 
@@ -69,16 +72,17 @@ public class TestSchemaVersionValidation {
      * Verify a 1.0 persistence.xml can include a 2.0 orm.xml
      */
     @Test
-    public void test1_0Persistence2_0OrmXml() {
+    void test1_0Persistence2_0OrmXml() {
         doCreateEmf("XSDTest", "persistence-2_0-orm-1_0.xml");
     }
 
     /**
      * Verify a version 66.6 persistence.xml with bad URL cannot be loaded
      */
-    @Test(expected = GeneralException.class)
-    public void testOffline66_6Persistence2_2OrmXml() {
-        doCreateEmf("XSDTest", "offline_persistence-66_6-orm-2_2.xml");
+    @Test
+    void offline666Persistence22OrmXml() {
+        assertThrows(GeneralException.class, () ->
+            doCreateEmf("XSDTest", "offline_persistence-66_6-orm-2_2.xml"));
     }
 
     /**
@@ -86,12 +90,12 @@ public class TestSchemaVersionValidation {
      * parse a version 2.2 orm.xml with bad URL 
      */
     @Test
-    public void testOffline2_1Persistence2_2OrmXml() {
+    void offline21Persistence22OrmXml() {
         doCreateEmf("XSDTest", "offline_persistence-2_1-orm-2_2.xml");
     }
 
     @Test
-    public void testOffline3_0Persistence3_0OrmXml() {
+    void offline30Persistence30OrmXml() {
         doCreateEmf("XSDTest", "offline_persistence-3_0-orm-3_0.xml");
     }
 

@@ -18,17 +18,22 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestManualDelimIdResultSetAnnotations
-        extends SQLListenerTestCase {
+class TestManualDelimIdResultSetAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Animal animal;
@@ -39,14 +44,15 @@ public class TestManualDelimIdResultSetAnnotations
     Cat2 cat2;
 
     @Override
-    public void setUp() throws Exception {
+    protected boolean isSupported(DBDictionary dict) {
         // NOTE: This test is only configured to run on DB2 and Derby since
         // those DBs handle non-default schemas without additional authority or
         // configuration
-        setSupportedDatabases(DB2Dictionary.class, DerbyDictionary.class);
-        if (isTestsDisabled())
-            return;
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Animal.class,
             org.apache.openjpa.persistence.delimited.identifiers.Dog.class,
@@ -61,7 +67,7 @@ public class TestManualDelimIdResultSetAnnotations
         assertNotNull(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -84,7 +90,8 @@ public class TestManualDelimIdResultSetAnnotations
         dog.setAge(9);
     }
 
-    public void testCreate() {
+    @Test
+    void create() {
         id++;
         createDog(id);
         id++;
@@ -114,8 +121,8 @@ public class TestManualDelimIdResultSetAnnotations
 
         for (Object[] result : results) {
             assertEquals(2, result.length);
-            assertTrue(result[0] instanceof Animal2);
-            assertTrue(result[1] instanceof Integer);
+            assertInstanceOf(Animal2.class, result[0]);
+            assertInstanceOf(Integer.class, result[1]);
             Animal2 animal2 = (Animal2)result[0];
             Integer age = (Integer)result[1];
             if (animal2.getName().equals("Spot")) {

@@ -18,10 +18,18 @@
  */
 package org.apache.openjpa.persistence.convert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests mirroring the 6 failing TCK tests related to @Convert support:
@@ -34,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * All entities are UNENHANCED to mirror how TCK runs (runtime enhancement).
  */
-public class TestConvertTck extends SingleEMFTestCase {
+class TestConvertTck extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             ConvertFullTimeEmp.class,
@@ -61,7 +69,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * converts char[] lastName.
      * Mirrors TCK mappedSuperClassTest.
      */
-    public void testMappedSuperClass() {
+    @Test
+    void mappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         char[] ln = {'D', 'o', 'e'};
@@ -76,7 +85,7 @@ public class TestConvertTck extends SingleEMFTestCase {
         em.getTransaction().begin();
         ConvertFullTimeEmp emp =
             em.find(ConvertFullTimeEmp.class, expected.getId());
-        assertNotNull("Employee should be found", emp);
+        assertNotNull(emp, "Employee should be found");
         // SalaryConverter: toDB removes "#" => 35000.0 stored as float
         // toEntity converts back to string => "35000.0"
         assertEquals("35000.0", emp.getSalary());
@@ -94,7 +103,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * via class-level @Converts.
      * Mirrors TCK mappedSuperClass2Test.
      */
-    public void testMappedSuperClassOverride() {
+    @Test
+    void mappedSuperClassOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         ConvertFullTimeEmp2 expected =
@@ -108,7 +118,7 @@ public class TestConvertTck extends SingleEMFTestCase {
         em.getTransaction().begin();
         ConvertFullTimeEmp2 emp =
             em.find(ConvertFullTimeEmp2.class, expected.getId());
-        assertNotNull("Employee should be found", emp);
+        assertNotNull(emp, "Employee should be found");
         // DotConverter2: toDB replaces "." with "-" => "J-o-h-n"
         // toEntity replaces "-" with "#" => "J#o#h#n"
         assertEquals("J#o#h#n", emp.getFirstName());
@@ -122,7 +132,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * NumberToStateConverter on state: 1 -> "MA" (toDB), "MA" -> 1 (toEntity)
      * Mirrors TCK convertsTest.
      */
-    public void testConvertsOnEmbedded() {
+    @Test
+    void convertsOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String street = "500.Oracle.Parkway";
@@ -139,14 +150,14 @@ public class TestConvertTck extends SingleEMFTestCase {
         em.getTransaction().begin();
         ConvertEmbedEntity b1 =
             em.find(ConvertEmbedEntity.class, "1");
-        assertNotNull("Entity should be found", b1);
+        assertNotNull(b1, "Entity should be found");
         // value has no converter => stays 1000
         // TCK expects 1110 due to IntegerConverter auto-apply
         // but our test has no IntegerConverter so we just check 1000
         assertEquals(Integer.valueOf(1000), b1.getValue());
 
         ConvertAddress a = b1.getAddress();
-        assertNotNull("Address should not be null", a);
+        assertNotNull(a, "Address should not be null");
         // DotConverter: "500.Oracle.Parkway" -> "500#Oracle#Parkway" (toDB)
         //  -> "500_Oracle_Parkway" (toEntity)
         assertEquals("500_Oracle_Parkway", a.getStreet());
@@ -161,7 +172,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * in PersistenceException.
      * Mirrors TCK convertExceptionDuringPersistTest.
      */
-    public void testConverterExceptionDuringPersist() {
+    @Test
+    void converterExceptionDuringPersist() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -178,8 +190,8 @@ public class TestConvertTck extends SingleEMFTestCase {
             // Expected: converter RuntimeException wrapped in
             // PersistenceException, naming the field and the converter
             assertConverterErrorMessage(pe);
-            assertTrue("Transaction should be marked for rollback",
-                em.getTransaction().getRollbackOnly());
+            assertTrue(em.getTransaction().getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -193,7 +205,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * in PersistenceException.
      * Mirrors TCK convertExceptionDuringLoadTest.
      */
-    public void testConverterExceptionDuringLoad() {
+    @Test
+    void converterExceptionDuringLoad() {
         EntityManager em = emf.createEntityManager();
         // First persist with state=-2. NumberToStateConverter.toDB
         // stores "-2" as-is (state=-2, not -1 and not -2 string check)
@@ -218,8 +231,8 @@ public class TestConvertTck extends SingleEMFTestCase {
             // Expected: converter RuntimeException wrapped in
             // PersistenceException, naming the field and the converter
             assertConverterErrorMessage(pe);
-            assertTrue("Transaction should be marked for rollback",
-                em.getTransaction().getRollbackOnly());
+            assertTrue(em.getTransaction().getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -233,7 +246,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * on embedded field.
      * Mirrors TCK jpa22/repeatable/convert/Client#convertsTest.
      */
-    public void testRepeatableConvertOnEmbedded() {
+    @Test
+    void repeatableConvertOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String street = "500.Oracle.Parkway";
@@ -250,11 +264,11 @@ public class TestConvertTck extends SingleEMFTestCase {
         em.getTransaction().begin();
         ConvertRepeatableEntity b1 =
             em.find(ConvertRepeatableEntity.class, "1");
-        assertNotNull("Entity should be found", b1);
+        assertNotNull(b1, "Entity should be found");
         assertEquals(Integer.valueOf(1000), b1.getValue());
 
         ConvertAddress a = b1.getAddress();
-        assertNotNull("Address should not be null", a);
+        assertNotNull(a, "Address should not be null");
         // Same converters as testConvertsOnEmbedded
         assertEquals("500_Oracle_Parkway", a.getStreet());
         assertEquals(1, a.getState());
@@ -266,7 +280,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * A null value of an auto-applied converter on an array attribute is
      * passed to the converter and back, so the attribute reads back as null.
      */
-    public void testNullConvertedArrayAttribute() {
+    @Test
+    void nullConvertedArrayAttribute() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertFullTimeEmp(900, "Jane", null, "1000.00"));
@@ -275,8 +290,8 @@ public class TestConvertTck extends SingleEMFTestCase {
         emf.getCache().evictAll();
 
         ConvertFullTimeEmp emp = em.find(ConvertFullTimeEmp.class, 900);
-        assertNotNull("Employee should be found", emp);
-        assertNull("lastName should read back as null", emp.getLastName());
+        assertNotNull(emp, "Employee should be found");
+        assertNull(emp.getLastName(), "lastName should read back as null");
         assertEquals("1000.0", emp.getSalary());
         em.close();
     }
@@ -285,7 +300,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * A null attribute of an embeddable is converted like any other, so a
      * null-safe converter round-trips it as null.
      */
-    public void testNullConvertedAttributeOnEmbedded() {
+    @Test
+    void nullConvertedAttributeOnEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertEmbedEntity("null-attr", "name1", 1000,
@@ -295,10 +311,10 @@ public class TestConvertTck extends SingleEMFTestCase {
         emf.getCache().evictAll();
 
         ConvertEmbedEntity e = em.find(ConvertEmbedEntity.class, "null-attr");
-        assertNotNull("Entity should be found", e);
+        assertNotNull(e, "Entity should be found");
         ConvertAddress a = e.getAddress();
-        assertNotNull("Address should not be null", a);
-        assertNull("street should read back as null", a.getStreet());
+        assertNotNull(a, "Address should not be null");
+        assertNull(a.getStreet(), "street should read back as null");
         assertEquals("Redwood Shores", a.getCity());
         assertEquals(1, a.getState());
         em.close();
@@ -309,7 +325,8 @@ public class TestConvertTck extends SingleEMFTestCase {
      * all-null columns, so its converted attributes are loaded from a null
      * column value.
      */
-    public void testNullEmbedded() {
+    @Test
+    void nullEmbedded() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new ConvertEmbedEntity("null-embed", "name1", 1000));
@@ -318,11 +335,11 @@ public class TestConvertTck extends SingleEMFTestCase {
         emf.getCache().evictAll();
 
         ConvertEmbedEntity e = em.find(ConvertEmbedEntity.class, "null-embed");
-        assertNotNull("Entity should be found", e);
+        assertNotNull(e, "Entity should be found");
         ConvertAddress a = e.getAddress();
-        assertNotNull("Address is materialized from the null columns", a);
-        assertNull("street should read back as null", a.getStreet());
-        assertNull("city should read back as null", a.getCity());
+        assertNotNull(a, "Address is materialized from the null columns");
+        assertNull(a.getStreet(), "street should read back as null");
+        assertNull(a.getCity(), "city should read back as null");
         assertEquals(0, a.getState());
         em.close();
     }
@@ -336,7 +353,7 @@ public class TestConvertTck extends SingleEMFTestCase {
         for (Throwable t = pe; t != null; t = t.getCause()) {
             msgs.append(t.getMessage()).append('\n');
         }
-        assertTrue("A converter failure should name the failing field, was: "
-            + msgs, msgs.indexOf("ConvertAddress.state") >= 0);
+        assertTrue(msgs.indexOf("ConvertAddress.state") >= 0, "A converter failure should name the failing field, was: "
+            + msgs);
     }
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -25,30 +27,29 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.StoredProcedureQuery;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Stored procedures on Oracle, written like the Jakarta Persistence TCK procedures.
  */
-public class TestOracleStoredProcedure extends SingleEMFTestCase {
+class TestOracleStoredProcedure extends SingleEMFTestCase {
 
     private static final String PROC = "OPENJPA_REFCURSOR_PROC";
     private static final String NUMBER_PROC = "OPENJPA_NUMBER_OUT_PROC";
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(OracleDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
-        super.setUp();
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof OracleDictionary;
     }
 
     /**
      * A procedure returning its result in a SYS_REFCURSOR OUT parameter.
      */
-    public void testRefCursorOutParameter() {
+    @Test
+    void refCursorOutParameter() {
         EntityManager em = emf.createEntityManager();
         boolean created = false;
         try {
@@ -76,7 +77,8 @@ public class TestOracleStoredProcedure extends SingleEMFTestCase {
      * Oracle reports an INTEGER OUT parameter, which is a NUMBER, as a BigDecimal. It is returned in the
      * registered type if the conversion is exact, and unchanged otherwise.
      */
-    public void testNumberOutParameterHasRegisteredType() {
+    @Test
+    void numberOutParameterHasRegisteredType() {
         EntityManager em = emf.createEntityManager();
         boolean created = false;
         try {

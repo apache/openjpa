@@ -18,23 +18,30 @@
  */
 package org.apache.openjpa.persistence.embed.record;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests record embeddables with non-String component types (long, double)
  * and custom @Column names.
  */
-public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
+class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LocationEntity.class, CoordinateRecord.class,
                 CLEAR_TABLES);
     }
 
-    public void testPersistAndLoadWithLongAndDouble() {
+    @Test
+    void persistAndLoadWithLongAndDouble() {
         final CoordinateRecord coord =
                 new CoordinateRecord(39.7817, -89.6501, 200L);
         final LocationEntity loc = new LocationEntity("Springfield", coord);
@@ -58,7 +65,8 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
         em2.close();
     }
 
-    public void testUpdateCoordinate() {
+    @Test
+    void updateCoordinate() {
         final LocationEntity loc = new LocationEntity("MountainBase",
                 new CoordinateRecord(46.8523, 9.5308, 1500L));
 
@@ -90,7 +98,8 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
         em3.close();
     }
 
-    public void testDeleteLocation() {
+    @Test
+    void deleteLocation() {
         final LocationEntity loc = new LocationEntity("ToDelete",
                 new CoordinateRecord(0.0, 0.0, 0L));
 
@@ -115,7 +124,8 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
         em3.close();
     }
 
-    public void testNullCoordinate() {
+    @Test
+    void nullCoordinate() {
         final LocationEntity loc = new LocationEntity("NoCoord", null);
 
         final EntityManager em = emf.createEntityManager();
@@ -134,7 +144,8 @@ public class TestRecordEmbeddableWithTypes extends SingleEMFTestCase {
         em2.close();
     }
 
-    public void testRecordEqualityAfterLoad() {
+    @Test
+    void recordEqualityAfterLoad() {
         final CoordinateRecord original =
                 new CoordinateRecord(51.5074, -0.1278, 11L);
         final LocationEntity loc = new LocationEntity("London", original);

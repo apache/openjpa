@@ -18,13 +18,20 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.kernel.common.apps.ComplexEmbeddedPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBEmbedded extends BaseKernelTest {
+class TestEJBEmbedded extends BaseKernelTest {
 
     private Object _oid1 = null;
     private Object _oid2 = null;
@@ -32,13 +39,9 @@ public class TestEJBEmbedded extends BaseKernelTest {
     EmbeddedOwnerPC.EmbKey id1;
     EmbeddedOwnerPC.EmbKey id2;
 
-    public TestEJBEmbedded(String name) {
-        super(name);
-    }
-
-    @Override
+    @BeforeEach
     @SuppressWarnings("unchecked")
-    public void setUp() {
+    void setUp() {
         deleteAll(EmbeddedOwnerPC.class);
         deleteAll(EmbeddedPC.class);
 
@@ -72,14 +75,15 @@ public class TestEJBEmbedded extends BaseKernelTest {
         endEm(em);
     }
 
-    public void testInsert() {
+    @Test
+    void insert() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
         EmbeddedOwnerPC pc = pm.find(EmbeddedOwnerPC.class, id1);
         EmbeddedOwnerPC pc2 = pm.find(EmbeddedOwnerPC.class, id2);
-        assertNotNull("pc is null in testInsert", pc);
-        assertNotNull("p2 is null in testInsert", pc2);
+        assertNotNull(pc, "pc is null in testInsert");
+        assertNotNull(pc2, "p2 is null in testInsert");
 
         assertEquals("string1", pc.getStringField());
         assertNotNull(pc.getEmbedded());
@@ -90,13 +94,14 @@ public class TestEJBEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDelete() {
+    @Test
+    void delete() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         EmbeddedOwnerPC pc =
             (EmbeddedOwnerPC) pm.find(EmbeddedOwnerPC.class, id1);
 
-        assertNotNull("pc is null in testDelete", pc);
+        assertNotNull(pc, "pc is null in testDelete");
 
         EmbeddedPC embed = pc.getEmbedded();
 
@@ -110,20 +115,21 @@ public class TestEJBEmbedded extends BaseKernelTest {
         startTx(pm);
         pc = (EmbeddedOwnerPC) pm.find(EmbeddedOwnerPC.class, id1);
 
-        assertEquals("the expt strng is not string1", "string1",
-            pc.getStringField());
-        assertNull("pc's embedded is null", pc.getEmbedded());
+        assertEquals("string1", pc.getStringField(),
+            "the expt strng is not string1");
+        assertNull(pc.getEmbedded(), "pc's embedded is null");
         endTx(pm);
         endEm(pm);
     }
 
-    public void testUpdateRetain() {
+    @Test
+    void updateRetain() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
         EmbeddedOwnerPC pc =
             (EmbeddedOwnerPC) pm.find(EmbeddedOwnerPC.class, id1);
 
-        assertNotNull("pc is null testUpdateRetain", pc);
+        assertNotNull(pc, "pc is null testUpdateRetain");
 
         pc.setStringField("string2");
         pc.getEmbedded().setStringField("embedString2");
@@ -138,7 +144,8 @@ public class TestEJBEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testReplace() {
+    @Test
+    void replace() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
@@ -164,23 +171,24 @@ public class TestEJBEmbedded extends BaseKernelTest {
         pc = pm.find(EmbeddedOwnerPC.class, id1);
         assertEquals("string1", pc.getStringField());
         assertNotNull(pc.getEmbedded());
-        assertEquals("the exp strng is not embedString1", "embedString1",
-            pc.getEmbedded().getStringField());
-        assertEquals("intfield is not 1", 1, pc.getEmbedded().getIntField());
+        assertEquals("embedString1", pc.getEmbedded().getStringField(),
+            "the exp strng is not embedString1");
+        assertEquals(1, pc.getEmbedded().getIntField(), "intfield is not 1");
 
         endTx(pm);
         endEm(pm);
     }
 
-    public void testShare() {
+    @Test
+    void share() {
         EntityManager pm = currentEntityManager();
         startTx(pm);
 
         EmbeddedOwnerPC pc1 = pm.find(EmbeddedOwnerPC.class, id1);
-        assertNotNull("pc1 is null in testshare", pc1);
+        assertNotNull(pc1, "pc1 is null in testshare");
 
         EmbeddedOwnerPC pc2 = pm.find(EmbeddedOwnerPC.class, id2);
-        assertNotNull("pc2 is null in testshare", pc2);
+        assertNotNull(pc2, "pc2 is null in testshare");
 
         EmbeddedPC embed1 = pc1.getEmbedded();
 
@@ -197,9 +205,9 @@ public class TestEJBEmbedded extends BaseKernelTest {
         pm = currentEntityManager();
         startTx(pm);
         pc1 = pm.find(EmbeddedOwnerPC.class, id1);
-        assertNotNull("pc1 is null in testshare 2nd find", pc1);
+        assertNotNull(pc1, "pc1 is null in testshare 2nd find");
         pc2 = pm.find(EmbeddedOwnerPC.class, id2);
-        assertNotNull("pc2 is null in testshare 2nd find", pc2);
+        assertNotNull(pc2, "pc2 is null in testshare 2nd find");
         embed1 = pm.find(EmbeddedPC.class, oid);
 
         if (embed1 != null) {
@@ -211,19 +219,20 @@ public class TestEJBEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testOptimisticLocking2() {
+    @Test
+    void optimisticLocking2() {
         EntityManager pm1 = getPM(true, false);
         startTx(pm1);
 
         EmbeddedOwnerPC pc1 = pm1.find(EmbeddedOwnerPC.class, id1);
-        assertNotNull("pc1 is null in testoptlock2", pc1);
+        assertNotNull(pc1, "pc1 is null in testoptlock2");
 
         EntityManager pm2 = currentEntityManager();
 
         startTx(pm2);
         EmbeddedOwnerPC pc2 = pm1.find(EmbeddedOwnerPC.class, id1);
 
-        assertNotNull("pc2 is null in testoptlock2", pc2);
+        assertNotNull(pc2, "pc2 is null in testoptlock2");
 
         EmbeddedPC embed2 = pc2.getEmbedded();
         embed2.setStringField("xxxx");

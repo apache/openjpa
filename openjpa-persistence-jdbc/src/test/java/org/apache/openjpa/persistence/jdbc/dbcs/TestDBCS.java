@@ -19,21 +19,24 @@
 package org.apache.openjpa.persistence.jdbc.dbcs;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
- * This test will verify that when a double byte charater set (DBCS) character
- * is used in an entity, that quotes are not added to the identifier.  See
- * JIRA OPENJPA-2535.
- */
-public class TestDBCS extends SQLListenerTestCase {
+* This test will verify that when a double byte charater set (DBCS) character
+* is used in an entity, that quotes are not added to the identifier.  See
+* JIRA OPENJPA-2535.
+*/
+class TestDBCS extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MyDBCSEntity.class);
     }
 
 
-    public void test() {
+    @Test
+    void test() {
         // Test test is disabled as most won't have their environment configured to support UTF-8 chars
 //        EntityManager em = emf.createEntityManager();
 //        String qStr = "SELECT m FROM MyDBCSEntity m WHERE m.閉塞フラグ = '0' ORDER BY m.業務id";

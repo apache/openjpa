@@ -21,11 +21,10 @@ package org.apache.openjpa.persistence.datacache;
 /**
  * Extend the single-JVM cache test to test dynamic pcdata.
  */
-public class TestDataCachePCDataGenerator
-    extends TestSJVMCache {
+public class TestDataCachePCDataGenerator extends TestSJVMCache {
 
-    public TestDataCachePCDataGenerator(String test) {
-        super(test);
+    public TestDataCachePCDataGenerator() {
+        super();
     }
 
     @Override

@@ -28,12 +28,22 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestStateManagerImplData extends BaseKernelTest {
 
     ClassMetaData _meta;
@@ -42,18 +52,8 @@ public class TestStateManagerImplData extends BaseKernelTest {
 
     Boolean _f3;
 
-    /**
-     * Creates a new instance of TestStateManagerImplData
-     */
-    public TestStateManagerImplData() {
-    }
-
-    public TestStateManagerImplData(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class);
     }
 
@@ -70,7 +70,8 @@ public class TestStateManagerImplData extends BaseKernelTest {
         _meta.getField(3).setUsesImplData(_f3);
     }
 
-    public void testImplData() {
+    @Test
+    void implData() {
         ModRuntimeTest1 pc = new ModRuntimeTest1();
 
         OpenJPAEntityManager pm = getPM(false, false);
@@ -99,7 +100,7 @@ public class TestStateManagerImplData extends BaseKernelTest {
             assertFalse(sm.isImplDataCacheable(1));
             assertNull(sm.setImplData(1, f1));
             assertEquals(f1, sm.getImplData(1));
-            assertTrue(!sm.isImplDataCacheable(1));
+            assertFalse(sm.isImplDataCacheable(1));
             assertEquals(f1, sm.setImplData(1, null));
             assertNull(sm.getImplData(1));
             assertFalse(sm.isImplDataCacheable(1));
@@ -123,7 +124,8 @@ public class TestStateManagerImplData extends BaseKernelTest {
         }
     }
 
-    public void testNotClearedIfRetainValues() {
+    @Test
+    void notClearedIfRetainValues() {
         notClearedIfRetainValuesTest(true);
         notClearedIfRetainValuesTest(false);
     }

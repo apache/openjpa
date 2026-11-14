@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests when PostPersist is invoked can be configured.
@@ -28,9 +33,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestPostPersistCallback extends SingleEMFTestCase {
+class TestPostPersistCallback extends SingleEMFTestCase {
 
-    public void testPostPersistCalledAfterFlush() {
+    @Test
+    void postPersistCalledAfterFlush() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -57,7 +63,8 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testPostPersistCalledAfterCommit() {
+    @Test
+    void postPersistCalledAfterCommit() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -76,7 +83,8 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testPostPersistCalledAfterPersist() {
+    @Test
+    void postPersistCalledAfterPersist() {
         super.setUp(CLEAR_TABLES, PostPersistEntity.class,
             "openjpa.Callbacks", "PostPersistCallbackImmediate=true");
         assertTrue(emf.getConfiguration().getCallbackOptionsInstance()

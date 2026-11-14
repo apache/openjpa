@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
@@ -26,21 +32,29 @@ import jakarta.persistence.StoredProcedureQuery;
 
 import org.apache.openjpa.jdbc.procedure.derby.Procedures;
 import org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
-public class TestStoredProcedure extends SingleEMFTestCase {
+class TestStoredProcedure extends SingleEMFTestCase {
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
               "openjpa.DynamicEnhancementAgent", "false",
               EntityWithStoredProcedure.class, EntityWithStoredProcedure.Mapping2.class);
-        setSupportedDatabases(DerbyDictionary.class);
     }
 
-    public void testSimple() throws Exception  {
+    @Test
+    void simple() throws Exception  {
         Procedures.simpleCalled = false;
 
         EntityManager em = emf.createEntityManager();
@@ -54,7 +68,8 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         assertTrue(Procedures.simpleCalled);
     }
 
-    public void testInParams() throws Exception  {
+    @Test
+    void inParams() throws Exception  {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
 
@@ -81,7 +96,8 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         assertNull(Procedures.inParamsString);
     }
 
-    public void testOut() throws Exception  {
+    @Test
+    void out() throws Exception  {
         EntityManager em = emf.createEntityManager();
         exec(em, "DROP PROCEDURE XTWO", true);
         exec(em, "CREATE PROCEDURE XTWO(IN SOME_NUMBER INTEGER,OUT x2 INTEGER) " +
@@ -95,7 +111,8 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testInOut() throws Exception  {
+    @Test
+    void inOut() throws Exception  {
         EntityManager em = emf.createEntityManager();
         exec(em, "DROP PROCEDURE XINOUT", true);
         exec(em, "CREATE PROCEDURE XINOUT(INOUT P INTEGER) " +
@@ -109,7 +126,8 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testMapping() throws Exception {
+    @Test
+    void mapping() throws Exception {
         EntityManager em = emf.createEntityManager();
         {
             em.getTransaction().begin();

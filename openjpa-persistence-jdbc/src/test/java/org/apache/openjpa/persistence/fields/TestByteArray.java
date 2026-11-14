@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,15 +30,17 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
- * This tests a particular kind of byte [] that is not a BLOB for DB2.  Don't need to
- * do anything except return if we are using a different DB.
- */
-public class TestByteArray extends SingleEMTestCase {
+* This tests a particular kind of byte [] that is not a BLOB for DB2.  Don't need to
+* do anything except return if we are using a different DB.
+*/
+class TestByteArray extends SingleEMTestCase {
     boolean runTest=false;
 
-    @Override
+    @BeforeEach
     public void setUp()  {
         super.setUp();
         OpenJPAEntityManagerFactorySPI ojpaEmf = (OpenJPAEntityManagerFactorySPI) emf;
@@ -47,7 +52,8 @@ public class TestByteArray extends SingleEMTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testByteArray() {
+    @Test
+    void byteArray() {
         if (! runTest) {
             // skip if not DB2 (from setup)
             return;

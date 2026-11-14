@@ -18,28 +18,35 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEntityTypeExpression extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
 
-    public TestEntityTypeExpression(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEntityTypeExpression() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CompUser.class);
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -76,7 +83,8 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testTypeOnNonPolymorphicEntity() {
+    @Test
+    void typeOnNonPolymorphicEntity() {
         EntityManager em = currentEntityManager();
         String query = "select a from Address a where type(a) = ?1";
         List rs = null;
@@ -90,7 +98,8 @@ public class TestEntityTypeExpression extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testTypeExpression() {
+    @Test
+    void typeExpression() {
         EntityManager em = currentEntityManager();
 
         String query = null;
@@ -135,31 +144,31 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = MaleUser";
         rs = em.createQuery(query).getResultList();
         Object type = rs.get(0);
-        assertEquals(type, MaleUser.class);
+        assertEquals(MaleUser.class, type);
 
         query = "SELECT TYPE(e) FROM CompUser e where TYPE(e) = ?1";
         rs = em.createQuery(query).
             setParameter(1, FemaleUser.class).getResultList();
         type = rs.get(0);
-        assertEquals(type, FemaleUser.class);
+        assertEquals(FemaleUser.class, type);
 
         query = "SELECT TYPE(e) FROM MaleUser e where TYPE(e) = ?1";
         rs = em.createQuery(query).
             setParameter(1, MaleUser.class).getResultList();
         type = rs.get(0);
-        assertEquals(type, MaleUser.class);
+        assertEquals(MaleUser.class, type);
 
         query = "SELECT e, FemaleUser, a FROM Address a, FemaleUser e " +
             " where e.address IS NOT NULL";
         List<Object> rs2 = em.createQuery(query).getResultList();
         type = ((Object[]) rs2.get(0))[1];
-        assertEquals(type, FemaleUser.class);
+        assertEquals(FemaleUser.class, type);
 
         query = "SELECT e FROM CompUser e where TYPE(e) = :type " +
             " ORDER BY e.name";
         rs =  em.createQuery(query).
             setParameter("type", FemaleUser.class).getResultList();
-        assertTrue(rs.size()==3);
+        assertEquals(3, rs.size());
         user = rs.get(0);
         assertEquals("Famzy", user.getName());
         user = rs.get(1);
@@ -192,7 +201,7 @@ public class TestEntityTypeExpression extends AbstractTestCase {
             " HAVING ABS(e.age) = :param";
         Long sum = (Long) em.createQuery(query).
             setParameter("param", 36.0).getSingleResult();
-        assertEquals(sum.intValue(), 72);
+        assertEquals(72, sum.intValue());
 
         String[] queries = {
             "SELECT e FROM CompUser e where TYPE(e) = MaleUser",

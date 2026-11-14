@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,18 +43,13 @@ import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestInitialValueFetching extends BaseKernelTest {
+class TestInitialValueFetching extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestInitialValueFetching
-     */
-    public TestInitialValueFetching(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -64,7 +61,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testInitialValueString() {
+    @Test
+    void initialValueString() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         RuntimeTest1 rt1 = getObject(pm);
@@ -81,7 +79,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testInitialValueInt() {
+    @Test
+    void initialValueInt() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         RuntimeTest1 rt1 = getObject(pm);
@@ -99,7 +98,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
     }
 
     @AllowFailure
-    public void testInitialValueMutableValueFailures() {
+    @Test
+    void initialValueMutableValueFailures() {
         Map props = new HashMap();
         props.put("openjpa.RestoreMutableValues", "false");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -121,7 +121,8 @@ public class TestInitialValueFetching extends BaseKernelTest {
     }
 
     @AllowFailure
-    public void testInitialValueDate() {
+    @Test
+    void initialValueDate() {
         Map props = new HashMap();
         props.put("openjpa.RestoreState", "all");
         OpenJPAEntityManagerFactory pmf = getEmf(props);
@@ -136,20 +137,21 @@ public class TestInitialValueFetching extends BaseKernelTest {
         assertEquals(d, sm.fetchInitialField(fmd.getIndex()));
 
         // == should pass here since we haven't made any modifications.
-        assertTrue("mutable object fails == test; should not",
-            d == sm.fetchInitialField(fmd.getIndex()));
+        assertSame(d, sm.fetchInitialField(fmd.getIndex()),
+            "mutable object fails == test; should not");
 
         Date d2 = new Date();
         rt1.setDateField(d2);
         assertEquals(d, sm.fetchInitialField(fmd.getIndex()));
         endTx(pm);
         assertEquals(d2, sm.fetchInitialField(fmd.getIndex()));
-        assertTrue("mutable object passes == test; should not",
-            d2 != sm.fetchInitialField(fmd.getIndex()));
+        assertNotSame(d2, sm.fetchInitialField(fmd.getIndex()),
+            "mutable object passes == test; should not");
         endEm(pm);
     }
 
-    public void testInitialValueExceptions() {
+    @Test
+    void initialValueExceptions() {
         OpenJPAEntityManager pm = getPM();
         pm.setRestoreState(RestoreStateType.NONE);
         startTx(pm);

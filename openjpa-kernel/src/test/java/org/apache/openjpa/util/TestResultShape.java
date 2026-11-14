@@ -17,6 +17,10 @@
  * under the License.
  */
 package org.apache.openjpa.util;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -27,15 +31,12 @@ import java.util.Map;
 
 import org.apache.openjpa.kernel.FillStrategy;
 import org.apache.openjpa.kernel.ResultShape;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-
-import static org.junit.Assert.*;
-
-public class TestResultShape {
+class TestResultShape {
 
     @Test
-    public void testPrimitiveShapeIsImmutable() {
+    void primitiveShapeIsImmutable() {
         ResultShape<Object> shape = new ResultShape<>(Object.class, true);
         assertCategory(shape, true, false, false);
         assertEquals(FillStrategy.Assign.class, shape.getStrategy().getClass());
@@ -53,7 +54,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testArrayIsMutable() {
+    void arrayIsMutable() {
         ResultShape<Object[]> shape = new ResultShape<>(Object[].class);
         assertCategory(shape, false, true, false);
         assertEquals(FillStrategy.Array.class, shape.getStrategy().getClass());
@@ -73,7 +74,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testMethodImpliesMapStrategy() {
+    void methodImpliesMapStrategy() {
         FillStrategy<Map> strategy = new FillStrategy.Map<>(method(Map.class, "put", Object.class, Object.class));
         ResultShape<Map> mapShape = new ResultShape<>(Map.class, strategy, true);
         assertCategory(mapShape, true, false, false);
@@ -81,7 +82,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testShapeWithConstrcutorStrategy() {
+    void shapeWithConstrcutorStrategy() {
         FillStrategy<List> strategy = new FillStrategy.NewInstance<>(constructor(ArrayList.class, int.class));
         ResultShape<List> listShape = new ResultShape<>(List.class, strategy);
         assertCategory(listShape, false, true, false);
@@ -89,7 +90,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testGetCompositeTypes() {
+    void getCompositeTypes() {
         ResultShape<Object[]> root  = new ResultShape<>(Object[].class);
         FillStrategy<Bar> strategy1 = new FillStrategy.NewInstance<>(Bar.class);
         ResultShape<Bar> bar1 = new ResultShape<>(Bar.class, strategy1, false);
@@ -111,7 +112,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testRecursiveNestingIsNotAllowed() {
+    void recursiveNestingIsNotAllowed() {
         ResultShape<Object[]> root = new ResultShape<>(Object[].class);
         ResultShape<Bar> bar1 = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
         bar1.add(int.class);
@@ -134,7 +135,7 @@ public class TestResultShape {
 
 
     @Test
-    public void testFill() {
+    void fill() {
         //Fill this shape: Foo{short, Bar{String, Double}};
         ResultShape<Foo> foo = new ResultShape<Foo>(Foo.class, new FillStrategy.NewInstance(Foo.class), false);
         ResultShape<Bar> bar = new ResultShape<Bar>(Bar.class, new FillStrategy.NewInstance(Bar.class), false);
@@ -154,7 +155,7 @@ public class TestResultShape {
     }
 
     @Test
-    public void testFill2() {
+    void fill2() {
         //Fill this shape: Object[]{Foo, Object, Foo{short, Bar{String, Double}}, Bar{double}};
         ResultShape<Object[]> root = new ResultShape<>(Object[].class);
         ResultShape<Bar> bar1 = new ResultShape<>(Bar.class, new FillStrategy.NewInstance<>(Bar.class));
@@ -188,23 +189,23 @@ public class TestResultShape {
 
     void assertCategory(ResultShape<?> s, boolean primitive, boolean compound, boolean nesting) {
         if (primitive)
-            assertTrue(s + " is not primitive", s.isPrimitive());
+            assertTrue(s.isPrimitive(), s + " is not primitive");
         else
-            assertFalse(s + " is primitive", s.isPrimitive());
+            assertFalse(s.isPrimitive(), s + " is primitive");
         if (compound)
-            assertTrue(s + " is not compound", s.isCompound());
+            assertTrue(s.isCompound(), s + " is not compound");
         else
-            assertFalse(s + " is compound", s.isCompound());
+            assertFalse(s.isCompound(), s + " is compound");
         if (nesting)
-            assertTrue(s + " is not nesting", s.isNesting());
+            assertTrue(s.isNesting(), s + " is not nesting");
         else
-            assertFalse(s + " is nesting", s.isNesting());
+            assertFalse(s.isNesting(), s + " is nesting");
     }
 
     void arrayEquals(Object[] a, Object[] b) {
         assertEquals(a.length, b.length);
         for (int i = 0; i < a.length; i++) {
-            assertEquals(i+"-th element not equal", a[i], b[i]);
+            assertEquals(a[i], b[i], i+"-th element not equal");
         }
     }
 

@@ -18,11 +18,15 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
+import org.junit.jupiter.api.Test;
 
-public class TestFetchJoin extends CriteriaTest {
-    public void testFetchJoin() {
+class TestFetchJoin extends CriteriaTest {
+    @Test
+    void fetchJoin() {
         String jpql = "SELECT e FROM Employee e INNER JOIN FETCH e.department";
         OpenJPACriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);
@@ -33,7 +37,8 @@ public class TestFetchJoin extends CriteriaTest {
         assertEquals(jpql, q.toCQL());
     }
 
-    public void testLeftFetchJoin() {
+    @Test
+    void leftFetchJoin() {
         String jpql = "SELECT e FROM Employee e LEFT JOIN FETCH e.department";
         OpenJPACriteriaQuery<Employee> q = cb.createQuery(Employee.class);
         Root<Employee> e = q.from(Employee.class);

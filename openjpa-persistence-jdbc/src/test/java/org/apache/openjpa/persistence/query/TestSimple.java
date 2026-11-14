@@ -24,21 +24,20 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSimple extends BaseQueryTest {
+class TestSimple extends BaseQueryTest {
 
     private Query q = null;
 
-    public TestSimple(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(Entity1.class);
     }
 
-    public void testSimple() throws java.io.IOException {
+    @Test
+    void simple() throws Exception {
         // test create
         {
             EntityManager em = currentEntityManager();

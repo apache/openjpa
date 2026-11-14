@@ -18,13 +18,13 @@
  */
 package org.apache.openjpa.enhance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,18 +35,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.openjpa.lib.log.AbstractLog;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that {@link InstrumentationFactory} loads the attach API from the
  * jdk.attach module and attaches the agent to the running JVM.
  */
-public class TestInstrumentationFactory {
+class TestInstrumentationFactory {
 
     private static final String ALLOW_ATTACH_SELF = "jdk.attach.allowAttachSelf";
 
     @Test
-    public void testLoadVirtualMachineClassFromJdkAttachModule() {
+    void loadVirtualMachineClassFromJdkAttachModule() {
         assumeTrue(ModuleLayer.boot().findModule("jdk.attach").isPresent());
 
         CapturingLog log = new CapturingLog();
@@ -54,7 +54,7 @@ public class TestInstrumentationFactory {
         assertNotNull(vmClass);
         assertEquals("com.sun.tools.attach.VirtualMachine", vmClass.getName());
         assertEquals("jdk.attach", vmClass.getModule().getName());
-        assertTrue(log.messages.toString(), log.messages.isEmpty());
+        assertTrue(log.messages.isEmpty(), log.messages.toString());
     }
 
     /**
@@ -63,21 +63,21 @@ public class TestInstrumentationFactory {
      * system property needed to enable the dynamic agent.
      */
     @Test
-    public void testSelfAttachNotAllowedLogsHint() {
+    void selfAttachNotAllowedLogsHint() {
         assumeTrue(InstrumentationFactory.class.getClassLoader() == ClassLoader.getSystemClassLoader());
         String allow = System.getProperty(ALLOW_ATTACH_SELF);
         assumeFalse("".equals(allow) || "true".equalsIgnoreCase(allow));
 
         CapturingLog log = new CapturingLog();
         assertNull(InstrumentationFactory.getInstrumentation(log));
-        assertEquals(log.messages.toString(), 1, log.messages.size());
+        assertEquals( 1, log.messages.size(), log.messages.toString());
         String msg = log.messages.get(0);
-        assertTrue(msg, msg.contains("-D" + ALLOW_ATTACH_SELF + "=true"));
-        assertTrue(msg, msg.contains("-javaagent"));
+        assertTrue(msg.contains("-D" + ALLOW_ATTACH_SELF + "=true"), msg);
+        assertTrue(msg.contains("-javaagent"), msg);
 
         // the attach is not retried and the message is not repeated
         assertNull(InstrumentationFactory.getInstrumentation(log));
-        assertEquals(log.messages.toString(), 1, log.messages.size());
+        assertEquals(1, log.messages.size(), log.messages.toString());
     }
 
     /**
@@ -85,7 +85,7 @@ public class TestInstrumentationFactory {
      * that the agent is attached and an {@link Instrumentation} is obtained.
      */
     @Test
-    public void testSelfAttachInChildJvm() throws IOException, InterruptedException {
+    void selfAttachInChildJvm() throws IOException, InterruptedException {
         assumeTrue(ModuleLayer.boot().findModule("jdk.attach").isPresent());
 
         List<String> cmd = new ArrayList<>();
@@ -97,11 +97,11 @@ public class TestInstrumentationFactory {
         cmd.add(AttachMain.class.getName());
 
         Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
-        assertTrue("child JVM did not finish", p.waitFor(120, TimeUnit.SECONDS));
+        assertTrue(p.waitFor(120, TimeUnit.SECONDS), "child JVM did not finish");
         String out = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        assertEquals(out, 0, p.exitValue());
-        assertTrue(out, out.contains(AttachMain.SUCCESS));
-        assertFalse(out, out.contains("WARNING: A Java agent has been loaded dynamically"));
+        assertEquals(0, p.exitValue(), out);
+        assertTrue(out.contains(AttachMain.SUCCESS), out);
+        assertFalse(out.contains("WARNING: A Java agent has been loaded dynamically"), out);
     }
 
     /**

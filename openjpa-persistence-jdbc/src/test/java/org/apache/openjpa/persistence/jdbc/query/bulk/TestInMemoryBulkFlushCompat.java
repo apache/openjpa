@@ -16,8 +16,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <code>FlushAfterInMemoryBulkOperation=false</code> suppresses the context
@@ -27,9 +33,9 @@ import jakarta.persistence.FlushModeType;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
  */
-public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCase {
+class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteCompositeOwner.class,
             BulkDeleteItem.class,
@@ -42,7 +48,8 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * Nothing is written during <code>executeUpdate()</code>, but the
      * instances are marked for deletion, so the commit deletes their rows.
      */
-    public void testInMemoryDeleteIsNotFlushed() {
+    @Test
+    void inMemoryDeleteIsNotFlushed() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, deleteInMemory(em));
@@ -59,7 +66,8 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * <code>executeUpdate()</code>, but the managed instance carries the new
      * value and the commit writes it.
      */
-    public void testInMemoryUpdateIsNotFlushed() {
+    @Test
+    void inMemoryUpdateIsNotFlushed() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, updateInMemory(em));
@@ -74,7 +82,8 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * reached the database, so clearing the context before the commit loses
      * the operation outright.
      */
-    public void testClearedContextLosesTheDelete() {
+    @Test
+    void clearedContextLosesTheDelete() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, deleteInMemory(em));
@@ -92,7 +101,8 @@ public class TestInMemoryBulkFlushCompat extends AbstractInMemoryBulkFlushTestCa
      * An unrelated pending change stays pending, which is what the option is
      * for.
      */
-    public void testUnrelatedPendingChangeStaysPending() {
+    @Test
+    void unrelatedPendingChangeStaysPending() {
         try (EntityManager em = emf.createEntityManager()) {
             em.setFlushMode(FlushModeType.COMMIT);
             em.getTransaction().begin();

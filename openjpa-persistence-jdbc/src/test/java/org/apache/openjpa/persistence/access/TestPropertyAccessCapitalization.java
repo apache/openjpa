@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
@@ -26,14 +30,17 @@ import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
-    @Override
+class TestPropertyAccessCapitalization extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, PropertyAccessCapitalization.class, PropertyAccessCapitalizationOldBehavior.class);
     }
 
-    public void testCorrectCapitalization() {
+    @Test
+    void correctCapitalization() {
         EntityManager em = emf.createEntityManager();
 
         PropertyAccessCapitalization entity = new PropertyAccessCapitalization();
@@ -64,7 +71,8 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
         assertEquals(entity, persistentEntity);
     }
 
-    public void testOldCapitalization() {
+    @Test
+    void oldCapitalization() {
         EntityManager em = emf.createEntityManager();
 
         PropertyAccessCapitalizationOldBehavior entity = new PropertyAccessCapitalizationOldBehavior();
@@ -96,14 +104,15 @@ public class TestPropertyAccessCapitalization extends SingleEMFTestCase {
         assertEquals(entity, persistentEntity);
     }
 
-    public void testBothAccessorSpellingsYieldTheSamePropertyNames() {
+    @Test
+    void bothAccessorSpellingsYieldTheSamePropertyNames() {
         ClassMetaData beanStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalization.class);
         ClassMetaData oldStyle = JPAFacadeHelper.getMetaData(emf, PropertyAccessCapitalizationOldBehavior.class);
         for (ClassMetaData meta : new ClassMetaData[] { beanStyle, oldStyle }) {
-            assertTrue("Access type should be PROPERTY", AccessCode.isProperty(meta.getAccessType()));
-            assertNotNull(meta + ": 'aWord' should be persistent", meta.getField("aWord"));
-            assertNotNull(meta + ": 'aCAPITAL' should be persistent", meta.getField("aCAPITAL"));
-            assertNotNull(meta + ": 'aBoolean' should be persistent", meta.getField("aBoolean"));
+            assertTrue(AccessCode.isProperty(meta.getAccessType()), "Access type should be PROPERTY");
+            assertNotNull(meta.getField("aWord"), meta + ": 'aWord' should be persistent");
+            assertNotNull(meta.getField("aCAPITAL"), meta + ": 'aCAPITAL' should be persistent");
+            assertNotNull(meta.getField("aBoolean"), meta + ": 'aBoolean' should be persistent");
         }
     }
 }

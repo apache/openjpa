@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -40,8 +43,10 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDateQueries extends BaseKernelTest {
+class TestDateQueries extends BaseKernelTest {
 
     private OpenJPAEntityManager _pm = null;
     private Date _date = null;
@@ -49,18 +54,8 @@ public class TestDateQueries extends BaseKernelTest {
     private Date _after = null;
     private final Timestamp referenceTst = new Timestamp(10000000000L);
 
-    /**
-     * Creates a new instance of TestDateQueries
-     */
-    public TestDateQueries() {
-    }
-
-    public TestDateQueries(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         super.setUp(AllFieldTypesTest.class);
 
@@ -104,19 +99,22 @@ public class TestDateQueries extends BaseKernelTest {
         _pm.clear();
     }
 
-    public void testEquals() {
+    @Test
+    void equals() {
         Collection vals = executeQuery("testDate = :date");
         assertEquals(1, vals.size());
         assertEquals(_date, ((AllFieldTypesTest) vals.iterator().next()).
             getTestDate());
     }
 
-    public void testNotEquals() {
+    @Test
+    void notEquals() {
         Collection vals = executeQuery("testDate <> :date");
         assertEquals(2, vals.size());
     }
 
-    public void testDateScale() {
+    @Test
+    void dateScale() {
         DBDictionary dbDictionary = ((JDBCConfiguration) _pm.getConfiguration()).getDBDictionaryInstance();
         if (!dbDictionary.fractionalTypeNameSet.contains(dbDictionary.timestampTypeName)) {
             getLog().info("skipping testDateScale because DB doesn't support different fractions in timestamps");
@@ -184,21 +182,24 @@ public class TestDateQueries extends BaseKernelTest {
         return digits;
     }
 
-    public void testBefore() {
+    @Test
+    void before() {
         Collection vals = executeQuery("testDate < :date");
         assertEquals(1, vals.size());
         assertEquals(_before, ((AllFieldTypesTest) vals.iterator().next()).
             getTestDate());
     }
 
-    public void testAfter() {
+    @Test
+    void after() {
         Collection vals = executeQuery("testDate > :date");
         assertEquals(1, vals.size());
         assertEquals(_after, ((AllFieldTypesTest) vals.iterator().next()).
             getTestDate());
     }
 
-    public void testOrderBy() {
+    @Test
+    void orderBy() {
         String query =
             "SELECT o FROM AllFieldTypesTest o ORDER BY o.testDate ASC";
         OpenJPAQuery q = _pm.createQuery(query);

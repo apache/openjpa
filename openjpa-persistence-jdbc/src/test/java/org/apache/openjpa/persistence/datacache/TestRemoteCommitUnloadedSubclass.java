@@ -18,30 +18,38 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-
 import org.apache.openjpa.datacache.AbstractQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.TypesChangedEvent;
+import org.apache.openjpa.datacache.TypesChangedListener;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
 
 /**
  * Without a list of persistent types, a remote commit event can name a
  * persistent subclass that has not been loaded yet. The subclass still
  * invalidates the cached query results of its superclass.
  */
-public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
+class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
 
     private static final String DOG = "org.apache.openjpa.persistence.datacache.RemoteCommitDog";
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         // the subclass is not part of the listed types
@@ -53,9 +61,10 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
         }
     }
 
-    public void testQueryCacheInvalidatesSuperclassOfUnloadedType() {
+    @Test
+    void queryCacheInvalidatesSuperclassOfUnloadedType() {
         for (Class<?> cls : PCRegistry.getRegisteredTypes()) {
-            assertFalse("the subclass must not be loaded yet", DOG.equals(cls.getName()));
+            assertNotEquals(DOG, cls.getName(), "the subclass must not be loaded yet");
         }
 
         // no persistent types are listed, so types are found when used
@@ -75,9 +84,16 @@ public class TestRemoteCommitUnloadedSubclass extends SingleEMFTestCase {
             assertEquals(1, cache.count());
 
             List<Collection<?>> changes = new ArrayList<>();
-            cache.addTypesChangedListener((TypesChangedEvent event) -> changes.add(event.getTypes()));
-            cache.afterCommit(new RemoteCommitEvent(RemoteCommitEvent.PAYLOAD_EXTENTS, null, null,
-                Arrays.asList(DOG), null));
+            // the query cache holds its listeners weakly, so keep the listener
+            // strongly reachable until the event has been delivered
+            TypesChangedListener listener = event -> changes.add(event.getTypes());
+            cache.addTypesChangedListener(listener);
+            try {
+                cache.afterCommit(new RemoteCommitEvent(RemoteCommitEvent.PAYLOAD_EXTENTS, null, null,
+                    Arrays.asList(DOG), null));
+            } finally {
+                cache.removeTypesChangedListener(listener);
+            }
 
             assertEquals(1, changes.size());
             assertEquals(1, changes.get(0).size());

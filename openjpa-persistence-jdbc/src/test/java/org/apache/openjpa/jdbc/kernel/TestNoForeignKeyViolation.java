@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that sql statements get flushed in an order which does not violate
@@ -32,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @author Reece Garrett
  */
-public class TestNoForeignKeyViolation
+class TestNoForeignKeyViolation
     extends SingleEMFTestCase {
 
     private EntityA entityA;
@@ -40,7 +44,7 @@ public class TestNoForeignKeyViolation
     private EntityC entityC;
     private EntityD entityD;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class,
               EntityE.class, EntityF.class, EntityG.class);
@@ -66,7 +70,8 @@ public class TestNoForeignKeyViolation
         entityC.setEntityD(entityD);
     }
 
-    public void testSqlOrder() {
+    @Test
+    void sqlOrder() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -104,7 +109,8 @@ public class TestNoForeignKeyViolation
         }
     }
 
-    public void testSimpleCycle() {
+    @Test
+    void simpleCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -124,7 +130,8 @@ public class TestNoForeignKeyViolation
         }
     }
 
-    public void testComplexCycle() {
+    @Test
+    void complexCycle() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -154,7 +161,8 @@ public class TestNoForeignKeyViolation
         }
     }
 
-    public void testComplexTwoCycles() {
+    @Test
+    void complexTwoCycles() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -185,7 +193,8 @@ public class TestNoForeignKeyViolation
         }
     }
 
-    public void testForeignKeyCascade() {
+    @Test
+    void foreignKeyCascade() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {

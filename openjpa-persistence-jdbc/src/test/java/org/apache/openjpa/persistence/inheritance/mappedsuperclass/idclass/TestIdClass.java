@@ -22,14 +22,17 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestIdClass extends SingleEMFTestCase {
-	 @Override
+class TestIdClass extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
 	        setUp(IdClassTestMSC.class, IdClassEntity.class);
 	 }
 
-	 public void test001() {
+    @Test
+    void test001() {
 		 EntityManager em = emf.createEntityManager();
 		 Query query = em.createQuery("SELECT a from IdClassEntity a");
 		 query.getResultList();

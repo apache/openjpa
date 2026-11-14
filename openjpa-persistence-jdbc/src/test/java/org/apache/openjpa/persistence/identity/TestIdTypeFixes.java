@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
@@ -37,15 +39,17 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPA 3.2 ID type and field type fixes:
  * - OffsetDateTime column compatibility (TIMESTAMP_WITH_TIMEZONE)
  * - UUID @Id persist and find
  */
-public class TestIdTypeFixes extends SingleEMFTestCase {
+class TestIdTypeFixes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UUIDIdEntity.class,
               DateTimeTypesEntity.class,
@@ -57,7 +61,8 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Previously this failed on PostgreSQL with:
      * "operator does not exist: character varying = uuid"
      */
-    public void testUUIDIdPersistAndFind() {
+    @Test
+    void uuidIdPersistAndFind() {
         UUID id = UUID.randomUUID();
         String name = "Test UUID Entity";
 
@@ -71,7 +76,7 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
         // Verify the entity can be found
         em = emf.createEntityManager();
         UUIDIdEntity found = em.find(UUIDIdEntity.class, id);
-        assertNotNull("UUID ID entity should be found", found);
+        assertNotNull(found, "UUID ID entity should be found");
         assertEquals(id, found.getId());
         assertEquals(name, found.getName());
         em.close();
@@ -82,7 +87,8 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Previously this failed with:
      * "column is not compatible with the expected type unknown(2014)"
      */
-    public void testDateTimeTypes() {
+    @Test
+    void dateTimeTypes() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -104,10 +110,10 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
         // Verify the entity can be loaded
         em = emf.createEntityManager();
         DateTimeTypesEntity found = em.find(DateTimeTypesEntity.class, id);
-        assertNotNull("DateTimeTypes entity should be found", found);
-        assertNotNull("OffsetDateTime should not be null", found.getOffsetDateTime());
-        assertNotNull("Instant should not be null", found.getInstantVal());
-        assertNotNull("Year should not be null", found.getYearVal());
+        assertNotNull(found, "DateTimeTypes entity should be found");
+        assertNotNull(found.getOffsetDateTime(), "OffsetDateTime should not be null");
+        assertNotNull(found.getInstantVal(), "Instant should not be null");
+        assertNotNull(found.getYearVal(), "Year should not be null");
         em.close();
     }
 
@@ -115,43 +121,46 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Test that Column.isCompatible handles TIMESTAMP_WITH_TIMEZONE
      * and TIME_WITH_TIMEZONE types as self-compatible.
      */
-    public void testTimestampWithTimezoneCompatibility() {
+    @Test
+    void timestampWithTimezoneCompatibility() {
         Column col = new Column();
         col.setType(Types.TIMESTAMP_WITH_TIMEZONE);
 
         // TIMESTAMP_WITH_TIMEZONE should be compatible with itself
-        assertTrue("TIMESTAMP_WITH_TIMEZONE should be compatible with itself",
-            col.isCompatible(Types.TIMESTAMP_WITH_TIMEZONE, null, 0, 0));
+        assertTrue(col.isCompatible(Types.TIMESTAMP_WITH_TIMEZONE, null, 0, 0),
+            "TIMESTAMP_WITH_TIMEZONE should be compatible with itself");
 
         // TIMESTAMP_WITH_TIMEZONE should be compatible with TIMESTAMP
-        assertTrue("TIMESTAMP_WITH_TIMEZONE should be compatible with TIMESTAMP",
-            col.isCompatible(Types.TIMESTAMP, null, 0, 0));
+        assertTrue(col.isCompatible(Types.TIMESTAMP, null, 0, 0),
+            "TIMESTAMP_WITH_TIMEZONE should be compatible with TIMESTAMP");
 
         // TIMESTAMP should be compatible with TIMESTAMP_WITH_TIMEZONE
         Column tsCol = new Column();
         tsCol.setType(Types.TIMESTAMP);
-        assertTrue("TIMESTAMP should be compatible with TIMESTAMP_WITH_TIMEZONE",
-            tsCol.isCompatible(Types.TIMESTAMP_WITH_TIMEZONE, null, 0, 0));
+        assertTrue(tsCol.isCompatible(Types.TIMESTAMP_WITH_TIMEZONE, null, 0, 0),
+            "TIMESTAMP should be compatible with TIMESTAMP_WITH_TIMEZONE");
     }
 
     /**
      * Test that TIME_WITH_TIMEZONE is self-compatible.
      */
-    public void testTimeWithTimezoneCompatibility() {
+    @Test
+    void timeWithTimezoneCompatibility() {
         Column col = new Column();
         col.setType(Types.TIME_WITH_TIMEZONE);
 
-        assertTrue("TIME_WITH_TIMEZONE should be compatible with itself",
-            col.isCompatible(Types.TIME_WITH_TIMEZONE, null, 0, 0));
-        assertTrue("TIME_WITH_TIMEZONE should be compatible with TIME",
-            col.isCompatible(Types.TIME, null, 0, 0));
+        assertTrue(col.isCompatible(Types.TIME_WITH_TIMEZONE, null, 0, 0),
+            "TIME_WITH_TIMEZONE should be compatible with itself");
+        assertTrue(col.isCompatible(Types.TIME, null, 0, 0),
+            "TIME_WITH_TIMEZONE should be compatible with TIME");
     }
 
     /**
      * Test that Schemas.getJDBCName returns proper names for
      * TIMESTAMP_WITH_TIMEZONE and TIME_WITH_TIMEZONE.
      */
-    public void testSchemasGetJDBCName() {
+    @Test
+    void schemasGetJDBCName() {
         assertEquals("timestamp_with_timezone",
             Schemas.getJDBCName(Types.TIMESTAMP_WITH_TIMEZONE));
         assertEquals("time_with_timezone",
@@ -162,7 +171,8 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
      * Test that Schemas.getJavaType returns proper types for
      * TIMESTAMP_WITH_TIMEZONE and TIME_WITH_TIMEZONE.
      */
-    public void testSchemasGetJavaType() {
+    @Test
+    void schemasGetJavaType() {
         assertEquals(OffsetDateTime.class,
             Schemas.getJavaType(Types.TIMESTAMP_WITH_TIMEZONE, 0, 0));
         assertEquals(OffsetTime.class,
@@ -172,19 +182,18 @@ public class TestIdTypeFixes extends SingleEMFTestCase {
     /**
      * Test that JavaTypes.convert handles BigDecimal/BigInteger conversions.
      */
-    public void testJavaTypesConvert() {
+    @Test
+    void javaTypesConvert() {
         BigDecimal bd = new BigDecimal("123");
         BigInteger bi = new BigInteger("456");
 
         // BigDecimal -> BigInteger conversion
         Object result = JavaTypes.convert(bd, JavaTypes.BIGINTEGER);
-        assertTrue("Should convert BigDecimal to BigInteger",
-            result instanceof BigInteger);
+        assertInstanceOf(BigInteger.class, result, "Should convert BigDecimal to BigInteger");
         assertEquals(new BigInteger("123"), result);
 
         // BigInteger -> BigDecimal conversion
         result = JavaTypes.convert(bi, JavaTypes.BIGDECIMAL);
-        assertTrue("Should convert BigInteger to BigDecimal",
-            result instanceof BigDecimal);
+        assertInstanceOf(BigDecimal.class, result, "Should convert BigInteger to BigDecimal");
     }
 }

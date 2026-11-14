@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +32,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class TestCacheExclusions extends AbstractCachedEMFTestCase {
 
@@ -72,7 +77,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (emf != null) {
             EntityManager em = emf.createEntityManager();
@@ -95,21 +100,24 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         super.tearDown();
     }
 
-    public void testCacheAll() {
+    @Test
+    void cacheAll() {
         getEntityManagerFactoryCacheSettings(null, null);
         populate();
         StoreCache cache = emf.getStoreCache();
         assertCacheContents(cache, true, true, true);
     }
 
-    public void testCacheItems() {
+    @Test
+    void cacheItems() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class }, null);
         populate();
         StoreCache cache = emf.getStoreCache();
         assertCacheContents(cache, false, false, true);
     }
 
-    public void testCacheItemsAndPurchases() {
+    @Test
+    void cacheItemsAndPurchases() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class,
             Purchase.class }, null);
         populate();
@@ -117,7 +125,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         assertCacheContents(cache, true, false, true);
     }
 
-    public void testCacheItemsAndOrders() {
+    @Test
+    void cacheItemsAndOrders() {
         getEntityManagerFactoryCacheSettings(new Class[] { Item.class,
             Order.class }, null);
         populate();
@@ -125,7 +134,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         assertCacheContents(cache, false, true, true);
     }
 
-    public void testCachePurchasesAndOrders() {
+    @Test
+    void cachePurchasesAndOrders() {
         getEntityManagerFactoryCacheSettings(new Class[] { Purchase.class,
             Order.class }, null);
         populate();
@@ -133,7 +143,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         assertCacheContents(cache, true, true, false);
     }
 
-    public void testExcludePurchases() {
+    @Test
+    void excludePurchases() {
         getEntityManagerFactoryCacheSettings(null,
             new Class[] { Purchase.class });
         populate();
@@ -141,21 +152,24 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         assertCacheContents(cache, false, true, true);
     }
 
-    public void testExcludeOrders() {
+    @Test
+    void excludeOrders() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Order.class });
         populate();
         StoreCache cache = emf.getStoreCache();
         assertCacheContents(cache, true, false, true);
     }
 
-    public void testExcludeItems() {
+    @Test
+    void excludeItems() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Item.class });
         populate();
         StoreCache cache = emf.getStoreCache();
         assertCacheContents(cache, true, true, false);
     }
 
-    public void testExcludeOrdersAndPurchases() {
+    @Test
+    void excludeOrdersAndPurchases() {
         getEntityManagerFactoryCacheSettings(null, new Class[] { Order.class,
             Purchase.class });
         populate();
@@ -163,7 +177,8 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         assertCacheContents(cache, false, false, true);
     }
 
-    public void testIncludePurchaseItemExcludePurchase() {
+    @Test
+    void includePurchaseItemExcludePurchase() {
         try{
         getEntityManagerFactoryCacheSettings(new Class[] { Purchase.class,
             Item.class }, new Class[] { Purchase.class });
@@ -220,19 +235,19 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
 
     public void assertCacheContents(StoreCache cache, boolean expectPurchase,
         boolean expectOrders, boolean expectItems) {
-        assertEquals("Expected purchases to " + (expectPurchase ? "" : "not ")
-            + "exist in the cache", expectPurchase, cache.contains(
-            Purchase.class, p.getId()));
-        assertEquals("Expected Orders to " + (expectOrders ? "" : "not ")
-            + "exist in the cache", expectOrders, cache.contains(Order.class,
-            o1.getId()));
-        assertEquals("Expected Orders to " + (expectOrders ? "" : "not ")
-            + "exist in the cache", expectOrders, cache.contains(Order.class,
-            o2.getId()));
+        assertEquals(expectPurchase, cache.contains(
+            Purchase.class, p.getId()), "Expected purchases to " + (expectPurchase ? "" : "not ")
+            + "exist in the cache");
+        assertEquals(expectOrders, cache.contains(Order.class,
+            o1.getId()), "Expected Orders to " + (expectOrders ? "" : "not ")
+            + "exist in the cache");
+        assertEquals(expectOrders, cache.contains(Order.class,
+            o2.getId()), "Expected Orders to " + (expectOrders ? "" : "not ")
+            + "exist in the cache");
         for (int i = 0; i < ITEM_NAMES.length; i++) {
-            assertEquals("Expected Items to " + (expectItems ? "" : "not ")
-                + "exist in the cache", expectItems, cache.contains(Item.class,
-                items[i].getId()));
+            assertEquals(expectItems, cache.contains(Item.class,
+                items[i].getId()), "Expected Items to " + (expectItems ? "" : "not ")
+                + "exist in the cache");
         }
     }
 }

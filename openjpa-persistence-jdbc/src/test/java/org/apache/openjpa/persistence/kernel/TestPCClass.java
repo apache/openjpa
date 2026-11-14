@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.Serializable;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -36,47 +38,39 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.PCClassInterface;
 import org.apache.openjpa.persistence.kernel.common.apps.PCClassPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestPCClass extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestPCClass
-     */
-    public TestPCClass() {
-    }
-
-    public TestPCClass(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+class TestPCClass extends BaseKernelTest {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(PCClassPC.class);
     }
 
-    public void testMetaData() {
+    @Test
+    void metaData() {
 
         MetaDataRepository repos = getConfiguration()
             .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getMetaData(PCClassPC.class, null, true);
 
         FieldMetaData fmd = meta.getField("specificPC");
-        assertNotNull("fmd is nulll", fmd);
-        assertEquals("JavaTypes.PC != fmd.getTypeCode()", JavaTypes.PC,
-            fmd.getTypeCode());
-        assertEquals("PCClassPC.class.getName() != fmd.getType().getName()",
-            PCClassPC.class.getName(), fmd.getType().getName());
+        assertNotNull(fmd, "fmd is nulll");
+        assertEquals(JavaTypes.PC, fmd.getTypeCode(),
+            "JavaTypes.PC != fmd.getTypeCode()");
+        assertEquals(PCClassPC.class.getName(),
+            fmd.getType().getName(), "PCClassPC.class.getName() != fmd.getType().getName()");
         assertEquals(
-            "Object.class.getName() != fmd.getDeclaredType().getName()",
-            Object.class.getName(), fmd.getDeclaredType().getName());
+            Object.class.getName(),
+            fmd.getDeclaredType().getName(), "Object.class.getName() != fmd.getDeclaredType().getName()");
 
         fmd = meta.getField("genericPC");
-        assertNotNull("fmd is null", fmd);
-        assertEquals("JavaTypes.PC_UNTYPE != fmd.getTypeCode()",
-            JavaTypes.PC_UNTYPED, fmd.getTypeCode());
+        assertNotNull(fmd, "fmd is null");
+        assertEquals(JavaTypes.PC_UNTYPED,
+            fmd.getTypeCode(), "JavaTypes.PC_UNTYPE != fmd.getTypeCode()");
         assertEquals(
-            "PersistenceCapable.class.getName() != fmd.getType().getName()",
-            PersistenceCapable.class.getName(), fmd.getType().getName());
+            PersistenceCapable.class.getName(),
+            fmd.getType().getName(), "PersistenceCapable.class.getName() != fmd.getType().getName()");
         assertEquals(Object.class.getName(),
             fmd.getDeclaredType().getName());
 
@@ -117,7 +111,8 @@ public class TestPCClass extends BaseKernelTest {
             fmd.getDeclaredType().getName());
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         PCClassPC pc = new PCClassPC();
         pc.setSpecificPC(pc);
         pc.setGenericPC(pc);
@@ -138,16 +133,16 @@ public class TestPCClass extends BaseKernelTest {
 
         pc = pm.find(PCClassPC.class, oid);
 
-        assertTrue(pc == pc.getSpecificPC());
-        assertTrue(pc == pc.getGenericPC());
+        assertSame(pc, pc.getSpecificPC());
+        assertSame(pc, pc.getGenericPC());
         assertNotNull(pc.getGenericObject());
-        assertTrue(pc == pc.getGenericObject());
-        assertTrue(pc == pc.getSpecificInterface());
-        assertTrue(pc == pc.getDefaultInterface());
+        assertSame(pc, pc.getGenericObject());
+        assertSame(pc, pc.getSpecificInterface());
+        assertSame(pc, pc.getDefaultInterface());
         assertNotNull(pc.getGenericInterface());
-        assertTrue(pc == pc.getGenericInterface());
+        assertSame(pc, pc.getGenericInterface());
         assertNotNull(pc.getSerializableInterface());
-        assertTrue(pc == pc.getSerializableInterface());
+        assertSame(pc, pc.getSerializableInterface());
 
         endEm(pm);
     }

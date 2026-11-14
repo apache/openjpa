@@ -18,24 +18,24 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.kernel.exps.Parameter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TestSQLBuffer {
+class TestSQLBuffer {
 
     /**
      * A parameter that occurs twice with another parameter in between, as
      * :a in :a BETWEEN :b AND x, must keep the position of each occurrence.
      */
     @Test
-    public void testUserParameterRepeatedWithOtherInBetween() {
+    void userParameterRepeatedWithOtherInBetween() {
         DBDictionary dict = new DBDictionary();
         Parameter a = new Param("a", Object.class);
         Parameter b = new Param("b", Object.class);
@@ -55,7 +55,7 @@ public class TestSQLBuffer {
      * keep their own positions.
      */
     @Test
-    public void testUserParameterRepeatedInSequence() {
+    void userParameterRepeatedInSequence() {
         DBDictionary dict = new DBDictionary();
         Parameter a = new Param("a", Object.class);
         Parameter b = new Param("b", Object.class);
@@ -75,7 +75,7 @@ public class TestSQLBuffer {
      * single quotes doubled.
      */
     @Test
-    public void testStringLiteralWithQuote() {
+    void stringLiteralWithQuote() {
         SQLBuffer buf = new SQLBuffer(new DBDictionary());
         buf.append("t0.NAME = ").appendValue("O'Brien", null, null, false);
 
@@ -89,7 +89,7 @@ public class TestSQLBuffer {
      * parameter otherwise.
      */
     @Test
-    public void testStringLiteralWithBackslash() {
+    void stringLiteralWithBackslash() {
         SQLBuffer buf = new SQLBuffer(new DBDictionary());
         buf.append("t0.NAME = ").appendValue("abc\\'", null, null, false);
         assertEquals("t0.NAME = 'abc\\'''", buf.getSQL());
@@ -106,7 +106,7 @@ public class TestSQLBuffer {
     }
 
     @Test
-    public void testToStringLiteral() {
+    void toStringLiteral() {
         DBDictionary dict = new DBDictionary();
         assertEquals("'a\\b'", dict.toStringLiteral("a\\b"));
         assertEquals("''''", dict.toStringLiteral("'"));
@@ -117,7 +117,7 @@ public class TestSQLBuffer {
     }
 
     @Test
-    public void testToStringLiteralSQLServer() {
+    void toStringLiteralSQLServer() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("'O''Brien'", dict.toStringLiteral("O'Brien"));
         assertEquals("'a\\b'", dict.toStringLiteral("a\\b"));

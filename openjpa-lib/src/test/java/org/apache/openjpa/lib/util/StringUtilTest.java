@@ -16,91 +16,102 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class StringUtilTest {
-	
+class StringUtilTest {
+
 	private static final Logger logger = Logger.getLogger(StringUtilTest.class.getCanonicalName());
 
     @Test
-    public void testStringSplit() {
+    void stringSplit() {
         String val = " a b c \n d \n  \n";
         String[] jsplit = val.split(" ");
         String[] split1 = StringUtil.split(val, " ", 0);
         String[] split2 = StringUtil.split(val, " ", 30);
 
         String[] split3 = StringUtil.split(val, " ", 3);
-        Assert.assertEquals(3, split3.length);
-        Assert.assertEquals("", split3[0]);
-        Assert.assertEquals("a", split3[1]);
-        Assert.assertEquals("b c \n d \n  \n", split3[2]);
+        assertEquals(3, split3.length);
+        assertEquals("", split3[0]);
+        assertEquals("a", split3[1]);
+        assertEquals("b c \n d \n  \n", split3[2]);
     }
 
     @Test
-    public void testStringSplitEnding() {
+    void stringSplitEnding() {
         String val = "a%B%C%";
         String[] jsplit = val.split("%");
         String[] ssplit = StringUtil.split(val, "%", Integer.MAX_VALUE);
-        Assert.assertEquals(4, ssplit.length);
-        Assert.assertArrayEquals(ssplit, new String[]{"a", "B", "C", ""});
+        assertEquals(4, ssplit.length);
+        assertArrayEquals(new String[]{"a", "B", "C", ""}, ssplit);
     }
 
     @Test
-    public void testStringSplitFatTokenEnding() {
+    void stringSplitFatTokenEnding() {
         String val = "a-.-B-.-C-.-";
         String[] jsplit = val.split("-.-");
         String[] ssplit = StringUtil.split(val, "-.-", Integer.MAX_VALUE);
-        Assert.assertEquals(4, ssplit.length);
-        Assert.assertArrayEquals(ssplit, new String[]{"a", "B", "C", ""});
+        assertEquals(4, ssplit.length);
+        assertArrayEquals(new String[]{"a", "B", "C", ""}, ssplit);
     }
 
     @Test
-    public void testTrimToNull() {
-        Assert.assertNull(StringUtil.trimToNull(null));
-        Assert.assertNull(StringUtil.trimToNull(" "));
-        Assert.assertNull(StringUtil.trimToNull("   "));
-        Assert.assertNull(StringUtil.trimToNull("   \n  "));
-        Assert.assertEquals("A", StringUtil.trimToNull("  A"));
-        Assert.assertEquals("A", StringUtil.trimToNull("A  "));
-        Assert.assertEquals("A", StringUtil.trimToNull("  A  "));
-        Assert.assertEquals("A", StringUtil.trimToNull("  A  \n  "));
+    void trimToNull() {
+        assertNull(StringUtil.trimToNull(null));
+        assertNull(StringUtil.trimToNull(" "));
+        assertNull(StringUtil.trimToNull("   "));
+        assertNull(StringUtil.trimToNull("   \n  "));
+        assertEquals("A", StringUtil.trimToNull("  A"));
+        assertEquals("A", StringUtil.trimToNull("A  "));
+        assertEquals("A", StringUtil.trimToNull("  A  "));
+        assertEquals("A", StringUtil.trimToNull("  A  \n  "));
     }
 
     @Test
-    public void testStringCapitalize() {
-        Assert.assertNull(StringUtil.capitalize(null));
-        Assert.assertEquals("", StringUtil.capitalize(""));
-        Assert.assertEquals(" ", StringUtil.capitalize(" "));
-        Assert.assertEquals("Ahoi", StringUtil.capitalize("ahoi"));
-        Assert.assertEquals("Ahoi", StringUtil.capitalize("Ahoi"));
-        Assert.assertEquals(" ahoi", StringUtil.capitalize(" ahoi")); // no trim
-        Assert.assertEquals("\u00d6hoi", StringUtil.capitalize("\u00f6hoi"));
-        Assert.assertEquals("\u00dfhoi", StringUtil.capitalize("\u00dfhoi"));
+    void stringCapitalize() {
+        assertNull(StringUtil.capitalize(null));
+        assertEquals("", StringUtil.capitalize(""));
+        assertEquals(" ", StringUtil.capitalize(" "));
+        assertEquals("Ahoi", StringUtil.capitalize("ahoi"));
+        assertEquals("Ahoi", StringUtil.capitalize("Ahoi"));
+        assertEquals(" ahoi", StringUtil.capitalize(" ahoi")); // no trim
+        assertEquals("\u00d6hoi", StringUtil.capitalize("\u00f6hoi"));
+        assertEquals("\u00dfhoi", StringUtil.capitalize("\u00dfhoi"));
     }
 
-    @Test
-    public void testStringEndsWith() {
-        Assert.assertFalse(StringUtil.endsWithIgnoreCase(null, "bla"));
-        Assert.assertFalse(StringUtil.endsWithIgnoreCase("bla", null));
-        Assert.assertTrue(StringUtil.endsWithIgnoreCase(null, null));
-        Assert.assertTrue(StringUtil.endsWithIgnoreCase(null, null));
-        Assert.assertTrue(StringUtil.endsWithIgnoreCase("I have a cAt", "Cat"));
-        Assert.assertFalse(StringUtil.endsWithIgnoreCase("at", "Cat"));
-        Assert.assertTrue(StringUtil.endsWithIgnoreCase("at", ""));
+    private static Stream<Arguments> stringEndsWithData() {
+        return Stream.of(
+            Arguments.of(null, "bla", false),
+            Arguments.of("bla", null, false),
+            Arguments.of(null, null, true),
+            Arguments.of("I have a cAt", "Cat", true),
+            Arguments.of("at", "Cat", false),
+            Arguments.of("at", "", true)
+        );
+    }
+
+    @ParameterizedTest(name = "#{index} endsWithIgnoreCase(\"{0}\", \"{1}\") = {2}")
+    @MethodSource("stringEndsWithData")
+    void stringEndsWith(String str, String suffix, boolean expected) {
+        assertEquals(expected, StringUtil.endsWithIgnoreCase(str, suffix));
     }
 
 
     @Test
-    public void testStringParse() {
+    void stringParse() {
 
         try {
             StringUtil.parse(null, null);
-            Assert.fail("NullPointerException expected");
+            fail("NullPointerException expected");
         }
         catch (NullPointerException npe) {
             // all fine
@@ -108,67 +119,67 @@ public class StringUtilTest {
 
 
         // test null representation for primitives
-        Assert.assertEquals(0, (int) StringUtil.parse(null, byte.class));
-        Assert.assertEquals(0, (char) StringUtil.parse(null, char.class));
-        Assert.assertEquals(0, (double) StringUtil.parse(null, double.class), 0);
-        Assert.assertEquals(0f, (float) StringUtil.parse(null, float.class), 0);
-        Assert.assertEquals(0, (int) StringUtil.parse(null, int.class));
-        Assert.assertEquals(0L, (long) StringUtil.parse(null, long.class));
-        Assert.assertEquals(0, (short) StringUtil.parse(null, short.class));
-        Assert.assertEquals(false, StringUtil.parse(null, boolean.class));
+        assertEquals(0, (int) StringUtil.parse(null, byte.class));
+        assertEquals(0, (char) StringUtil.parse(null, char.class));
+        assertEquals(0, (double) StringUtil.parse(null, double.class), 0);
+        assertEquals(0f, (float) StringUtil.parse(null, float.class), 0);
+        assertEquals(0, (int) StringUtil.parse(null, int.class));
+        assertEquals(0L, (long) StringUtil.parse(null, long.class));
+        assertEquals(0, (short) StringUtil.parse(null, short.class));
+        assertEquals(false, StringUtil.parse(null, boolean.class));
 
         // special fun:
         try {
             StringUtil.parse(null, void.class);
-            Assert.fail("IllegalStateException expected");
+            fail("IllegalStateException expected");
         }
         catch (IllegalStateException ise) {
             // all fine
         }
 
-        Assert.assertNull(StringUtil.parse(null, Character.class));
-        Assert.assertNull(StringUtil.parse(null, Double.class));
-        Assert.assertNull(StringUtil.parse(null, Float.class));
-        Assert.assertNull(StringUtil.parse(null, Integer.class));
-        Assert.assertNull(StringUtil.parse(null, Long.class));
-        Assert.assertNull(StringUtil.parse(null, Short.class));
-        Assert.assertNull(StringUtil.parse(null, Boolean.class));
+        assertNull(StringUtil.parse(null, Character.class));
+        assertNull(StringUtil.parse(null, Double.class));
+        assertNull(StringUtil.parse(null, Float.class));
+        assertNull(StringUtil.parse(null, Integer.class));
+        assertNull(StringUtil.parse(null, Long.class));
+        assertNull(StringUtil.parse(null, Short.class));
+        assertNull(StringUtil.parse(null, Boolean.class));
 
         try {
             StringUtil.parse(null, char[].class);
-            Assert.fail("IllegalArgumentException expected");
+            fail("IllegalArgumentException expected");
         }
         catch (IllegalArgumentException iae) {
             // all fine
         }
 
-        Assert.assertEquals('C', (char) StringUtil.parse("C", char.class));
-        Assert.assertEquals(35.2345, (double) StringUtil.parse("35.2345", double.class), 0.000001);
-        Assert.assertEquals(35.2345, (float) StringUtil.parse("35.2345", float.class), 0.000001);
-        Assert.assertEquals(42, (int) StringUtil.parse("42", int.class));
-        Assert.assertEquals(42L, (long) StringUtil.parse("42", long.class));
-        Assert.assertEquals(42, (short) StringUtil.parse("42", short.class));
-        Assert.assertEquals(true, StringUtil.parse("true", boolean.class));
-        Assert.assertEquals(true, StringUtil.parse("TRUE", boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("false", boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("FALSE", boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("bla", boolean.class));
+        assertEquals('C', (char) StringUtil.parse("C", char.class));
+        assertEquals(35.2345, (double) StringUtil.parse("35.2345", double.class), 0.000001);
+        assertEquals(35.2345, (float) StringUtil.parse("35.2345", float.class), 0.000001);
+        assertEquals(42, (int) StringUtil.parse("42", int.class));
+        assertEquals(42L, (long) StringUtil.parse("42", long.class));
+        assertEquals(42, (short) StringUtil.parse("42", short.class));
+        assertEquals(true, StringUtil.parse("true", boolean.class));
+        assertEquals(true, StringUtil.parse("TRUE", boolean.class));
+        assertEquals(false, StringUtil.parse("false", boolean.class));
+        assertEquals(false, StringUtil.parse("FALSE", boolean.class));
+        assertEquals(false, StringUtil.parse("bla", boolean.class));
 
-        Assert.assertEquals('C', (char) StringUtil.parse("C", Character.class));
-        Assert.assertEquals(35.2345, (double) StringUtil.parse("35.2345", Double.class), 0.000001);
-        Assert.assertEquals(35.2345, (float) StringUtil.parse("35.2345", Float.class), 0.000001);
-        Assert.assertEquals(42, (int) StringUtil.parse("42", Integer.class));
-        Assert.assertEquals(42L, (long) StringUtil.parse("42", Long.class));
-        Assert.assertEquals(42, (short) StringUtil.parse("42", Short.class));
-        Assert.assertEquals(true, StringUtil.parse("true", Boolean.class));
-        Assert.assertEquals(true, StringUtil.parse("TRUE", Boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("false", Boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("FALSE", Boolean.class));
-        Assert.assertEquals(false, StringUtil.parse("bla", Boolean.class));
+        assertEquals('C', (char) StringUtil.parse("C", Character.class));
+        assertEquals(35.2345, (double) StringUtil.parse("35.2345", Double.class), 0.000001);
+        assertEquals(35.2345, (float) StringUtil.parse("35.2345", Float.class), 0.000001);
+        assertEquals(42, (int) StringUtil.parse("42", Integer.class));
+        assertEquals(42L, (long) StringUtil.parse("42", Long.class));
+        assertEquals(42, (short) StringUtil.parse("42", Short.class));
+        assertEquals(true, StringUtil.parse("true", Boolean.class));
+        assertEquals(true, StringUtil.parse("TRUE", Boolean.class));
+        assertEquals(false, StringUtil.parse("false", Boolean.class));
+        assertEquals(false, StringUtil.parse("FALSE", Boolean.class));
+        assertEquals(false, StringUtil.parse("bla", Boolean.class));
 
         try {
             StringUtil.parse(null, StringUtilTest.class);
-            Assert.fail("IllegalArgumentException expected");
+            fail("IllegalArgumentException expected");
         }
         catch (IllegalArgumentException iae) {
             // all fine
@@ -177,19 +188,19 @@ public class StringUtilTest {
     }
 
     @Test
-    public void testStringJoin() {
-        Assert.assertEquals("AAA,BBB,CCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, ","));
-        Assert.assertEquals("AAA", StringUtil.join(new String[]{"AAA"}, ","));
-        Assert.assertEquals("AAAnullBBBnullCCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, null));
-        Assert.assertEquals("", StringUtil.join(new String[]{}, ","));
-        Assert.assertNull(StringUtil.join(null, null));
-        Assert.assertNull(StringUtil.join(null, ","));
+    void stringJoin() {
+        assertEquals("AAA,BBB,CCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, ","));
+        assertEquals("AAA", StringUtil.join(new String[]{"AAA"}, ","));
+        assertEquals("AAAnullBBBnullCCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, null));
+        assertEquals("", StringUtil.join(new String[]{}, ","));
+        assertNull(StringUtil.join(null, null));
+        assertNull(StringUtil.join(null, ","));
 
     }
 
     @Test
-    @Ignore("only needed for manual performance tests")
-    public void stringSplitPerformanceTest() {
+    @Disabled("only needed for manual performance tests")
+    void stringSplitPerformanceTest() {
         String val = "  asdfsfsfsfafasdf  basdfasf cs d efdfdfdfdfdfdfdf ghai asdf " +
                 "asdflkj  lökajdf lkölkasdflk jklö adfk \n adslsfl \t adsfsfd";
 
@@ -203,8 +214,8 @@ public class StringUtilTest {
     }
 
     @Test
-    @Ignore("only needed for manual performance tests")
-    public void testStringsReplacePerformance() {
+    @Disabled("only needed for manual performance tests")
+    void stringsReplacePerformance() {
         String val = "This is my fnx test suite for fnx replacement to fnx=fnx";
 
         long start = System.nanoTime();
@@ -219,8 +230,8 @@ public class StringUtilTest {
     }
 
     @Test
-    @Ignore("only needed for manual performance tests")
-    public void testStringJoinPerformance() {
+    @Disabled("only needed for manual performance tests")
+    void stringJoinPerformance() {
         String[] vals = {"A", "BDS", "DSD", "XYZ", "HOHOHO", "AND", "SOMETHING", "ELSE"};
         long start = System.nanoTime();
         for (int i = 1; i < 10000000; i++) {

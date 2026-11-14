@@ -18,14 +18,17 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that querying the id of a related many-one (or one-one) does not create
@@ -33,12 +36,12 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestQueryIdOfRelationDoesNotJoin
+class TestQueryIdOfRelationDoesNotJoin
     extends SingleEMFTestCase {
 
     private long e3Id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
 
@@ -64,7 +67,8 @@ public class TestQueryIdOfRelationDoesNotJoin
         em.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneEntity e "
             + "where e.rel.id = :id").setParameter("id", e3Id);
@@ -76,9 +80,4 @@ public class TestQueryIdOfRelationDoesNotJoin
         assertNull(e.getRel());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestQueryIdOfRelationDoesNotJoin.class);
-    }
 }
-

@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestImplicitValueStrategy extends SQLListenerTestCase {
-    @Override
+class TestImplicitValueStrategy extends SQLListenerTestCase {
+    @BeforeEach
     public void setUp(){
         setUp(ImplicitValueStrategyEntity.class, DROP_TABLES,
                 "openjpa.jdbc.MappingDefaults",
@@ -37,7 +42,8 @@ public class TestImplicitValueStrategy extends SQLListenerTestCase {
         create();
     }
 
-    public void testIt() {
+    @Test
+    void it() {
         EntityManager em = emf.createEntityManager();
         ImplicitValueStrategyEntity se = em.find(ImplicitValueStrategyEntity.class, "id1");
         assertNotNull(se);

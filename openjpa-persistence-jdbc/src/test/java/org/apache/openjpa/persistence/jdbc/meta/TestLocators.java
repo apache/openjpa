@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Arrays;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -37,22 +40,17 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.LocatorTestObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestLocators
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestLocators extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private OpenJPAEntityManagerFactory pmf;
 
-    public TestLocators(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestLocators */
-    public TestLocators() {
-    }
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
 
@@ -65,7 +63,7 @@ public class TestLocators
         pm.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         super.tearDown();
@@ -73,11 +71,13 @@ public class TestLocators
        deleteAll(LocatorTestObject.class);
     }
 
-    public void testBLOBs() {
+    @Test
+    void bloBs() {
         doBlobTest(50000);
     }
 
-    public void testSmallBLOBs() {
+    @Test
+    void smallBLOBs() {
         doBlobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
@@ -117,7 +117,8 @@ public class TestLocators
         }
     }
 
-    public void testShrinkBLOB() {
+    @Test
+    void shrinkBLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
         LocatorTestObject o = new LocatorTestObject();
@@ -148,11 +149,13 @@ public class TestLocators
         }
     }
 
-    public void testCLOBs() {
+    @Test
+    void cloBs() {
         doClobTest(50000);
     }
 
-    public void testSmallCLOBs() {
+    @Test
+    void smallCLOBs() {
         doClobTest(50);
 
         if (getCurrentPlatform() == AbstractTestCase.Platform.ORACLE) {
@@ -193,7 +196,8 @@ public class TestLocators
         }
     }
 
-    public void testShrinkCLOB() {
+    @Test
+    void shrinkCLOB() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
         LocatorTestObject o = new LocatorTestObject();

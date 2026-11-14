@@ -18,24 +18,28 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.net.MalformedURLException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.RelationHandlerMapTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestRelationToHandlerMaps
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestRelationToHandlerMaps extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(RelationToHandlerMapInstance.class, AllFieldTypes.class,
             CLEAR_TABLES);
     }
 
-    public void testRelationToHandlerMaps() throws MalformedURLException {
+    @Test
+    void relationToHandlerMaps() throws Exception {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             RelationToHandlerMapInstance.class);
         assertEquals(RelationHandlerMapTableFieldStrategy.class,

@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -25,9 +29,12 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.kernel.NativeJDBCSeq;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests entities named and with attributes named after words Derby rejects
@@ -37,18 +44,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * are persisted, found, queried and updated. Other databases reserve other
  * words, so the tests only run on Derby.
  */
-public class TestReservedWordEntityNames extends SingleEMFTestCase {
+class TestReservedWordEntityNames extends SingleEMFTestCase {
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(DerbyDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
-        setUp(Window.class, Order.class, User.class, UserSession.class, Ticket.class, DROP_TABLES);
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
     }
 
-    public void testTableNames() {
+    @BeforeEach
+    public void setUp() {
+        super.setUp(Window.class, Order.class, User.class, UserSession.class, Ticket.class, DROP_TABLES);
+    }
+
+    @Test
+    void tableNames() {
         // the default table names Derby rejects get a 0 appended, the others
         // are used as they are
         assertEquals("WINDOW0", getMapping(Window.class).getTable().getIdentifier().getName());
@@ -61,7 +70,8 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         assertEquals("SESSION_USER0", getFieldTableName(UserSession.class, "user"));
     }
 
-    public void testDefaultSequenceName() {
+    @Test
+    void defaultSequenceName() {
         // the generator name is the default sequence name, and Derby rejects it
         SequenceMetaData meta = getMapping(Ticket.class).getMappingRepository()
             .getSequenceMetaData("Window", Ticket.class.getClassLoader(), true);
@@ -71,7 +81,8 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         assertEquals("WINDOW0", seq.getSequence());
     }
 
-    public void testPersistWithDefaultSequenceName() {
+    @Test
+    void persistWithDefaultSequenceName() {
         long first;
         long second;
         try (EntityManager em = emf.createEntityManager()) {
@@ -96,7 +107,8 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         }
     }
 
-    public void testColumnNames() {
+    @Test
+    void columnNames() {
         ClassMapping mapping = getMapping(Window.class);
         for (String field : List.of("cursors", "definer", "invoker", "xmlquery", "deterministic")) {
             assertEquals(field.toUpperCase(Locale.ENGLISH) + "0",
@@ -106,7 +118,8 @@ public class TestReservedWordEntityNames extends SingleEMFTestCase {
         assertEquals("WINDOW01", mapping.getFieldMapping("window").getColumns()[0].getIdentifier().getName());
     }
 
-    public void testPersistFindAndQuery() {
+    @Test
+    void persistFindAndQuery() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             Window window = new Window();

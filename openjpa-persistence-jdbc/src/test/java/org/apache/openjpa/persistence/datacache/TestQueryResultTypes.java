@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.datacache;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
@@ -27,6 +29,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectB;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test some assumptions about query result metadata that the query
@@ -35,11 +38,12 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 @AllowFailure(message="surefire excluded")
 public class TestQueryResultTypes extends AbstractTestCase {
 
-    public TestQueryResultTypes(String test) {
-        super(test, "datacachecactusapp");
+    public TestQueryResultTypes() {
+        super("datacachecactusapp");
     }
 
-    public void testQueryResultTypesWithThis() {
+    @Test
+    void queryResultTypesWithThis() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.name,a FROM " +
@@ -51,7 +55,8 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectA.class, types[1]);
     }
 
-    public void testQueryResultTypesWithRelated() {
+    @Test
+    void queryResultTypesWithRelated() {
         Broker broker = getBroker();
         Query q = broker
             .newQuery(JPQLParser.LANG_JPQL, "select a.name,a.relatedB FROM " +
@@ -64,7 +69,8 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectB.class, types[1]);
     }
 
-    public void testSingleProjectionOfNonThisRelation() {
+    @Test
+    void singleProjectionOfNonThisRelation() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a.relatedB FROM " +
@@ -75,7 +81,8 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(CacheObjectB.class, types[0]);
     }
 
-    public void testSingleProjectionOfThisRelation() {
+    @Test
+    void singleProjectionOfThisRelation() {
         Broker broker = getBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +
             CacheObjectA.class.getSimpleName() + " a");
@@ -83,7 +90,8 @@ public class TestQueryResultTypes extends AbstractTestCase {
         assertEquals(0, types.length);
     }
 
-    public void testNoResultClause() {
+    @Test
+    void noResultClause() {
         Broker broker = getBroker();
         Query q =
             broker.newQuery(JPQLParser.LANG_JPQL, "select a FROM " +

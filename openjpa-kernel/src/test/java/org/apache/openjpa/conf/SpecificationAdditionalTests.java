@@ -19,10 +19,12 @@
 package org.apache.openjpa.conf;
 
 
-import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class SpecificationAdditionalTests {
+import org.junit.jupiter.api.Test;
+
+class SpecificationAdditionalTests {
 
 	String myString = "JPA";
 	String myCompleteString = "JPA 2.0-draft";
@@ -32,43 +34,43 @@ public class SpecificationAdditionalTests {
 	String myNullString = null;
 
 
-	@Test
-	public void EqualsTest() {
+    @Test
+    void EqualsTest() {
 		Specification spec = new Specification(myString);
-		Assert.assertTrue(spec.equals(spec)); // parse() is overidded in Specification
+        assertEquals(spec, spec); // parse() is overidded in Specification
 	}
 
-	@Test
-	public void EqualsTest2() {
+    @Test
+    void EqualsTest2() {
 		Specification spec = new Specification(myString);
-		Assert.assertFalse(spec.equals(myNullString)); // parse() is overidded in Specification
+        assertNotEquals(spec, myNullString); // parse() is overidded in Specification
 	}
 
 
-	@Test
-	public void EqualsTest3() {
+    @Test
+    void EqualsTest3() {
 		Specification spec = new Specification(myString);
 		Specification spec2 = new Specification(myHalfCompleteString);
-		Assert.assertFalse(spec.equals(spec2)); // parse() is overidded in Specification
+        assertNotEquals(spec, spec2); // parse() is overidded in Specification
 	}
 
-	@Test
-	public void EqualsTest4() {
+    @Test
+    void EqualsTest4() {
 		Specification spec = new Specification(myString);
-		Assert.assertFalse(spec.equals(1)); // parse() is overidded in Specification
+        assertNotEquals(1, spec); // parse() is overidded in Specification
 	}
 
-	@Test
-	public void EqualsTest5() {
+    @Test
+    void EqualsTest5() {
 		Specification spec = new Specification(myHalfCompleteString);
 		Specification spec2 = new Specification(myHalfCompleteString2);
-		Assert.assertFalse(spec.equals(spec2));
+        assertNotEquals(spec, spec2);
 	}
 
-	@Test
-	public void EqualsTest6() {
+    @Test
+    void EqualsTest6() {
 		Specification spec = new Specification(myCompleteString);
 		Specification spec2 = new Specification(myHalfCompleteString2);
-		Assert.assertFalse(spec.equals(spec2));
+        assertNotEquals(spec, spec2);
 	}
 }

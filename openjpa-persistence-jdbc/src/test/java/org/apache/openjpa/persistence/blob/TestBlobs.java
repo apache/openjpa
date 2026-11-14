@@ -18,6 +18,9 @@
  */
  package org.apache.openjpa.persistence.blob;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,8 +29,10 @@ import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.query.QueryBuilder;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestBlobs extends SingleEMFTestCase {
+ class TestBlobs extends SingleEMFTestCase {
 
     private int _populatedId = 1;
     private int _nullLobId = 2;
@@ -36,8 +41,8 @@ public class TestBlobs extends SingleEMFTestCase {
 
     QueryBuilder qb = null;
 
-    @Override
-    public void setUp() {
+     @BeforeEach
+     public void setUp() {
         super.setUp(BlobEntity.class, RETAIN_DATA);
         cleanup();
         populate();
@@ -85,7 +90,8 @@ public class TestBlobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNotNullBlobQuery() {
+     @Test
+     void notNullBlobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.blobField IS NOT NULL", Integer.class);
@@ -99,7 +105,8 @@ public class TestBlobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNullBlobQuery() {
+     @Test
+     void nullBlobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.blobField IS NULL", Integer.class);
@@ -113,7 +120,8 @@ public class TestBlobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNotNullLobQuery() {
+     @Test
+     void notNullLobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.lobField IS NOT NULL", Integer.class);
@@ -127,7 +135,8 @@ public class TestBlobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNullLobQuery() {
+     @Test
+     void nullLobQuery() {
         EntityManager em = emf.createEntityManager();
         TypedQuery<Integer> q =
             em.createQuery("SELECT e.id FROM BlobEntity e where e.lobField IS NULL", Integer.class);

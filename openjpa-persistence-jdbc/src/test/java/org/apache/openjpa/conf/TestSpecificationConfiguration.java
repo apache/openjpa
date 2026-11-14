@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.PersistenceException;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Specification of Configuration.
@@ -33,25 +40,29 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestSpecificationConfiguration extends SingleEMFTestCase {
 
-    public void testSpecificationIsSet() {
+    @Test
+    void specificationIsSet() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
     }
 
-    public void testSpecificationIsJPA() {
+    @Test
+    void specificationIsJPA() {
         Specification spec = getSpecifcation();
         assertTrue(spec.isSame("JPA"));
         assertTrue(spec.isSame("jpa"));
     }
 
-    public void testSpecificationVersionIsJPA1() {
+    @Test
+    void specificationVersionIsJPA1() {
         Specification spec = getSpecifcation();
         int major = spec.getVersion();
         assertEquals(1, major);
         assertTrue(spec.isSame("JPA"));
     }
 
-    public void testSpecificationVersionIsJPA2() {
+    @Test
+    void specificationVersionIsJPA2() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -71,7 +82,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
-    public void testSpecificationVersionIsJPA3_0() {
+    @Test
+    void specificationVersionIsJPA30() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
           emf1 =
@@ -89,7 +101,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
-    public void testSpecificationVersionIsJPA3_1() {
+    @Test
+    void specificationVersionIsJPA31() {
 
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
@@ -108,7 +121,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
-    public void testSpecificationVersionIsJPA3_2() {
+    @Test
+    void specificationVersionIsJPA32() {
         OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
           emf1 =
@@ -126,7 +140,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
-    public void testLowerVersionCanBeSet() {
+    @Test
+    void lowerVersionCanBeSet() {
         super.setUp("openjpa.Specification", "JPA 1.0");
         Specification spec = getSpecifcation();
 
@@ -138,7 +153,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
      * Slight change for 2.0, in that the geronimo spec does not rethrow
      * all exceptions wrapped as a PersistenceException
      */
-    public void testHigherVersionCanNotBeSet() {
+    @Test
+    void higherVersionCanNotBeSet() {
         try {
             super.setUp("openjpa.Specification", "jpa 3.0",
                 "openjpa.Log", "DefaultLevel=WARN");
@@ -154,18 +170,21 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
         }
     }
 
-    public void testDifferentSpecCanBeSet() {
+    @Test
+    void differentSpecCanBeSet() {
         super.setUp("openjpa.Specification", "jdo 3.0");
     }
 
-    public void testSpecCanBeSetToNullString() {
+    @Test
+    void specCanBeSetToNullString() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
         emf.getConfiguration().setSpecification((String)null);
         assertNull(getSpecifcation());
     }
 
-    public void testSpecCanBeSetToNullSpecification() {
+    @Test
+    void specCanBeSetToNullSpecification() {
         Specification spec = getSpecifcation();
         assertNotNull(spec);
         emf.getConfiguration().setSpecification((Specification)null);

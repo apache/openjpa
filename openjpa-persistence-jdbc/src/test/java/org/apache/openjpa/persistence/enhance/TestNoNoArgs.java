@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -27,6 +27,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.util.OpenJPAException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNoNoArgs
     extends AbstractTestCase {
@@ -36,12 +38,12 @@ public class TestNoNoArgs
     ClassLoader loader;
     private PCEnhancer.Flags flags = new PCEnhancer.Flags();
 
-    public TestNoNoArgs(String s) {
-        super(s, "enhancecactusapp");
+    public TestNoNoArgs() {
+        super("enhancecactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
@@ -50,15 +52,17 @@ public class TestNoNoArgs
         endEm(em);
     }
 
-    public void testNoNoArgs()
-        throws IOException {
+    @Test
+    void noNoArgs()
+        throws Exception {
         PCEnhancer.run((OpenJPAConfiguration) conf,
             new String[]{ },
             flags, repos, null, loader);
     }
 
-    public void testNo2NoArgs()
-        throws IOException {
+    @Test
+    void no2NoArgs()
+        throws Exception {
         flags.addDefaultConstructor = false;
         boolean caughtException = false;
         try {
@@ -70,8 +74,9 @@ public class TestNoNoArgs
         assertTrue(caughtException);
     }
 
-    public void testNo3NoArgs()
-        throws IOException {
+    @Test
+    void no3NoArgs()
+        throws Exception {
         PCEnhancer.run((OpenJPAConfiguration) conf,
             new String[]{ "persistence.enhance.common.apps.Entity1" },
             flags, repos, null, loader);

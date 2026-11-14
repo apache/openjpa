@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
@@ -31,10 +34,12 @@ import org.apache.openjpa.persistence.access.xml.XMLDefPropMixedFieldAccess2;
 import org.apache.openjpa.persistence.access.xml.XMLFieldAccess2;
 import org.apache.openjpa.persistence.access.xml.XMLPropAccess2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDefaultAccess extends SingleEMFTestCase {
+class TestDefaultAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             PropEntity.class, MappedCallbackSup.class);
@@ -46,7 +51,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * containing no persistent fields (only a callback) does not cause access
      * validation failures.
      */
-    public void testDefaultMappedSuperclassAccess() {
+    @Test
+    void defaultMappedSuperclassAccess() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -64,7 +70,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of FIELD in entity-mappings.
      */
-    public void testEMDefaultFieldAccess() {
+    @Test
+    void eMDefaultFieldAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMFldDef",
@@ -82,7 +89,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of PROPERTY in entity-mappings.
      */
-    public void testEMDefaultPropertyAccess() {
+    @Test
+    void eMDefaultPropertyAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-EMPropDef",
@@ -100,7 +108,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
     /**
      * Validates use of access specifier of FIELD in persistence unit defaults.
      */
-    public void testPUDefaultFieldAccess() {
+    @Test
+    void pUDefaultFieldAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUFldDef",
@@ -119,7 +128,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
      * Validates use of access specifier of PROPERTY in persistence unit
      * defaults.
      */
-    public void testPUDefaultPropertyAccess() {
+    @Test
+    void pUDefaultPropertyAccess() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-PUPropDef",
@@ -173,7 +183,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         XMLDefFieldMixedPropAccess2 dfmpa2 =
             (XMLDefFieldMixedPropAccess2)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
-        assertEquals(dfmpa2.getStringField(), "XMLDFMPA2");
+        assertEquals("XMLDFMPA2", dfmpa2.getStringField());
 
         try {
             qry = em.createNamedQuery("XMLDFMPA2.badQuery");
@@ -224,7 +234,7 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         XMLDefPropMixedFieldAccess2 dpmfa2 =
             (XMLDefPropMixedFieldAccess2)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
-        assertEquals(dpmfa2.getStrProp(), "XMLDPMFA2");
+        assertEquals("XMLDPMFA2", dpmfa2.getStrProp());
 
         try {
             qry = em.createNamedQuery("XMLDPMFA2.badQuery");

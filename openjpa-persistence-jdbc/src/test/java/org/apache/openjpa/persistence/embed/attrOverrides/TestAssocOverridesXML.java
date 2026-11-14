@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,8 +34,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
+class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
     protected List<String> _sql = new ArrayList<>();
 
@@ -41,7 +45,8 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
      * Test association overrides defined within an embedded of an element
      * collection
      */
-    public void testElementCollectionAssocOverrides() {
+    @Test
+    void elementCollectionAssocOverrides() {
 
         _sql.clear();
         HashMap<String, Object> props = new HashMap<>();
@@ -87,13 +92,11 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
                 " .*value_emba_entb.*value_emba_mentb");
         }
         finally {
-            try {
+            Assertions.assertDoesNotThrow(() -> {
                 if (emf1 != null)
                     cleanupEMF(emf1);
                 _sql.clear();
-            } catch (Exception e) {
-                fail(e.getMessage());
-            }
+            });
         }
     }
 
@@ -124,11 +127,6 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
 
         try {
             clear(emf1);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf1);
         }

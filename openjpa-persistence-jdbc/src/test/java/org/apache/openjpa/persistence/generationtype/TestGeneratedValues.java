@@ -18,25 +18,35 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestGeneratedValues extends SingleEMFTestCase {
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+
+class TestGeneratedValues extends SingleEMFTestCase {
     DBDictionary _dict;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(GeneratedValues.class, CLEAR_TABLES);
         _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
-    public void testDefaultValues() {
+    @Test
+    void defaultValues() {
         if (_dict instanceof PostgresDictionary)
             return;
 
@@ -64,13 +74,14 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertFalse(gv.getId() == gv2.getId());
         assertFalse(gv.getField() == gv2.getField());
         // assertFalse(gv.getUuidstring().equals(gv2.getUuidstring()));
-        assertFalse(gv.getUuidhex().equals(gv2.getUuidhex()));
-        assertFalse(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
-        assertFalse(gv.getUuidT4string().equals(gv2.getUuidT4string()));
+        assertNotEquals(gv.getUuidhex(), gv2.getUuidhex());
+        assertNotEquals(gv.getUuidT4hex(), gv2.getUuidT4hex());
+        assertNotEquals(gv.getUuidT4string(), gv2.getUuidT4string());
         closeEM(em);
     }
 
-    public void testInitialValues() {
+    @Test
+    void initialValues() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues(7, 9, "a", "b", "c", "d");
@@ -91,7 +102,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
-    public void testIdSetter() {
+    @Test
+    void idSetter() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -113,7 +125,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
-    public void testFieldSetter() {
+    @Test
+    void fieldSetter() {
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -134,7 +147,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         fail();
     }
 
-//    public void testCustomSequenceGenerator() {
+//    @Test void customSequenceGenerator() {
 //        EntityManager em = emf.createEntityManager();
 //
 //        GeneratedValues gv = new GeneratedValues();
@@ -146,7 +159,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
 //        assertNotEquals(0, gv.getCustomSeqField());
 //    }
 
-    public void testCustomSequenceGeneratorWithIndirection() {
+    @Test
+    void customSequenceGeneratorWithIndirection() {
         if (_dict instanceof PostgresDictionary)
             return;
         EntityManager em = emf.createEntityManager();
@@ -161,7 +175,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         closeEM(em);
     }
 
-    public void testUUIDGenerators() {
+    @Test
+    void uuidGenerators() {
         if (_dict instanceof PostgresDictionary)
             return;
 
@@ -200,10 +215,10 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         // issue with string data, but even more likely for a uuids given that
         // uuid strings are produced from pseudo-random byte arrays, which yield
         // all sorts of variant characters.
-        assertTrue(gv.getId() == gv2.getId());
-        assertTrue(gv.getField() == gv2.getField());
-        assertTrue(gv.getUuidhex().equals(gv2.getUuidhex()));
-        assertTrue(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
+        assertEquals(gv.getId(), gv2.getId());
+        assertEquals(gv.getField(), gv2.getField());
+        assertEquals(gv.getUuidhex(), gv2.getUuidhex());
+        assertEquals(gv.getUuidT4hex(), gv2.getUuidT4hex());
         closeEM(em);
     }
 

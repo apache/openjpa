@@ -18,24 +18,30 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that JPA 3.2 @Column(secondPrecision) is correctly handled
  * for time-based column types.
  */
-public class TestSecondPrecision extends SingleEMFTestCase {
+class TestSecondPrecision extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, SecondPrecisionEntity.class);
     }
 
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         LocalDateTime now = LocalDateTime.now();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -59,7 +65,8 @@ public class TestSecondPrecision extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testSecondPrecisionMetadata() {
+    @Test
+    void secondPrecisionMetadata() {
         // Verify that secondPrecision is correctly parsed from the annotation
         // by checking the column metadata through the mapping info
         org.apache.openjpa.jdbc.meta.ClassMapping mapping =

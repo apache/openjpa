@@ -18,22 +18,28 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestInMemoryQueryMatchEscapes
+class TestInMemoryQueryMatchEscapes
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        setUp(CLEAR_TABLES, AllFieldTypes.class);
     }
 
-    public void testDatabaseEscape() {
+    @Test
+    void databaseEscape() {
         OpenJPAQuery q = escapeHelper(false);
         q.setFlushMode(FlushModeType.AUTO);
         q.getEntityManager().flush();
@@ -42,7 +48,8 @@ public class TestInMemoryQueryMatchEscapes
         q.getEntityManager().getTransaction().rollback();
     }
 
-    public void testInMemoryEscape() {
+    @Test
+    void inMemoryEscape() {
         OpenJPAQuery q = escapeHelper(true);
         q.setFlushMode(FlushModeType.COMMIT);
         try {

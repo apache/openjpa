@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,19 +27,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.openjpa.meta.FieldMetaData.MemberProvider;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
-public class TestMemberProvider {
+class TestMemberProvider {
     // field gets accessed via reflection.
     @SuppressWarnings("unused")
     private String field;
 
     @Test
-    public void testField()
-        throws NoSuchFieldException, IOException, ClassNotFoundException {
+    void field()
+        throws Exception {
         MemberProvider b = new MemberProvider(
             getClass().getDeclaredField("field"));
         MemberProvider b2 = roundtrip(b);
@@ -45,9 +44,9 @@ public class TestMemberProvider {
     }
 
     @Test
-    public void testMethod()
-        throws NoSuchMethodException, IOException, ClassNotFoundException {
-        MemberProvider b = new MemberProvider(getClass().getDeclaredMethod("testMethod"));
+    void method()
+        throws Exception {
+        MemberProvider b = new MemberProvider(getClass().getDeclaredMethod("method"));
         MemberProvider b2 = roundtrip(b);
         assertEquals(b.getMember(), b2.getMember());
     }

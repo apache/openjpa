@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
-import java.io.IOException;
-
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -29,22 +27,25 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEmbeddedEnumSqlGeneration
     extends AbstractTestCase {
 
     private PCEnhancer.Flags flags = new PCEnhancer.Flags();
 
-    public TestEmbeddedEnumSqlGeneration(String s) {
-        super(s, "org.apache.openjpa.persistence.enhance.EntityWithEnum");
+    public TestEmbeddedEnumSqlGeneration() {
+        super("org.apache.openjpa.persistence.enhance.EntityWithEnum");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
     }
 
-    public void testEnumEnhancement()
-    throws IOException {
+    @Test
+    void enumEnhancement()
+        throws Exception {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
 

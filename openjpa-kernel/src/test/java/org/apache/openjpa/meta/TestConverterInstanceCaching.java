@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +31,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * The AttributeConverter instance of a field is cached on the shared
  * {@link FieldMetaData}; concurrent conversions must construct and publish
  * exactly one instance. See OPENJPA-2954.
  */
-public class TestConverterInstanceCaching {
+class TestConverterInstanceCaching {
 
     private static final int THREADS = 8;
 
@@ -69,7 +69,7 @@ public class TestConverterInstanceCaching {
     }
 
     @Test
-    public void testSingleConverterInstanceUnderConcurrency() throws Exception {
+    void singleConverterInstanceUnderConcurrency() throws Exception {
         CONSTRUCTED.set(0);
         SECOND_CONSTRUCTION = new CountDownLatch(2);
 

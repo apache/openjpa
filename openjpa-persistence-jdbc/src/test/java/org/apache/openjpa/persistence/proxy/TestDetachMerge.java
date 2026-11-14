@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -55,18 +58,20 @@ import org.apache.openjpa.persistence.proxy.entities.Person;
 import org.apache.openjpa.persistence.proxy.entities.Rider;
 import org.apache.openjpa.persistence.proxy.entities.RiderType;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /*
- * Test the complicated interaction between Detached entities, Proxy classes
- * and Merging changes made in ProxyCollections back into entities.
- *
- * This code is based on AcmeTest2, which was originally written by
- * Mohammad at IBM and contributed under ASL 2.0.
- */
-public class TestDetachMerge extends SingleEMFTestCase {
+* Test the complicated interaction between Detached entities, Proxy classes
+* and Merging changes made in ProxyCollections back into entities.
+*
+* This code is based on AcmeTest2, which was originally written by
+* Mohammad at IBM and contributed under ASL 2.0.
+*/
+class TestDetachMerge extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Address.class, Annuity.class, AnnuityHolder.class, AnnuityPersistebleObject.class,
             Contact.class, EquityAnnuity.class, FixedAnnuity.class, Payor.class, Payout.class,
@@ -76,7 +81,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /*
      * Test default 1.0 compatibility behavior, which should pass AS-IS
      */
-    public void testAnnuity1Compat() throws Exception {
+    @Test
+    void annuity1Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity1Compat", "org/apache/openjpa/persistence/proxy/persistence1.xml");
@@ -107,7 +113,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /*
      * Test default 2.0 compatibility behavior, which should PASS
      */
-    public void testAnnuity2Compat() throws Exception {
+    @Test
+    void annuity2Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf2 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
             "Annuity2Compat", "org/apache/openjpa/persistence/proxy/persistence2.xml");

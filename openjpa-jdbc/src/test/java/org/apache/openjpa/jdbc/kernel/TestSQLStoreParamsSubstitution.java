@@ -18,14 +18,13 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * <p>
@@ -33,14 +32,14 @@ import static org.junit.Assert.fail;
  * </p>
  */
 
-public class TestSQLStoreParamsSubstitution {
+class TestSQLStoreParamsSubstitution {
 
     /**
      * Tests parameter substitution algorithm to make sure the input sql is NOT transformed
      * especially escape characters.
      */
     @Test
-    public void testParamSubstitute() {
+    void paramSubstitute() {
 
         String sqlNrtns[][] = {
                 {
@@ -77,7 +76,7 @@ public class TestSQLStoreParamsSubstitution {
                    "[1]"
                 }
             };
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             List<Integer> paramOrder = new ArrayList<>();
 
             for (String sqlNrtn[] : sqlNrtns) {
@@ -86,8 +85,6 @@ public class TestSQLStoreParamsSubstitution {
                 assertEquals(sqlNrtn[0], rtnSql);
                 assertEquals(sqlNrtn[1], paramOrder.toString());
             }
-        } catch (IOException e) {
-            fail("Unexpected Exception:" + e);
-        }
+        }, "Unexpected Exception:");
     }
 }

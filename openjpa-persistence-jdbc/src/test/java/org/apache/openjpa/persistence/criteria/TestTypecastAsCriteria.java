@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -25,10 +28,12 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.junit.jupiter.api.Test;
 
-public class TestTypecastAsCriteria extends CriteriaTest {
+class TestTypecastAsCriteria extends CriteriaTest {
 
-    public void testTypecastAsString() {
+    @Test
+    void typecastAsString() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -43,7 +48,8 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testTypecastAsInteger() {
+    @Test
+    void typecastAsInteger() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -58,7 +64,8 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testTypecastAsLong() {
+    @Test
+    void typecastAsLong() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -73,7 +80,8 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testTypecastAsFloat() {
+    @Test
+    void typecastAsFloat() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -88,7 +96,8 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testTypecastAsDouble() {
+    @Test
+    void typecastAsDouble() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -103,7 +112,8 @@ public class TestTypecastAsCriteria extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testTypecastAsInvalid() {
+    @Test
+    void typecastAsInvalid() {
         if (getDictionary() instanceof DerbyDictionary) {
             // Derby does not support these CASTs
             return;
@@ -116,7 +126,7 @@ public class TestTypecastAsCriteria extends CriteriaTest {
             q.select(c);
             fail("Should have thrown IllegalTargetException");
         } catch (Throwable t) {
-            assertTrue(t.getClass() == IllegalArgumentException.class);
+            assertSame(t.getClass(), IllegalArgumentException.class);
         }
     }
 }

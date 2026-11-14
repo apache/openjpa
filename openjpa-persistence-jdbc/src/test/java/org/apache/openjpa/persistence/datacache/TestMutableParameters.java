@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,20 +36,23 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestMutableParameters
     extends AbstractTestCase {
 
-    public TestMutableParameters(String test) {
-        super(test, "datacachecactusapp");
+    public TestMutableParameters() {
+        super("datacachecactusapp");
     }
 
     private BrokerFactory _factory;
     private Date _startDate;
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         deleteAll(CacheObjectA.class);
         Map propsMap = new HashMap();
@@ -76,7 +81,7 @@ public class TestMutableParameters
         CacheTestHelper.cacheManager(_factory).getSystemQueryCache().clear();
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         try {
@@ -88,7 +93,8 @@ public class TestMutableParameters
         super.tearDown();
     }
 
-    public void testMutatedDateParameter() {
+    @Test
+    void mutatedDateParameter() {
         Broker broker = _factory.newBroker();
         Query q = broker.newQuery(JPQLParser.LANG_JPQL,
             "select a from " +
@@ -105,17 +111,17 @@ public class TestMutableParameters
             new Object[]{ d });
         c = (Collection) q.execute(new Object[]{ d });
 
-        assertFalse(Integer.valueOf(initialSize).equals(c.size()));
+        assertNotEquals(Integer.valueOf(initialSize), c.size());
     }
 
     //FIXME Seetha Nov 10,2006
     //need to find the JPQL query for :p_age contains
     /*
-    public void testMutatedSetParameter() {
+    @Test void mutatedSetParameter() {
         mutatedCollectionParameterHelper(true);
     }
 
-    public void testMutatedListParameter() {
+    @Test void mutatedListParameter() {
         mutatedCollectionParameterHelper(false);
     }
 
@@ -145,11 +151,11 @@ public class TestMutableParameters
         assertFalse(new Integer(initialSize).equals(new Integer(c.size())));
     }
 
-    public void testMutatedSetParameterDates() {
+    @Test void mutatedSetParameterDates() {
         mutatedCollectionParameterDatesHelper(true);
     }
 
-    public void testMutatedListParameterDates() {
+    @Test void mutatedListParameterDates() {
         mutatedCollectionParameterDatesHelper(false);
     }
 

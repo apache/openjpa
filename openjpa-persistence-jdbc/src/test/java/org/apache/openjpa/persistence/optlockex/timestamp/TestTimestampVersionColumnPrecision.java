@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.optlockex.timestamp;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A timestamp version column of a schema not created by OpenJPA may keep
@@ -37,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * versions are generated and bound at it. A precision declared in the
  * mapping is used without a lookup.
  */
-public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
+class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         if (!isDerby()) {
             return;
@@ -54,19 +59,19 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
         return url.startsWith("jdbc:derby:");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (emf != null) {
             super.tearDown();
         }
     }
 
-    public void testVersionsAreKeptAtTheColumnPrecision() {
+    @Test
+    void versionsAreKeptAtTheColumnPrecision() {
         if (emf == null) {
             return;
         }
-        assertTrue(((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance()
-            instanceof DerbyDictionary);
+        assertInstanceOf(DerbyDictionary.class, ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance());
 
         CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.set(0);
         EntityManager em = emf.createEntityManager();
@@ -75,12 +80,12 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
             CoarseTSVersionEntity e = new CoarseTSVersionEntity("1");
             em.persist(e);
             em.getTransaction().commit();
-            assertEquals("the version is generated at the precision of the column: " + e.getVersion(),
-                0, e.getVersion().getNanos());
+            assertEquals(0,
+                e.getVersion().getNanos(), "the version is generated at the precision of the column: " + e.getVersion());
 
             Column col = ((JDBCConfiguration) emf.getConfiguration()).getMappingRepositoryInstance()
                 .getMapping(CoarseTSVersionEntity.class, null, true).getVersion().getColumns()[0];
-            assertEquals("the precision read from the database is recorded on the column", 0, col.getPrecision());
+            assertEquals(0, col.getPrecision(), "the precision read from the database is recorded on the column");
 
             // the cached instance is updated, its version has to match the stored one
             for (int i = 0; i < 2; i++) {
@@ -91,8 +96,8 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
                 em.getTransaction().commit();
                 assertEquals(0, found.getVersion().getNanos());
             }
-            assertEquals("the metadata is read once, not on every flush",
-                1, CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get());
+            assertEquals(1,
+                CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get(), "the metadata is read once, not on every flush");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -115,7 +120,8 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
      * at whole seconds, as the column keeps them, and the database metadata
      * is not consulted.
      */
-    public void testDeclaredSecondPrecisionIsHonoured() {
+    @Test
+    void declaredSecondPrecisionIsHonoured() {
         if (emf == null) {
             return;
         }
@@ -126,11 +132,11 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
             DeclaredTSVersionEntity e = new DeclaredTSVersionEntity("1");
             em.persist(e);
             em.getTransaction().commit();
-            assertEquals("the version is generated at the declared precision: " + e.getVersion(),
-                0, e.getVersion().getNanos());
+            assertEquals(0,
+                e.getVersion().getNanos(), "the version is generated at the declared precision: " + e.getVersion());
             Column col = ((JDBCConfiguration) emf.getConfiguration()).getMappingRepositoryInstance()
                 .getMapping(DeclaredTSVersionEntity.class, null, true).getVersion().getColumns()[0];
-            assertEquals("secondPrecision reaches the version column", 0, col.getSecondPrecision());
+            assertEquals(0, col.getSecondPrecision(), "secondPrecision reaches the version column");
 
             for (int i = 0; i < 2; i++) {
                 em.getTransaction().begin();
@@ -146,8 +152,8 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
             }
             em.close();
         }
-        assertEquals("no metadata lookup for a declared precision",
-            0, CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get());
+        assertEquals(0,
+            CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get(), "no metadata lookup for a declared precision");
     }
 
     /**
@@ -155,7 +161,8 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
      * precision read for it from the metadata, which depends on the column
      * type, applies to both; it is read once.
      */
-    public void testSharedVersionColumnIsResolvedOnce() {
+    @Test
+    void sharedVersionColumnIsResolvedOnce() {
         if (emf == null) {
             return;
         }
@@ -167,7 +174,7 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
             SharedTSVersionEntityA a = new SharedTSVersionEntityA("a");
             em.persist(a);
             em.getTransaction().commit();
-            assertEquals(a.getVersion().toString(), 0, a.getVersion().getNanos() % half);
+            assertEquals(0, a.getVersion().getNanos() % half, a.getVersion().toString());
 
             for (int i = 0; i < 4; i++) {
                 em.getTransaction().begin();
@@ -179,7 +186,7 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
                     b.setName("name" + i);
                 }
                 em.getTransaction().commit();
-                assertEquals(b.getVersion().toString(), 0, b.getVersion().getNanos() % half);
+                assertEquals(0, b.getVersion().getNanos() % half, b.getVersion().toString());
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -187,6 +194,6 @@ public class TestTimestampVersionColumnPrecision extends SingleEMFTestCase {
             }
             em.close();
         }
-        assertEquals("one lookup for the shared column", 1, CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get());
+        assertEquals(1, CoarseTimestampDerbyDictionary.COLUMN_LOOKUPS.get(), "one lookup for the shared column");
     }
 }

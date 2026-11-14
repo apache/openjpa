@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -29,6 +35,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests derived identity (@IdClass, @EmbeddedId, @MapsId) with RUNTIME
@@ -41,9 +49,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * All entities use Unenhanced* prefix to skip build-time enhancement.
  */
-public class TestUnenhancedDerivedId extends SingleEMFTestCase {
+class TestUnenhancedDerivedId extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedDID1Employee.class,
@@ -68,7 +76,8 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * ex1a: @IdClass with @Id @ManyToOne, simple parent PK (long).
      * Mirrors TCK core/derivedid/ex1a/Client.DIDTest.
      */
-    public void testEx1a_IdClassWithIdManyToOne() {
+    @Test
+    void ex1aIdClassWithIdManyToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -90,17 +99,17 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
             // Find with composite IdClass key
             UnenhancedDID1Dependent newDependent = em.find(UnenhancedDID1Dependent.class,
                 new UnenhancedDID1DependentId("Obama", 1L));
-            assertNotNull("Should find dependent by IdClass key", newDependent);
+            assertNotNull(newDependent, "Should find dependent by IdClass key");
             em.refresh(newDependent);
 
             // Query
             List depList = em.createQuery(
                 "Select d from UnenhancedDID1Dependent d where d.name='Obama' and d.emp.name='Duke'")
                 .getResultList();
-            assertTrue("Query should return results", depList.size() > 0);
+            assertTrue(depList.size() > 0, "Query should return results");
 
             newDependent = (UnenhancedDID1Dependent) depList.get(0);
-            assertSame("Should be same managed instance", dep1, newDependent);
+            assertSame(dep1, newDependent, "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -117,7 +126,8 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * ex1b: @EmbeddedId + @MapsId, simple parent PK (long).
      * Mirrors TCK core/derivedid/ex1b/Client.DIDTest.
      */
-    public void testEx1b_EmbeddedIdWithMapsId() {
+    @Test
+    void ex1bEmbeddedIdWithMapsId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -142,17 +152,17 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
 
             // Find with EmbeddedId key
             UnenhancedDID1bDependent newDependent = em.find(UnenhancedDID1bDependent.class, depId1);
-            assertNotNull("Should find dependent by EmbeddedId key", newDependent);
+            assertNotNull(newDependent, "Should find dependent by EmbeddedId key");
             em.refresh(newDependent);
 
             // Query
             List depList = em.createQuery(
                 "Select d from UnenhancedDID1bDependent d where d.id.name='Obama' and d.emp.name='Duke'")
                 .getResultList();
-            assertTrue("Query should return results", depList.size() > 0);
+            assertTrue(depList.size() > 0, "Query should return results");
 
             newDependent = (UnenhancedDID1bDependent) depList.get(0);
-            assertSame("Should be same managed instance", dep1, newDependent);
+            assertSame(dep1, newDependent, "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -169,7 +179,8 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * ex3a: @IdClass with @Id @ManyToOne, composite parent PK (@EmbeddedId).
      * Mirrors TCK core/derivedid/ex3a/Client.DIDTest.
      */
-    public void testEx3a_IdClassWithCompositeParentPK() {
+    @Test
+    void ex3aIdClassWithCompositeParentPK() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -197,17 +208,17 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
 
             // Find
             UnenhancedDID3Dependent newDependent = em.find(UnenhancedDID3Dependent.class, depId1);
-            assertNotNull("Should find dependent by IdClass key", newDependent);
+            assertNotNull(newDependent, "Should find dependent by IdClass key");
             em.refresh(newDependent);
 
             // Query
             List depList = em.createQuery(
                 "Select d from UnenhancedDID3Dependent d where d.name2='Obama' and d.emp.empId.firstName='Java'")
                 .getResultList();
-            assertTrue("Query should return results", depList.size() > 0);
+            assertTrue(depList.size() > 0, "Query should return results");
 
             newDependent = (UnenhancedDID3Dependent) depList.get(0);
-            assertSame("Should be same managed instance", dep1, newDependent);
+            assertSame(dep1, newDependent, "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -224,7 +235,8 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * ex2a: @IdClass with @Id @ManyToOne, composite parent @IdClass.
      * Mirrors TCK core/derivedid/ex2a/Client.DIDTest.
      */
-    public void testEx2a_IdClassWithCompositeParentIdClass() {
+    @Test
+    void ex2aIdClassWithCompositeParentIdClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -253,7 +265,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
                 "Obama", new UnenhancedDID2aEmployeeId("John", "Duke"));
             UnenhancedDID2aDependent newDependent =
                 em.find(UnenhancedDID2aDependent.class, depId);
-            assertNotNull("Should find dependent by IdClass key", newDependent);
+            assertNotNull(newDependent, "Should find dependent by IdClass key");
             em.refresh(newDependent);
 
             // Query
@@ -261,10 +273,10 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
                 "Select d from UnenhancedDID2aDependent d where d.name='Obama'"
                 + " and d.emp.firstName='John'")
                 .getResultList();
-            assertTrue("Query should return results", depList.size() > 0);
+            assertTrue(depList.size() > 0, "Query should return results");
 
             newDependent = (UnenhancedDID2aDependent) depList.get(0);
-            assertSame("Should be same managed instance", dep1, newDependent);
+            assertSame(dep1, newDependent, "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -281,7 +293,8 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * mapsid: @MapsId ManyToOne — same pattern as ex1b.
      * Mirrors TCK core/annotations/mapsid/Client.persistMX1Test1.
      */
-    public void testMapsId_PersistMX1() {
+    @Test
+    void mapsIdPersistMX1() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -306,7 +319,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
             // Find
             UnenhancedDID1bDependent newDependent = em.find(UnenhancedDID1bDependent.class,
                 new UnenhancedDID1bDependentId("Obama", 1L));
-            assertNotNull("Should find dependent", newDependent);
+            assertNotNull(newDependent, "Should find dependent");
             em.refresh(newDependent);
 
             // Query
@@ -319,7 +332,7 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
                 resultDep = (UnenhancedDID1bDependent) depList.get(0);
             }
 
-            assertSame("Should be same managed instance", dep1, resultDep);
+            assertSame(dep1, resultDep, "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -341,27 +354,28 @@ public class TestUnenhancedDerivedId extends SingleEMFTestCase {
      * should be "EMP_ID" (from field "emp" + "_" + PK column "ID"),
      * not "empPK" (the embedded ID field name).
      */
-    public void testMapsIdFKColumnNaming() {
+    @Test
+    void mapsIdFKColumnNaming() {
         ClassMapping mapping = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, UnenhancedDID1bDependent.class);
-        assertNotNull("Should have mapping for UnenhancedDID1bDependent",
-            mapping);
+        assertNotNull(mapping,
+            "Should have mapping for UnenhancedDID1bDependent");
 
         FieldMapping empField = mapping.getFieldMapping("emp");
-        assertNotNull("Should have 'emp' field mapping", empField);
+        assertNotNull(empField, "Should have 'emp' field mapping");
 
         ForeignKey fk = empField.getForeignKey();
-        assertNotNull("Should have FK on 'emp' field", fk);
+        assertNotNull(fk, "Should have FK on 'emp' field");
 
         Column[] fkCols = fk.getColumns();
-        assertNotNull("FK should have columns", fkCols);
-        assertEquals("FK should have 1 column", 1, fkCols.length);
+        assertNotNull(fkCols, "FK should have columns");
+        assertEquals(1, fkCols.length, "FK should have 1 column");
 
         String fkColName = fkCols[0].getIdentifier().getName()
             .toUpperCase(Locale.ROOT);
         assertEquals(
-            "@MapsId FK column should use default FK naming convention "
-            + "(field_name + '_' + referenced PK column name)",
-            "EMP_ID", fkColName);
+            "EMP_ID",
+            fkColName, "@MapsId FK column should use default FK naming convention "
+            + "(field_name + '_' + referenced PK column name)");
     }
 }

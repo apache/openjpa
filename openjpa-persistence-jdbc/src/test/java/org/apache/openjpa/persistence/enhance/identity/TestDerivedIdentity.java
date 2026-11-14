@@ -18,19 +18,24 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDerivedIdentity extends SingleEMFTestCase {
-    @Override
+class TestDerivedIdentity extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent5a.class, Employee5.class, EmployeeId5.class);
     }
 
-    public void testIncorrectJoinColumnAnnotation() {
+    @Test
+    void incorrectJoinColumnAnnotation() {
         try {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();

@@ -21,7 +21,7 @@ package org.apache.openjpa.persistence.common.utils;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Extension of an assertion error that indicates to the outside

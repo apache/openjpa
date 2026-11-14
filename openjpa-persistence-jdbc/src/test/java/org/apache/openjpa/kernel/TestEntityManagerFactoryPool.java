@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,18 +28,21 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEntityManagerFactoryPool
+class TestEntityManagerFactoryPool
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.EntityManagerFactoryPool", Boolean.TRUE);
 
         emf.createEntityManager().close();
     }
 
-    public void testBrokerFactoryPoolHit() {
+    @Test
+    void brokerFactoryPoolHit() {
         Map m = new HashMap();
         // also tests string values for the property
         m.put("openjpa.EntityManagerFactoryPool", "True");
@@ -47,7 +53,8 @@ public class TestEntityManagerFactoryPool
         closeEMF(emf1);
     }
 
-    public void testBrokerFactoryPoolMiss() {
+    @Test
+    void brokerFactoryPoolMiss() {
         Map m = new HashMap();
         m.put("openjpa.EntityManagerFactoryPool", Boolean.TRUE);
         EntityManagerFactory emf1 = Persistence.createEntityManagerFactory(

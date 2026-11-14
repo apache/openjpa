@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +29,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
-
+@DynamicEnhancementTest
 public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
 
     public int numEmployees = 2;
@@ -41,8 +45,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
     public int numPhoneNumbersPerEmployee = 2;
 
     public Map<Integer, Employee> empMap = new HashMap<>();
-    public Map<Integer, PhoneNumber> phoneMap =
-        new HashMap<>();
+    public Map<Integer, PhoneNumber> phoneMap = new HashMap<>();
 
     public int empId = 1;
     public int phoneId = 1;
@@ -51,7 +54,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
     public List rsAllPhones = null;
     public List rsAllEmps = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Department.class,
@@ -64,10 +67,13 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
     }
 
     @AllowFailure
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    @Test
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
-    public void testQueryQualifiedId() throws Exception {
+
+    @Test
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
     public void setCandidate(Query q, Class clz)
@@ -116,7 +122,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
-        assertEquals((String) rs.get(0), "String1");
+        assertEquals("String1", (String) rs.get(0));
 
         query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e WHERE KEY(e) = ?1";
@@ -125,7 +131,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
-        assertEquals((String) rs.get(0), "String1");
+        assertEquals("String1", (String) rs.get(0));
 
         query = "select KEY(e) from PhoneNumber p, " +
             " in (p.emps) e WHERE KEY(e) = ?1";
@@ -134,12 +140,13 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, PhoneNumber.class);
         rs = q.getResultList();
-        assertEquals((String) rs.get(0), "String1");
+        assertEquals("String1", (String) rs.get(0));
 
         em.close();
     }
 
-    public void testQueryObject() throws Exception {
+    @Test
+    void queryObject() throws Exception {
         queryObj();
         findObj();
     }
@@ -227,7 +234,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         Employee e0 = empMap.get(id);
         Map<Department, PhoneNumber> phones = e.getPhoneNumbers();
         Map<Department, PhoneNumber> phones0 = e0.getPhoneNumbers();
-        Assert.assertEquals(phones0.size(), phones.size());
+        assertEquals(phones0.size(), phones.size());
         checkPhoneMap(phones0, phones);
     }
 
@@ -236,7 +243,7 @@ public class TestMany2ManyMapEx2 extends SQLListenerTestCase {
         PhoneNumber p0 = phoneMap.get(number);
         Map<String, Employee> es = p.getEmployees();
         Map<String, Employee> es0 = p0.getEmployees();
-        Assert.assertEquals(es0.size(), es.size());
+        assertEquals(es0.size(), es.size());
         checkEmpMap(es0, es);
     }
 

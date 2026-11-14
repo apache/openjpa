@@ -27,22 +27,21 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Properties;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedOwnerPC;
 import org.apache.openjpa.persistence.kernel.common.apps.EmbeddedPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSavepointEmbedded extends BaseKernelTest {
 
     private int id = 10000;
-
-    /**
-     * Creates a new instance of TestSavepointEmbedded
-     */
-    public TestSavepointEmbedded(String name) {
-        super(name);
-    }
 
     protected String getSavepointPlugin() {
         return "in-mem(PreFlush=false)";
@@ -59,8 +58,8 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         return properties;
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(EmbeddedOwnerPC.class);
     }
 
@@ -68,7 +67,8 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         return new EmbeddedOwnerPC(id++, id++);
     }
 
-    public void testClearNew()
+    @Test
+    void clearNew()
         throws Exception {
         doClearNewTest(true, 0, 0);
         doClearNewTest(true, 2, 0);
@@ -122,7 +122,8 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testEmbeddedReassign() {
+    @Test
+    void embeddedReassign() {
         doEmbeddedReassignTest(true, 0, 0);
         doEmbeddedReassignTest(true, 2, 0);
         doEmbeddedReassignTest(true, 0, 2);
@@ -176,7 +177,8 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testEmbeddedChange()
+    @Test
+    void embeddedChange()
         throws Exception {
         try {
             doEmbeddedChangeTest(true, 0, 0);
@@ -234,7 +236,8 @@ public class TestSavepointEmbedded extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testEmbeddedChange2()
+    @Test
+    void embeddedChange2()
         throws Exception {
         try {
             doEmbeddedChangeTest2(true, 0, 0);

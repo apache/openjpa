@@ -20,9 +20,13 @@ package org.apache.openjpa.persistence.relations;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestChainEntities extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestChainEntities extends SingleEMFTestCase {
 
 	/*
 	 * Set this magical number to 3 or less to avoid the error.
@@ -31,7 +35,7 @@ public class TestChainEntities extends SingleEMFTestCase {
 
 	long aid;
 
-	@Override
+    @BeforeEach
     public void setUp () {
 		setUp (DROP_TABLES,
 		    ChainEntityA.class, ChainEntityB.class, ChainEntityC.class);
@@ -47,7 +51,8 @@ public class TestChainEntities extends SingleEMFTestCase {
 		em.close ();
 	}
 
-	public void testChainEntities () {
+    @Test
+    void chainEntities() {
 		chainUpdate ();
 	}
 

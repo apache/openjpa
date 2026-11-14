@@ -20,6 +20,15 @@ package org.apache.openjpa.persistence.lock.extended;
 
 import jakarta.persistence.EntityManager;
 
+import java.util.stream.Stream;
+
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 /**
  * LockScopeTestCase subclass to test entities:
  * - with Basic attributes
@@ -29,18 +38,16 @@ import jakarta.persistence.EntityManager;
  * - uses element collection - lazy fetch (default)
  * - uses element collection - eager fetch
  */
-public class TestBasicLockScope extends LockScopeTestCase {
+class TestBasicLockScope extends LockScopeTestCase {
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(DerbyDictionary.class, OracleDictionary.class, DB2Dictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(LSEBase.class
             , LSESecTbl.class
             , LSESngTblCon.class
@@ -63,11 +70,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
         );
     }
 
-    public void testNormalBasicLock() {
+    @Test
+    void normalBasicLock() {
         commonBasicLock("testNormalBasicLock", 000, false);
     }
 
-    public void testExtendedBasicLock() {
+    @Test
+    void extendedBasicLock() {
         commonBasicLock("testExtendedBasicLock", 010, true);
     }
 
@@ -229,11 +238,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalSecTableLock() {
+    @Test
+    void normalSecTableLock() {
         commonSecTableLock("testNormalSecTableLock", 100, false);
     }
 
-    public void testExtendedSecTableLock() {
+    @Test
+    void extendedSecTableLock() {
         commonSecTableLock("testExtendedSecTableLock", 110, true);
     }
 
@@ -454,11 +465,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalSingleTableLock() {
+    @Test
+    void normalSingleTableLock() {
         commonSingleTableLock("testNormalSingleTableLock", 200, false);
     }
 
-    public void testExtendedlSingleTableLock() {
+    @Test
+    void extendedlSingleTableLock() {
         commonSingleTableLock("testExtendedlSingleTableLock", 210, true);
     }
 
@@ -636,11 +649,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalJoinedLock() {
+    @Test
+    void normalJoinedLock() {
         commonJoinedLock("testNormalJoinedLock", 400, false);
     }
 
-    public void testExtendedJoinedLock() {
+    @Test
+    void extendedJoinedLock() {
         commonJoinedLock("testExtendedJoinedLock", 410, true);
     }
 
@@ -856,11 +871,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalElementCollectionLock() {
+    @Test
+    void normalElementCollectionLock() {
         commonElementCollectionLock("testNormalElementCollectionLock", 500, false);
     }
 
-    public void testExtendedElementCollectionLock() {
+    @Test
+    void extendedElementCollectionLock() {
         commonElementCollectionLock("testExtendedElementCollectionLock", 510, true);
     }
 
@@ -1024,11 +1041,13 @@ public class TestBasicLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalElementCollectionEagerLock() {
+    @Test
+    void normalElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testNormalElementCollectionEagerLock", 600, false);
     }
 
-    public void testExtendedElementCollectionEagerLock() {
+    @Test
+    void extendedElementCollectionEagerLock() {
         commonElementCollectionEagerLock("testExtendedElementCollectionEagerLock", 610, true);
     }
 

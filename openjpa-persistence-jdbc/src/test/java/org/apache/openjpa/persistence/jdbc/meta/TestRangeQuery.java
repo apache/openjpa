@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -29,31 +31,28 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.HelperPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
 
-public class TestRangeQuery extends
-        org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-    /** Creates a new instance of TestRangeQuery */
-    public TestRangeQuery(String name) {
-        super(name);
-    }
+public class TestRangeQuery extends BaseJDBCTest {
 
     public boolean skipTest() {
-        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).
-                getDBDictionaryInstance();
+        DBDictionary dict = ((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance();
         return !dict.supportsSubselect;
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
        deleteAll(HelperPC.class);
        deleteAll(EagerOuterJoinPC2.class);
        deleteAll(EagerOuterJoinPC.class);
     }
 
-    public void testQueryRange() {
+    @Test
+    void queryRange() {
         insertManyStringList();
 
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();

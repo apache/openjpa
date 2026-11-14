@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.conversion.autoapply;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.SQLException;
 import java.util.List;
 
@@ -27,32 +31,36 @@ import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.apache.openjpa.meta.FieldMetaData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * An attribute whose declared type is an interface that is not serializable
  * is mapped through the auto-apply converter of that interface, with or
  * without {@code @Basic}.
  */
-public class TestAutoApplyConvertedInterfaceAttribute extends AbstractAutoApplyTestCase {
+class TestAutoApplyConvertedInterfaceAttribute extends AbstractAutoApplyTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUpUnit(List.of(UnenhancedAutoApplyInterfaceEntity.class, ProductCodeConverter.class));
     }
 
-    public void testInterfaceAttributesAreMappedWithTheirConverter() throws SQLException {
+    @Test
+    void interfaceAttributesAreMappedWithTheirConverter() throws SQLException {
         for (String name : List.of("code", "basicCode")) {
             FieldMetaData fmd = persistentField(UnenhancedAutoApplyInterfaceEntity.class, name);
-            assertNotNull(name + " must be persistent", fmd);
+            assertNotNull(fmd, name + " must be persistent");
             assertEquals(ProductCodeConverter.class, fmd.getConverter());
-            assertFalse("the converter maps the value, not serialization", fmd.isSerialized());
+            assertFalse(fmd.isSerialized(), "the converter maps the value, not serialization");
         }
         persist();
         assertColumnType(STRING_TYPES, "AA_IFACE", "CODE");
         assertColumnType(STRING_TYPES, "AA_IFACE", "BASICCODE");
     }
 
-    public void testRoundTripAndQuery() {
+    @Test
+    void roundTripAndQuery() {
         persist();
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedAutoApplyInterfaceEntity found =
@@ -69,7 +77,8 @@ public class TestAutoApplyConvertedInterfaceAttribute extends AbstractAutoApplyT
         }
     }
 
-    public void testMetamodelShowsBasicAttributes() {
+    @Test
+    void metamodelShowsBasicAttributes() {
         EntityType<UnenhancedAutoApplyInterfaceEntity> entity =
             emf.getMetamodel().entity(UnenhancedAutoApplyInterfaceEntity.class);
         for (String name : List.of("code", "basicCode")) {

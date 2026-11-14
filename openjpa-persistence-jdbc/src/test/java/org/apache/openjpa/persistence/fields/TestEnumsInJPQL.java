@@ -18,14 +18,18 @@
  */
 package org.apache.openjpa.persistence.fields;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEnumsInJPQL
+class TestEnumsInJPQL
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EnumFieldType.class, CLEAR_TABLES);
 
@@ -40,15 +44,17 @@ public class TestEnumsInJPQL
         em = emf.createEntityManager();
     }
 
-    public void testEnumLiteralInSelect() {
+    @Test
+    void enumLiteralInSelect() {
         Query q = em.createQuery("select count(o) from EnumFieldType o where " +
             "o.enumField = " +
             "org.apache.openjpa.persistence.fields.SampleEnum.BAR");
         assertEquals(1, ((Number) q.getSingleResult()).intValue());
     }
 
-    public void testEnumLiteralInSetInUpdate() {
-        testEnumLiteralInSelect();
+    @Test
+    void enumLiteralInSetInUpdate() {
+        enumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set " +
             "o.enumField = " +
@@ -58,8 +64,9 @@ public class TestEnumsInJPQL
         postUpdateCheck(true);
     }
 
-    public void testEnumLiteralInWhereInUpdate() {
-        testEnumLiteralInSelect();
+    @Test
+    void enumLiteralInWhereInUpdate() {
+        enumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set o.intField = 3 " +
             "where o.enumField = " +
@@ -83,22 +90,25 @@ public class TestEnumsInJPQL
             ((Number) q.getSingleResult()).intValue());
     }
 
-    public void testEnumPositionalParamInSelect() {
+    @Test
+    void enumPositionalParamInSelect() {
         Query q = em.createQuery("select count(o) from EnumFieldType o where " +
             "o.enumField = ?1");
         q.setParameter(1, SampleEnum.BAR);
         assertEquals(1, ((Number) q.getSingleResult()).intValue());
     }
 
-    public void testEnumNamedParamInSelect() {
+    @Test
+    void enumNamedParamInSelect() {
         Query q = em.createQuery("select count(o) from EnumFieldType o where " +
             "o.enumField = :e");
         q.setParameter("e", SampleEnum.BAR);
         assertEquals(1, ((Number) q.getSingleResult()).intValue());
     }
 
-    public void testEnumParamInSetInUpdate() {
-        testEnumLiteralInSelect();
+    @Test
+    void enumParamInSetInUpdate() {
+        enumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set o.enumField = :e");
         q.setParameter("e", SampleEnum.BAZ);
@@ -107,8 +117,9 @@ public class TestEnumsInJPQL
         postUpdateCheck(true);
     }
 
-    public void testEnumParamInWhereInUpdate() {
-        testEnumLiteralInSelect();
+    @Test
+    void enumParamInWhereInUpdate() {
+        enumLiteralInSelect();
         em.getTransaction().begin();
         Query q = em.createQuery("update EnumFieldType o set o.intField = 3 " +
             "where o.enumField = :e");
@@ -118,7 +129,8 @@ public class TestEnumsInJPQL
         postUpdateCheck(false);
     }
 
-    public void testMemberOf() {
+    @Test
+    void memberOf() {
         assertEquals(1L,
             em.createQuery("select count(o) from EnumFieldType o where " +
                 "(:param member of o.enumList or :param2 member of o.enumList)")

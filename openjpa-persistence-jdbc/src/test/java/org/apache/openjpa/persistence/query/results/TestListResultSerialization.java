@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query.results;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,8 @@ import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.PersistenceExceptions;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that the DistinctResultList serializes correctly and without error.
@@ -35,14 +40,15 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @author Dianne Richards
  * @since 2.1.0
  */
-public class TestListResultSerialization extends SQLListenerTestCase {
-    @Override
+class TestListResultSerialization extends SQLListenerTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         assertNotNull(emf);
     }
 
-    public void testRoundtrip() {
+    @Test
+    void testRoundtrip() {
         List<String> list = new ArrayList<>();
         list.add("xxx");
         list.add("yyy");

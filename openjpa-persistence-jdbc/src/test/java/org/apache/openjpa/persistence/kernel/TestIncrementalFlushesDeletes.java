@@ -29,31 +29,28 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestIncrementalFlushesDeletes extends BaseKernelTest {
+class TestIncrementalFlushesDeletes extends BaseKernelTest {
 
     private OpenJPAEntityManager pm;
     private Object oid;
     private RuntimeTest1 a;
 
-    public TestIncrementalFlushesDeletes(String str) {
-        super(str);
-    }
-
-    /**
-     * Creates a new instance of TestIncrementalFlushesDeletes
-     */
-    public TestIncrementalFlushesDeletes() {
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         pm = getPM(true, false);
@@ -63,7 +60,7 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
         oid = pm.getObjectId(a);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         endTx(pm);
 
@@ -93,7 +90,8 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     /**
      * PNew => PNewDeleted
      */
-    public void testNewDeleted() {
+    @Test
+    void newDeleted() {
         pm.remove(a);
         assertState(PCState.PNEWDELETED, false);
     }
@@ -101,7 +99,8 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     /**
      * PNew => PNewDeleted => PNewDeletedFlushed
      */
-    public void testNewDeletedFlushed() {
+    @Test
+    void newDeletedFlushed() {
         pm.remove(a);
         assertState(PCState.PNEWDELETED, false);
         pm.flush();
@@ -111,7 +110,8 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     /**
      * PNew => PNewFlushed => PNewFlushedDeleted
      */
-    public void testNewFlushedDeleted() {
+    @Test
+    void newFlushedDeleted() {
         pm.flush();
         assertState(PCState.PNEW, true);
         pm.remove(a);
@@ -121,7 +121,8 @@ public class TestIncrementalFlushesDeletes extends BaseKernelTest {
     /**
      * PNew => PNewFlushed => PNewFlushedDeleted => PNewFlushedDeletedFlushed
      */
-    public void testNewFlushedDeletedFlushed() {
+    @Test
+    void newFlushedDeletedFlushed() {
         pm.flush();
         assertState(PCState.PNEW, true);
         pm.remove(a);

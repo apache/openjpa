@@ -18,11 +18,11 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The schema configured for new tables is named for the dictionary of the
@@ -30,10 +30,10 @@ import org.junit.Test;
  * delimited, so that it equals the name that is read back from the
  * database, on other databases it is left alone (OPENJPA-3076).
  */
-public class TestNewTableSchemaName {
+class TestNewTableSchemaName {
 
     @Test
-    public void testConfiguredSchema() {
+    void configuredSchema() {
         assertEquals("\"Current\"", Schemas.getNewTableSchemaIdentifier(configuration("mysql", "Current", null))
             .getName());
         assertEquals("\"Current\"", Schemas.getNewTableSchemaIdentifier(configuration("mariadb", "Current", null))
@@ -43,7 +43,7 @@ public class TestNewTableSchemaName {
     }
 
     @Test
-    public void testFirstOfTheConfiguredSchemas() {
+    void firstOfTheConfiguredSchemas() {
         assertEquals("\"Current\"", Schemas.getNewTableSchemaIdentifier(
             configuration("mysql", null, "Current.Window,Item")).getName());
         assertEquals("Shop", Schemas.getNewTableSchemaIdentifier(configuration("mysql", null, "Shop.Item"))

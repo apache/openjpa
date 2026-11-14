@@ -19,12 +19,14 @@
 package org.apache.openjpa.persistence.lockmgr;
 
 import jakarta.persistence.LockModeType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 em.lock(LockMode) behaviors with "mixed" lock manager.
  */
-public class MixedLockManagerGenericTest extends SequencedActionsTest {
-    @Override
+class MixedLockManagerGenericTest extends SequencedActionsTest {
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -32,42 +34,49 @@ public class MixedLockManagerGenericTest extends SequencedActionsTest {
         commonSetUp();
     }
 
-    public void testRefreshRead() {
-        testCommon("testRefreshRead",
+    @Test
+    void refreshRead() {
+        common("testRefreshRead",
             LockModeType.READ, 0, 1);
     }
 
-    public void testRefreshWrite() {
-        testCommon("testRefreshWrite",
+    @Test
+    void refreshWrite() {
+        common("testRefreshWrite",
             LockModeType.WRITE, 1, 1);
     }
 
-    public void testRefreshOptimistic() {
-        testCommon("testRefreshOptimistic",
+    @Test
+    void refreshOptimistic() {
+        common("testRefreshOptimistic",
             LockModeType.OPTIMISTIC, 0, 1);
     }
 
-    public void testRefreshOptimisticForceInc() {
-        testCommon("testRefreshOptimisticForceInc",
+    @Test
+    void refreshOptimisticForceInc() {
+        common("testRefreshOptimisticForceInc",
             LockModeType.OPTIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
-    public void testRefreshPessimisticRead() {
-        testCommon("testRefreshPessimisticRead",
+    @Test
+    void refreshPessimisticRead() {
+        common("testRefreshPessimisticRead",
             LockModeType.PESSIMISTIC_READ, 0, 1);
     }
 
-    public void testRefreshPessimisticWrite() {
-        testCommon("testRefreshPessimisticWrite",
+    @Test
+    void refreshPessimisticWrite() {
+        common("testRefreshPessimisticWrite",
             LockModeType.PESSIMISTIC_WRITE, 0, 1);
     }
 
-    public void testRefreshPessimisticForceInc() {
-        testCommon("testRefreshPessimisticForceInc",
+    @Test
+    void refreshPessimisticForceInc() {
+        common("testRefreshPessimisticForceInc",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, 1, 1);
     }
 
-    public void testCommon(String testName, LockModeType lockMode,
+    void common(String testName, LockModeType lockMode,
         int commitVersionIncrement, int updateCommitVersionIncrement) {
 
         Object[][] threadTest = {

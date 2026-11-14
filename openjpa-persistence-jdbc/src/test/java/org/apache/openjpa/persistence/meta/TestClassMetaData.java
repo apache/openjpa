@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
@@ -35,6 +37,8 @@ import org.apache.openjpa.persistence.meta.common.apps.MetaTest2;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest3;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest5;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest6;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests the {@link ClassMetaData} type, and in so doing tests parts of
@@ -53,12 +57,12 @@ public class TestClassMetaData
     private ClassMetaData _metaTest5 = null;
     private ClassMetaData _metaTest6 = null;
 
-    public TestClassMetaData(String test) {
-        super(test, "metacactusapp");
+    public TestClassMetaData() {
+        super("metacactusapp");
     }
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         _repos = getRepository();
         _metaTest5 = _repos.getMetaData(MetaTest5.class, null, true);
@@ -80,7 +84,8 @@ public class TestClassMetaData
     /**
      * Test the class-level defaults.
      */
-    public void testClassDefaults() {
+    @Test
+    void classDefaults() {
         assertEquals(MetaTest1.class.getName(),
             _metaTest1.getDescribedType().getName());
         assertNull(_metaTest1.getPCSuperclass());
@@ -89,7 +94,8 @@ public class TestClassMetaData
         assertTrue(_metaTest1.getRequiresExtent());
     }
 
-    public void testGetProxyFields(){
+    @Test
+    void getProxyFields(){
         FieldMetaData[] proxies = _metaTest3.getProxyFields();
         assertEquals(2, proxies.length);
 
@@ -100,10 +106,12 @@ public class TestClassMetaData
         assertEquals(0, proxies.length);
 
     }
+
     /**
      * Test non-persistent fields.
      */
-    public void testDefaultNonPersistentFields() {
+    @Test
+    void defaultNonPersistentFields() {
         assertNull(_metaTest1.getField("staticField"));
         assertNull(_metaTest1.getField("finalfield"));
         assertNull(_metaTest1.getField("transientfield"));
@@ -119,7 +127,8 @@ public class TestClassMetaData
     /**
      * Test basics on persistent fields.
      */
-    public void testBasicFields() {
+    @Test
+    void basicFields() {
         FieldMetaData fmd;
         fmd = _metaTest1.getField("stringField");
         assertEquals(JavaTypes.STRING, fmd.getTypeCode());
@@ -151,8 +160,8 @@ public class TestClassMetaData
             fmd.getElement().getDeclaredTypeCode());
         fmd = _metaTest1.getField("intField");
         assertEquals(FieldMetaData.NULL_EXCEPTION, fmd.getNullValue());
-        assertTrue(!fmd.isInDefaultFetchGroup());
-        assertTrue(!fmd.isEmbedded());
+        assertFalse(fmd.isInDefaultFetchGroup());
+        assertFalse(fmd.isEmbedded());
         fmd = _metaTest1.getField("stringField");
         assertEquals(FieldMetaData.NULL_UNSET, fmd.getNullValue());
         assertTrue(fmd.isInDefaultFetchGroup());
@@ -162,7 +171,8 @@ public class TestClassMetaData
     /**
      * Test collection and map fields.
      */
-    public void testCollectionFields() {
+    @Test
+    void collectionFields() {
         FieldMetaData fmd;
         fmd = _metaTest2.getField("collectionField1");
         assertEquals(JavaTypes.COLLECTION, fmd.getTypeCode());
@@ -187,7 +197,7 @@ public class TestClassMetaData
             fmd.getElement().getDeclaredTypeCode());
         assertEquals(MetaTest3.class, fmd.getElement().getDeclaredType());
         assertEquals(_metaTest3, fmd.getElement().getDeclaredTypeMetaData());
-        assertTrue(!fmd.getElement().isEmbedded());
+        assertFalse(fmd.getElement().isEmbedded());
 
         fmd = _metaTest2.getField("mapField1");
         assertEquals(JavaTypes.MAP, fmd.getTypeCode());
@@ -218,21 +228,23 @@ public class TestClassMetaData
         assertEquals(String.class, fmd.getKey().getDeclaredType());
         assertEquals(Integer.class, fmd.getElement().getDeclaredType());
         assertTrue(fmd.getKey().isEmbedded());
-        assertTrue(!fmd.getElement().isEmbedded());
+        assertFalse(fmd.getElement().isEmbedded());
     }
 
     /**
      * Test the basic class-level meta data.
      */
-    public void testBasicClass() {
+    @Test
+    void basicClass() {
         assertEquals(_metaTest1, _metaTest2.getPCSuperclassMetaData());
-        assertTrue(!_metaTest2.getRequiresExtent());
+        assertFalse(_metaTest2.getRequiresExtent());
     }
 
     /**
      * Test application identity.
      */
-    public void testApplicationIdentity() {
+    @Test
+    void applicationIdentity() {
         assertEquals(ClassMetaData.ID_APPLICATION,
             _metaTest5.getIdentityType());
         assertEquals(MetaTest5.MetaTest5Id.class.getName(),
@@ -246,7 +258,8 @@ public class TestClassMetaData
     /**
      * Test absolute field numbering.
      */
-    public void testAbsoluteFieldNumbering() {
+    @Test
+    void absoluteFieldNumbering() {
         assertEquals(0, _metaTest1.getField("doubleField").getIndex());
         assertEquals(1, _metaTest1.getField("intArrayField").getIndex());
         assertEquals(2, _metaTest1.getField("intField").getIndex());
@@ -264,7 +277,8 @@ public class TestClassMetaData
     /**
      * Test the methods to get fields.
      */
-    public void testGetFields() {
+    @Test
+    void getFields() {
         FieldMetaData[] fmds = _metaTest2.getFields();
         assertEquals("doubleField", fmds[0].getName());
         assertEquals("intField", fmds[2].getName());
@@ -274,14 +288,16 @@ public class TestClassMetaData
     /**
      * Test that metadata on inner classes is available.
      */
-    public void testStaticInnerClasses() {
+    @Test
+    void staticInnerClasses() {
         assertNotNull(_repos.getMetaData(MetaTest1.Inner.class, null, true));
     }
 
     /**
      * Test extensions for external values and declared vs external types.
      */
-    public void testExternalTypes() {
+    @Test
+    void externalTypes() {
         // note that below, declared type code is promoted
         FieldMetaData fmd = _metaTest3.getField("pcField");
         assertEquals(JavaTypes.PC_UNTYPED, fmd.getTypeCode());

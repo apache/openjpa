@@ -18,13 +18,17 @@
  */
 package org.apache.openjpa.persistence.detach;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Added for OPENJPA-1896
  */
-public class TestMergeNoStateManager extends SingleEMFTestCase {
+class TestMergeNoStateManager extends SingleEMFTestCase {
     Object[] args =
         new Object[] { TimestampVersionEntity.class, IntVersionEntity.class, NoVersionEntity.class,
             IntegerVersionEntity.class, CLEAR_TABLES
@@ -35,7 +39,7 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
     NoVersionEntity _nve;
     IntegerVersionEntity _integerVe;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(args);
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
@@ -60,7 +64,7 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
     /**
      * This test is commented out is it will fail.
      */
-//    public void testOLE() throws Exception {
+    //    @Test void ole() throws Exception {
 //        OpenJPAEntityManagerSPI em = emf.createEntityManager();
 //        try {
 //            String updatedName = "updatedName_" + System.currentTimeMillis();
@@ -90,7 +94,8 @@ public class TestMergeNoStateManager extends SingleEMFTestCase {
 //        }
 //    }
 
-    public void test() throws Exception {
+    @Test
+    void test() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         try {
             String updatedName = "updatedName_" + System.currentTimeMillis();

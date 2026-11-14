@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.models.company.fetchlazy.Address;
@@ -31,10 +33,12 @@ import org.apache.openjpa.persistence.models.company.fetchlazy.Person;
 import org.apache.openjpa.persistence.models.company.fetchlazy.Product;
 import org.apache.openjpa.persistence.models.company.fetchlazy.ProductOrder;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDistinctQueries extends SingleEMTestCase {
+class TestDistinctQueries extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Address.class, Company.class, Customer.class, Employee.class,
             FullTimeEmployee.class, LineItem.class, PartTimeEmployee.class,
@@ -56,25 +60,29 @@ public class TestDistinctQueries extends SingleEMTestCase {
         em.getTransaction().commit();
     }
 
-    public void testDuplicateResultsInNonDistinctJoinFetchQuery() {
+    @Test
+    void duplicateResultsInNonDistinctJoinFetchQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join fetch o.items").getResultList();
         assertEquals(3, l.size());
     }
 
-    public void testDuplicateResultsInNonDistinctJoinQuery() {
+    @Test
+    void duplicateResultsInNonDistinctJoinQuery() {
         List l = em.createQuery("select o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(3, l.size());
     }
 
-    public void testNoDuplicateResultsInDistinctQuery() {
+    @Test
+    void noDuplicateResultsInDistinctQuery() {
         List l = em.createQuery("select distinct o from LAZ_ProductOrder o " +
             "left join o.items item").getResultList();
         assertEquals(1, l.size());
     }
 
-    public void testDuplicateResultsInNonDistinctConstructorJoinQuery() {
+    @Test
+    void duplicateResultsInNonDistinctConstructorJoinQuery() {
         List l = em.createQuery("select new " +
             "org.apache.openjpa.persistence.query.TestDistinctQueries$Holder(" +
             "o.id) from LAZ_ProductOrder o " +
@@ -82,8 +90,9 @@ public class TestDistinctQueries extends SingleEMTestCase {
         assertEquals(3, l.size());
     }
 
-    public void testNoDuplicateResultsInDistinctConstructorQuery()
-        throws NoSuchMethodException {
+    @Test
+    void noDuplicateResultsInDistinctConstructorQuery()
+        throws Exception {
         List l = em.createQuery("select distinct new " +
             "org.apache.openjpa.persistence.query.TestDistinctQueries$Holder(" +
             "o.id) from LAZ_ProductOrder o " +

@@ -18,28 +18,32 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Date;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities can use SQL dates as identity values.
  *
  * @author Abe White
  */
-public class TestSQLDateId
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestSQLDateId extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SQLDateIdEntity.class);
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
 
         SQLDateIdEntity e = new SQLDateIdEntity();
@@ -58,9 +62,4 @@ public class TestSQLDateId
         assertEquals(1, e.getData());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestSQLBigIntegerId.class);
-    }
 }
-

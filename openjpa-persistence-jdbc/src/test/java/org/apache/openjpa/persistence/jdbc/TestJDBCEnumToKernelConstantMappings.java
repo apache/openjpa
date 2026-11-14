@@ -18,18 +18,19 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.ResultSet;
 
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.kernel.LRSSizes;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
+class TestJDBCEnumToKernelConstantMappings {
 
-public class TestJDBCEnumToKernelConstantMappings
-    extends TestCase {
-
-    public void testEagerFetchModes() {
+    @Test
+    void eagerFetchModes() {
         assertEquals(EagerFetchModes.EAGER_NONE,
             FetchMode.NONE.toKernelConstant());
         assertEquals(FetchMode.NONE,
@@ -58,7 +59,8 @@ public class TestJDBCEnumToKernelConstantMappings
             FetchMode.values().length);
     }
 
-    public void testLRSSizeType() {
+    @Test
+    void lrsSizeType() {
         assertEquals(LRSSizes.SIZE_UNKNOWN,
             LRSSizeAlgorithm.UNKNOWN.toKernelConstant());
         assertEquals(LRSSizeAlgorithm.UNKNOWN,
@@ -87,7 +89,8 @@ public class TestJDBCEnumToKernelConstantMappings
             LRSSizeAlgorithm.values().length);
     }
 
-    public void testJoinSyntaxType() {
+    @Test
+    void joinSyntaxType() {
         assertEquals(JoinSyntaxes.SYNTAX_SQL92,
             JoinSyntax.SQL92.toKernelConstant());
         assertEquals(JoinSyntax.SQL92,
@@ -116,7 +119,8 @@ public class TestJDBCEnumToKernelConstantMappings
             JoinSyntax.values().length);
     }
 
-    public void testResultSetType() {
+    @Test
+    void resultSetType() {
         assertEquals(ResultSet.TYPE_FORWARD_ONLY,
             ResultSetType.FORWARD_ONLY.toKernelConstant());
         assertEquals(ResultSetType.FORWARD_ONLY,
@@ -138,7 +142,8 @@ public class TestJDBCEnumToKernelConstantMappings
         assertEquals(3, ResultSetType.values().length);
     }
 
-    public void testFetchDirection() {
+    @Test
+    void fetchDirection() {
         assertEquals(ResultSet.FETCH_FORWARD,
             FetchDirection.FORWARD.toKernelConstant());
         assertEquals(FetchDirection.FORWARD,

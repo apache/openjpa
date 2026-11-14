@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -28,11 +31,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSelectForUpdateOverride
+class TestSelectForUpdateOverride
     extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class,
             "openjpa.Optimistic", "false",
@@ -40,7 +45,8 @@ public class TestSelectForUpdateOverride
             "openjpa.ReadLockLevel", "none");
     }
 
-    public void testSelectForUpdateOverride() {
+    @Test
+    void selectForUpdateOverride() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI)
             OpenJPAPersistence.cast(emf.createEntityManager());
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())

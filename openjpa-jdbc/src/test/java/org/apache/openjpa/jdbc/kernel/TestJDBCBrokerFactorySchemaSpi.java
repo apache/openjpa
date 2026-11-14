@@ -24,11 +24,11 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.kernel.BrokerImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies that the {@code BrokerFactory} schema management operations do not
@@ -37,7 +37,7 @@ import org.junit.Test;
  *
  * This test needs no database: {@code synchronizeMappings} is stubbed out.
  */
-public class TestJDBCBrokerFactorySchemaSpi {
+class TestJDBCBrokerFactorySchemaSpi {
 
     static final AtomicInteger CLONES = new AtomicInteger();
 
@@ -82,8 +82,8 @@ public class TestJDBCBrokerFactorySchemaSpi {
 
     private CapturingFactory factory;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         JDBCConfigurationImpl conf = new JDBCConfigurationImpl();
         conf.setBrokerImpl(CountingBroker.class.getName());
         CLONES.set(0);
@@ -91,44 +91,44 @@ public class TestJDBCBrokerFactorySchemaSpi {
     }
 
     private void assertNoBroker(String expectedAction) {
-        assertEquals("schema management must not instantiate a Broker", 0, CLONES.get());
+        assertEquals(0, CLONES.get(), "schema management must not instantiate a Broker");
         assertEquals(1, factory.calls);
         assertSame(Thread.currentThread().getContextClassLoader(), factory.loader);
         assertEquals(expectedAction, factory.action);
     }
 
     @Test
-    public void testCreatePersistenceStructure() {
+    void createPersistenceStructure() {
         factory.createPersistenceStructure(false);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='add')");
     }
 
     @Test
-    public void testCreatePersistenceStructureWithSchemas() {
+    void createPersistenceStructureWithSchemas() {
         factory.createPersistenceStructure(true);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='createDB, add')");
     }
 
     @Test
-    public void testDropPersistenceStructure() {
+    void dropPersistenceStructure() {
         factory.dropPersistenceStructure(false);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='drop')");
     }
 
     @Test
-    public void testDropPersistenceStructureWithSchemas() {
+    void dropPersistenceStructureWithSchemas() {
         factory.dropPersistenceStructure(true);
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='drop, dropDB')");
     }
 
     @Test
-    public void testValidatePersistenceStructure() throws Exception {
+    void validatePersistenceStructure() throws Exception {
         factory.validatePersistenceStructure();
         assertNoBroker("validate(ForeignKeys=true)");
     }
 
     @Test
-    public void testTruncateData() {
+    void truncateData() {
         factory.truncateData();
         assertNoBroker("buildSchema(ForeignKeys=true,schemaAction='refresh,deleteTableContents')");
     }

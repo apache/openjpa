@@ -27,24 +27,19 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class TestStaticInnerClasses extends BaseKernelTest {
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class TestStaticInnerClasses extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestStaticInnerClasses
-     */
-    public TestStaticInnerClasses() {
-    }
-
-    public TestStaticInnerClasses(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         super.setUp(StaticInnerClassesContainer.Inner.class);
         StaticInnerClassesContainer.Inner inner = new StaticInnerClassesContainer.Inner("foo");
@@ -57,7 +52,8 @@ public class TestStaticInnerClasses extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testGetById() {
+    @Test
+    void getById() {
         OpenJPAEntityManager pm = getPM();
         StaticInnerClassesContainer.Inner inner = pm.find(StaticInnerClassesContainer.Inner.class, _oid);
         assertNotNull(inner);
@@ -65,7 +61,8 @@ public class TestStaticInnerClasses extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testGetByQuery() {
+    @Test
+    void getByQuery() {
 //        OpenJPAEntityManager pm = getPM();
 //
 //        OpenJPAQuery q = pm.createNativeQuery("",Inner.class);

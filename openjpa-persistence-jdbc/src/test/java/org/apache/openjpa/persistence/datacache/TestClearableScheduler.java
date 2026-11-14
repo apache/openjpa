@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -26,8 +28,10 @@ import org.apache.openjpa.datacache.ClearableScheduler;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestClearableScheduler extends SingleEMFTestCase {
+class TestClearableScheduler extends SingleEMFTestCase {
 
     private static String getMinutesString() {
         StringBuilder buf = new StringBuilder();
@@ -38,7 +42,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
         return buf.toString();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
             "openjpa.DataCache", "true(EvictionSchedule=+1)"
@@ -48,7 +52,8 @@ public class TestClearableScheduler extends SingleEMFTestCase {
             );
     }
 
-    public void testBasic() throws Exception {
+    @Test
+    void basic() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
         ClearableScheduler scheduler = new ClearableScheduler(conf);
@@ -91,7 +96,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
     }
 
 // Comment this test out while investigating OPENJPA-1692
-//    public void testMultithreadedInitialization() throws Exception {
+//    @Test void multithreadedInitialization() throws Exception {
 //        final OpenJPAConfiguration conf =  emf.getConfiguration();
 //        final List<DataCacheManager> dcms = new Vector<DataCacheManager>();
 //        Runnable r = new Runnable(){
@@ -149,7 +154,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
     // }
     private class DummyCache extends ConcurrentDataCache {
 
-        
+
         private static final long serialVersionUID = 1L;
         int clearCount = 0;
 

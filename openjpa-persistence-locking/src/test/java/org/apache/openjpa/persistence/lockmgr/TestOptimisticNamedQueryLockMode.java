@@ -24,17 +24,21 @@ import jakarta.persistence.Query;
 
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests whether the lock mode on named query emits a FOR UPDATE clause in target SQL
  * query when Optimistic=true (default), with pessimistic lock manager.
  */
-public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
+class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     String lockClause = "FOR UPDATE";
 
     @Override
@@ -42,7 +46,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, LockEmployee.class,
             "openjpa.LockManager", "pessimistic"
@@ -52,7 +56,8 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     /*
      * Optimistic=true, but a lock mode specified - assert statement will lock.
      */
-    public void testForUpdateClausePresentInNamedQueryWithLockMode() {
+    @Test
+    void forUpdateClausePresentInNamedQueryWithLockMode() {
         EntityManager em = emf.createEntityManager();
         lockClause = getForUpdateClause();
         em.getTransaction().begin();
@@ -70,7 +75,8 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     /*
      * Optimistic=true, but a no lock mode specified - assert statement does not lock.
      */
-    public void testForUpdateClausePresentInQueryWithDefault() {
+    @Test
+    void forUpdateClausePresentInQueryWithDefault() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -89,7 +95,8 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     /*
      * Optimistic=true, lock mode = none set explicitly on the fetch plan.
      */
-    public void testForUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
+    @Test
+    void forUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -110,7 +117,8 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     /*
     * Optimistic = false, explicit no locking on the named query
     */
-    public void testForUpdateClauseAbsentInQueryWithExplictNoLock() {
+    @Test
+    void forUpdateClauseAbsentInQueryWithExplictNoLock() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         lockClause = getForUpdateClause();
@@ -122,19 +130,19 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
 
     String getLastSQL() {
         String last = sql.get(getSQLCount() - 1);
-        assertNotNull("No last sql found", last);
+        assertNotNull(last, "No last sql found");
         return last;
     }
 
     void assertClausePresentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not present in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) != -1);
+        assertTrue(last.toUpperCase(Locale.ROOT).indexOf(clause) != -1, clause + " is not present in " + last);
     }
 
     void assertClauseAbsentInSQL(String clause, Query q) {
         q.getResultList();
         String last = getLastSQL();
-        assertTrue(clause + " is not absent in " + last, last.toUpperCase(Locale.ROOT).indexOf(clause) == -1);
+        assertEquals(-1, last.toUpperCase(Locale.ROOT).indexOf(clause), clause + " is not absent in " + last);
     }
 }

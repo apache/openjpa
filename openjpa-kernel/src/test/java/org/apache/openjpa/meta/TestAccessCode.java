@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.meta;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Access code is a 5-bit integer.
@@ -37,7 +40,7 @@ public class TestAccessCode {
 
     // Valid class codes are 0 2 4 10 12 26 28
     @Test
-    public void testValidClassCodes() {
+    void validClassCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
         isValidClassCode(true,   2, FIELD);
@@ -60,14 +63,14 @@ public class TestAccessCode {
 
         // All odd codes other than 1 are invalid
         for (int i = 3; i < 32; i += 2)
-            assertFalse("Not a valid Class Code: " +
-                AccessCode.toClassString(i),
-                AccessCode.isValidClassCode(i));
+            assertFalse(AccessCode.isValidClassCode(i),
+                "Not a valid Class Code: " +
+                AccessCode.toClassString(i));
     }
 
     // Valid field codes are 0 2 4 10 12
     @Test
-    public void testValidFieldCodes() {
+    void validFieldCodes() {
         isValidClassCode(true,   0, UNKNOWN);
 
         isValidClassCode(true,   2, FIELD);
@@ -81,14 +84,14 @@ public class TestAccessCode {
 
         // any even code with MIXED bit set is invalid
         for (int i = MIXED; i < 32; i += 2) {
-            assertFalse("Not a valid field code: " +
-                AccessCode.toFieldString(i),
-                AccessCode.isValidFieldCode(i));
+            assertFalse(AccessCode.isValidFieldCode(i),
+                "Not a valid field code: " +
+                AccessCode.toFieldString(i));
         }
     }
 
     @Test
-    public void testProperty() {
+    void property() {
         isProperty(false,  0, UNKNOWN);
         isProperty(false,  2, FIELD);
         isProperty(true,   4, PROPERTY);
@@ -99,7 +102,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testField() {
+    void field() {
         isField(false,  0, UNKNOWN);
         isField(true,   2, FIELD);
         isField(false,  4, PROPERTY);
@@ -111,7 +114,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testExplicit() {
+    void explicit() {
         isExplicit(false,  0, UNKNOWN);
         isExplicit(false,  2, FIELD);
         isExplicit(false,  4, PROPERTY);
@@ -123,7 +126,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testMixed() {
+    void mixed() {
         isMixed(false,  0, UNKNOWN);
         isMixed(false,  2, FIELD);
         isMixed(false,  4, PROPERTY);
@@ -135,7 +138,7 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testCompatibleField() {
+    void compatibleField() {
         assertCompatible(EXPLICIT|FIELD, PROPERTY, MIXED|EXPLICIT|FIELD);
         assertCompatible(EXPLICIT|FIELD, FIELD, EXPLICIT|FIELD);
         assertCompatible(EXPLICIT|PROPERTY, PROPERTY, EXPLICIT|PROPERTY);
@@ -173,32 +176,32 @@ public class TestAccessCode {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals("explicit property access", AccessCode.toClassString(12));
     }
 
     void isValidClassCode(boolean flag, int v, int valid) {
         assertEquals(v, valid);
         if (flag)
-            assertTrue("Invalid Class Code: " +
-            AccessCode.toClassString(valid),
-            AccessCode.isValidClassCode(valid));
+            assertTrue(AccessCode.isValidClassCode(valid),
+            "Invalid Class Code: " +
+            AccessCode.toClassString(valid));
         else
-            assertFalse("Wrong Valid Class Code: " +
-            AccessCode.toClassString(valid),
-            AccessCode.isValidClassCode(valid));
+            assertFalse(AccessCode.isValidClassCode(valid),
+            "Wrong Valid Class Code: " +
+            AccessCode.toClassString(valid));
     }
 
     void isValidFieldCode(boolean flag, int v, int valid) {
         assertEquals(v, valid);
         if (flag)
-            assertTrue("Invalid Field Code: " +
-            AccessCode.toFieldString(valid),
-            AccessCode.isValidFieldCode(valid));
+            assertTrue(AccessCode.isValidFieldCode(valid),
+            "Invalid Field Code: " +
+            AccessCode.toFieldString(valid));
         else
-            assertFalse("Wrong Field Class Code: " +
-            AccessCode.toFieldString(valid),
-            AccessCode.isValidFieldCode(valid));
+            assertFalse(AccessCode.isValidFieldCode(valid),
+            "Wrong Field Class Code: " +
+            AccessCode.toFieldString(valid));
     }
 
     void isProperty(boolean flag, int v, int valid) {

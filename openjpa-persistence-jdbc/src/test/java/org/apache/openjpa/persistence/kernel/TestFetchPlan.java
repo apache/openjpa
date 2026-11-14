@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +43,9 @@ import org.apache.openjpa.persistence.kernel.common.apps.PCDirectory;
 import org.apache.openjpa.persistence.kernel.common.apps.PCEmployee;
 import org.apache.openjpa.persistence.kernel.common.apps.PCFile;
 import org.apache.openjpa.persistence.kernel.common.apps.PCPerson;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestFetchPlan extends BaseKernelTest {
 
@@ -53,22 +58,12 @@ public class TestFetchPlan extends BaseKernelTest {
     private static boolean firstTime = true;
 
     /**
-     * Creates a new instance of TestFetchPlan
-     */
-    public TestFetchPlan() {
-    }
-
-    public TestFetchPlan(String name) {
-        super(name);
-    }
-
-    /**
      * Clears past data and creates new data for test.
      * Clear test data before and not <em>after</em> such that one can analyze
      * the database for test failures.
      */
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         if (firstTime) {
             firstTime = false;
             clearTestData();
@@ -147,7 +142,8 @@ public class TestFetchPlan extends BaseKernelTest {
      * Test that the single valued field (_parent) is not traversed when the
      * fecth group selects only the _name field.
      */
-    public void testZeroRecursionDepthSingleValuedField() {
+    @Test
+    void zeroRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name", 4, 0);
     }
 
@@ -156,7 +152,8 @@ public class TestFetchPlan extends BaseKernelTest {
      * once when the fecth group selects the _parent field with recursion depth
      * of 1 (default).
      */
-    public void testOneRecursionDepthSingleValuedField() {
+    @Test
+    void oneRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name+parent", 4, 1);
     }
 
@@ -165,17 +162,20 @@ public class TestFetchPlan extends BaseKernelTest {
      * twice when the fecth group selects the _parent field with recursion depth
      * of 2.
      */
-    public void testTwoRecursionDepthSingleValuedField() {
+    @Test
+    void twoRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("name+parent+grandparent",
             4, 2);
     }
 
-    public void testThreeRecursionDepthSingleValuedField() {
+    @Test
+    void threeRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField
             ("name+parent+grandparent+greatgrandparent", 4, 3);
     }
 
-    public void testInfiniteRecursionDepthSingleValuedField() {
+    @Test
+    void infiniteRecursionDepthSingleValuedField() {
         genericTestForSingleValuedRecursiveField("allparents", 4, -1);
     }
 
@@ -239,19 +239,19 @@ public class TestFetchPlan extends BaseKernelTest {
      */
     void checkParents(PCDirectory result, int D, int L) {
 
-        assertEquals("ge", getDirectoryName(D),
-            PCDirectory.reflect(result, "_name"));
+        assertEquals(getDirectoryName(D), PCDirectory.reflect(result, "_name"),
+            "ge");
         PCDirectory[] parents = getParents(result, D);
         int N = (L == -1) ? D : L;
         for (int i = 0; i < N; i++) {
-            assertNotNull(i + "-th parent at depth " + D + " is null",
-                parents[i]);
+            assertNotNull(parents[i],
+                i + "-th parent at depth " + D + " is null");
             assertEquals(getDirectoryName(D - i - 1),
                 PCDirectory.reflect(parents[i], "_name"));
         }
         for (int i = N; i < D; i++)
-            assertNull(i + "-th parent at depth " + D + " is not null " +
-                parents[i], parents[i]);
+            assertNull(parents[i], i + "-th parent at depth " + D + " is not null " +
+                parents[i]);
     }
 
     /**
@@ -306,7 +306,8 @@ public class TestFetchPlan extends BaseKernelTest {
      * The fetch depth is kept infinite, so what would be fetched is essentially
      * controlled by the fetch groups.
      */
-    public void testRelationTraversal() {
+    @Test
+    void relationTraversal() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(-1);
@@ -343,7 +344,8 @@ public class TestFetchPlan extends BaseKernelTest {
      * The fetch depth is kept infinite, so what would be fetched is essentially
      * controlled by the fetch groups.
      */
-    public void testRelationTraversalTruncated() {
+    @Test
+    void relationTraversalTruncated() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(-1);
@@ -382,7 +384,8 @@ public class TestFetchPlan extends BaseKernelTest {
      * Hence the company's address->country should be loaded but not the
      * employee's.
      */
-    public void testRelationTraversalWithCompanyAsRoot() {
+    @Test
+    void relationTraversalWithCompanyAsRoot() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
 
@@ -396,27 +399,28 @@ public class TestFetchPlan extends BaseKernelTest {
         PCCompany company =
             (PCCompany) pm.find(PCCompany.class, _rootCompanyId);
         Set departments = (Set) PCCompany.reflect(company, "departments");
-        assertNotNull("department is null", departments);
-        assertEquals("exp. depart size is not 2", 2, departments.size());
+        assertNotNull(departments, "department is null");
+        assertEquals(2, departments.size(), "exp. depart size is not 2");
         PCDepartment dept = (PCDepartment) departments.iterator().next();
-        assertNotNull("dept is null", dept);
+        assertNotNull(dept, "dept is null");
         Set employees = (Set) PCDepartment.reflect(dept, "employees");
-        assertNotNull("employees is null", employees);
+        assertNotNull(employees, "employees is null");
         assertEquals(1, employees.size());
         PCEmployee emp = (PCEmployee) employees.iterator().next();
-        assertNotNull("emp is not null", emp);
+        assertNotNull(emp, "emp is not null");
         PCAddress eaddr = (PCAddress) PCPerson.reflect(emp, "address");
         PCAddress caddr = (PCAddress) PCCompany.reflect(company, "address");
-        assertNull("eaddr is not null", eaddr);
-        assertNotNull("caddr is null", caddr);
+        assertNull(eaddr, "eaddr is not null");
+        assertNotNull(caddr, "caddr is null");
         PCCountry country = (PCCountry) PCAddress.reflect(caddr, "country");
-        assertNotNull("country is null", country);
+        assertNotNull(country, "country is null");
     }
 
     /**
      * Same as above but the root compnay instance is detached.
      */
-    public void testDetachedRelationTraversalWithCompanyAsRoot() {
+    @Test
+    void detachedRelationTraversalWithCompanyAsRoot() {
         OpenJPAEntityManager pm = getPM();
         FetchPlan plan = pm.getFetchPlan();
         pm.getFetchPlan().setMaxFetchDepth(2);
@@ -430,26 +434,27 @@ public class TestFetchPlan extends BaseKernelTest {
             (PCCompany) pm.find(PCCompany.class, _rootCompanyId);
 
         PCCompany company = (PCCompany) pm.detachCopy(company1);
-        assertTrue("company is equal company1", company != company1);
+        assertNotSame(company, company1, "company is equal company1");
         Set departments = (Set) PCCompany.reflect(company, "departments");
-        assertNotNull("department is null", departments);
-        assertEquals("department size is not 2", 2, departments.size());
+        assertNotNull(departments, "department is null");
+        assertEquals(2, departments.size(), "department size is not 2");
         PCDepartment dept = (PCDepartment) departments.iterator().next();
-        assertNotNull("dept is null", dept);
+        assertNotNull(dept, "dept is null");
         Set employees = (Set) PCDepartment.reflect(dept, "employees");
-        assertNotNull("employee is null", employees);
-        assertEquals("employees size not 1", 1, employees.size());
+        assertNotNull(employees, "employee is null");
+        assertEquals(1, employees.size(), "employees size not 1");
         PCEmployee emp = (PCEmployee) employees.iterator().next();
-        assertNotNull("emp is null", emp);
+        assertNotNull(emp, "emp is null");
         PCAddress eaddr = (PCAddress) PCPerson.reflect(emp, "address");
         PCAddress caddr = (PCAddress) PCCompany.reflect(company, "address");
-        assertNull("eaddr is not null", eaddr);
-        assertNotNull("caddr is null", caddr);
+        assertNull(eaddr, "eaddr is not null");
+        assertNotNull(caddr, "caddr is null");
         PCCountry country = (PCCountry) PCAddress.reflect(caddr, "country");
-        assertNotNull("country is null", country);
+        assertNotNull(country, "country is null");
     }
 
-    public void testDefaultFetchGroup() {
+    @Test
+    void defaultFetchGroup() {
         OpenJPAEntityManager pm = getPM();
 
         String squery =
@@ -458,35 +463,37 @@ public class TestFetchPlan extends BaseKernelTest {
 
         //FIXME jthomas
         PCEmployee person = (PCEmployee) q.getSingleResult();
-        assertEquals("Exp. String is not employee1", "Employee1",
-            PCPerson.reflect(person, "name"));
+        assertEquals("Employee1", PCPerson.reflect(person, "name"),
+            "Exp. String is not employee1");
     }
 
-    public void testDefaultFetchGroupExistsByDefault() {
+    @Test
+    void defaultFetchGroupExistsByDefault() {
         OpenJPAEntityManager pm = getPM();
-        assertTrue("pm does not contain default fetchplan",
-            pm.getFetchPlan().getFetchGroups().contains(
-                FetchPlan.GROUP_DEFAULT));
+        assertTrue(pm.getFetchPlan().getFetchGroups().contains(
+                FetchPlan.GROUP_DEFAULT),
+            "pm does not contain default fetchplan");
     }
 
-    public void testDefaultFetchGroupCanBeRemoved() {
+    @Test
+    void defaultFetchGroupCanBeRemoved() {
         OpenJPAEntityManager pm = getPM();
-        assertTrue("does not contain default fetchplan",
-            pm.getFetchPlan().getFetchGroups().contains(
-                FetchPlan.GROUP_DEFAULT));
+        assertTrue(pm.getFetchPlan().getFetchGroups().contains(
+                FetchPlan.GROUP_DEFAULT),
+            "does not contain default fetchplan");
 
         pm.getFetchPlan().removeFetchGroup(FetchPlan.GROUP_DEFAULT);
-        assertFalse("does contain default fetchplan",
-            pm.getFetchPlan().getFetchGroups().contains(
-                FetchPlan.GROUP_DEFAULT));
+        assertFalse(pm.getFetchPlan().getFetchGroups().contains(
+                FetchPlan.GROUP_DEFAULT),
+            "does contain default fetchplan");
 
         OpenJPAEntityManager pm2 = getPM();
-        assertTrue("pm2 does not contain default fetchplan",
-            pm2.getFetchPlan().getFetchGroups().contains(
-                FetchPlan.GROUP_DEFAULT));
+        assertTrue(pm2.getFetchPlan().getFetchGroups().contains(
+                FetchPlan.GROUP_DEFAULT),
+            "pm2 does not contain default fetchplan");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }

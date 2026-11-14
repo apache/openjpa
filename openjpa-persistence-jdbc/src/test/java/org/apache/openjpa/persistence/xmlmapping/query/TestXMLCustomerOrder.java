@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.xmlmapping.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.util.List;
 
@@ -37,8 +41,8 @@ import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.CANAddress;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.ObjectFactory;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddress;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test query with predicates on persistent field mapped to XML column.
@@ -53,7 +57,7 @@ import junit.textui.TestRunner;
  * @author Milosz Tylenda
  * @since 1.0.0
  */
-public class TestXMLCustomerOrder
+class TestXMLCustomerOrder
     extends SingleEMFTestCase {
 
     private static final int ORDER_1_OID = 10;
@@ -67,18 +71,17 @@ public class TestXMLCustomerOrder
     private static boolean firstTestExecuted;
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        // skip test if dictionary has no support for XML column type
+        return dict.supportsXMLColumn;
+    }
+
+    @BeforeEach
     public void setUp() {
         Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
         firstTestExecuted = true;
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             EAddress.class, clearOrDropTables);  // test create table DDL for XML column but only once to save time.
-
-        // skip test if dictionary has no support for XML column type
-        setTestsDisabled(!dictionarySupportsXMLColumn());
-        if (isTestsDisabled()) {
-            getLog().trace("TestXMLCustomerOrder() - Skipping all tests - No XML Column support");
-            return;
-        }
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -88,7 +91,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLFieldProjection() {
+    @Test
+    void xmlFieldProjection() {
         EntityManager em = emf.createEntityManager();
         List<Address> addrs = em.createQuery(
             "select o.shipAddress from Order o order by o.oid")
@@ -108,7 +112,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLFieldInEntity() {
+    @Test
+    void xmlFieldInEntity() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o order by o.oid")
@@ -130,7 +135,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLStringToXMLStringComparison() {
+    @Test
+    void xmlStringToXMLStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Object[]> orders = em.createQuery(
             "select o, o2 from Order o, Order o2 where o.shipAddress.city " +
@@ -155,7 +161,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLStringToEmbeddedStringComparison() {
+    @Test
+    void xmlStringToEmbeddedStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o, Customer c where o.shipAddress.city " +
@@ -170,7 +177,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLStringToConstantStringComparison() {
+    @Test
+    void xmlStringToConstantStringComparison() {
         EntityManager em = emf.createEntityManager();
         List<Order> orders = em.createQuery(
             "select o from Order o where o.shipAddress.city = 'San Jose'")
@@ -184,7 +192,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testXMLStringToParameterStringComparison() {
+    @Test
+    void xmlStringToParameterStringComparison() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where o.shipAddress.city = :city");
@@ -199,7 +208,8 @@ public class TestXMLCustomerOrder
     }
 
     @SuppressWarnings("unchecked")
-    public void testParameterStringToXMLStringComparison() {
+    @Test
+    void parameterStringToXMLStringComparison() {
         EntityManager em = emf.createEntityManager();
         Query query = em.createQuery(
             "select o from Order o where :city = o.shipAddress.city");
@@ -213,7 +223,8 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
-    public void testUpdate() {
+    @Test
+    void update() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -237,7 +248,8 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
-    public void testNullify() {
+    @Test
+    void nullify() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -258,7 +270,8 @@ public class TestXMLCustomerOrder
         em.close();
     }
 
-    public void testXMLStringToConstantIntComparison() {
+    @Test
+    void xmlStringToConstantIntComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -272,7 +285,8 @@ public class TestXMLCustomerOrder
         fail("createQuery should throw IllegalArgumentException.");
     }
 
-    public void testXMLListToConstantStringComparison() {
+    @Test
+    void xmlListToConstantStringComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -286,7 +300,8 @@ public class TestXMLCustomerOrder
         fail("createQuery should throw IllegalArgumentException.");
     }
 
-    public void testSubclassPropertyInXMLFieldComparison() {
+    @Test
+    void subclassPropertyInXMLFieldComparison() {
         EntityManager em = emf.createEntityManager();
         try {
             em.createQuery(
@@ -298,10 +313,6 @@ public class TestXMLCustomerOrder
             em.close();
         }
         fail("createQuery should throw IllegalArgumentException.");
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestXMLCustomerOrder.class);
     }
 
     private void persistEntities(EntityManager em) {
@@ -332,23 +343,6 @@ public class TestXMLCustomerOrder
         em.persist(o2);
     }
 
-    /**
-     * Check whether DBDictionary supports XML column.
-     * This is done by forcing the execution of
-     * {@link DBDictionary#connectedConfiguration(Connection)}.
-     * This is where some dictionaries actually determine whether XML column is
-     * supported.
-     * @return true if {@link DBDictionary} supports XML column
-     */
-    private boolean dictionarySupportsXMLColumn() {
-        OpenJPAEntityManagerFactorySPI emf = createEMF();
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
-            .getDBDictionaryInstance();
-        closeEMF(emf);
-        return dict.supportsXMLColumn;
-    }
-
     private USAAddress createUSAAddress(String name) {
         USAAddress address = new ObjectFactory().createUSAAddress();
         address.setName(name);
@@ -375,5 +369,4 @@ public class TestXMLCustomerOrder
         assertEquals(o1.getAmount(), o2.getAmount());
         assertEquals(o1.isDelivered(), o2.isDelivered());
     }
-
 }

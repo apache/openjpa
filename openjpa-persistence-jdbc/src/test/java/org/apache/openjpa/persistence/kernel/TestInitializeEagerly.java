@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestInitializeEagerly extends SingleEMFTestCase {
+class TestInitializeEagerly extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class,
             "openjpa.InitializeEagerly", "true",
@@ -32,7 +36,8 @@ public class TestInitializeEagerly extends SingleEMFTestCase {
     }
 
     // Smoke test to ensure that the EMF is created properly when using this property.
-    public void test(){
+    @Test
+    void test(){
         assertNotNull(emf);
     }
 

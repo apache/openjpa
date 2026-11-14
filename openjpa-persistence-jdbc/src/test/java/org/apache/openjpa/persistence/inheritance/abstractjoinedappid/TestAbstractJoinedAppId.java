@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -25,17 +27,17 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that you traverse an inverse key-baesd relation to an abstract
  * class using joined inheritance.
  */
-public class TestAbstractJoinedAppId
+class TestAbstractJoinedAppId
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Superclass.class, Subclass.class, RelationOwner.class,
             DROP_TABLES);
@@ -56,20 +58,22 @@ public class TestAbstractJoinedAppId
         em.close();
     }
 
-    public void testEntityTypeForAbstractJoined() {
+    @Test
+    void entityTypeForAbstractJoined() {
         EntityManager em = emf.createEntityManager();
         String query = "select s from RelationOwner r join r.supers s where TYPE(s) = Subclass";
         List rs = em.createQuery(query).getResultList();
         assertTrue(rs.size() > 0);
-        for (Object o : rs) assertTrue(o instanceof Subclass);
+        for (Object o : rs) assertInstanceOf(Subclass.class, o);
         query = "select s from Superclass s where TYPE(s) = Subclass";
         rs = em.createQuery(query).getResultList();
         assertTrue(rs.size() > 0);
-        for (Object r : rs) assertTrue(r instanceof Subclass);
+        for (Object r : rs) assertInstanceOf(Subclass.class, r);
         em.close();
     }
 
-    public void testTraverseRelation() {
+    @Test
+    void traverseRelation() {
         EntityManager em = emf.createEntityManager();
         RelationOwner ro = em.find(RelationOwner.class, 1);
         assertNotNull(ro);
@@ -77,15 +81,10 @@ public class TestAbstractJoinedAppId
         Collection supers = ro.getSupers();
         assertEquals(1, supers.size());
         Superclass s = (Superclass) supers.iterator().next();
-        assertTrue(s instanceof Subclass);
+        assertInstanceOf(Subclass.class, s);
         assertEquals(Integer.valueOf(99), s.getId());
         assertEquals("supattr", s.getAttr1());
         assertEquals("subattr", ((Subclass) s).getAttr2());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestAbstractJoinedAppId.class);
-    }
 }
-

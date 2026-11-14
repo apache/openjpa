@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -35,19 +37,13 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.persistence.jdbc.common.apps.BuildSchemaPC;
 import org.apache.regexp.REUtil;
+import org.junit.jupiter.api.Test;
 
 
-public class TestBuildSchema
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestBuildSchema extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-    /** Creates a new instance of TestBuildSchema */
-    public TestBuildSchema() {
-    }
-    public TestBuildSchema(String test) {
-        super(test);
-    }
-
-    public void testSchema()
+    @Test
+    void schema()
         throws Exception {
         StringWriter out = new StringWriter();
 

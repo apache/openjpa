@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,13 +30,15 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestBulkJPQLAndDataCache
+class TestBulkJPQLAndDataCache
     extends SingleEMFTestCase {
 
     private Object oid;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.QueryCache", "true",
@@ -50,7 +56,8 @@ public class TestBulkJPQLAndDataCache
         em.close();
     }
 
-    public void testBulkDelete() {
+    @Test
+    void bulkDelete() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         List result = em.createQuery("SELECT o FROM AllFieldTypes o")
@@ -71,7 +78,8 @@ public class TestBulkJPQLAndDataCache
         em.close();
     }
 
-    public void testBulkUpdate() {
+    @Test
+    void bulkUpdate() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -93,7 +101,8 @@ public class TestBulkJPQLAndDataCache
         em.close();
     }
 
-    public void testBulkDeleteOfCascadingEntity() {
+    @Test
+    void bulkDeleteOfCascadingEntity() {
         CascadeParent parent = new CascadeParent();
         parent.setName("parent");
         CascadeChild child = new CascadeChild();

@@ -18,21 +18,27 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerCollectionTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestHandlerCollections
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestHandlerCollections extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(HandlerCollectionInstance.class,
             CLEAR_TABLES);
     }
 
-    public void testHandlerCollections() {
+    @Test
+    void handlerCollections() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(em,
             HandlerCollectionInstance.class);
         assertEquals(HandlerCollectionTableFieldStrategy.class,

@@ -35,23 +35,13 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestOpenResultsCommit extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestOpenResultsCommit
-     */
-    public TestOpenResultsCommit() {
-    }
-
-    public TestOpenResultsCommit(String testName) {
-        super(testName);
-    }
-
-    @Override
-    public void setUp()
+class TestOpenResultsCommit extends BaseKernelTest {
+    @BeforeEach
+    void setUp()
         throws Exception {
-        super.setUp();
 
         deleteAll(RuntimeTest1.class);
 
@@ -63,9 +53,10 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testCommitWithModeTransaction() {
+    @Test
+    void commitWithModeTransaction() {
         try {
-            testCommitWithOpenResults("transaction");
+            commitWithOpenResults("transaction");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -74,9 +65,10 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
-    public void testCommitWithModeOpenJPAEntityManager() {
+    @Test
+    void commitWithModeOpenJPAEntityManager() {
         try {
-            testCommitWithOpenResults("persistence-manager");
+            commitWithOpenResults("persistence-manager");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -85,9 +77,10 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
-    public void testCommitWithModeOnDemand() {
+    @Test
+    void commitWithModeOnDemand() {
         try {
-            testCommitWithOpenResults("on-demand");
+            commitWithOpenResults("on-demand");
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.INFORMIX,
@@ -96,7 +89,8 @@ public class TestOpenResultsCommit extends BaseKernelTest {
         }
     }
 
-    private void testCommitWithOpenResults(String crm) {
+    @Test
+    private void commitWithOpenResults(String crm) {
         Map props = new HashMap();
         props.put("openjpa.DefaultFetchThreshold", 1 + "");
         props.put("openjpa.ConnectionRetainMode", crm);

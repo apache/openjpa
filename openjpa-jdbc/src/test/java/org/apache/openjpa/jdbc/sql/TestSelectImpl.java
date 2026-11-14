@@ -26,17 +26,18 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.junit.jupiter.api.Test;
+
 import static org.apache.openjpa.jdbc.sql.Select.FROM_SELECT_ALIAS;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests about SelectImpl.
  */
-public class TestSelectImpl {
+class TestSelectImpl {
 
     @Test
-    public void testSelectResultGetColumnAlias() {
+    void selectResultGetColumnAlias() {
         verifySelectResultGetColumnAlias(true, false, false, -1, "Col", 56, "t56.\"Col\"");
         verifySelectResultGetColumnAlias(false, false, false, -1, "Col", 18, "t18.Col");
 

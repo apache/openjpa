@@ -22,11 +22,10 @@ package org.apache.openjpa.persistence.datacache;
  * Test data caching across multiple factories in the same JVM, using
  * the single-JVM commit provider to communicate updates..
  */
-public class TestSJVMCache
-    extends CacheTest {
+public class TestSJVMCache extends CacheTest {
 
-    public TestSJVMCache(String test) {
-        super(test);
+    public TestSJVMCache() {
+        super();
     }
 
     @Override

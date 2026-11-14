@@ -28,6 +28,11 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.event.AbstractTransactionListener;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.kernel.PCState;
@@ -36,26 +41,19 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.kernel.common.apps.
         ModInstanceCallbackTests;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestIncrementalFlushes extends BaseKernelTest {
 
-    public TestIncrementalFlushes(String str) {
-        super(str);
-    }
-
-    /**
-     * Creates a new instance of TestIncrementalFlushes
-     */
-    public TestIncrementalFlushes() {
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(ModRuntimeTest1.class);
 //        deleteAll(ModInstanceCallbackTests.class);
     }
 
-    public void testBasicJdoPreStore() {
+    @Test
+    void basicJdoPreStore() {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
         ModInstanceCallbackTests a = new ModInstanceCallbackTests("foo", 10);
@@ -65,7 +63,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         endTx(pm);
     }
 
-    public void testNoFlush() {
+    @Test
+    void noFlush() {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
         ModInstanceCallbackTests a = new ModInstanceCallbackTests("foo", 10);
@@ -74,7 +73,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         assertTrue(a.preStoreCalled);
     }
 
-    public void testFlushNoChange() {
+    @Test
+    void flushNoChange() {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
         ModInstanceCallbackTests a = new ModInstanceCallbackTests("foo", 10);
@@ -131,52 +131,58 @@ public class TestIncrementalFlushes extends BaseKernelTest {
 
         if (multi) {
             if (dfg)
-                assertEquals("a.getIntField is not 12", 12, a.getIntField());
+                assertEquals(12, a.getIntField(), "a.getIntField is not 12");
             if (nonDFG)
-                assertEquals("a.getNonDFGField is not 12", 12,
-                    a.getNonDFGField());
+                assertEquals(12, a.getNonDFGField(),
+                    "a.getNonDFGField is not 12");
         } else {
             if (dfg)
-                assertEquals("a.getIntField is not 12", 11, a.getIntField());
+                assertEquals(11, a.getIntField(), "a.getIntField is not 12");
             if (nonDFG)
-                assertEquals("a.getNonDFGField is not 12", 11,
-                    a.getNonDFGField());
+                assertEquals(11, a.getNonDFGField(),
+                    "a.getNonDFGField is not 12");
         }
     }
 
-    public void testFlushStorePrimaryDFGChange() {
+    @Test
+    void flushStorePrimaryDFGChange() {
         basicHelper(false, false, true, false);
         basicHelper(false, true, true, false);
         basicHelper(true, false, true, false);
         basicHelper(true, true, true, false);
     }
 
-    public void testFlushStorePrimaryNonDFGChange() {
+    @Test
+    void flushStorePrimaryNonDFGChange() {
         basicHelper(false, false, false, true);
         basicHelper(false, true, false, true);
         basicHelper(true, false, false, true);
         basicHelper(true, true, false, true);
     }
 
-    public void testFlushStorePrimaryNonDFGAndDFGChange() {
+    @Test
+    void flushStorePrimaryNonDFGAndDFGChange() {
         basicHelper(false, false, true, true);
         basicHelper(false, true, true, true);
         basicHelper(true, false, true, true);
         basicHelper(true, true, true, true);
     }
 
-    public void testFlushStorePrimaryNoChanges() {
+    @Test
+    void flushStorePrimaryNoChanges() {
         basicHelper(false, false, false, false);
         basicHelper(false, true, false, false);
         basicHelper(true, false, false, false);
         basicHelper(true, true, false, false);
     }
 
-    public void testJdoPreStoreWithModificationBeforeFlush() {
+    @Test
+    void jdoPreStoreWithModificationBeforeFlush() {
         tjpswmHelper(true);
     }
 
-    public void testJdoPreStoreWithModificationAfterFlush() {
+    @Test
+    void jdoPreStoreWithModificationAfterFlush() {
         tjpswmHelper(false);
     }
 
@@ -201,20 +207,21 @@ public class TestIncrementalFlushes extends BaseKernelTest {
             a.setStringField("bar");
         }
         endTx(pm);
-        assertTrue("a.preStoreCalled is false", a.preStoreCalled);
-        assertNotNull("a.getOneOne is null", a.getOneOne());
-        assertTrue("getOneOne().getstrngfld.equals(jdoPrestore) is false",
-            a.getOneOne().getStringField().equals("jdoPreStore"));
+        assertTrue(a.preStoreCalled, "a.preStoreCalled is false");
+        assertNotNull(a.getOneOne(), "a.getOneOne is null");
+        assertEquals("jdoPreStore", a.getOneOne().getStringField(), "getOneOne().getstrngfld.equals(jdoPrestore) is false");
     }
 
-    public void testOneToOneBefore() {
+    @Test
+    void oneToOneBefore() {
         totoHelper(true, true, false);
         totoHelper(true, false, false);
         totoHelper(true, true, true);
         totoHelper(true, false, true);
     }
 
-    public void testOneToOneAfter() {
+    @Test
+    void oneToOneAfter() {
         totoHelper(false, true, false);
         totoHelper(false, false, false);
         totoHelper(false, true, true);
@@ -261,15 +268,12 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         }
 
         endTx(pm);
-        assertTrue("a.preStoreCalled is false", a.preStoreCalled);
-        assertNotNull("a.getOneOne is null", a.getOneOne());
+        assertTrue(a.preStoreCalled, "a.preStoreCalled is false");
+        assertNotNull(a.getOneOne(), "a.getOneOne is null");
         if (!multi)
-            assertTrue("a.getOneOne().getStringField().equals(baz) is false",
-                a.getOneOne().getStringField().equals("baz"));
+            assertEquals("baz", a.getOneOne().getStringField(), "a.getOneOne().getStringField().equals(baz) is false");
         else {
-            assertTrue(
-                "a.getOneOne().getStringField().equals(newParent) is false",
-                a.getOneOne().getStringField().equals("newParent"));
+            assertEquals("newParent", a.getOneOne().getStringField(), "a.getOneOne().getStringField().equals(newParent) is false");
 
             // if multi, then we really should delete the baz
             // parent. This isn't happening right now.
@@ -295,7 +299,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         }
     }
 
-    public void testDeleteNew() {
+    @Test
+    void deleteNew() {
         OpenJPAEntityManager pm = getPM(true, false);
         startTx(pm);
         ModRuntimeTest1 a = new ModRuntimeTest1("foo", 10);
@@ -304,7 +309,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         assertState(a, PCState.PNEWDELETED, pm);
     }
 
-    public void testOptimisticLockGivesCorrectError() {
+    @Test
+    void optimisticLockGivesCorrectError() {
         OpenJPAEntityManager pm1 = getPM(true, false);
         OpenJPAEntityManager pm2 = getPM(true, false);
 
@@ -383,7 +389,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         endEm(readPM);
     }
 
-    public void testEmptyFlush() {
+    @Test
+    void emptyFlush() {
         OpenJPAEntityManager pm = getPM();
         TListener listener = new TListener();
         ((OpenJPAEntityManagerSPI) pm).addTransactionListener(listener);
@@ -410,7 +417,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testEmptyRollback() {
+    @Test
+    void emptyRollback() {
         OpenJPAEntityManager pm = getPM();
         TListener listener = new TListener();
         ((OpenJPAEntityManagerSPI) pm).addTransactionListener(listener);
@@ -422,7 +430,8 @@ public class TestIncrementalFlushes extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testEmptyCommit() {
+    @Test
+    void emptyCommit() {
         OpenJPAEntityManager pm = getPM();
         TListener listener = new TListener();
         ((OpenJPAEntityManagerSPI) pm).addTransactionListener(listener);

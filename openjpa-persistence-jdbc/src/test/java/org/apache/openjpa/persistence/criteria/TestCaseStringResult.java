@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,16 +31,18 @@ import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A CASE expression whose results are string literals or parameters of
  * different lengths returns the result as it is. HSQLDB types a string
  * literal as CHAR and padded the shorter results with spaces (OPENJPA-3063).
  */
-public class TestCaseStringResult extends SingleEMFTestCase {
+class TestCaseStringResult extends SingleEMFTestCase {
     private CriteriaBuilder cb;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, CompUser.class, Address.class);
         cb = emf.getCriteriaBuilder();
@@ -50,7 +54,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testGeneralCaseWithLiterals() {
+    @Test
+    void generalCaseWithLiterals() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT CASE WHEN u.age > 35 THEN 'old' ELSE 'young' END "
                 + "FROM CompUser u ORDER BY u.name", String.class).getResultList();
@@ -58,7 +63,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testGeneralCaseWithLiteralsInWhenClauses() {
+    @Test
+    void generalCaseWithLiteralsInWhenClauses() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT CASE WHEN u.age > 35 THEN 'old' "
                 + "WHEN u.age > 25 THEN 'middle aged' ELSE 'young' END "
@@ -67,7 +73,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testSimpleCaseWithLiterals() {
+    @Test
+    void simpleCaseWithLiterals() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT CASE u.age WHEN 40 THEN 'forty' ELSE 'other value' END "
                 + "FROM CompUser u ORDER BY u.name", String.class).getResultList();
@@ -75,7 +82,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testCaseComparedWithLiteral() {
+    @Test
+    void caseComparedWithLiteral() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT u.name FROM CompUser u "
                 + "WHERE CASE WHEN u.age > 35 THEN 'old' ELSE 'young' END = 'old'", String.class)
@@ -84,7 +92,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testConcatOfCase() {
+    @Test
+    void concatOfCase() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT CONCAT(CASE WHEN u.age > 35 THEN 'old' ELSE 'young' END, '!') "
                 + "FROM CompUser u ORDER BY u.name", String.class).getResultList();
@@ -92,7 +101,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testGeneralCaseWithParameters() {
+    @Test
+    void generalCaseWithParameters() {
         if (getDBDictionary() instanceof DerbyDictionary) {
             // Derby requires a result of known type, a parameter has none
             return;
@@ -105,7 +115,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testGeneralCaseWithLiteralAndParameter() {
+    @Test
+    void generalCaseWithLiteralAndParameter() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> result = em.createQuery("SELECT CASE WHEN u.age > 35 THEN 'old' ELSE :young END "
                 + "FROM CompUser u ORDER BY u.name", String.class)
@@ -114,7 +125,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testCriteriaCaseWithLiterals() {
+    @Test
+    void criteriaCaseWithLiterals() {
         CriteriaQuery<String> cq = cb.createQuery(String.class);
         Root<CompUser> u = cq.from(CompUser.class);
         Expression<String> group = cb.<String> selectCase()
@@ -128,7 +140,8 @@ public class TestCaseStringResult extends SingleEMFTestCase {
         }
     }
 
-    public void testCriteriaCaseWithParameters() {
+    @Test
+    void criteriaCaseWithParameters() {
         if (getDBDictionary() instanceof DerbyDictionary) {
             // Derby requires a result of known type, a parameter has none
             return;

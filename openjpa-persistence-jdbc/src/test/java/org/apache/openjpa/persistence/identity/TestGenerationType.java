@@ -18,18 +18,21 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to test the GenerationType for
@@ -40,12 +43,12 @@ import junit.textui.TestRunner;
  *
  * @author Kevin Sutter
  */
-public class TestGenerationType
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestGenerationType extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
-        if (getName().endsWith("WithoutGetGeneratedKeys")) {
+        if (getTestName().endsWith("WithoutGetGeneratedKeys")) {
             setUp(IdentityGenerationType.class,
                 "openjpa.jdbc.DBDictionary",
                 "supportsGetGeneratedKeys=false");
@@ -62,7 +65,8 @@ public class TestGenerationType
             .getDBDictionaryInstance().supportsAutoAssign;
     }
 
-    public void testCreateEntityManager() {
+    @Test
+    void createEntityManager() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -75,14 +79,15 @@ public class TestGenerationType
         t.rollback();
 
         // openjpa-facade test
-        assertTrue(em instanceof OpenJPAEntityManager);
+        assertInstanceOf(OpenJPAEntityManager.class, em);
         OpenJPAEntityManager ojem = (OpenJPAEntityManager) em;
         ojem.getFetchPlan().setMaxFetchDepth(-1);
         assertEquals(-1, ojem.getFetchPlan().getMaxFetchDepth());
         em.close();
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -93,7 +98,8 @@ public class TestGenerationType
         em.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         if (!supportsAutoAssign()) {
             return;
         }
@@ -113,20 +119,17 @@ public class TestGenerationType
         em.close();
     }
 
-    public void testPersistWithoutGetGeneratedKeys() {
-        testPersist();
+    @Test
+    void persistWithoutGetGeneratedKeys() {
+        persist();
     }
 
-    public void testQueryWithoutGetGeneratedKeys() {
+    @Test
+    void queryWithoutGetGeneratedKeys() {
         if (getDBDictionary() instanceof OracleDictionary) {
             // Oracle now always has JDBC4 driver.
             return;
         }
-        testQuery();
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestGenerationType.class);
+        query();
     }
 }
-

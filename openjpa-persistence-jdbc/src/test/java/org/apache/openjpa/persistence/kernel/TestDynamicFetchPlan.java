@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 
 import org.apache.openjpa.meta.FetchGroup;
@@ -27,6 +32,8 @@ import org.apache.openjpa.persistence.kernel.common.apps.FetchA;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchB;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchBase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests behavior of FetchPlan constructed dynamically by adding fields.
@@ -41,7 +48,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestDynamicFetchPlan extends SingleEMFTestCase {
 	private static final String JPQL = "select a from FetchA a";
 
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, FetchBase.class, FetchA.class, FetchB.class);
 		createData();
@@ -60,7 +67,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 
-	public void testFetchBySubClassFieldB() {
+    @Test
+    void fetchBySubClassFieldB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
 		fp.setExtendedPathLookup(true);
@@ -78,7 +86,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("b1", b.getText());
 	}
 
-	public void testFetchBySubClassFieldA() {
+    @Test
+    void fetchBySubClassFieldA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -96,7 +105,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertNull(b.getText());
 	}
 
-	public void testFetchBySuperClassField() {
+    @Test
+    void fetchBySuperClassField() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -114,7 +124,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("b1", b.getText());
 	}
 
-	public void testFetchBySubClassFieldNameB() {
+    @Test
+    void fetchBySubClassFieldNameB() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -132,7 +143,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("b1", b.getText());
 	}
 
-	public void testFetchBySubClassFieldNameA() {
+    @Test
+    void fetchBySubClassFieldNameA() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -150,7 +162,8 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertNull(b.getText());
 	}
 
-	public void testFetchBySuperClassFieldName() {
+    @Test
+    void fetchBySuperClassFieldName() {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
@@ -168,8 +181,9 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertEquals("b1", b.getText());
 	}
 
-	// OPENJPA-2413: FetchPlan.clearFetchGroups() does not retain "default" in list of active Fetch Groups.
-	public void testClearFetchPlan() {
+    // OPENJPA-2413: FetchPlan.clearFetchGroups() does not retain "default" in list of active Fetch Groups.
+    @Test
+    void clearFetchPlan() {
 	    OpenJPAEntityManager em = emf.createEntityManager();
 	    FetchPlan fp = em.getFetchPlan();
 

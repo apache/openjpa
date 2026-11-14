@@ -36,6 +36,8 @@
  */
 package org.apache.openjpa.persistence.common.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -87,6 +89,7 @@ import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.apache.regexp.REUtil;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Extends AbstractCachedEMFTestCase, which extends AbstractPersistenceTestCase.
@@ -97,8 +100,7 @@ import org.apache.regexp.REUtil;
 public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     private String persistenceXmlResource;
-    private Map<Map,OpenJPAEntityManagerFactory> emfs =
-        new HashMap<>();
+    private Map<Map,OpenJPAEntityManagerFactory> emfs = new HashMap<>();
     private OpenJPAEntityManager currentEntityManager;
     private Object[] props;
 
@@ -122,9 +124,9 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     protected String multiThreadExecuting = null;
     protected boolean inTimeoutThread = false;
 
+    public AbstractTestCase() {}
 
-    public AbstractTestCase(String name, String s) {
-        setName(name);
+    public AbstractTestCase(String s) {
         persistenceXmlResource = computePersistenceXmlResource(s);
     }
 
@@ -135,8 +137,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
      */
-    protected void setUp(Object... props) throws Exception {
-        super.setUp();
+    public void setUp(Object... props) throws Exception {
         this.props = props;
     }
 
@@ -144,7 +145,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Closes any EMFs created by getEmf()
      *
      */
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         try {
             super.tearDown();
@@ -159,13 +160,6 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                 }
             }
         }
-    }
-
-    public AbstractTestCase() {
-    }
-
-    public AbstractTestCase(String name) {
-        setName(name);
     }
 
     protected String computePersistenceXmlResource(String s) {
@@ -910,7 +904,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      */
     public class ThreadingException extends RuntimeException {
 
-        
+
         private static final long serialVersionUID = 1L;
         private final Throwable[] _nested;
 
@@ -1128,7 +1122,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      */
     public static class OperationTimedOutException extends RuntimeException {
 
-        
+
         private static final long serialVersionUID = 1L;
         private final Throwable _err;
 
@@ -1272,7 +1266,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         assertEquals(c1.size(), c2.size());
         for (Iterator i1 = c1.iterator(), i2 = c2.iterator();
             i1.hasNext() && i2.hasNext();)
-            assertTrue(i1.next() == i2.next());
+            assertSame(i1.next(), i2.next());
     }
 
     /**

@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -40,28 +42,12 @@ import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub1;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub2;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub2;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSubclassJoinExtent
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
+public class TestSubclassJoinExtent extends TestSQLListenerTestCase {
     private String _outer = "OUTER";
-
-    /** Creates a new instance of TestSubclassJoinExtent */
-    public TestSubclassJoinExtent(String name)
-    {
-    	super(name);
-    }
-
-    public boolean skipTest() {
-        //FIXME
-        /*
-        return super.skipTest()
-            || ((JDBCConfiguration) getConfiguration()).
-            getDBDictionaryInstance().joinSyntax == Join.SYNTAX_TRADITIONAL;
-         */
-        return false;
-    }
 
     @Override
     public void setUpTestCase() {
@@ -103,8 +89,9 @@ public class TestSubclassJoinExtent
         pm.close();
     }
 
-    public void testBaseNoSubs()
-    throws Exception {
+    @Test
+    void baseNoSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(Base.class, false);
         Iterator itr = extent.iterator();
@@ -112,7 +99,7 @@ public class TestSubclassJoinExtent
         Base pc = (Base) itr.next();
         assertEquals(1, pc.getBaseField());
         assertEquals(Base.class, pc.getClass());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -120,8 +107,9 @@ public class TestSubclassJoinExtent
         assertSQL(_outer);
     }
 
-    public void testBaseWithSubs()
-    throws Exception {
+    @Test
+    void baseWithSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(Base.class, true);
         Collection pcs = new TreeSet(((Extent) extent).list());
@@ -151,30 +139,33 @@ public class TestSubclassJoinExtent
         assertSQL(_outer);
     }
 
-    public void testEmptyNoSubs()
-    throws Exception {
+    @Test
+    void emptyNoSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1Sub1.class, false);
         Iterator itr = extent.iterator();
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
         assertNotSQL(_outer);
     }
 
-    public void testEmptyWithSubs()
-    throws Exception {
+    @Test
+    void emptyWithSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1Sub1.class, true);
         Iterator itr = extent.iterator();
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
         assertNotSQL(_outer);
     }
 
-    public void testLeafNoSubs()
-    throws Exception {
+    @Test
+    void leafNoSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1Sub2.class, false);
         Iterator itr = extent.iterator();
@@ -183,7 +174,7 @@ public class TestSubclassJoinExtent
         assertEquals(4, pc.getBaseField());
         assertEquals(5, pc.getBaseSub1Field());
         assertEquals(6, pc.getBaseSub1Sub2Field());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -191,8 +182,9 @@ public class TestSubclassJoinExtent
         assertNotSQL(_outer);
     }
 
-    public void testLeafWithSubs()
-    throws Exception {
+    @Test
+    void leafWithSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1Sub2.class, true);
         Iterator itr = extent.iterator();
@@ -201,7 +193,7 @@ public class TestSubclassJoinExtent
         assertEquals(4, pc.getBaseField());
         assertEquals(5, pc.getBaseSub1Field());
         assertEquals(6, pc.getBaseSub1Sub2Field());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -209,8 +201,9 @@ public class TestSubclassJoinExtent
         assertNotSQL(_outer);
     }
 
-    public void testLeafNoSubs2()
-    throws Exception {
+    @Test
+    void leafNoSubs2()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub2.class, false);
         Iterator itr = extent.iterator();
@@ -218,7 +211,7 @@ public class TestSubclassJoinExtent
         BaseSub2 pc = (BaseSub2) itr.next();
         assertEquals(3, pc.getBaseField());
         assertEquals(4, pc.getBaseSub2Field());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -226,8 +219,9 @@ public class TestSubclassJoinExtent
         assertNotSQL(_outer);
     }
 
-    public void testLeafWithSubs2()
-    throws Exception {
+    @Test
+    void leafWithSubs2()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub2.class, true);
         Iterator itr = extent.iterator();
@@ -235,7 +229,7 @@ public class TestSubclassJoinExtent
         BaseSub2 pc = (BaseSub2) itr.next();
         assertEquals(3, pc.getBaseField());
         assertEquals(4, pc.getBaseSub2Field());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -243,8 +237,9 @@ public class TestSubclassJoinExtent
         assertNotSQL(_outer);
     }
 
-    public void testMidNoSubs()
-    throws Exception {
+    @Test
+    void midNoSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1.class, false);
         Iterator itr = extent.iterator();
@@ -253,7 +248,7 @@ public class TestSubclassJoinExtent
         assertEquals(2, pc.getBaseField());
         assertEquals(3, pc.getBaseSub1Field());
         assertEquals(BaseSub1.class, pc.getClass());
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         extent.closeAll();
         pm.close();
 
@@ -261,8 +256,9 @@ public class TestSubclassJoinExtent
         assertSQL(_outer);
     }
 
-    public void testMidWithSubs()
-    throws Exception {
+    @Test
+    void midWithSubs()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         Extent extent = pm.createExtent(BaseSub1.class, true);
         Collection pcs = new TreeSet(((Extent) extent).list());

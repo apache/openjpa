@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.flush.fkorder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.Statement;
 
@@ -28,6 +34,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A schema not created by OpenJPA - the TCK creates its tables from DDL
@@ -39,9 +47,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * OPENJPA-3034). Inserts are ordered by logical foreign keys since
  * OPENJPA-2940; this is the delete side.
  */
-public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
+class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, FkoParent.class, FkoChild.class, FkoNode.class, FkoLink.class);
         // add a constraint the mapping does not know of, as a DDL script would
@@ -64,19 +72,21 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
         }
     }
 
-    public void testRelationIsMappedToALogicalForeignKey() {
+    @Test
+    void relationIsMappedToALogicalForeignKey() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance().getMapping(FkoChild.class, null, true);
         ForeignKey fk = mapping.getFieldMapping("parent").getForeignKey();
         assertNotNull(fk);
-        assertTrue("the scenario needs a foreign key the mapping does not enforce", fk.isLogical());
+        assertTrue(fk.isLogical(), "the scenario needs a foreign key the mapping does not enforce");
     }
 
     /**
      * The referenced entity is removed first, as in the TCK test; the
      * referencing row has to be deleted before it all the same.
      */
-    public void testRemoveReferencedEntityFirst() {
+    @Test
+    void removeReferencedEntityFirst() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -112,7 +122,8 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * the database enforces the key, the ordering it asks for is dropped
      * instead of failing the flush - for the inserts and for the deletes.
      */
-    public void testCycleOfNonNullableLogicalForeignKeys() {
+    @Test
+    void cycleOfNonNullableLogicalForeignKeys() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -151,7 +162,8 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
      * before the two DELETEs. Without the ordering, the first DELETE would
      * violate the constraint.
      */
-    public void testCycleOfNullableLogicalForeignKeys() {
+    @Test
+    void cycleOfNullableLogicalForeignKeys() {
         // the statements are counted, so they are not batched, as on Oracle and DB2 by default
         DBDictionary dict = getDbDictionary(emf);
         int batchLimit = dict.getBatchLimit();
@@ -177,15 +189,15 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
             for (String s : sql) {
                 String stmnt = s.toUpperCase();
                 if (stmnt.startsWith("UPDATE OJ3034_LINK")) {
-                    assertEquals("the key is nulled before the rows are deleted: " + sql, 0, deletes);
-                    assertTrue(s, stmnt.contains("NEXT_ID = ?"));
+                    assertEquals(0, deletes, "the key is nulled before the rows are deleted: " + sql);
+                    assertTrue(stmnt.contains("NEXT_ID = ?"), s);
                     updates++;
                 } else if (stmnt.startsWith("DELETE FROM OJ3034_LINK")) {
                     deletes++;
                 }
             }
-            assertEquals(sql.toString(), 1, updates);
-            assertEquals(sql.toString(), 2, deletes);
+            assertEquals(1, updates, sql.toString());
+            assertEquals(2, deletes, sql.toString());
             em.getTransaction().commit();
         } finally {
             dict.setBatchLimit(batchLimit);
@@ -206,7 +218,7 @@ public class TestDeleteOrderForUnmappedForeignKey extends SQLListenerTestCase {
 
     private void assertNoUpdate() {
         for (String s : sql) {
-            assertFalse(s, s.toUpperCase().startsWith("UPDATE"));
+            assertFalse(s.toUpperCase().startsWith("UPDATE"), s);
         }
     }
 }

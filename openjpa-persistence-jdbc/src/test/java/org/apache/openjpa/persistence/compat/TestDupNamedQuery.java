@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,8 +27,8 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>Compatible testcases</b> are used to test various backwards compatibility scenarios between JPA 2.0 and JPA 1.2
@@ -41,9 +43,9 @@ import junit.textui.TestRunner;
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
  * </ul>
  */
-public class TestDupNamedQuery extends SingleEMFTestCase {
+class TestDupNamedQuery extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class, SimpleEntity2.class, CLEAR_TABLES);
 
@@ -57,7 +59,8 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testSimpleQuery() {
+    @Test
+    void testSimpleQuery() {
         simpleQuery(false, "FindOne", "FindAll", "Name One", "Value One",
             "Name Two", "Value Two");
         simpleQuery(true, "Find2One", "Find2All", "Name2 One", "Value2 One",
@@ -75,7 +78,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
         try {
             List list = em.createNamedQuery(findOneQName).setParameter(1, nameOne).getResultList();
             assertNotNull(list);
-            assertEquals(list.size(), 1);
+            assertEquals(1, list.size());
             Object o = list.get(0);
             assertSame(o.getClass(), simple2 ? SimpleEntity2.class : SimpleEntity.class);
             assertEquals(simple2 ? ((SimpleEntity2) o).getValue()
@@ -84,7 +87,7 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             if (findAllQName != null) {
                 list = em.createNamedQuery(findAllQName).getResultList();
                 assertNotNull(list);
-                assertEquals(list.size(), 2);
+                assertEquals(2, list.size());
                 for (Object value : list) {
                     o = value;
                     assertSame(o.getClass(), simple2 ? SimpleEntity2.class
@@ -100,13 +103,13 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
                         v = ((SimpleEntity) o).getValue();
                     }
                     if (n.equals(nameOne)) {
-                        assertTrue(v.equals(ValueOne));
+                        assertEquals(v, ValueOne);
                     }
                     else if (n.equals(nameTwo)) {
-                        assertTrue(v.equals(ValueTwo));
+                        assertEquals(v, ValueTwo);
                     }
                     else {
-                        assertTrue(false);
+                        fail();
                     }
                 }
             }
@@ -129,9 +132,4 @@ public class TestDupNamedQuery extends SingleEMFTestCase {
             em.close();
         }
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestDupNamedQuery.class);
-    }
 }
-

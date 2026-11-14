@@ -20,23 +20,30 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 import jakarta.persistence.EntityManager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The default name of an index over a delimited column must not contain the
  * delimiters of that column name (OPENJPA-3079).
  */
-public class TestDelimitedIndexColumnName extends SingleEMFTestCase {
-    @Override
+class TestDelimitedIndexColumnName extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(EntityWithDelimitedIndexColumn.class, DROP_TABLES);
     }
 
-    public void testDefaultIndexName() {
+    @Test
+    void defaultIndexName() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance()
             .getMapping(EntityWithDelimitedIndexColumn.class, null, true);
@@ -48,13 +55,14 @@ public class TestDelimitedIndexColumnName extends SingleEMFTestCase {
                 idx = index;
             }
         }
-        assertNotNull("Index over rank and AMOUNT should exist", idx);
+        assertNotNull(idx, "Index over rank and AMOUNT should exist");
         String name = idx.getIdentifier().getName();
-        assertFalse("Index name " + name + " contains a delimiter", name.contains("\""));
+        assertFalse(name.contains("\""), "Index name " + name + " contains a delimiter");
         assertEquals("I_DLM_IDX_RANK_AMOUNT", name);
     }
 
-    public void testSchemaCreated() {
+    @Test
+    void schemaCreated() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

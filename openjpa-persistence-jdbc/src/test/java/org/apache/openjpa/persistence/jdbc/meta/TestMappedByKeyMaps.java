@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -44,18 +46,13 @@ import org.apache.openjpa.persistence.jdbc.common.apps.InverseKeyMapPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.JoinTableMapPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.MappedByMapPC;
 import org.apache.openjpa.util.AbstractLRSProxyMap;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMappedByKeyMaps
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMappedByKeyMaps extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-    /** Creates a new instance of TestMappedByKeyMaps */
-    public TestMappedByKeyMaps(String name)
-    {
-    	super(name);
-    }
-
-    public void testInverseKeyMapMapping() {
+    @Test
+    void inverseKeyMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
                 (InverseKeyMapPC.class, null, true);
@@ -67,14 +64,14 @@ public class TestMappedByKeyMaps
 
         assertEquals("stringField", map.getKey().getValueMappedBy());
         assertEquals(str, map.getKey().getValueMappedByMetaData());
-        assertTrue(map.getStrategy() instanceof
-                RelationMapInverseKeyFieldStrategy);
+        assertInstanceOf(RelationMapInverseKeyFieldStrategy.class, map.getStrategy());
         assertEquals(1, map.getKeyMapping().getColumns().length);
         assertEquals(map.getKeyMapping().getColumns()[0],
                 str.getColumns()[0]);
     }
 
-    public void testJoinTableMapMapping() {
+    @Test
+    void joinTableMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
                 (JoinTableMapPC.class, null, true);
@@ -86,27 +83,31 @@ public class TestMappedByKeyMaps
 
         assertEquals("stringField", map.getKey().getValueMappedBy());
         assertEquals(str, map.getKey().getValueMappedByMetaData());
-        assertTrue(map.getStrategy() instanceof RelationMapTableFieldStrategy);
+        assertInstanceOf(RelationMapTableFieldStrategy.class, map.getStrategy());
         assertEquals(1, map.getKeyMapping().getColumns().length);
         assertEquals(map.getKeyMapping().getColumns()[0],
                 str.getColumns()[0]);
     }
 
-    public void testInverseKeyMap() {
+    @Test
+    void inverseKeyMap() {
         mappedByMap(new InverseKeyMapPC(), false);
         queryMap(new InverseKeyMapPC());
     }
 
-    public void testInverseKeyLRSMap() {
+    @Test
+    void inverseKeyLRSMap() {
         mappedByMap(new InverseKeyMapPC(), true);
     }
 
-    public void testJoinTableMap() {
+    @Test
+    void joinTableMap() {
         mappedByMap(new JoinTableMapPC(), false);
         queryMap(new JoinTableMapPC());
     }
 
-    public void testJoinTableLRSMap() {
+    @Test
+    void joinTableLRSMap() {
         mappedByMap(new JoinTableMapPC(), true);
     }
 
@@ -143,7 +144,7 @@ public class TestMappedByKeyMaps
             pm = (OpenJPAEntityManager)currentEntityManager();
             pc = (MappedByMapPC) pm.getObjectId(oid);
             if (lrs)
-                assertTrue(pc.getHelpers() instanceof AbstractLRSProxyMap);
+                assertInstanceOf(AbstractLRSProxyMap.class, pc.getHelpers());
             assertEquals(3, pc.getHelpers().size());
             assertFalse(pc.getHelpers().containsKey("foo"));
             assertNull(pc.getHelpers().get("foo"));
@@ -206,7 +207,7 @@ public class TestMappedByKeyMaps
             itr = values.iterator();
             while (itr.hasNext()) {
                 Object next = itr.next();
-                assertTrue(next instanceof HelperPC);
+                assertInstanceOf(HelperPC.class, next);
                 ordered.add(((HelperPC) next).getStringField());
             }
             //FIXME jthomas

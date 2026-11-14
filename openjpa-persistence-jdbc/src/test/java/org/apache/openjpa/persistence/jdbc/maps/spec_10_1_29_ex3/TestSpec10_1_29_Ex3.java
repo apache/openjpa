@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_29_ex3;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +31,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public int numStudents = 2;
@@ -41,7 +43,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public int semesterId = 1;
     public List rsAllStudents = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             Course.class,
@@ -51,16 +53,19 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
         rsAllStudents = getAll(Student.class);
     }
 
-    public void testQueryObj() throws Exception {
+    @Test
+    void testQueryObj() throws Exception {
         queryObj(emf);
     }
 
     @AllowFailure
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    @Test
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
-    public void testQueryQualifiedId() throws Exception {
+    @Test
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -126,7 +131,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
         if (inMemory)
             setCandidate(q, Student.class);
         rs = q.getResultList();
-        assertEquals(((Course) rs.get(0)).getId(), 1);
+        assertEquals(1, ((Course) rs.get(0)).getId());
 
         em.close();
     }
@@ -186,7 +191,7 @@ public class TestSpec10_1_29_Ex3 extends SQLListenerTestCase {
     public void assertStudent(Student s) {
         int id = s.getId();
         Map enrollment = s.getEnrollment();
-        Assert.assertEquals(2, enrollment.size());
+        assertEquals(2, enrollment.size());
     }
 
     public void assertCourse(Course c) {

@@ -18,14 +18,19 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that unenhanced entities with PROPERTY access and inheritance
@@ -33,14 +38,17 @@ import junit.framework.TestCase;
  * HardwareProduct (subclass) inherits @Id from Product (parent) and
  * the enhancer fails to map the inherited property to its backing field.
  */
-public class TestInheritedPropertyAccessPersist extends TestCase {
+class TestInheritedPropertyAccessPersist {
 
     private EntityManagerFactory emf;
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         Map<String, Object> props = new HashMap<>();
-        props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+        // The tests insert fixed ids, so clear UTCK_PRODUCT before each test:
+        // the Derby database is file based and outlives the test run.
+        props.put("openjpa.jdbc.SynchronizeMappings",
+            "buildSchema(ForeignKeys=true,SchemaAction='add,deleteTableContents')");
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         props.put("openjpa.DynamicEnhancementAgent", "false");
         props.put("openjpa.MetaDataFactory",
@@ -51,8 +59,8 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
         emf = Persistence.createEntityManagerFactory("test", props);
     }
 
-    @Override
-    public void tearDown() throws Exception {
+    @AfterEach
+    void tearDown() throws Exception {
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
@@ -64,7 +72,8 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
      * ReflectingPersistenceCapable.pcNewObjectIdInstance() fails because
      * pcAttributeIndexToFieldName() returns null for inherited PK field.
      */
-    public void testPersistSubclassWithInheritedId() {
+    @Test
+    void persistSubclassWithInheritedId() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {
@@ -82,7 +91,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
                 em.getTransaction().rollback();
             }
             fail("Persisting HardwareProduct with inherited @Id failed: "
-                + e.getMessage());
+                + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -92,7 +101,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
         try {
             UnenhancedTCKHardwareProduct found = em.find(
                 UnenhancedTCKHardwareProduct.class, "1");
-            assertNotNull("Should find persisted HardwareProduct", found);
+            assertNotNull(found, "Should find persisted HardwareProduct");
             assertEquals("1", found.getId());
             assertEquals("Test Product", found.getName());
             assertEquals(5000, found.getModelNumber());
@@ -104,7 +113,8 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
     /**
      * Test persisting the parent class directly works too.
      */
-    public void testPersistParentClassDirectly() {
+    @Test
+    void persistParentClassDirectly() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         try {
@@ -117,7 +127,7 @@ public class TestInheritedPropertyAccessPersist extends TestCase {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            fail("Persisting Product failed: " + e.getMessage());
+            fail("Persisting Product failed: " + e.getMessage(), e);
         } finally {
             em.close();
         }

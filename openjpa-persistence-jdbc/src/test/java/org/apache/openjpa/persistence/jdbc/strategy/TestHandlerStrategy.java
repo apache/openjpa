@@ -23,12 +23,14 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.jdbc.strategy.MappedEntity.Key;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  */
-public class TestHandlerStrategy extends SingleEMFTestCase {
+class TestHandlerStrategy extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(MappedEntity.class, MapperEntity.class, "openjpa.jdbc.MappingDefaults",
             "ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict", CLEAR_TABLES);
@@ -37,7 +39,8 @@ public class TestHandlerStrategy extends SingleEMFTestCase {
     /**
      * @see JIRA ticket OPENJPA-2328 for more explanation
      */
-    public void testIssue_OPENJPA2328() {
+    @Test
+    void issueOPENJPA2328() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
             return;

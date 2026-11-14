@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.temporal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,22 +33,24 @@ import jakarta.persistence.criteria.CriteriaQuery;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTemporalTimestamp extends SQLListenerTestCase {
     private OpenJPAEntityManager em;
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(CLEAR_TABLES, TemporalEntity.class, "openjpa.jdbc.DBDictionary",
             "DateMillisecondBehavior=" + DBDictionary.DateMillisecondBehaviors.DROP,
             "openjpa.Log", "SQL=TRACE,Tests=TRACE", "openjpa.ConnectionFactoryProperties"
@@ -76,26 +83,28 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         loadDB();
     }
 
-    public void testNoRounding() {
+    @Test
+    void noRounding() {
         em = emf.createEntityManager();
         final List<TemporalEntity> temporalEntityList = findAll(em);
         assertNotNull(temporalEntityList);
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 5);
-            assertEquals(testDate.getMonth(), 11);
-            assertEquals(testDate.getDate(), 31);
-            assertEquals(testDate.getHours(), 23);
-            assertEquals(testDate.getMinutes(), 59);
-            assertEquals(testDate.getSeconds(), 59);
-            assertEquals(testDate.getYear(), 8099);
+            assertEquals(5, testDate.getDay());
+            assertEquals(11, testDate.getMonth());
+            assertEquals(31, testDate.getDate());
+            assertEquals(23, testDate.getHours());
+            assertEquals(59, testDate.getMinutes());
+            assertEquals(59, testDate.getSeconds());
+            assertEquals(8099, testDate.getYear());
             assertTrue(sdf.format(testDate).toString().endsWith(".000"));
         }
         em.close();
     }
 
-    public void testNoRoundingNoMillisecondLoss() {
+    @Test
+    void noRoundingNoMillisecondLoss() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         dict.setDateMillisecondBehavior(DBDictionary.DateMillisecondBehaviors.RETAIN.toString());
@@ -106,20 +115,21 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 5);
-            assertEquals(testDate.getMonth(), 11);
-            assertEquals(testDate.getDate(), 31);
-            assertEquals(testDate.getHours(), 23);
-            assertEquals(testDate.getMinutes(), 59);
-            assertEquals(testDate.getSeconds(), 59);
-            assertEquals(testDate.getYear(), 8099);
+            assertEquals(5, testDate.getDay());
+            assertEquals(11, testDate.getMonth());
+            assertEquals(31, testDate.getDate());
+            assertEquals(23, testDate.getHours());
+            assertEquals(59, testDate.getMinutes());
+            assertEquals(59, testDate.getSeconds());
+            assertEquals(8099, testDate.getYear());
             assertTrue(sdf.format(testDate).toString().endsWith(".999"));
             // System.out.println("sdf.format(testDate).toString() = " + sdf.format(testDate).toString());
         }
         em.close();
     }
 
-    public void testRounding() {
+    @Test
+    void rounding() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         // set value back to default
@@ -131,13 +141,13 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         assertNotEquals(temporalEntityList.size(), 0);
         for (final TemporalEntity temporalEntity : temporalEntityList) {
             Date testDate = temporalEntity.getTestDate();
-            assertEquals(testDate.getDay(), 6);
-            assertEquals(testDate.getMonth(), 0);
-            assertEquals(testDate.getDate(), 1);
-            assertEquals(testDate.getHours(), 0);
-            assertEquals(testDate.getMinutes(), 0);
-            assertEquals(testDate.getSeconds(), 0);
-            assertEquals(testDate.getYear(), 8100);
+            assertEquals(6, testDate.getDay());
+            assertEquals(0, testDate.getMonth());
+            assertEquals(1, testDate.getDate());
+            assertEquals(0, testDate.getHours());
+            assertEquals(0, testDate.getMinutes());
+            assertEquals(0, testDate.getSeconds());
+            assertEquals(8100, testDate.getYear());
 //            assertEquals(testDate.getTime(), 253402326000000L);
             assertTrue(sdf.format(testDate).toString().endsWith(".000"));
         }

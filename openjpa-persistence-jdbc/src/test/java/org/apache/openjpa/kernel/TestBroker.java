@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.jdbc.kernel.A;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestBroker extends SingleEMFTestCase {
-    @Override
+class TestBroker extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         super.setUp(A.class, CLEAR_TABLES);
     }
@@ -33,7 +37,8 @@ public class TestBroker extends SingleEMFTestCase {
      * that exists in the current persistence context, a detached Entity with a DetachedStateManager, and a detached
      * Entity with no DetachedStateManager]
      */
-    public void testGetObjectId() {
+    @Test
+    void getObjectId() {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         Broker broker = em.getBroker();
 
@@ -53,7 +58,7 @@ public class TestBroker extends SingleEMFTestCase {
 
         Object oidDetachedNoSm = broker.getObjectId(a2);
 
-        assertTrue(oidInPersistenceContext.equals(oidDetached));
-        assertTrue(oidDetached.equals(oidDetachedNoSm));
+        assertEquals(oidInPersistenceContext, oidDetached);
+        assertEquals(oidDetached, oidDetachedNoSm);
     }
 }

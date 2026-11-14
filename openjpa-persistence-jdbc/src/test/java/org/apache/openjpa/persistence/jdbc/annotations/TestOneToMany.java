@@ -18,25 +18,31 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for 1-m
  *
  * @author Steve Kim
  */
-public class TestOneToMany
+class TestOneToMany
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
-    public void testOneToMany() {
+    @Test
+    void oneToMany() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -66,7 +72,8 @@ public class TestOneToMany
         em.close();
     }
 
-    public void testInverseOwnerOneToMany() {
+    @Test
+    void inverseOwnerOneToMany() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);

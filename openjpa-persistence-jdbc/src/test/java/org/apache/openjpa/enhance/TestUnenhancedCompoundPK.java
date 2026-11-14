@@ -19,17 +19,20 @@
 package org.apache.openjpa.enhance;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestUnenhancedCompoundPK
+class TestUnenhancedCompoundPK
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedCompoundPKFieldAccess.class,
             UnenhancedCompoundPKPropertyAccess.class, CLEAR_TABLES);
     }
 
-    public void testCompoundPKFieldAccessUserDefined() {
+    @Test
+    void compoundPKFieldAccessUserDefined() {
         UnenhancedCompoundPKFieldAccess un
             = new UnenhancedCompoundPKFieldAccess(17, 31);
         UnenhancedCompoundPKFieldAccess.PK oid
@@ -37,7 +40,8 @@ public class TestUnenhancedCompoundPK
         compoundPKHelper(un, oid, true);
     }
 
-    public void testCompoundPKFieldAccessOpenJPADefined() {
+    @Test
+    void compoundPKFieldAccessOpenJPADefined() {
         UnenhancedCompoundPKFieldAccess un
             = new UnenhancedCompoundPKFieldAccess(17, 31);
         UnenhancedCompoundPKFieldAccess.PK oid
@@ -45,7 +49,8 @@ public class TestUnenhancedCompoundPK
         compoundPKHelper(un, oid, false);
     }
 
-    public void testCompoundPKPropertyAccessUserDefined() {
+    @Test
+    void compoundPKPropertyAccessUserDefined() {
         UnenhancedCompoundPKPropertyAccess un
             = new UnenhancedCompoundPKPropertyAccess(17, 31);
         UnenhancedCompoundPKPropertyAccess.PK oid
@@ -53,7 +58,8 @@ public class TestUnenhancedCompoundPK
         compoundPKHelper(un, oid, true);
     }
 
-    public void testCompoundPKPropertyAccessOpenJPADefined() {
+    @Test
+    void compoundPKPropertyAccessOpenJPADefined() {
         UnenhancedCompoundPKPropertyAccess un
             = new UnenhancedCompoundPKPropertyAccess(17, 31);
         UnenhancedCompoundPKPropertyAccess.PK oid

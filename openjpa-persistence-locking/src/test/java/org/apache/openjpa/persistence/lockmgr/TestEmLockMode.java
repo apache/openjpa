@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.TransactionRequiredException;
@@ -29,11 +32,14 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test hints using EntityManager interface.
  */
-public class TestEmLockMode extends SequencedActionsTest {
+class TestEmLockMode extends SequencedActionsTest {
     private static String NON_SUPPORTED_OPTIMISTIC_SQL =
         "SELECT .* FROM LockEmployee .*";
     private static String NON_SUPPORTED_FOR_UPDATE_SQL = "" ; // append lock clause from dict
@@ -46,7 +52,7 @@ public class TestEmLockMode extends SequencedActionsTest {
     private static String DB2_PESSIMISTIC_RR_SQL =
         "SELECT .* FROM LockEmployee .* WITH RR USE .*";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class, "openjpa.LockManager", "mixed");
         commonSetUp();
@@ -64,7 +70,8 @@ public class TestEmLockMode extends SequencedActionsTest {
     /*
      * Test em.find(lockmode);
      */
-    public void testFindLockModeIsolations() {
+    @Test
+    void findLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -134,7 +141,8 @@ public class TestEmLockMode extends SequencedActionsTest {
     /*
      * Test em.refresh(lockmode);
      */
-    public void testRefreshLockModeIsolations() {
+    @Test
+    void refreshLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -205,7 +213,8 @@ public class TestEmLockMode extends SequencedActionsTest {
     /*
      * Test em.lock(lockmode);
      */
-    public void testLockLockModeIsolations() {
+    @Test
+    void lockLockModeIsolations() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -275,7 +284,8 @@ public class TestEmLockMode extends SequencedActionsTest {
     /*
      * Test em.getLockMode();
      */
-    public void testGetLockMode() {
+    @Test
+    void getLockMode() {
         EntityManager em = emf.createEntityManager();
 
         LockEmployee employee = em.find(LockEmployee.class, 1);
@@ -289,7 +299,7 @@ public class TestEmLockMode extends SequencedActionsTest {
 
         em.getTransaction().begin();
         try {
-            assertEquals("getLockMode only allows in transaction.",LockModeType.NONE, em.getLockMode(employee));
+            assertEquals(LockModeType.NONE,em.getLockMode(employee), "getLockMode only allows in transaction.");
         } catch (Exception e){
             fail("Do not expecting any exception.");
         }
@@ -310,8 +320,8 @@ public class TestEmLockMode extends SequencedActionsTest {
         em.getTransaction().begin();
         try {
             employee = em.find(LockEmployee.class, 1, LockModeType.PESSIMISTIC_WRITE);
-            assertEquals("Test getLockMode on non-NONE lock mode type.", LockModeType.PESSIMISTIC_WRITE, em
-                    .getLockMode(employee));
+            assertEquals(LockModeType.PESSIMISTIC_WRITE, em
+                    .getLockMode(employee), "Test getLockMode on non-NONE lock mode type.");
         } catch (Exception e){
             fail("Do not expecting any exception.");
         }

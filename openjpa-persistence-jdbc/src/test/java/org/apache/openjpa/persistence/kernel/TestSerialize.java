@@ -28,26 +28,21 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSerialize extends BaseKernelTest {
+class TestSerialize extends BaseKernelTest {
 
     private int _oid = 0;
     private Object _oid2 = null;
 
-    /**
-     * Creates a new instance of TestSerialize
-     */
-    public TestSerialize() {
-    }
-
-    public TestSerialize(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         RuntimeTest1 a = new RuntimeTest1("1NAME", 1);
         a.setSelfOneOne(new RuntimeTest1("2NAME", 2));
 
@@ -60,14 +55,16 @@ public class TestSerialize extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testConfigurationSerializable()
+    @Test
+    void configurationSerializable()
         throws Exception {
         // validate that the hashCode() and equals() method hold true
         // for the round-trip.
         roundtrip(getConfiguration(), true);
     }
 
-    public void testSerialize()
+    @Test
+    void serialize()
         throws Exception {
         OpenJPAEntityManager pm = getPM();
         //FIXME jthomas

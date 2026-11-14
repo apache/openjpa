@@ -27,6 +27,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -34,24 +38,17 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestIntermediate
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestIntermediate extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private Object _pc;
     private Object _rel;
 
-    public TestIntermediate(String test) {
-        super(test);
-    }
-
-    /** Creates a new instance of TestIntermediate */
-    public TestIntermediate() {
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RuntimeTest1 pc = new RuntimeTest1("pc", 1);
         RuntimeTest1 rel = new RuntimeTest1("rel", 2);
         pc.setSelfOneOne(rel);
@@ -67,7 +64,8 @@ public class TestIntermediate
         em.close();
     }
 
-    public void testOneOneSetsIntermediate() {
+    @Test
+    void oneOneSetsIntermediate() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
         try {
@@ -78,7 +76,8 @@ public class TestIntermediate
         }
     }
 
-    public void testDataCacheOneOneSetsIntermediate() {
+    @Test
+    void dataCacheOneOneSetsIntermediate() {
         BrokerFactory factory = getBrokerFactory(new String[]{
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",

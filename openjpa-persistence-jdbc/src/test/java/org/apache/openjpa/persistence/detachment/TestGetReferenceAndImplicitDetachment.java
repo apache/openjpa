@@ -18,23 +18,29 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.RollbackException;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestGetReferenceAndImplicitDetachment
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestGetReferenceAndImplicitDetachment extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DetachState", "fetch-groups",
             DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
-    public void testNonexistentGetReferenceDetachmentInTxWithCommit() {
+    @Test
+    void nonexistentGetReferenceDetachmentInTxWithCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =
@@ -50,7 +56,8 @@ public class TestGetReferenceAndImplicitDetachment
         // assertFalse(((PersistenceCapable) o).pcIsDetached());
     }
 
-    public void testNonexistentGetReferenceDetachmentOutsideTx() {
+    @Test
+    void nonexistentGetReferenceDetachmentOutsideTx() {
         EntityManager em = emf.createEntityManager();
         DetachmentOneManyParent o =
             em.getReference(DetachmentOneManyParent.class, 0);
@@ -64,7 +71,8 @@ public class TestGetReferenceAndImplicitDetachment
         // assertFalse(((PersistenceCapable) o).pcIsDetached());
     }
 
-    public void testNonexistentGetReferenceDetachmentInTxWithRollback() {
+    @Test
+    void nonexistentGetReferenceDetachmentInTxWithRollback() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =
@@ -80,7 +88,8 @@ public class TestGetReferenceAndImplicitDetachment
         em.close();
     }
 
-    public void testNonexistentGetReferenceDetachmentInTxWithFailedCommit() {
+    @Test
+    void nonexistentGetReferenceDetachmentInTxWithFailedCommit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         DetachmentOneManyParent o =

@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.example.gallery;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -29,11 +31,9 @@ import jakarta.validation.ConstraintViolationException;
 
 import org.apache.openjpa.example.gallery.model.Image;
 import org.apache.openjpa.example.gallery.model.Location;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.fail;
-
-public class TestJPAValidation {
+class TestJPAValidation {
 
 
     /**
@@ -41,7 +41,7 @@ public class TestJPAValidation {
      * and pre-persist lifecycle events.
      */
     @Test
-    public void testValidation() {
+    void validation() {
         EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("BeanValidation");
         EntityManager em = emf.createEntityManager();

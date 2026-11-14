@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,23 +42,15 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.MapElementPC;
 import org.apache.openjpa.persistence.kernel.common.apps.MapElementPCChild;
 import org.apache.openjpa.persistence.kernel.common.apps.PersistentMapHolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestPersistentMaps extends BaseKernelTest {
+class TestPersistentMaps extends BaseKernelTest {
 
     private static final String JDOQL = "javax.jdo.query.JDOQL";
 
-    /**
-     * Creates a new instance of TestPersistentMaps
-     */
-    public TestPersistentMaps() {
-    }
-
-    public TestPersistentMaps(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(PersistentMapHolder.class);
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
@@ -80,7 +74,8 @@ public class TestPersistentMaps extends BaseKernelTest {
             return type.newInstance();
     }
 
-    private void testMap(int num, String name, Class keyClass, Class valueClass)
+    @Test
+    private void map(int num, String name, Class keyClass, Class valueClass)
         throws Exception {
         OpenJPAEntityManager srcpm = getPM(true, true);
         startTx(srcpm);
@@ -189,69 +184,80 @@ public class TestPersistentMaps extends BaseKernelTest {
         endEm(srcpm);
     }
 
-    public void testPCKeyStringValue()
+    @Test
+    void pCKeyStringValue()
         throws Exception {
-        testMap(5, "testPCKeyStringValue",
+        map(5, "testPCKeyStringValue",
             MapElementPC.class, String.class);
     }
 
-    public void testStringKeyPCValue()
+    @Test
+    void stringKeyPCValue()
         throws Exception {
-        testMap(6, "testStringKeyPCValue",
+        map(6, "testStringKeyPCValue",
             String.class, MapElementPC.class);
     }
 
-    public void testPCKeyPCValue()
+    @Test
+    void pCKeyPCValue()
         throws Exception {
-        testMap(7, "testPCKeyPCValue",
+        map(7, "testPCKeyPCValue",
             MapElementPC.class, MapElementPC.class);
     }
 
-    public void testPCSubKeyStringValue()
+    @Test
+    void pCSubKeyStringValue()
         throws Exception {
-        testMap(8, "testPCSubKeyStringValue",
+        map(8, "testPCSubKeyStringValue",
             MapElementPCChild.class, String.class);
     }
 
-    public void testStringKeyPCSubValue()
+    @Test
+    void stringKeyPCSubValue()
         throws Exception {
-        testMap(9, "testStringKeyPCSubValue",
+        map(9, "testStringKeyPCSubValue",
             String.class, MapElementPCChild.class);
     }
 
-    public void testPCSubKeyPCValue()
+    @Test
+    void pCSubKeyPCValue()
         throws Exception {
-        testMap(10, "testPCSubKeyPCValue",
+        map(10, "testPCSubKeyPCValue",
             MapElementPCChild.class, MapElementPC.class);
     }
 
-    public void testPCSubKeyPCSubValue()
+    @Test
+    void pCSubKeyPCSubValue()
         throws Exception {
-        testMap(11, "testPCSubKeyPCSubValue",
+        map(11, "testPCSubKeyPCSubValue",
             MapElementPCChild.class, MapElementPCChild.class);
     }
 
-    public void testPCKeyPCSubValue()
+    @Test
+    void pCKeyPCSubValue()
         throws Exception {
-        testMap(12, "testPCKeyPCSubValue",
+        map(12, "testPCKeyPCSubValue",
             MapElementPC.class, MapElementPCChild.class);
     }
 
-    public void testPCIntfKeyStringValue()
+    @Test
+    void pCIntfKeyStringValue()
         throws Exception {
-        testMap(13, "testPCIntfKeyStringValue",
+        map(13, "testPCIntfKeyStringValue",
             MapElementPC.class, String.class);
     }
 
-    public void testStringKeyPCIntfValue()
+    @Test
+    void stringKeyPCIntfValue()
         throws Exception {
-        testMap(14, "testStringKeyPCIntfValue",
+        map(14, "testStringKeyPCIntfValue",
             String.class, MapElementPC.class);
     }
 
-    public void testPCIntfKeyPCValue()
+    @Test
+    void pCIntfKeyPCValue()
         throws Exception {
-        testMap(15, "testPCIntfKeyPCValue",
+        map(15, "testPCIntfKeyPCValue",
             MapElementPC.class, MapElementPC.class);
     }
 
@@ -259,7 +265,8 @@ public class TestPersistentMaps extends BaseKernelTest {
      * Test querying maps when there are multiple holder instances that
      * have maps with the same key.
      */
-    public void testQueryMultipleMaps() throws Exception {
+    @Test
+    void queryMultipleMaps() throws Exception {
         deleteAll(PersistentMapHolder.class);
 
         String mapName = "testStringKeyPCValue";

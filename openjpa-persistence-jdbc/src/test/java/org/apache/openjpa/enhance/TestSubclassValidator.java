@@ -28,16 +28,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.asm.AsmHelper;
 import org.apache.openjpa.util.asm.EnhancementProject;
 import org.apache.xbean.asm9.tree.ClassNode;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-public class TestSubclassValidator extends SingleEMFTestCase {
-    @Override
+class TestSubclassValidator extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
                 Department.class,
@@ -48,7 +48,7 @@ public class TestSubclassValidator extends SingleEMFTestCase {
     }
 
     @Test
-    public void testBcSubclassValidator() throws Exception {
+    void bcSubclassValidator() throws Exception {
         EnhancementProject project = new EnhancementProject();
         TemporaryClassLoader tempCl = new TemporaryClassLoader(this.getClass().getClassLoader());
         final OpenJPAConfiguration conf = emf.getConfiguration();

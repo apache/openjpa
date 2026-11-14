@@ -13,6 +13,12 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +31,14 @@ import jakarta.persistence.Query;
 import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.Timeout;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.exception.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.OpenJPAException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that correct timeout exceptions are being thrown depending on whether it is a query or a lock operation.
@@ -44,28 +50,19 @@ public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
 
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // Disable tests for any DB that has supportsSelectForUpdate==false, like HSQLDictionary
-        OpenJPAEntityManagerFactorySPI tempEMF = emf;
-        if (tempEMF == null) {
-            tempEMF = createEMF();
-        }
-        assertNotNull(tempEMF);
-        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
-        assertNotNull(dict);
-        if (!dict.supportsSelectForUpdate || !dict.supportsQueryTimeout || dict instanceof SolidDBDictionary || dict instanceof OracleDictionary)
-            setTestsDisabled(true);
+        return dict.supportsSelectForUpdate && dict.supportsQueryTimeout &&
+            !(dict instanceof SolidDBDictionary || dict instanceof OracleDictionary);
+    }
 
-        if (emf == null) {
-            closeEMF(tempEMF);
-        }
-
-        if (isTestsDisabled())
-            return;
+    @BeforeEach
+    public void setUp() {
         super.setUp(entityClass, CLEAR_TABLES);
     }
 
-    public void testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
+    @Test
+    void queryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities()");
@@ -99,7 +96,8 @@ public class TestTimeoutException extends SingleEMFTestCase {
         }
     }
 
-    public void testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption() {
+    @Test
+    void lockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testLockTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntitiesOption()");
@@ -130,7 +128,8 @@ public class TestTimeoutException extends SingleEMFTestCase {
         }
     }
 
-    public void testLockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
+    @Test
+    void lockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
                 "testLockTimeOutExceptionWhileLockingAlreadyLockedEntities()");
@@ -163,7 +162,8 @@ public class TestTimeoutException extends SingleEMFTestCase {
         }
     }
 
-    public void testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
+    @Test
+    void queryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
         final int timeout = 1000;
         if (getLog().isTraceEnabled())
             getLog().trace("***** Entered TestTimeoutException." +
@@ -222,7 +222,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
             fail(actual.getClass().getName() + " was raised but expected " + expected.getName());
         }
         Object failed = getFailedObject(actual);
-        assertNotNull("Failed object is null", failed);
+        assertNotNull(failed, "Failed object is null");
         assertNotEquals("null", failed);
     }
 

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.OptimisticLockException;
@@ -28,11 +30,13 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestBulkUpdatesAndVersionColumn
+class TestBulkUpdatesAndVersionColumn
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -46,25 +50,29 @@ public class TestBulkUpdatesAndVersionColumn
         em.close();
     }
 
-    public void testSelectOnOplockField() {
+    @Test
+    void selectOnOplockField() {
         EntityManager em = emf.createEntityManager();
         em.createQuery("select o from OptimisticLockInstance o "
             + "where o.oplock = 0").getResultList();
         em.close();
     }
 
-    public void testOplockFieldMapping() {
+    @Test
+    void oplockFieldMapping() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper.getMetaData(
             emf, OptimisticLockInstance.class);
         FieldMapping fm = cm.getFieldMapping("oplock");
         assertEquals(1, fm.getColumns().length);
     }
 
-    public void testBulkUpdateWithManualVersionIncrement() {
+    @Test
+    void bulkUpdateWithManualVersionIncrement() {
         bulkUpdateHelper(true);
     }
 
-    public void testBulkUpdateWithoutManualVersionIncrement() {
+    @Test
+    void bulkUpdateWithoutManualVersionIncrement() {
         bulkUpdateHelper(false);
     }
 
@@ -92,8 +100,7 @@ public class TestBulkUpdatesAndVersionColumn
             em.getTransaction().commit();
             fail("transaction should have failed");
         } catch (RollbackException re) {
-            assertTrue("nested exception must be an oplock exception",
-                re.getCause() instanceof OptimisticLockException);
+            assertInstanceOf(OptimisticLockException.class, re.getCause(), "nested exception must be an oplock exception");
         } finally {
             em.close();
         }

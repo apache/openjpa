@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,11 +29,14 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestQueryEscapeCharacters
+class TestQueryEscapeCharacters
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Employee.class, CLEAR_TABLES,
             "openjpa.jdbc.QuerySQLCache", "true");
@@ -62,7 +67,7 @@ public class TestQueryEscapeCharacters
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -72,28 +77,34 @@ public class TestQueryEscapeCharacters
         super.tearDown();
     }
 
-    public void testNormalQuery() {
+    @Test
+    void normalQuery() {
         performFind ("Employee.findByName", "%Dick", 1);
     }
 
-    public void testMultiResultQuery() {
+    @Test
+    void multiResultQuery() {
         performFind ("Employee.findByName", "Mike%", 3);
     }
 
-    public void testEscapedQuery() {
+    @Test
+    void escapedQuery() {
         performFind ("Employee.findByNameEscaped",
                 "M\\%%", 1);
     }
 
-    public void testDoubleEscapedQuery() {
+    @Test
+    void doubleEscapedQuery() {
         performFind ("Employee.findByName", "\\\\", 0);
     }
 
-    public void testWrongEscape() {
+    @Test
+    void wrongEscape() {
         performFind ("Employee.findByName", "M|%%", 0);
     }
 
-    public void testDoubleSlashQuery() {
+    @Test
+    void doubleSlashQuery() {
         // a LIKE without an ESCAPE clause has no escape character on any
         // database, so this is a pattern of one ordinary backslash
         performFind ("Employee.findByName", "\\", 0);
@@ -107,7 +118,8 @@ public class TestQueryEscapeCharacters
      * database, not only on the ones which set the flag themselves.
      */
     @SuppressWarnings("unchecked")
-    public void testDifferentEscapeCharacter () {
+    @Test
+    void differentEscapeCharacter() {
         OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
@@ -157,7 +169,8 @@ public class TestQueryEscapeCharacters
      * does not depend on the pattern, so re-executing the query with another
      * pattern from the prepared query cache stays correct (OPENJPA-3009).
      */
-    public void testCachedSqlDoesNotDependOnThePattern() {
+    @Test
+    void cachedSqlDoesNotDependOnThePattern() {
         String jpql = "Select e from Employee e where e.name LIKE :name";
 
         EntityManager em = emf.createEntityManager();
@@ -165,17 +178,17 @@ public class TestQueryEscapeCharacters
             for (int i = 0; i < 3; i++) {
                 Query q = em.createQuery(jpql);
                 q.setParameter("name", "Mike%");
-                assertEquals("run " + i, 3, q.getResultList().size());
+                assertEquals(3, q.getResultList().size(), "run " + i);
 
                 q = em.createQuery(jpql);
                 q.setParameter("name", "%Dick");
-                assertEquals("run " + i, 1, q.getResultList().size());
+                assertEquals(1, q.getResultList().size(), "run " + i);
 
                 // a backslash is an ordinary character, so this matches
                 // nothing rather than 'M' plus any two characters
                 q = em.createQuery(jpql);
                 q.setParameter("name", "M\\%%");
-                assertEquals("run " + i, 0, q.getResultList().size());
+                assertEquals(0, q.getResultList().size(), "run " + i);
             }
         } finally {
             em.close();

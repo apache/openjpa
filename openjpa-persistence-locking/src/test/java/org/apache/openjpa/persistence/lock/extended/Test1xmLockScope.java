@@ -19,6 +19,16 @@
 package org.apache.openjpa.persistence.lock.extended;
 
 import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+
+import java.util.stream.Stream;
+
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 
 /**
  * LockScopeTestCase subclass to test entity with:
@@ -27,18 +37,16 @@ import jakarta.persistence.EntityManager;
  * - Uni-1xm use join table - lazy fetch (default)
  * - Uni-1xm use join table - eager fetch
  */
-public class Test1xmLockScope extends LockScopeTestCase {
+class Test1xmLockScope extends LockScopeTestCase {
 
     @Override
-    public void setUp() {
-        setSupportedDatabases(
-                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return Stream.of(DerbyDictionary.class, OracleDictionary.class, DB2Dictionary.class)
+                .anyMatch(clazz -> clazz.isInstance(dict));
+    }
 
+    @BeforeEach
+    public void setUp() {
         setUp(LSE1xmLf.class
             , LSE1xmLfEgr.class
             , LSE1xmLfJT.class
@@ -55,11 +63,13 @@ public class Test1xmLockScope extends LockScopeTestCase {
         );
     }
 
-    public void testNormalUni1xmLock() {
+    @Test
+    void normalUni1xmLock() {
         common1xmLock("testNormalUni1xmLock", 2111101, false);
     }
 
-    public void testExtendedUni1xmLock() {
+    @Test
+    void extendedUni1xmLock() {
         common1xmLock("testExtendedUni1xmLock", 2111111, true);
     }
 
@@ -248,11 +258,13 @@ public class Test1xmLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalUni1xmEagerLock() {
+    @Test
+    void normalUni1xmEagerLock() {
         common1xmEagerLock("testNormalUni1xmEagerLock", 2111201, false);
     }
 
-    public void testExtendedUni1xmEagerLock() {
+    @Test
+    void extendedUni1xmEagerLock() {
         common1xmEagerLock("testExtendedUni1xmEagerLock", 2111211, true);
     }
 
@@ -605,11 +617,13 @@ public class Test1xmLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalUni1xmJTLock() {
+    @Test
+    void normalUni1xmJTLock() {
         common1xmJTLock("testNormalUni1xmJTLock", 2112101, false);
     }
 
-    public void testExtendedUni1xmJTLock() {
+    @Test
+    void extendedUni1xmJTLock() {
         common1xmJTLock("testExtendedUni1xmJTLock", 2112111, true);
     }
 
@@ -798,11 +812,13 @@ public class Test1xmLockScope extends LockScopeTestCase {
                 });
     }
 
-    public void testNormalUni1xmJTEagerLock() {
+    @Test
+    void normalUni1xmJTEagerLock() {
         common1xmJTEagerLock("testNormalUni1xmJTEagerLock", 2112201, false);
     }
 
-    public void testExtendedUni1xmJTEagerLock() {
+    @Test
+    void extendedUni1xmJTEagerLock() {
         common1xmJTEagerLock("testExtendedUni1xmJTEagerLock", 2112211, true);
     }
 

@@ -18,31 +18,39 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Generator;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for generators
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestGenerators extends AnnotationTestCase
 {
 
-	public TestGenerators(String name)
+	public TestGenerators()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         deleteAll(Generator.class);
     }
 
-    public void testGet() {
+    @Test
+    void get() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -54,7 +62,8 @@ public class TestGenerators extends AnnotationTestCase
         assertNew();
     }
 
-    public void testFlush() {
+    @Test
+    void flush() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -67,7 +76,8 @@ public class TestGenerators extends AnnotationTestCase
         assertNew();
     }
 
-    public void testCommit() {
+    @Test
+    void commit() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Generator g = new Generator();
@@ -92,10 +102,5 @@ public class TestGenerators extends AnnotationTestCase
         assertNotNull(g.getPk2());
        // assertNotEquals(new Integer(0), g);
         assertNotEquals(0, g.getPk3());
-    }
-
-    private boolean assertNotEquals(long n, long num)
-    {
-    	return(n != num);
     }
 }

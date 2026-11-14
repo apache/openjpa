@@ -18,25 +18,24 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Map;
 
 import jakarta.persistence.PersistenceConfiguration;
 import jakarta.persistence.PersistenceUnitTransactionType;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The transaction type is kept as {@link PersistenceUnitTransactionType} and only
  * exposed as the deprecated SPI enum through {@link PersistenceUnitInfoImpl#getTransactionType()}.
  */
 @SuppressWarnings("removal")
-public class TestPersistenceUnitInfoTransactionType {
+class TestPersistenceUnitInfoTransactionType {
 
     @Test
-    public void testDefaultIsResourceLocal() {
+    void defaultIsResourceLocal() {
         PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
         assertEquals(jakarta.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL,
             pinfo.getTransactionType());
@@ -44,7 +43,7 @@ public class TestPersistenceUnitInfoTransactionType {
     }
 
     @Test
-    public void testFromPersistenceConfiguration() {
+    void fromPersistenceConfiguration() {
         PersistenceConfiguration config = new PersistenceConfiguration("tx")
             .transactionType(PersistenceUnitTransactionType.JTA);
         PersistenceUnitInfoImpl pinfo = PersistenceUnitInfoImpl.convert(config);
@@ -53,22 +52,22 @@ public class TestPersistenceUnitInfoTransactionType {
     }
 
     @Test
-    public void testFromUserPropertiesAsString() {
+    void fromUserPropertiesAsString() {
         assertJta("JTA");
     }
 
     @Test
-    public void testFromUserPropertiesAsEnum() {
+    void fromUserPropertiesAsEnum() {
         assertJta(PersistenceUnitTransactionType.JTA);
     }
 
     @Test
-    public void testFromUserPropertiesAsDeprecatedSpiEnum() {
+    void fromUserPropertiesAsDeprecatedSpiEnum() {
         assertJta(jakarta.persistence.spi.PersistenceUnitTransactionType.JTA);
     }
 
     @Test
-    public void testDeprecatedSetter() {
+    void deprecatedSetter() {
         PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
         pinfo.setTransactionType(jakarta.persistence.spi.PersistenceUnitTransactionType.JTA);
         assertEquals(jakarta.persistence.spi.PersistenceUnitTransactionType.JTA, pinfo.getTransactionType());

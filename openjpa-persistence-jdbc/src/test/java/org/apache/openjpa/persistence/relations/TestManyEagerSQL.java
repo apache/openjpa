@@ -18,21 +18,23 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.textui.TestRunner;
+@DynamicEnhancementTest
+class TestManyEagerSQL extends SQLListenerTestCase {
 
-
-public class TestManyEagerSQL
-    extends SQLListenerTestCase {
-
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             OneManyEagerParent.class, OneManyEagerChild.class,
@@ -74,7 +76,8 @@ public class TestManyEagerSQL
         em.close();
     }
 
-    public void testManyToOneEagerQuery() {
+    @Test
+    void manyToOneEagerQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -112,7 +115,8 @@ public class TestManyEagerSQL
         em.close();
     }
 
-    public void testManyToOneLazyQuery() {
+    @Test
+    void manyToOneLazyQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -157,7 +161,8 @@ public class TestManyEagerSQL
         em.close();
     }
 
-    public void testOneToManyEagerQuery() {
+    @Test
+    void oneToManyEagerQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -203,7 +208,8 @@ public class TestManyEagerSQL
         em.close();
     }
 
-    public void testOneToOneParentQuery() {
+    @Test
+    void oneToOneParentQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -230,7 +236,8 @@ public class TestManyEagerSQL
         em.close();
     }
 
-    public void testOneToOneChildQuery() {
+    @Test
+    void oneToOneChildQuery() {
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -256,9 +263,4 @@ public class TestManyEagerSQL
         assertEquals(0, sql.size());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestManyEagerSQL.class);
-    }
 }
-

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -38,6 +39,7 @@ import org.apache.openjpa.persistence.jdbc.ForeignKey;
 public class CM {
 
 	@Id
+	@Column(length = 64)
     private String cmId;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy="cm")

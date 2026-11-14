@@ -18,21 +18,26 @@
  */
 package org.apache.openjpa.persistence.arrays;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.arrays.model.XMLExceptionEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestXMLExceptionEntity extends SingleEMFTestCase {
+class TestXMLExceptionEntity extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
         return "arrays";
     }
 
-    public void testExceptionArrayAsLob() {
+    @Test
+    void exceptionArrayAsLob() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -59,7 +64,8 @@ public class TestXMLExceptionEntity extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testExceptionPersistentCollection() {
+    @Test
+    void exceptionPersistentCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -86,7 +92,8 @@ public class TestXMLExceptionEntity extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testExceptionElementCollection() {
+    @Test
+    void exceptionElementCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

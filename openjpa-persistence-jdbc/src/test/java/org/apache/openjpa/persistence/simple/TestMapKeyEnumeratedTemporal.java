@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +28,7 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for @MapKeyEnumerated and @MapKeyTemporal on
@@ -35,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *   @MapKeyEnumerated types (ORDINAL vs STRING) on the same column
  * - @OneToMany(mappedBy) with @MapKeyTemporal(DATE) for Date map keys
  */
-public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
+class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
     /**
      * Test that @MapKeyEnumerated(STRING) works on a OneToMany(mappedBy)
@@ -46,7 +50,8 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * and Department2 (ORDINAL) both have employees on EMP_MAPKEYCOL
      * with OFFICE_ID column.
      */
-    public void testMapKeyEnumeratedWithSharedTable() {
+    @Test
+    void mapKeyEnumeratedWithSharedTable() {
         setUp(DROP_TABLES,
             MkeDepartment.class,
             MkeDepartmentOrdinal.class,
@@ -99,12 +104,12 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
         // Verify STRING enum department
         MkeDepartment found = em.find(MkeDepartment.class, 1);
-        assertNotNull("Department should be found", found);
-        assertNotNull("Map should not be null", found.getLastNameEmployees());
-        assertEquals("Map should have 3 entries", 3,
-            found.getLastNameEmployees().size());
-        assertNotNull("Key ONE should exist",
-            found.getLastNameEmployees().get(MapKeyEnum.ONE));
+        assertNotNull(found, "Department should be found");
+        assertNotNull(found.getLastNameEmployees(), "Map should not be null");
+        assertEquals(3, found.getLastNameEmployees().size(),
+            "Map should have 3 entries");
+        assertNotNull(found.getLastNameEmployees().get(MapKeyEnum.ONE),
+            "Key ONE should exist");
         assertEquals("Smith", found.getLastNameEmployees()
             .get(MapKeyEnum.ONE).getLastName());
 
@@ -116,7 +121,8 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Map field. Verifies Date map keys are correctly stored and
      * retrieved.
      */
-    public void testMapKeyTemporalOneToMany() {
+    @Test
+    void mapKeyTemporalOneToMany() {
         setUp(DROP_TABLES,
             MktDepartment.class,
             MktEmployee.class);
@@ -148,10 +154,10 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
         // Verify temporal department
         MktDepartment found = em.find(MktDepartment.class, 1);
-        assertNotNull("Department should be found", found);
-        assertNotNull("Map should not be null", found.getLastNameEmployees());
-        assertEquals("Map should have 2 entries", 2,
-            found.getLastNameEmployees().size());
+        assertNotNull(found, "Department should be found");
+        assertNotNull(found.getLastNameEmployees(), "Map should not be null");
+        assertEquals(2, found.getLastNameEmployees().size(),
+            "Map should have 2 entries");
 
         em.close();
     }
@@ -160,7 +166,8 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Test @MapKeyEnumerated(STRING) on @ElementCollection
      * Map field with embeddable values.
      */
-    public void testMapKeyEnumeratedElementCollection() {
+    @Test
+    void mapKeyEnumeratedElementCollection() {
         setUp(DROP_TABLES,
             MapKeyEnumEntity.class,
             MapValueEmbeddable.class);
@@ -198,7 +205,8 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * Test @MapKeyTemporal(DATE) on @ElementCollection
      * Map field with embeddable values.
      */
-    public void testMapKeyTemporalElementCollection() {
+    @Test
+    void mapKeyTemporalElementCollection() {
         setUp(DROP_TABLES,
             MapKeyTemporalEntity.class,
             MapValueEmbeddable.class);
@@ -234,7 +242,8 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
      * and Department2 both map to DEPARTMENT2, and Employee and Employee2
      * both map to EMP_MAPKEYCOL2.
      */
-    public void testMapKeyTemporalSharedTable() {
+    @Test
+    void mapKeyTemporalSharedTable() {
         setUp(DROP_TABLES,
             MktDeptShared.class,
             MktDeptShared2.class,
@@ -291,10 +300,10 @@ public class TestMapKeyEnumeratedTemporal extends SingleEMFTestCase {
 
         // Verify Department 1
         MktDeptShared found1 = em.find(MktDeptShared.class, 1);
-        assertNotNull("Department1 should be found", found1);
-        assertNotNull("Map should not be null", found1.getLastNameEmployees());
-        assertEquals("Map should have 2 entries", 2,
-            found1.getLastNameEmployees().size());
+        assertNotNull(found1, "Department1 should be found");
+        assertNotNull(found1.getLastNameEmployees(), "Map should not be null");
+        assertEquals(2, found1.getLastNameEmployees().size(),
+            "Map should have 2 entries");
 
         em.close();
     }

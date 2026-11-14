@@ -18,6 +18,8 @@
  */
  package org.apache.openjpa.persistence.jdbc.version;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,14 +29,17 @@ import org.apache.openjpa.persistence.jdbc.version.model.IntVersion;
 import org.apache.openjpa.persistence.jdbc.version.model.ShortVersion;
 import org.apache.openjpa.persistence.jdbc.version.model.TimestampVersion;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestVersionColumn extends SQLListenerTestCase {
-    @Override
-    public void setUp() {
+ class TestVersionColumn extends SQLListenerTestCase {
+     @BeforeEach
+     public void setUp() {
         super.setUp(IntVersion.class, TimestampVersion.class, ShortVersion.class);
     }
 
-    public void testNullIntegerVersion() {
+     @Test
+     void nullIntegerVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -50,19 +55,20 @@ public class TestVersionColumn extends SQLListenerTestCase {
         resetSQL();
 
         List<IntVersion> results = em.createQuery("SELECT i from IntVersion i", IntVersion.class).getResultList();
-        assertNotNull("No results found", results);
-        assertFalse("No results found", results.isEmpty());
+        assertNotNull(results, "No results found");
+        assertFalse(results.isEmpty(), "No results found");
         for (IntVersion iv : results) {
-            assertEquals("Version should be initialized to 0, was: " + iv.getVersion(), 0, iv.getVersion());
+            assertEquals(0, iv.getVersion(), "Version should be initialized to 0, was: " + iv.getVersion());
             em.find(IntVersion.class, iv.getId());
         }
 
-        assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
+        assertEquals(1, getSQLCount(), "Unexpected number of SQL statements: " + getSQLCount());
 
         em.close();
     }
 
-    public void testNullTimestampVersion() {
+     @Test
+     void nullTimestampVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -78,19 +84,20 @@ public class TestVersionColumn extends SQLListenerTestCase {
         resetSQL();
         List<TimestampVersion> results =
             em.createQuery("SELECT i from TimestampVersion i", TimestampVersion.class).getResultList();
-        assertNotNull("No results found", results);
-        assertFalse("No results found", results.isEmpty());
+        assertNotNull(results, "No results found");
+        assertFalse(results.isEmpty(), "No results found");
         for (TimestampVersion iv : results) {
-            assertEquals("Version should be initialized to null, was: " + iv.getVersion(), null, iv.getVersion());
+            assertNull(iv.getVersion(), "Version should be initialized to null, was: " + iv.getVersion());
             em.find(TimestampVersion.class, iv.getId());
         }
 
-        assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
+        assertEquals(1, getSQLCount(), "Unexpected number of SQL statements: " + getSQLCount());
 
         em.close();
     }
 
-    public void testNullShortVersion() {
+     @Test
+     void nullShortVersion() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         tran.begin();
@@ -106,15 +113,15 @@ public class TestVersionColumn extends SQLListenerTestCase {
         resetSQL();
         List<ShortVersion> results =
             em.createQuery("SELECT i from ShortVersion i", ShortVersion.class).getResultList();
-        assertNotNull("No results found", results);
-        assertFalse("No results found", results.isEmpty());
+        assertNotNull(results, "No results found");
+        assertFalse(results.isEmpty(), "No results found");
         for (ShortVersion iv : results) {
-            assertEquals("Version should be initialized to 0, was" + iv.getVersion(), 0, iv.getVersion());
+            assertEquals(0, iv.getVersion(), "Version should be initialized to 0, was" + iv.getVersion());
             em.find(ShortVersion.class, iv.getId());
         }
 
 
-        assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
+        assertEquals(1, getSQLCount(), "Unexpected number of SQL statements: " + getSQLCount());
 
         em.close();
     }

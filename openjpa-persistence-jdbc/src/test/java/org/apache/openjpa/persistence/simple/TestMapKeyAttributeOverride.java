@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +28,8 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that @AttributeOverrides with unqualified names work on
@@ -35,9 +40,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * a Map @ElementCollection refer to the map value (the embeddable),
  * not the key.
  */
-public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
+class TestMapKeyAttributeOverride extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             MapKeyEnumEntity.class,
@@ -51,7 +56,8 @@ public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
      * and retrieved. This verifies the fix for the "not a persistent
      * property in the embedded type" error.
      */
-    public void testMapKeyEnumeratedWithAttributeOverride() {
+    @Test
+    void mapKeyEnumeratedWithAttributeOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -92,7 +98,8 @@ public class TestMapKeyAttributeOverride extends SingleEMFTestCase {
      * and @AttributeOverrides using unqualified names can be persisted
      * and retrieved.
      */
-    public void testMapKeyTemporalWithAttributeOverride() {
+    @Test
+    void mapKeyTemporalWithAttributeOverride() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

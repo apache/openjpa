@@ -24,6 +24,8 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <b>TestResWordEntity</b> is used to test the case where reserved words are
@@ -32,13 +34,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * invoked, and the SchemaFactory setting will cause the LazySchemaFactory to
  * be invoked.
  */
-public class TestResWordEntity extends SingleEMFTestCase {
+class TestResWordEntity extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
-    public void testMultipleSchemafactories1() {
+    @Test
+    void multipleSchemafactories1() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)",
@@ -63,7 +66,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
-    public void testMultipleSchemafactories2() {
+    @Test
+    void multipleSchemafactories2() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)",
@@ -88,7 +92,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
-    public void testMultipleSchemafactories3() {
+    @Test
+    void multipleSchemafactories3() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SynchronizeMappings","buildSchema(ForeignKeys=true)");
@@ -112,7 +117,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         closeEMF(emf);
     }
 
-    public void testMultipleSchemafactories4() {
+    @Test
+    void multipleSchemafactories4() {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(ResWordEntity.class,
             "openjpa.jdbc.SchemaFactory","native(ForeignKeys=true)");

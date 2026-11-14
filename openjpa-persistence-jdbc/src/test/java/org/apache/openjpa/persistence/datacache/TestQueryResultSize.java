@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,26 +27,30 @@ import java.util.logging.Logger;
 
 import jakarta.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestQueryResultSize extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestQueryResultSize.class.getCanonicalName());
 
-    public TestQueryResultSize(String test) {
-        super(test, "datacachecactusapp");
+    public TestQueryResultSize() {
+        super("datacachecactusapp");
     }
 
     private EntityManagerFactory _pmf;
     private OpenJPAEntityManager pm;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         logger.fine("****Deleted Records " + deleteAll(CacheObjectE.class));
         deleteAll(CascadeParent.class);
         deleteAll(CascadeChild.class);
@@ -55,7 +61,8 @@ public class TestQueryResultSize extends AbstractTestCase {
         _pmf = getEmf(propsMap);
     }
 
-    public void test() {
+    @Test
+    void test() {
         CacheObjectE pc1 = new CacheObjectE();
         pc1.setStr("pc1");
 
@@ -82,7 +89,8 @@ public class TestQueryResultSize extends AbstractTestCase {
             getCacheMap().size());
     }
 
-    public void testCrossJoinQueryCache() {
+    @Test
+    void crossJoinQueryCache() {
         pm = (OpenJPAEntityManager) _pmf.createEntityManager();
         // create
         startTx(pm);

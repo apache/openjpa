@@ -19,49 +19,36 @@
 
 package org.apache.openjpa.enhance.stats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for Open JPA Fetch Statistic.
  */
-public class TestFetchStatistics extends TestCase {
+public class TestFetchStatistics {
 
-    /**
-     * Create the test case
-     *
-     * @param testName
-     *            name of the test case
-     */
-    public TestFetchStatistics(String testName) {
-        super(testName);
-    }
-
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite() {
-        return new TestSuite(TestFetchStatistics.class);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("fetchStatisticPU");
         emf.createEntityManager().close();
         FetchStatsCollector.clear();
     }
 
-    @Override
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
     }
 
-    public void testFieldAccess() {
+    @Test
+    void fieldAccess() {
         FetchStatsCollector.clear();
 
         AEntity aEntity = new AEntity(1, "t", "d", null);
@@ -78,7 +65,8 @@ public class TestFetchStatistics extends TestCase {
 
     }
 
-    public void testEmbeddedEntityFieldAccess() {
+    @Test
+    void embeddedEntityFieldAccess() {
         AEntity aEntity = new AEntity(1, "t1", "d1", null);
 
         assertEquals("extra d1", aEntity.getExtraInfo());
@@ -88,15 +76,16 @@ public class TestFetchStatistics extends TestCase {
         assertFalse(res.contains("org.apache.openjpa.enhance.stats.AEntity.extraInfo"));
     }
 
-    public void testPropertyFieldMixedAccess() {
+    @Test
+    void propertyFieldMixedAccess() {
         FetchStatsCollector.clear();
 
         BEntity b = new BEntity(2, "t2", "d2");
 
         Set<String> res = FetchStatsCollector.getStatistics();
 
-        assertTrue(res.toString(), res.contains("org.apache.openjpa.enhance.stats.BEntity.name"));
-        assertTrue(res.toString(), res.contains("org.apache.openjpa.enhance.stats.BEntity.bool"));
+        assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.name"), res.toString());
+        assertTrue(res.contains("org.apache.openjpa.enhance.stats.BEntity.bool"), res.toString());
 
         b.getName();
         b.isBool();
@@ -108,7 +97,8 @@ public class TestFetchStatistics extends TestCase {
 
     }
 
-    public void testMixedAccess() {
+    @Test
+    void mixedAccess() {
         BEntity e = new BEntity(1, "t1", "d1");
 
 
@@ -127,7 +117,8 @@ public class TestFetchStatistics extends TestCase {
 
     }
 
-    public void testFieldAccessThroughRelationship() {
+    @Test
+    void fieldAccessThroughRelationship() {
         BEntity bf1 = new BEntity(1, "t1", "d1");
         AEntity af3 = new AEntity(3, "t3", "d3", bf1);
 
@@ -139,7 +130,8 @@ public class TestFetchStatistics extends TestCase {
         assertFalse(res.contains("org.apache.openjpa.enhance.stats.AEntity.checked"));
     }
 
-    public void testPropertyAccessThroughInheritance() {
+    @Test
+    void propertyAccessThroughInheritance() {
         FetchStatsCollector.clear();
 
         ChildEntity cEntity = new ChildEntity(1, "t1", "d1", "cn1");

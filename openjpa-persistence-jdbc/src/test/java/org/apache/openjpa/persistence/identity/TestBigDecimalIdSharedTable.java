@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that BigDecimal @Id entities work correctly when sharing a table
@@ -40,9 +44,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * The fix is in ImmutableValueHandler.toObjectValue() which now converts
  * numeric values to the expected field type when a mismatch is detected.
  */
-public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
+class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SharedTableBigDecimalId.class,
               SharedTableBigIntegerId.class,
@@ -55,7 +59,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Test field-access BigDecimal @Id persist and find with shared table.
      * Mirrors TCK FieldBigDecimalIdTest.
      */
-    public void testFieldBigDecimalIdPersistAndFind() {
+    @Test
+    void fieldBigDecimalIdPersistAndFind() {
         BigDecimal id = new BigDecimal(new BigInteger("1"));
         BigDecimal value = new BigDecimal(new BigInteger("1"));
 
@@ -70,9 +75,9 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
         em = emf.createEntityManager();
         SharedTableBigDecimalId found =
             em.find(SharedTableBigDecimalId.class, id);
-        assertNotNull("BigDecimal ID entity should be found", found);
-        assertEquals("Value should match",
-            0, id.compareTo(found.getValue()));
+        assertNotNull(found, "BigDecimal ID entity should be found");
+        assertEquals(0,
+            id.compareTo(found.getValue()), "Value should match");
         em.close();
     }
 
@@ -80,7 +85,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Test field-access BigInteger @Id persist and find with shared table.
      * Ensures BigInteger still works after the BigDecimal fix.
      */
-    public void testFieldBigIntegerIdPersistAndFind() {
+    @Test
+    void fieldBigIntegerIdPersistAndFind() {
         BigInteger id = new BigInteger("2");
         BigInteger value = new BigInteger("2");
 
@@ -95,8 +101,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
         em = emf.createEntityManager();
         SharedTableBigIntegerId found =
             em.find(SharedTableBigIntegerId.class, id);
-        assertNotNull("BigInteger ID entity should be found", found);
-        assertEquals("Value should match", id, found.getValue());
+        assertNotNull(found, "BigInteger ID entity should be found");
+        assertEquals(id, found.getValue(), "Value should match");
         em.close();
     }
 
@@ -104,7 +110,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Test property-access BigDecimal @Id persist and find with shared table.
      * Mirrors TCK PropertyBigDecimalIdTest.
      */
-    public void testPropertyBigDecimalIdPersistAndFind() {
+    @Test
+    void propertyBigDecimalIdPersistAndFind() {
         BigDecimal id = new BigDecimal(new BigInteger("1"));
         BigDecimal value = new BigDecimal(new BigInteger("1"));
 
@@ -119,9 +126,9 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
         em = emf.createEntityManager();
         PropertyBigDecimalIdEntity found =
             em.find(PropertyBigDecimalIdEntity.class, id);
-        assertNotNull("Property BigDecimal ID entity should be found", found);
-        assertEquals("Value should match",
-            0, id.compareTo(found.getBigDecimal()));
+        assertNotNull(found, "Property BigDecimal ID entity should be found");
+        assertEquals(0,
+            id.compareTo(found.getBigDecimal()), "Value should match");
         em.close();
     }
 
@@ -129,7 +136,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Test property-access BigInteger @Id persist and find with shared table.
      * Ensures BigInteger still works after the BigDecimal fix.
      */
-    public void testPropertyBigIntegerIdPersistAndFind() {
+    @Test
+    void propertyBigIntegerIdPersistAndFind() {
         BigInteger id = new BigInteger("2");
         BigInteger value = new BigInteger("2");
 
@@ -144,8 +152,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
         em = emf.createEntityManager();
         PropertyBigIntegerIdEntity found =
             em.find(PropertyBigIntegerIdEntity.class, id);
-        assertNotNull("Property BigInteger ID entity should be found", found);
-        assertEquals("Value should match", id, found.getBigInteger());
+        assertNotNull(found, "Property BigInteger ID entity should be found");
+        assertEquals(id, found.getBigInteger(), "Value should match");
         em.close();
     }
 
@@ -153,7 +161,8 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
      * Test that both BigDecimal and BigInteger entities can coexist
      * in the same persistence unit and be loaded in sequence.
      */
-    public void testMixedBigDecimalBigIntegerFind() {
+    @Test
+    void mixedBigDecimalBigIntegerFind() {
         BigDecimal decId = new BigDecimal("100");
         BigInteger intId = new BigInteger("200");
 
@@ -171,12 +180,10 @@ public class TestBigDecimalIdSharedTable extends SingleEMFTestCase {
         SharedTableBigIntegerId intFound =
             em.find(SharedTableBigIntegerId.class, intId);
 
-        assertNotNull("BigDecimal entity should be found", decFound);
-        assertNotNull("BigInteger entity should be found", intFound);
-        assertTrue("BigDecimal value type check",
-            decFound.getValue() instanceof BigDecimal);
-        assertTrue("BigInteger value type check",
-            intFound.getValue() instanceof BigInteger);
+        assertNotNull(decFound, "BigDecimal entity should be found");
+        assertNotNull(intFound, "BigInteger entity should be found");
+        assertInstanceOf(BigDecimal.class, decFound.getValue(), "BigDecimal value type check");
+        assertInstanceOf(BigInteger.class, intFound.getValue(), "BigInteger value type check");
         em.close();
     }
 }

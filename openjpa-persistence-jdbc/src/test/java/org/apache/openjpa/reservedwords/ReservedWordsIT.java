@@ -23,7 +23,9 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.io.*;
@@ -35,16 +37,15 @@ import java.util.List;
  * Run this test manually or as part of the integration test suite to
  * generate the list of reserved words for a specific Database
  */
-public class ReservedWordsIT extends AbstractPersistenceTestCase {
+class ReservedWordsIT extends AbstractPersistenceTestCase {
     private static OpenJPAEntityManagerFactory _emf;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
         _emf = createEMF(new Object[0]);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(_emf);
         _emf = null;
@@ -52,7 +53,8 @@ public class ReservedWordsIT extends AbstractPersistenceTestCase {
     }
 
 
-    public void testReservedColumnWords() throws Exception {
+    @Test
+    void reservedColumnWords() throws Exception {
         List<String> reservedColumnWords = new ArrayList<>();
         DBDictionary dict = ((JDBCConfiguration)_emf.getConfiguration()).getDBDictionaryInstance();
 

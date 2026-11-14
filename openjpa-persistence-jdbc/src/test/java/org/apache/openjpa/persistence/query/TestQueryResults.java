@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import jakarta.persistence.NoResultException;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
@@ -32,20 +35,18 @@ import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that ResultList objects behaver correctly.
  *
  * @author Marc Prud'hommeaux
  */
-public class TestQueryResults extends BaseQueryTest {
-
-    public TestQueryResults(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+@DynamicEnhancementTest
+class TestQueryResults extends BaseQueryTest {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager em =
@@ -66,7 +67,8 @@ public class TestQueryResults extends BaseQueryTest {
      * After query.closeAll(), the list and its iterators remain valid
      * since they are detached from the query lifecycle.
      */
-    public void testQueryIteratorsReturnFalseForClosedQuery() {
+    @Test
+    void queryIteratorsReturnFalseForClosedQuery() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -82,11 +84,12 @@ public class TestQueryResults extends BaseQueryTest {
 
         // With ArrayList-backed results, iterators remain valid after
         // query close — this is correct JPA 3.2 behavior.
-        assertTrue("ArrayList iterator should still have elements "
-            + "after query close", i.hasNext());
+        assertTrue(i.hasNext(), "ArrayList iterator should still have elements "
+            + "after query close");
     }
 
-    public void testQueryIteratorsThrowExceptionForClosedQuery() {
+    @Test
+    void queryIteratorsThrowExceptionForClosedQuery() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -101,11 +104,12 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
 
         // With ArrayList-backed results, next() still works after close.
-        assertNotNull("Iterator.next() should succeed on ArrayList "
-            + "snapshot after query close", i.next());
+        assertNotNull(i.next(), "Iterator.next() should succeed on ArrayList "
+            + "snapshot after query close");
     }
 
-    public void testLazyQueryIteratorsReturnFalseForClosedem() {
+    @Test
+    void lazyQueryIteratorsReturnFalseForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -123,11 +127,12 @@ public class TestQueryResults extends BaseQueryTest {
 
         // With ArrayList-backed results (JPA 3.2), the iterator remains
         // valid even after the EM is closed since data is fully materialized.
-        assertTrue("ArrayList iterator should still have elements "
-            + "after EM close", i.hasNext());
+        assertTrue(i.hasNext(), "ArrayList iterator should still have elements "
+            + "after EM close");
     }
 
-    public void testEagerQueryIteratorsWorkForClosedem() {
+    @Test
+    void eagerQueryIteratorsWorkForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -149,7 +154,8 @@ public class TestQueryResults extends BaseQueryTest {
                 + "true for hasNext() after em has been closed");
     }
 
-    public void testQueryResultIsList() {
+    @Test
+    void queryResultIsList() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -165,7 +171,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testQueryResultSizeIsCorrect() {
+    @Test
+    void queryResultSizeIsCorrect() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -186,7 +193,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testExtentIteratorsReturnFalseForClosedExtent() {
+    @Test
+    void extentIteratorsReturnFalseForClosedExtent() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -205,7 +213,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testExtentIteratorsThrowExceptionForClosedExtent() {
+    @Test
+    void extentIteratorsThrowExceptionForClosedExtent() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -229,7 +238,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testExtentIteratorsReturnFalseForClosedem() {
+    @Test
+    void extentIteratorsReturnFalseForClosedem() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -246,7 +256,8 @@ public class TestQueryResults extends BaseQueryTest {
                 + "for hasNext() after em has been closed");
     }
 
-    public void testUniqueReturnsSingleResult() {
+    @Test
+    void uniqueReturnsSingleResult() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -255,7 +266,7 @@ public class TestQueryResults extends BaseQueryTest {
             + "r.stringField = \'TestQueryResults1\'";
         Object obj = em.createQuery(query).getSingleResult();
 
-        assertTrue(obj instanceof RuntimeTest1);
+        assertInstanceOf(RuntimeTest1.class, obj);
 
         query = "SELECT DISTINCT r FROM RuntimeTest1 r WHERE r.stringField = "
             + "\'xxxx\'";
@@ -273,7 +284,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testUniqueThrowsExceptionIfMultipleResults() {
+    @Test
+    void uniqueThrowsExceptionIfMultipleResults() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -291,7 +303,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testImpossibleRangeReturnsEmptyList() {
+    @Test
+    void impossibleRangeReturnsEmptyList() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -309,7 +322,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testImpossibleUniqueRangeReturnsNull() {
+    @Test
+    void impossibleUniqueRangeReturnsNull() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -319,14 +333,15 @@ public class TestQueryResults extends BaseQueryTest {
         q.setFirstResult(2);
         q.setMaxResults(0);
         assertTrue(
-            "resultlist is not null its size is: " + q.getResultList().size(),
-            q.getResultList().isEmpty());
+            q.getResultList().isEmpty(),
+            "resultlist is not null its size is: " + q.getResultList().size());
         q.closeAll();
         endTx(em);
         endEm(em);
     }
 
-    public void testSingleResultUniqueRange() {
+    @Test
+    void singleResultUniqueRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -336,13 +351,14 @@ public class TestQueryResults extends BaseQueryTest {
         q.setFirstResult(1);
         q.setMaxResults(1000000);
 
-        assertTrue("resultlist is not empty", (q.getResultList()).isEmpty());
+        assertTrue((q.getResultList()).isEmpty(), "resultlist is not empty");
         q.closeAll();
         endTx(em);
         endEm(em);
     }
 
-    public void testMultiResultUniqueRange() {
+    @Test
+    void multiResultUniqueRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -363,7 +379,7 @@ public class TestQueryResults extends BaseQueryTest {
      * test complementing the original JDO test which uses the setUnique()
      * method available in JDO Query. OpenJPAQuery does not have such a method
      * and hence this test does not make sense.
-      public void testUniqueThrowsExceptionIfNonUniqueRange()
+      @Test void uniqueThrowsExceptionIfNonUniqueRange()
      {
          OpenJPAEntityManager em =
              (OpenJPAEntityManager) currentEntityManager();
@@ -387,7 +403,8 @@ public class TestQueryResults extends BaseQueryTest {
          endEm(em);
      }
      */
-    public void testFullRange() {
+    @Test
+    void fullRange() {
         try {
             OpenJPAEntityManager em =
                 (OpenJPAEntityManager) currentEntityManager();
@@ -416,7 +433,8 @@ public class TestQueryResults extends BaseQueryTest {
         }
     }
 
-    public void testFullRangeSubs() {
+    @Test
+    void fullRangeSubs() {
         try {
             OpenJPAEntityManager em =
                 (OpenJPAEntityManager) currentEntityManager();
@@ -441,7 +459,8 @@ public class TestQueryResults extends BaseQueryTest {
         }
     }
 
-    public void testBeginRange() {
+    @Test
+    void beginRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -454,7 +473,7 @@ public class TestQueryResults extends BaseQueryTest {
             q.setMaxResults(100000);
 
             List res = (List) q.getResultList();
-            assertEquals("they are not equal", 3 - i, res.size());
+            assertEquals(3 - i, res.size(), "they are not equal");
             int idx = 0;
 
             // try both random acess and iteration
@@ -470,7 +489,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testBeginRangeSubs() {
+    @Test
+    void beginRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -500,7 +520,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testEndRange() {
+    @Test
+    void endRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -530,7 +551,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testEndRangeSubs() {
+    @Test
+    void endRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -558,7 +580,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testMidRange() {
+    @Test
+    void midRange() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -583,7 +606,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testMidRangeSubs() {
+    @Test
+    void midRangeSubs() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -607,7 +631,8 @@ public class TestQueryResults extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testPessimisticOrderedRange() {
+    @Test
+    void pessimisticOrderedRange() {
         // test to make sure whatever machinations we do to get a range doesn't
         // interfere with FOR UPDATE
         OpenJPAEntityManager em =

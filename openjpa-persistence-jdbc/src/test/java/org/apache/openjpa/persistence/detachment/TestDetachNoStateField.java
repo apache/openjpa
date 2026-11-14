@@ -18,16 +18,21 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityFieldAccess;
 import org.apache.openjpa.persistence.detachment.model.NoDetachedStateEntityPropertyAccess;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestDetachNoStateField extends SingleEMFTestCase {
 
     @Override
-    protected void setUp(Object... props) {
+    public void setUp(Object... props) {
         super.setUp(DROP_TABLES, "openjpa.DetachState", "loaded(DetachedStateField=false)",
             NoDetachedStateEntityPropertyAccess.class, NoDetachedStateEntityFieldAccess.class);
         loadDB();
@@ -36,7 +41,8 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
     /**
      * This testcase was added for OPENJPA-1400.
      */
-    public void testIsDetchedNoStateManagerZeroVersionField() {
+    @Test
+    void isDetchedNoStateManagerZeroVersionField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         NoDetachedStateEntityPropertyAccess property = em.find(NoDetachedStateEntityPropertyAccess.class, 1);
         NoDetachedStateEntityFieldAccess field = em.find(NoDetachedStateEntityFieldAccess.class, 1);
@@ -52,7 +58,8 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
     /**
      * This testcase was added for OPENJPA-1400.
      */
-    public void testPersistRelationshipToDetchedEntityZeroVersion() {
+    @Test
+    void persistRelationshipToDetchedEntityZeroVersion() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         NoDetachedStateEntityPropertyAccess property = em.find(NoDetachedStateEntityPropertyAccess.class, 1);
         em.close();
@@ -78,7 +85,8 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
     /**
      * This testcase was added for OPENJPA-1482.
      */
-    public void testSetVersionPropertyAccess() {
+    @Test
+    void setVersionPropertyAccess() {
         NoDetachedStateEntityPropertyAccess entity = new NoDetachedStateEntityPropertyAccess();
         entity.setVersion(1);
     }

@@ -20,9 +20,10 @@ package org.apache.openjpa.slice;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-public abstract class SingleEMFTestCase
-    extends PersistenceTestCase {
+public abstract class SingleEMFTestCase extends PersistenceTestCase {
 
     protected OpenJPAEntityManagerFactorySPI emf;
 
@@ -31,7 +32,7 @@ public abstract class SingleEMFTestCase
      * set-up happens even if <code>setUp()</code> is not called from the
      * subclass.
      */
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(new Object[0]);
     }
@@ -44,27 +45,20 @@ public abstract class SingleEMFTestCase
      * @param props list of persistent types used in testing and/or
      * configuration values in the form key,value,key,value...
      */
-    protected void setUp(Object... props) {
+    public void setUp(Object... props) {
         emf = createEMF(props);
     }
 
     /**
      * Closes the entity manager factory.
      */
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
-        super.tearDown();
-
         if (emf == null)
             return;
 
         try {
             clear(emf);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf);
         }

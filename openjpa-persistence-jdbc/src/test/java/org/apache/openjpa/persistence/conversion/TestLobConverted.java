@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Types;
 import java.util.Arrays;
 
@@ -29,6 +32,8 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A {@code @Lob} attribute with a converter is a CLOB or a BLOB depending on
@@ -36,9 +41,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * type, so a list or a bean converted to a string got a BLOB (BYTEA on
  * PostgreSQL) and a string converted to bytes got a CLOB.
  */
-public class TestLobConverted extends SingleEMFTestCase {
+class TestLobConverted extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LobConvertedEntity.class, DROP_TABLES);
     }
@@ -53,19 +58,23 @@ public class TestLobConverted extends SingleEMFTestCase {
         return cols[0];
     }
 
-    public void testListConvertedToStringIsClob() {
+    @Test
+    void listConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("items", false).getType());
     }
 
-    public void testItemConvertedToStringIsClob() {
+    @Test
+    void itemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, column("item", false).getType());
     }
 
-    public void testElementConvertedToBytesIsBlob() {
+    @Test
+    void elementConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("elements", true).getType());
     }
 
-    public void testStringConvertedToBytesIsBlob() {
+    @Test
+    void stringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, column("bytes", false).getType());
     }
 
@@ -74,17 +83,20 @@ public class TestLobConverted extends SingleEMFTestCase {
      * {@code @Lob}. The column used to be typed as an object, so reading
      * the value back passed the driver's Blob to the converter.
      */
-    public void testStringConvertedToBytesWithoutLobIsReadAsBytes() {
+    @Test
+    void stringConvertedToBytesWithoutLobIsReadAsBytes() {
         assertEquals(JavaSQLTypes.BYTES, column("plainBytes", false).getJavaType());
     }
 
-    public void testLobsWithoutConverterAreUnchanged() {
+    @Test
+    void lobsWithoutConverterAreUnchanged() {
         assertEquals(Types.CLOB, column("text", false).getType());
         assertEquals(Types.BLOB, column("data", false).getType());
         assertEquals(Types.BLOB, column("serial", false).getType());
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             LobConvertedEntity e = new LobConvertedEntity();

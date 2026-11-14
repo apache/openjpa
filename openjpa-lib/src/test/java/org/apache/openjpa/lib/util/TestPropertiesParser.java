@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,10 +39,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.openjpa.lib.util.FormatPreservingProperties.DuplicateKeyException;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 // things to test:
 // - delimiters in keys
@@ -46,12 +48,12 @@ import static org.junit.Assert.*;
 // - non-String keys / vals
 // - list() method behavior
 
-public class TestPropertiesParser {
+class TestPropertiesParser {
 
     private static final String LS = System.getProperty( "line.separator" );
 
     @Test
-    public void testSimpleProperties() throws IOException {
+    void simpleProperties() throws Exception {
         StringBuilder buf = new StringBuilder();
         buf.append("key: value" + LS);
         buf.append("key2: value2"); // no EOL -- this is intentional
@@ -61,7 +63,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testComments() throws IOException {
+    void comments() throws Exception {
         StringBuilder buf = new StringBuilder();
         buf.append("# this is a comment" + LS);
         buf.append(" # another one, with leading whitespace	" + LS);
@@ -74,7 +76,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testMixedContent() throws IOException {
+    void mixedContent() throws Exception {
         StringBuilder buf = new StringBuilder();
         buf.append("# this is a comment" + LS);
         buf.append(" # another one, with leading whitespace	" + LS);
@@ -86,7 +88,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testMultiLineInput() throws IOException {
+    void multiLineInput() throws Exception {
         String s = "foo: bar\\" + LS + "more line goes here";
         Properties p = toProperties(s);
         assertProperties(
@@ -94,14 +96,14 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testEmptyLines() throws IOException {
+    void emptyLines() throws Exception {
         Properties p = toProperties(LS + "foo: bar" + LS + LS + "baz: val");
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
             p);
     }
 
     @Test
-    public void testAddProperties() throws IOException {
+    void addProperties() throws Exception {
         // intentionally left out the trailing end line
         String s = "foo: bar" + LS + "baz: val";
         Properties p = toProperties(s);
@@ -116,7 +118,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testAddAndMutateProperties() throws IOException {
+    void addAndMutateProperties() throws Exception {
         // intentionally left out the trailing end line
         Properties p = toProperties("foo: bar" + LS + "baz: val");
         assertProperties(new String[][]{ { "foo", "bar" }, { "baz", "val" } },
@@ -129,13 +131,13 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testEscapedEquals() throws IOException {
+    void escapedEquals() throws Exception {
         Properties p = toProperties("foo=bar\\=WARN,baz\\=TRACE");
         assertProperties(new String[][]{ { "foo", "bar=WARN,baz=TRACE" } }, p);
     }
 
     @Test
-    public void testLineTypes() throws IOException {
+    void lineTypes() throws Exception {
         StringBuilder buf = new StringBuilder();
         buf.append("   !comment" + LS + " \t  " + LS + "name = no" + LS + "    "
             + "#morec\tomm\\" + LS + "ents" + LS + LS + "  dog=no\\cat   " + LS
@@ -151,7 +153,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testSpecialChars() throws Throwable {
+    void specialChars() throws Throwable {
         testSpecialChars(false, true);
         testSpecialChars(true, true);
         testSpecialChars(false, false);
@@ -225,8 +227,8 @@ public class TestPropertiesParser {
 
                 p.load(in);
 
-                assertNotNull("Property \"" + key + "\" was null",
-                        p.getProperty(key));
+                assertNotNull(p.getProperty(key),
+                        "Property \"" + key + "\" was null");
                 assertEquals(val.trim(), p.getProperty(key).trim());
             }
             catch (Throwable ioe) {
@@ -259,7 +261,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testEquivalentStore() throws IOException {
+    void equivalentStore() throws Exception {
         Properties p1 = new Properties();
         FormatPreservingProperties p2 = new FormatPreservingProperties();
 
@@ -299,8 +301,8 @@ public class TestPropertiesParser {
             String s1 = new String(out1.toByteArray());
             String s2 = new String(out2.toByteArray());
 
-            assertTrue("Expected <" + s1 + "> but was <" + s2 + ">",
-                    s1.indexOf(s2) != -1);
+            assertTrue(s1.indexOf(s2) != -1,
+                    "Expected <" + s1 + "> but was <" + s2 + ">");
         }
     }
 
@@ -322,7 +324,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testDuplicateProperties() throws IOException {
+    void duplicateProperties() throws Exception {
         FormatPreservingProperties p = new FormatPreservingProperties();
         try {
             toProperties("foo=bar" + LS + "foo=baz", p);
@@ -339,7 +341,7 @@ public class TestPropertiesParser {
     }
 
     @Test
-    public void testMultipleLoads() throws IOException {
+    void multipleLoads() throws Exception {
         String props = "foo=bar" + LS + "baz=quux";
         String props2 = "a=b" + LS + "c=d";
         Properties vanilla = new Properties();

@@ -18,16 +18,16 @@
  */
 package org.apache.openjpa.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Pins the registry contract of
@@ -38,7 +38,7 @@ import org.junit.Test;
  * would need a configuration and manageable metadata, which is beyond a unit
  * test here.
  */
-public class TestImplHelperUnenhancedInstance {
+class TestImplHelperUnenhancedInstance {
 
     record Point(int x, int y) {
     }
@@ -48,7 +48,7 @@ public class TestImplHelperUnenhancedInstance {
      * not share one registration.
      */
     @Test
-    public void testKeysByIdentityNotEquality() {
+    void keysByIdentityNotEquality() {
         Point p1 = new Point(3, 4);
         Point p2 = new Point(3, 4);
         assertEquals(p1, p2);
@@ -64,7 +64,7 @@ public class TestImplHelperUnenhancedInstance {
     }
 
     @Test
-    public void testLastRegistrationWins() {
+    void lastRegistrationWins() {
         Point p = new Point(5, 6);
         PersistenceCapable pcA = newPersistenceCapable();
         PersistenceCapable pcB = newPersistenceCapable();

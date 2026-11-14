@@ -19,23 +19,23 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies the types {@link HSQLDictionary} uses for columns and casts
  * on HSQLDB 2.x (OPENJPA-3063).
  */
-public class TestHSQLDictionary {
+class TestHSQLDictionary {
 
     @Test
-    public void testLobTypesBeforeFirstConnection() {
+    void lobTypesBeforeFirstConnection() {
         // the version is not known yet, which must not select the HSQLDB 1.x types
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals(Types.CLOB, dict.getPreferredType(Types.CLOB));
@@ -43,7 +43,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testPrecisionAndScaleAreKept() {
+    void precisionAndScaleAreKept() {
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals("NUMERIC(10, 2)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 2)));
         assertEquals("NUMERIC(10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 0)));
@@ -51,7 +51,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testUnsizedDecimalKeepsFraction() {
+    void unsizedDecimalKeepsFraction() {
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals("NUMERIC(128,32)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
         assertEquals("NUMERIC(128,32)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 2)));
@@ -64,14 +64,14 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testUnsizedIntegralNumericIsUnchanged() {
+    void unsizedIntegralNumericIsUnchanged() {
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGINTEGER, 0, 0)));
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.LONG, 0, 0)));
     }
 
     @Test
-    public void testColumnDefinitionIsUnchanged() {
+    void columnDefinitionIsUnchanged() {
         HSQLDictionary dict = new HSQLDictionary();
         Column col = decimal(JavaTypes.BIGDECIMAL, 0, 0);
         col.setTypeName("NUMERIC");
@@ -81,7 +81,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testConfiguredTypeNameIsKept() {
+    void configuredTypeNameIsKept() {
         HSQLDictionary dict = new HSQLDictionary();
         dict.numericTypeName = "NUMERIC(19,4)";
         assertEquals("NUMERIC(19,4)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
@@ -91,7 +91,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testDecimalCastKeepsFraction() {
+    void decimalCastKeepsFraction() {
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals("CAST(? AS NUMERIC(128,32))", cast(dict, Types.NUMERIC));
         assertEquals("CAST(? AS DATE)", cast(dict, Types.DATE));
@@ -99,7 +99,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testComparisonCastsKeepColumnPrecision() {
+    void comparisonCastsKeepColumnPrecision() {
         // TIMESTAMP(9) would keep nanoseconds a TIMESTAMP(6) column has cut
         // off, and an equality comparison with the stored value would fail
         HSQLDictionary dict = new HSQLDictionary();
@@ -108,7 +108,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testExtractOperandCastsKeepFractions() {
+    void extractOperandCastsKeepFractions() {
         HSQLDictionary dict = new HSQLDictionary();
         assertEquals("DATE", dict.getExtractOperandCastType(Types.DATE));
         assertEquals("TIME(9)", dict.getExtractOperandCastType(Types.TIME));
@@ -116,7 +116,7 @@ public class TestHSQLDictionary {
     }
 
     @Test
-    public void testOperandsThatNeedACast() {
+    void operandsThatNeedACast() {
         HSQLDictionary dict = new HSQLDictionary();
         assertTrue(dict.requiresCastForExtractOperand);
         assertTrue(dict.requiresCastForCaseStringResult);

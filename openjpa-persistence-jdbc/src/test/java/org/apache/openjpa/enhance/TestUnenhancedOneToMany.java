@@ -18,19 +18,27 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestUnenhancedOneToMany extends SingleEMTestCase {
+class TestUnenhancedOneToMany extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedOne.class, UnenhancedMany.class, CLEAR_TABLES);
     }
 
-    public void testOneToMany() throws Exception {
+    @Test
+    void oneToMany() throws Exception {
         assertFalse(PersistenceCapable.class.isAssignableFrom(
             UnenhancedOne.class));
         assertFalse(PersistenceCapable.class.isAssignableFrom(
@@ -84,29 +92,29 @@ public class TestUnenhancedOneToMany extends SingleEMTestCase {
 
         // reload one
         one = em.find(UnenhancedOne.class, 1000);
-        assertNotNull("one is null", one);
+        assertNotNull(one, "one is null");
 
         // verify one.getMany(); ensure that it's a dynamic proxy before
         // it is accessed
         assertTrue(Proxy.isProxyClass(one.many.getClass()));
-        assertNotNull("one.getMany() is null", one.getMany());
+        assertNotNull(one.getMany(), "one.getMany() is null");
         Collection<UnenhancedMany> many = one.getMany();
         assertEquals(3, many.size());
 
         // reload the many
         manyA = em.find(UnenhancedMany.class, 1);
-        assertNotNull("manyA is null", manyA);
+        assertNotNull(manyA, "manyA is null");
         manyB = em.find(UnenhancedMany.class, 2);
-        assertNotNull("manyB is null", manyA);
+        assertNotNull(manyA, "manyB is null");
         manyC = em.find(UnenhancedMany.class, 3);
-        assertNotNull("manyc is null", manyA);
+        assertNotNull(manyA, "manyc is null");
 
         // verify many.getOne()
-        assertNotNull("manyA.getOne() is null", manyA.getOne());
+        assertNotNull(manyA.getOne(), "manyA.getOne() is null");
         assertEquals(one, manyA.getOne());
-        assertNotNull("manyB.getOne() is null", manyB.getOne());
+        assertNotNull(manyB.getOne(), "manyB.getOne() is null");
         assertEquals(one, manyB.getOne());
-        assertNotNull("manyC.getOne() is null", manyC.getOne());
+        assertNotNull(manyC.getOne(), "manyC.getOne() is null");
         assertEquals(one, manyC.getOne());
 
         // verify collection contains each many

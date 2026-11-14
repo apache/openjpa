@@ -18,19 +18,24 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="excluded")
-public class TestRelationToUnlistedClass
-    extends SingleEMFTestCase {
+@AllowFailure(message = "excluded")
+class TestRelationToUnlistedClass extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedUnlistedReferer.class, CLEAR_TABLES);
     }
 
-    public void testRelationToUnlistedClass() {
+    @Test
+    void relationToUnlistedClass() {
         try {
             emf.createEntityManager().close();
             fail("should not be able to initialize system");

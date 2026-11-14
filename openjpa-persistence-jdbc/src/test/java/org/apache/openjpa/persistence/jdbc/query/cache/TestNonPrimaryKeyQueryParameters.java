@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,6 +27,8 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that find() queries that use non-primary keys can be cached.
@@ -47,13 +51,13 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * @author Vikram Bhatia
  * @author David Blevins
  */
-public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
+class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 	private static final int FULLTIME_EMPLOYEE_COUNT = 3;
 	private static final int PARTTIME_EMPLOYEE_COUNT = 2;
     private static final int LINEITEM_PER_INVOICE = 1;
 	private static final String DEPT_NAME = "ENGINEERING";
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Department.class, Employee.class,
 				FullTimeEmployee.class, PartTimeEmployee.class,
@@ -64,7 +68,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		sql.clear();
 	}
 
-	public void testSelectQueryWithPrimaryKeyParameter() {
+    @Test
+    void selectQueryWithPrimaryKeyParameter() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em
@@ -80,7 +85,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testSelectQueryWithNoParameter() {
+    @Test
+    void selectQueryWithNoParameter() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT d from Department d");
@@ -96,7 +102,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testFind() {
+    @Test
+    void find() {
 		EntityManager em = emf.createEntityManager();
 
 		Department dept = em.find(Department.class, DEPT_NAME);
@@ -114,7 +121,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		em.close();
 	}
 
-	public void testSelectSubClass() {
+    @Test
+    void selectSubClass() {
 		EntityManager em = emf.createEntityManager();
 
         Query query = em.createQuery("SELECT e from FullTimeEmployee e");
@@ -128,7 +136,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
 		assertSQL(".* WHERE t0.TYPE = .*");
 	}
 
-	public void testSelectBaseClass() {
+    @Test
+    void selectBaseClass() {
 		EntityManager em = emf.createEntityManager();
 
 		Query query = em.createQuery("SELECT e from Employee e");

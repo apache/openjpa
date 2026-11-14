@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.noschema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
@@ -28,8 +31,11 @@ import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestCase {
+class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     EntityC entityC;
@@ -41,13 +47,12 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
     DBDictionary dict;
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return !(dict instanceof MariaDBDictionary || dict instanceof MySQLDictionary);
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
-
-        setUnsupportedDatabases(MariaDBDictionary.class);
-        setUnsupportedDatabases(MySQLDictionary.class);
-        if (isTestsDisabled())
-            return;
-
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityC.class,
             org.apache.openjpa.persistence.delimited.identifiers.noschema.EntityD.class,
@@ -64,7 +69,7 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         dict = conf.getDBDictionaryInstance();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -103,7 +108,8 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         entityD2.setEntityD3(entityD3);
     }
 
-    public void testCreate() {
+    @Test
+    void create() {
         id++;
         createCandD(id);
         // TODO: Maybe create another one.

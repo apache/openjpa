@@ -18,18 +18,22 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that our parser handles newlines in queries
  */
-public class TestNewlinesInQueries
+class TestNewlinesInQueries
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleEntity.class, CLEAR_TABLES);
 
@@ -40,7 +44,8 @@ public class TestNewlinesInQueries
         em.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e \n from simple e");
         SimpleEntity e = (SimpleEntity) q.getSingleResult();

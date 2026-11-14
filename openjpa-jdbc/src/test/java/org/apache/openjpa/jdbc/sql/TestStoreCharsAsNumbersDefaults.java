@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 
@@ -28,7 +28,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the <code>StoreCharsAsNumbers</code> default of the Derby, H2,
@@ -36,70 +36,70 @@ import org.junit.Test;
  * <code>char</code> fields in <code>CHAR</code> columns unless configured
  * otherwise (OPENJPA-3001, OPENJPA-3033, OPENJPA-3060, OPENJPA-3028).
  */
-public class TestStoreCharsAsNumbersDefaults {
+class TestStoreCharsAsNumbersDefaults {
 
     @Test
-    public void testDerbyStoresCharsAsCharByDefault() {
+    void derbyStoresCharsAsCharByDefault() {
         assertNativeCharDefault(new DerbyDictionary());
     }
 
     @Test
-    public void testSQLServerStoresCharsAsCharByDefault() {
+    void sqlServerStoresCharsAsCharByDefault() {
         assertNativeCharDefault(new SQLServerDictionary());
     }
 
     @Test
-    public void testH2StoresCharsAsCharByDefault() {
+    void h2StoresCharsAsCharByDefault() {
         assertNativeCharDefault(new H2Dictionary());
     }
 
     @Test
-    public void testH2ExplicitStoreCharsAsNumbers() {
+    void h2ExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new H2Dictionary());
     }
 
     @Test
-    public void testDerbyExplicitStoreCharsAsNumbers() {
+    void derbyExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new DerbyDictionary());
     }
 
     @Test
-    public void testSQLServerExplicitStoreCharsAsNumbers() {
+    void sqlServerExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new SQLServerDictionary());
     }
 
     @Test
-    public void testMySQLStoresCharsAsCharByDefault() {
+    void mySQLStoresCharsAsCharByDefault() {
         assertNativeCharDefault(new MySQLDictionary());
     }
 
     @Test
-    public void testMySQLExplicitStoreCharsAsNumbers() {
+    void mySQLExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new MySQLDictionary());
     }
 
     @Test
-    public void testMariaDBStoresCharsAsCharByDefault() {
+    void mariaDBStoresCharsAsCharByDefault() {
         assertNativeCharDefault(new MariaDBDictionary());
     }
 
     @Test
-    public void testMariaDBExplicitStoreCharsAsNumbers() {
+    void mariaDBExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new MariaDBDictionary());
     }
 
     @Test
-    public void testOracleStoresCharsAsCharByDefault() {
+    void oracleStoresCharsAsCharByDefault() {
         assertNativeCharDefault(new OracleDictionary());
     }
 
     @Test
-    public void testOracleExplicitStoreCharsAsNumbers() {
+    void oracleExplicitStoreCharsAsNumbers() {
         assertExplicitNumbers(new OracleDictionary());
     }
 
     @Test
-    public void testOracleDeclaresCharColumnsWithCharacterSemantics() {
+    void oracleDeclaresCharColumnsWithCharacterSemantics() {
         DBDictionary dict = configure(new OracleDictionary(), null);
         assertEquals("CHAR(1 CHAR)", dict.getTypeName(column(Types.CHAR, JavaTypes.CHAR, 1)));
         assertEquals("CHAR(1 CHAR)", dict.getTypeName(column(Types.CHAR, JavaTypes.CHAR_OBJ, 1)));
@@ -117,7 +117,7 @@ public class TestStoreCharsAsNumbersDefaults {
     }
 
     @Test
-    public void testSybaseDefaultUnchanged() {
+    void sybaseDefaultUnchanged() {
         DBDictionary dict = configure(new SybaseDictionary(), null);
         assertTrue(dict.storeCharsAsNumbers);
     }

@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,18 +34,18 @@ import jakarta.persistence.criteria.LocalTimeField;
 import jakarta.persistence.criteria.TemporalField;
 
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that EXTRACT resolves each temporal field constant of the specification to its
  * kernel equivalent, rather than deriving it from the constant's textual representation.
  */
-public class TestExtractTemporalField {
+class TestExtractTemporalField {
 
     private final CriteriaBuilderImpl cb = new CriteriaBuilderImpl();
 
     @Test
-    public void testLocalDateFields() {
+    void localDateFields() {
         assertExtracts(DateTimeExtractField.YEAR, LocalDateField.YEAR, LocalDate.class);
         assertExtracts(DateTimeExtractField.QUARTER, LocalDateField.QUARTER, LocalDate.class);
         assertExtracts(DateTimeExtractField.MONTH, LocalDateField.MONTH, LocalDate.class);
@@ -54,14 +54,14 @@ public class TestExtractTemporalField {
     }
 
     @Test
-    public void testLocalTimeFields() {
+    void localTimeFields() {
         assertExtracts(DateTimeExtractField.HOUR, LocalTimeField.HOUR, LocalTime.class);
         assertExtracts(DateTimeExtractField.MINUTE, LocalTimeField.MINUTE, LocalTime.class);
         assertExtracts(DateTimeExtractField.SECOND, LocalTimeField.SECOND, LocalTime.class);
     }
 
     @Test
-    public void testLocalDateTimeFields() {
+    void localDateTimeFields() {
         assertExtracts(DateTimeExtractField.YEAR, LocalDateTimeField.YEAR, LocalDateTime.class);
         assertExtracts(DateTimeExtractField.QUARTER, LocalDateTimeField.QUARTER, LocalDateTime.class);
         assertExtracts(DateTimeExtractField.MONTH, LocalDateTimeField.MONTH, LocalDateTime.class);
@@ -77,7 +77,7 @@ public class TestExtractTemporalField {
      * JPQL only, so the criteria API must reject them with a meaningful error.
      */
     @Test
-    public void testUnsupportedFieldIsRejected() {
+    void unsupportedFieldIsRejected() {
         assertThrows(IllegalArgumentException.class,
             () -> extract(LocalDateTimeField.DATE, LocalDateTime.class));
         assertThrows(IllegalArgumentException.class,
@@ -89,9 +89,9 @@ public class TestExtractTemporalField {
     private <N, T extends Temporal> void assertExtracts(DateTimeExtractField expected,
             TemporalField<N, T> field, Class<T> temporalType) {
         Expression<N> e = extract(field, temporalType);
-        assertSame(field.toString(), expected, ((Expressions.ExtractField<N>) e).getField());
-        assertEquals(field.toString(),
-            expected == DateTimeExtractField.SECOND ? Double.class : Integer.class, e.getJavaType());
+        assertSame(expected, ((Expressions.ExtractField<N>) e).getField(), field.toString());
+        assertEquals(expected == DateTimeExtractField.SECOND ? Double.class : Integer.class,
+            e.getJavaType(), field.toString());
     }
 
     private <N, T extends Temporal> Expression<N> extract(TemporalField<N, T> field, Class<T> temporalType) {

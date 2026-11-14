@@ -22,17 +22,20 @@ import jakarta.persistence.Persistence;
 
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase that verifies the names for Foreign Key columns is as expected.
  */
-public class TestFKColumnNames extends AbstractPersistenceTestCase {
+class TestFKColumnNames extends AbstractPersistenceTestCase {
     private String getName(Column col) {
         IdentifierConfiguration cfg = Normalizer.getNamingConfiguration();
         return col.getIdentifier().getName()
@@ -51,7 +54,8 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
      * can be run with any DBDictionary.
      * </P>
      */
-    public void testSQLKeywords() {
+    @Test
+    void sqlKeywords() {
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) Persistence
                     .createEntityManagerFactory("test");

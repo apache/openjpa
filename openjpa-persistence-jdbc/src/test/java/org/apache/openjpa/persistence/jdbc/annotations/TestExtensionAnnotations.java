@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -28,18 +34,20 @@ import org.apache.openjpa.meta.UpdateStrategies;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the parsing of Kodo metadata extension annotations.</p>
  *
  * @author Abe White
  */
-public class TestExtensionAnnotations
+class TestExtensionAnnotations
     extends SingleEMFTestCase {
 
     private ClassMapping _mapping;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ExtensionsEntity.class);
         _mapping = ((JDBCConfiguration) emf.getConfiguration()).
@@ -47,17 +55,20 @@ public class TestExtensionAnnotations
             null, true);
     }
 
-    public void testDataStoreId() {
+    @Test
+    void dataStoreId() {
         assertEquals(ClassMetaData.ID_DATASTORE, _mapping.getIdentityType());
         assertEquals(ValueStrategies.SEQUENCE, _mapping.getIdentityStrategy());
         assertEquals("system", _mapping.getIdentitySequenceName());
     }
 
-    public void testDataCache() {
+    @Test
+    void dataCache() {
         assertNull(_mapping.getDataCacheName());
     }
 
-    public void testFetchGroups() {
+    @Test
+    void fetchGroups() {
         FetchGroup fg = _mapping.getFetchGroup("detail");
         assertNotNull(fg);
         assertFalse(fg.isPostLoad());
@@ -71,7 +82,8 @@ public class TestExtensionAnnotations
         assertEquals(1, fg.getRecursionDepth(fm));
     }
 
-    public void testValueStrategy() {
+    @Test
+    void valueStrategy() {
         assertEquals(ValueStrategies.UUID_HEX,
             _mapping.getField("uuid").getValueStrategy());
         assertEquals(ValueStrategies.UUID_STRING,
@@ -85,17 +97,20 @@ public class TestExtensionAnnotations
         assertEquals("system", seq.getValueSequenceName());
     }
 
-    public void testReadOnly() {
+    @Test
+    void readOnly() {
         assertEquals(UpdateStrategies.RESTRICT,
             _mapping.getField("seq").getUpdateStrategy());
     }
 
-    public void testInverseLogical() {
+    @Test
+    void inverseLogical() {
         assertEquals("owner", _mapping.getField("rel").getInverse());
         assertNull(_mapping.getField("owner").getInverse());
     }
 
-    public void testDependent() {
+    @Test
+    void dependent() {
         assertEquals(ValueMetaData.CASCADE_AUTO,
             _mapping.getField("rel").getCascadeDelete());
         assertEquals(ValueMetaData.CASCADE_NONE,
@@ -104,12 +119,14 @@ public class TestExtensionAnnotations
             _mapping.getField("eager").getElement().getCascadeDelete());
     }
 
-    public void testLRS() {
+    @Test
+    void lrs() {
         assertTrue(_mapping.getField("lrs").isLRS());
         assertFalse(_mapping.getField("eager").isLRS());
     }
 
-    public void testClassCriteria() {
+    @Test
+    void classCriteria() {
         assertTrue(_mapping.getFieldMapping("eager").getElementMapping().
             getUseClassCriteria());
         assertFalse(_mapping.getFieldMapping("eager").getUseClassCriteria());
@@ -117,7 +134,8 @@ public class TestExtensionAnnotations
             getUseClassCriteria());
     }
 
-    public void testExternalValues() {
+    @Test
+    void externalValues() {
         FieldMapping externalValues = _mapping.getFieldMapping
             ("externalValues");
         assertEquals(JavaTypes.CHAR, externalValues.getDeclaredTypeCode());
@@ -128,7 +146,8 @@ public class TestExtensionAnnotations
             get('F'));
     }
 
-    public void testExternalizer() {
+    @Test
+    void externalizer() {
         FieldMapping externalizer = _mapping.getFieldMapping("externalizer");
         assertEquals(JavaTypes.OBJECT, externalizer.getDeclaredTypeCode());
         assertEquals(JavaTypes.STRING, externalizer.getTypeCode());

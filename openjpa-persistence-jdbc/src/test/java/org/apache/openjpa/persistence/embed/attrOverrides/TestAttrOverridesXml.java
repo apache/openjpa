@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
@@ -33,8 +35,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAttrOverridesXml extends SQLListenerTestCase {
 
@@ -42,7 +44,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     public List<String> namedQueries = new ArrayList<>();
     public int eId = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
         org.apache.openjpa.persistence.embed.attrOverrides.AnnoOverEmbed.class,
@@ -54,7 +56,8 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         return "embed-pu";
     }
 
-    public void testAttrOverride1() {
+    @Test
+    void attrOverride1() {
         sql.clear();
     	createObj1();
     	findObj1();
@@ -66,7 +69,8 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
      * This test verifies that an embeddable column attribute override defined
      * in XML overrides the base column definition.
      */
-    public void testBasicEmbedAttrOverride() {
+    @Test
+    void basicEmbedAttrOverride() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         BasicEntityXML be = new BasicEntityXML();
@@ -91,7 +95,8 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
      * This test verifies that an XML defined entity with an annotated
      * only embeddable has attribute overrides applied correctly.
      */
-    public void testXMLEntityWithAnnotatedOverrideEmbed() {
+    @Test
+    void xmlEntityWithAnnotatedOverrideEmbed() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLOverEntity xoe = new XMLOverEntity();
@@ -146,11 +151,11 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
     public void findObj1() {
         EntityManager em = emf.createEntityManager();
         CustomerXml p = em.find(CustomerXml.class, 1);
-        Assert.assertEquals(p.getId(), Integer.valueOf(1));
-        Assert.assertEquals(p.getAddress().getCity(), "city_1");
-        Assert.assertEquals(p.getAddress().getStreet(), "street_1");
-        Assert.assertEquals(p.getAddress().getState(), "state_1");
-        Assert.assertEquals(p.getName(), "name_1");
+        assertEquals(p.getId(), Integer.valueOf(1));
+        assertEquals("city_1", p.getAddress().getCity());
+        assertEquals("street_1", p.getAddress().getStreet());
+        assertEquals("state_1", p.getAddress().getState());
+        assertEquals("name_1", p.getName());
         em.close();
     }
 
@@ -161,7 +166,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         String jpql = "select p from CustomerXml1 p";
         Query q = em.createQuery(jpql);
         List<CustomerXml> ps = q.getResultList();
-        Assert.assertEquals(ps.size(), numPersons);
+        assertEquals(ps.size(), numPersons);
         tran.commit();
         em.close();
     }

@@ -19,21 +19,26 @@
 
 package org.apache.openjpa.persistence.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.enhance.common.apps.EmbeddableEntityWithIDAnnotation;
 import org.apache.openjpa.persistence.enhance.common.apps.IDOwningClassTestEntity;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
+class TestEmbeddableEntityWithIDAnnotation extends SQLListenerTestCase{
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EmbeddableEntityWithIDAnnotation.class, IDOwningClassTestEntity.class, CLEAR_TABLES);
     }
 
     //make sure no exception is thrown here.
-    public void testpcNewObjectIdInstanceMethod(){
+    @Test
+    void testpcNewObjectIdInstanceMethod(){
         EntityManager em = emf.createEntityManager();
         try{
             IDOwningClassTestEntity e = new IDOwningClassTestEntity();

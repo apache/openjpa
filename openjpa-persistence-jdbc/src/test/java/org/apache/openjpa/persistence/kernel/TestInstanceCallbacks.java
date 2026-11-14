@@ -29,13 +29,20 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.InstanceCallbacksTest;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
-import junit.framework.AssertionFailedError;
-
-public class TestInstanceCallbacks extends BaseKernelTest {
+class TestInstanceCallbacks extends BaseKernelTest {
 
     private static final int COMMIT = 0;
     private static final int FLUSH = 1;
@@ -44,18 +51,8 @@ public class TestInstanceCallbacks extends BaseKernelTest {
     private OpenJPAEntityManager _pm = null;
     private InstanceCallbacksTest _callbacks = null;
 
-    public TestInstanceCallbacks(String name) {
-        super(name);
-    }
-
-    /**
-     * Creates a new instance of TestInstanceCallbacks
-     */
-    public TestInstanceCallbacks() {
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         deleteAll(InstanceCallbacksTest.class);
         deleteAll(RuntimeTest1.class);
         _pm = getPM(true, true);
@@ -73,27 +70,31 @@ public class TestInstanceCallbacks extends BaseKernelTest {
             (InstanceCallbacksTest) _pm.find(InstanceCallbacksTest.class, id);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         rollbackTx(_pm);
         endEm(_pm);
         super.tearDown();
     }
 
-    public void testPostLoad() {
+    @Test
+    void postLoad() {
         _callbacks.getStringField();
         assertTrue(_callbacks.postLoadCalled);
     }
 
-    public void testPreStore() {
+    @Test
+    void preStore() {
         preStoreTest(COMMIT);
     }
 
-    public void testPreStoreWithFlush() {
+    @Test
+    void preStoreWithFlush() {
         preStoreTest(FLUSH);
     }
 
-    public void testPreStoreWithPreStore() {
+    @Test
+    void preStoreWithPreStore() {
         preStoreTest(PRESTORE);
     }
 
@@ -111,7 +112,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
             _pm.flush();
         else if (action == PRESTORE)
             _pm.preFlush();
-        assertTrue("prestore wasnt called", _callbacks.preStoreCalled);
+        assertTrue(_callbacks.preStoreCalled, "prestore wasnt called");
         if (action != COMMIT) {
 //            _pm.commit();
             if (action != FLUSH)
@@ -123,12 +124,13 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         InstanceCallbacksTest callbacks = (InstanceCallbacksTest)
             pm.find(InstanceCallbacksTest.class, oid);
         assertNoCallbacksInvoked(callbacks);
-        assertEquals("getonetoone strng is not jdoprestore", "jdoPreStore",
-            callbacks.getOneOne().getStringField());
+        assertEquals("jdoPreStore", callbacks.getOneOne().getStringField(),
+            "getonetoone strng is not jdoprestore");
         endEm(pm);
     }
 
-    public void testPreDelete() {
+    @Test
+    void preDelete() {
         assertNoCallbacksInvoked(_callbacks);
         startTx(_pm);
         _pm.remove(_callbacks);
@@ -136,7 +138,8 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         endTx(_pm);
     }
 
-    public void testPreDeleteRecursion() {
+    @Test
+    void preDeleteRecursion() {
         assertNoCallbacksInvoked(_callbacks);
         startTx(_pm);
         _callbacks.preDeleteCycle = 0;
@@ -145,7 +148,8 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         endTx(_pm);
     }
 
-    public void testSetRelatedReferenceInPreStore() {
+    @Test
+    void setRelatedReferenceInPreStore() {
         assertNull(_callbacks.getRelId());
         InstanceCallbacksTest callbacks2 = new InstanceCallbacksTest();
         callbacks2.setRelId(_pm.getObjectId(_callbacks));
@@ -162,13 +166,15 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         }
     }
 
-    public void testFlushCausesFlush() {
+    @Test
+    void flushCausesFlush() {
         //### JDO2MIG : this is failing because we're consuming exceptions
         // throws from callbacks; need to decide what to do with them
         causeFlushTest(FLUSH);
     }
 
-    public void testPreStoreCausesFlush() {
+    @Test
+    void preStoreCausesFlush() {
         //### JDO2MIG : this is failing because we're consuming exceptions
         // throws from callbacks; need to decide what to do with them
         causeFlushTest(PRESTORE);
@@ -194,18 +200,18 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
 
-        assertFalse("Expected preDelete to not have been called for object ID "
-            + pm.getObjectId(pc), pc.preDeleteCalled);
-        assertFalse("Expected preClear to not have been called for object ID "
-            + pm.getObjectId(pc), pc.preClearCalled);
-        assertFalse("Expected preStore to not have been called for object ID "
-            + pm.getObjectId(pc), pc.preStoreCalled);
+        assertFalse(pc.preDeleteCalled, "Expected preDelete to not have been called for object ID "
+            + pm.getObjectId(pc));
+        assertFalse(pc.preClearCalled, "Expected preClear to not have been called for object ID "
+            + pm.getObjectId(pc));
+        assertFalse(pc.preStoreCalled, "Expected preStore to not have been called for object ID "
+            + pm.getObjectId(pc));
     }
 
     /*
     // no JPA equivalent
 
-    public void testDetachAttach()
+    @Test void detachAttach()
     throws Exception {
         OpenJPAEntityManager pm = getPM();
         DetachAttachEvent pc = (DetachAttachEvent) pm.find
@@ -232,7 +238,7 @@ public class TestInstanceCallbacks extends BaseKernelTest {
         endEm(pm,());
     }
 
-    public void testDetachAttachRelations() {
+    @Test void detachAttachRelations() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm,());
         DetachAttachEvent pc = (DetachAttachEvent) pm.find

@@ -19,21 +19,26 @@
 package org.apache.openjpa.persistence.recursive;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jakarta.persistence.EntityManager;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test accessing a non-recursive relation of an instance that has been loaded via a recursive relation.
  */
-public class TestRecursiveThenNonRecursiveRelationship extends SingleEMFTestCase {
-    @Override
+class TestRecursiveThenNonRecursiveRelationship extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, Cat.class, Human.class,
                 "openjpa.ConnectionFactoryProperties", "PrintParameters=True",
                 "openjpa.Log", "SQL=trace");
     }
 
-    public void testRelationAccessedViaRecursiveRelationship() {
+    @Test
+    void relationAccessedViaRecursiveRelationship() {
         final String ALICE = "Alice";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

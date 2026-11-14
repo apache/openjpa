@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that when an entity-listener class has both @PostLoad annotation
@@ -33,9 +38,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Regression test for OPENJPA-2940: XML callback listeners should not
  * duplicate annotation-declared callbacks.
  */
-public class TestXmlCallbackDedup extends SingleEMFTestCase {
+class TestXmlCallbackDedup extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -49,7 +54,8 @@ public class TestXmlCallbackDedup extends SingleEMFTestCase {
      * Verifies that a @PostLoad callback fires exactly once when the same
      * listener method is declared in both annotations and XML.
      */
-    public void testPostLoadCallbackNotDuplicated() {
+    @Test
+    void postLoadCallbackNotDuplicated() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -62,14 +68,14 @@ public class TestXmlCallbackDedup extends SingleEMFTestCase {
             Query q = em.createQuery(
                 "SELECT e FROM XmlCallbackEntity e WHERE e.id = 'test1'");
             List<?> results = q.getResultList();
-            assertFalse("Expected at least one result", results.isEmpty());
+            assertFalse(results.isEmpty(), "Expected at least one result");
 
             XmlCallbackEntity loaded = (XmlCallbackEntity) results.get(0);
             List<String> calls = loaded.getPostLoadCalls();
 
             // The listener should fire exactly once, not twice
-            assertEquals("PostLoad should fire exactly once, not duplicated",
-                1, calls.size());
+            assertEquals(1,
+                calls.size(), "PostLoad should fire exactly once, not duplicated");
             assertEquals("XmlCallbackListener", calls.get(0));
 
             em.getTransaction().commit();

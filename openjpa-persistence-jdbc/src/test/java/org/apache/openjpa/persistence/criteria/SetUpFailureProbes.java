@@ -18,12 +18,19 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 /**
  * Criteria tests that fail on purpose, driven by
@@ -44,12 +51,13 @@ public final class SetUpFailureProbes {
      * fails, exactly as TestMultiselect does when its own {@code setUp()} clears the tables
      * and hits a schema or data problem after {@code super.setUp()}.
      */
-    public static class FailingSetUp extends CriteriaTest {
+    @Nested
+    class FailingSetUp extends CriteriaTest {
 
         /** The EntityManager the last probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             opened = getEntityManager();
@@ -63,7 +71,7 @@ public final class SetUpFailureProbes {
          * connection pool - open, so that a connection a probe fails to release stays missing
          * from the pool for the probes that follow it.
          */
-        @Override
+        @AfterEach
         public void tearDown() throws Exception {
             try {
                 closeEntityManager();
@@ -73,7 +81,8 @@ public final class SetUpFailureProbes {
             }
         }
 
-        public void testNeverRuns() {
+        @Test
+        void neverRuns() {
             fail("setUp() must have failed before this ran");
         }
     }
@@ -84,18 +93,19 @@ public final class SetUpFailureProbes {
      * factory, and with it the pool, has to be closed even when releasing the EntityManager
      * fails.
      */
-    public static class FailingEntityManagerClose extends CriteriaTest {
+    @Nested
+    class FailingEntityManagerClose extends CriteriaTest {
 
         /** The factory in use while the probe ran, so the caller can affirm it was closed. */
         static OpenJPAEntityManagerFactorySPI factory;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             factory = getEntityManagerFactory();
             final EntityManager delegate = getEntityManager();
             setEntityManager((EntityManager) Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class<?>[] { EntityManager.class }, (proxy, method, args) -> {
+                new Class<?>[]{EntityManager.class}, (proxy, method, args) -> {
                     if ("close".equals(method.getName())) {
                         delegate.close();
                         throw new IllegalStateException("deliberate failure closing the EntityManager");
@@ -108,7 +118,8 @@ public final class SetUpFailureProbes {
                 }));
         }
 
-        public void testPasses() {
+        @Test
+        void passes() {
             assertNotNull(getEntityManagerFactory());
         }
     }
@@ -118,12 +129,13 @@ public final class SetUpFailureProbes {
      * its own static factory and its own {@code tearDown()}, so the guarantee
      * {@link AbstractCriteriaTestCase#runBare()} relies on has to hold there too.
      */
-    public static class FailingEmbeddableSetUp extends EmbeddableDomainTestCase {
+    @Nested
+    class FailingEmbeddableSetUp extends EmbeddableDomainTestCase {
 
         /** The EntityManager the probe opened, so the caller can affirm it was closed. */
         static EntityManager opened;
 
-        @Override
+        @BeforeEach
         public void setUp() throws Exception {
             super.setUp();
             opened = getEntityManager();
@@ -132,7 +144,8 @@ public final class SetUpFailureProbes {
             throw new IllegalStateException("deliberate setUp failure after taking a connection");
         }
 
-        public void testNeverRuns() {
+        @Test
+        void neverRuns() {
             fail("setUp() must have failed before this ran");
         }
     }

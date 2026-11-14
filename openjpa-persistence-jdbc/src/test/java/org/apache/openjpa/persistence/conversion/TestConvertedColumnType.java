@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -32,11 +35,11 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.jdbc.sql.H2Dictionary;
-import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The column of a converted attribute takes the converter's database type,
@@ -47,9 +50,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * object, a BLOB (BYTEA on PostgreSQL), while the same value externalized by
  * OpenJPA's Externalizer API got a column of the externalized type.
  */
-public class TestConvertedColumnType extends SingleEMFTestCase {
+class TestConvertedColumnType extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedColumnTypeEntity.class, RankConverter.class, BoxConverter.class,
             DROP_TABLES);
@@ -67,7 +70,7 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
 
     private void assertColumn(String field, int javaType, int... sqlTypes) {
         Column col = column(field);
-        assertEquals(field + " java type", javaType, col.getJavaType());
+        assertEquals(javaType, col.getJavaType(), field + " java type");
         for (int sqlType : sqlTypes) {
             if (col.getType() == sqlType) {
                 return;
@@ -76,7 +79,8 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
         fail(field + " has SQL type " + col.getType() + " (" + col.getTypeIdentifier() + ")");
     }
 
-    public void testUuidColumnsAgree() {
+    @Test
+    void uuidColumnsAgree() {
         assertColumn("externalized", JavaTypes.STRING, Types.VARCHAR);
         assertColumn("converted", JavaTypes.STRING, Types.VARCHAR);
         if (getDBDictionary().supportsUuidType) {
@@ -86,27 +90,33 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
         }
     }
 
-    public void testConverterToLong() {
+    @Test
+    void converterToLong() {
         assertColumn("code", JavaTypes.LONG_OBJ, Types.BIGINT, Types.NUMERIC, Types.DECIMAL);
     }
 
-    public void testConverterWithGenericSuperclass() {
+    @Test
+    void converterWithGenericSuperclass() {
         assertColumn("inheritedCode", JavaTypes.LONG_OBJ, Types.BIGINT, Types.NUMERIC, Types.DECIMAL);
     }
 
-    public void testConverterWithAttributeConverterSubinterface() {
+    @Test
+    void converterWithAttributeConverterSubinterface() {
         assertColumn("interfaceCode", JavaTypes.LONG_OBJ, Types.BIGINT, Types.NUMERIC, Types.DECIMAL);
     }
 
-    public void testAutoAppliedConverterWithGenericSuperclass() {
+    @Test
+    void autoAppliedConverterWithGenericSuperclass() {
         assertColumn("rating", JavaTypes.INT_OBJ, Types.INTEGER, Types.NUMERIC, Types.DECIMAL);
     }
 
-    public void testAutoAppliedConverterOfParameterizedType() {
+    @Test
+    void autoAppliedConverterOfParameterizedType() {
         assertColumn("box", JavaTypes.STRING, Types.VARCHAR);
     }
 
-    public void testSchemaColumnTypes() throws SQLException {
+    @Test
+    void schemaColumnTypes() throws SQLException {
         // the table must exist in the database to read its columns back
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -147,7 +157,8 @@ public class TestConvertedColumnType extends SingleEMFTestCase {
         return Types.OTHER;
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         UUID uuid = UUID.randomUUID();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();

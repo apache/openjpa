@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,24 +43,14 @@ import org.apache.openjpa.persistence.jdbc.common.apps.MultiA;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiB;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiC;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiD;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMultiTableMappings
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-
+public class TestMultiTableMappings extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
     private Object aoid;
     private Object boid;
     private Object coid;
     private Object doid;
-
-    public TestMultiTableMappings(String name) {
-        super(name);
-    }
-
-    /** Creates a new instance of TestMultiTableMappings */
-    public TestMultiTableMappings() {
-    }
 
     @Override
     public void setUpTestCase() {
@@ -173,7 +165,8 @@ public class TestMultiTableMappings
     // ### - base A, vertical B extends A, virtual C extends B,
     // ###   vertical D extends C, vertical E extends C, flat F extends C
 
-    public void testVerticalQueryModeQueries() {
+    @Test
+    void verticalQueryModeQueries() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery<MultiA> q = (OpenJPAQuery<MultiA>) pm.createNativeQuery("",MultiA.class);
         ((JDBCFetchPlan) q.getFetchPlan()).setSubclassFetchMode(FetchMode.PARALLEL);
@@ -183,15 +176,15 @@ public class TestMultiTableMappings
         //FIXME jthomas
         //q.setOrdering("string0 ascending");
         sql.clear();
-        assertEquals(sql.toString(), 0, sql.size());
+        assertEquals(0, sql.size(), sql.toString());
 
         Collection c = (Collection) q.getCandidateCollection();
 
         // account for the select distinct
         if (((String) sql.get(0)).startsWith("SELECT DISTINCT"))
-            assertEquals(sql.toString(), 5, sql.size());
+            assertEquals(5, sql.size(), sql.toString());
         else
-            assertEquals(sql.toString(), 4, sql.size());
+            assertEquals(4, sql.size(), sql.toString());
         sql.clear();
 
         assertEquals(6, c.size());
@@ -199,7 +192,7 @@ public class TestMultiTableMappings
         // only check for counts sql if any was executed (some databases
         // might eagerly instantiate all the rows, such as pointbase)
         if (sql.size() != 0)
-            assertEquals(sql.toString(), 4, sql.size()); // select counts
+            assertEquals(4, sql.size(), sql.toString()); // select counts
         sql.clear();
 
         // walk through the results. This will cause individual
@@ -208,7 +201,7 @@ public class TestMultiTableMappings
         for (Iterator iter = c.iterator(); iter.hasNext();)
             iter.next();
 
-        assertEquals(sql.toString(), 0, sql.size());
+        assertEquals(0, sql.size(), sql.toString());
 
         pm.close();
     }

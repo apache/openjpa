@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.oracle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,9 +34,11 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
+class TestOracleXmlColumn extends AbstractPersistenceTestCase {
 
     private static String projectStr = "project";
     private static String xmlData =
@@ -48,8 +53,8 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         return !(dict instanceof OracleDictionary);
     }
 
-    @Override
-    public void setUp() throws SQLException {
+    @BeforeEach
+    void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
         JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
@@ -84,7 +89,8 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         emf.close();
     }
 
-    public void testCrudXmlColumn() throws SQLException {
+    @Test
+    void crudXmlColumn() throws Exception {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =
@@ -121,7 +127,8 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
         emf.close();
     }
 
-    public void testExistingColumn() throws SQLException {
+    @Test
+    void existingColumn() throws Exception {
         // This test will fail with Oracle JDBC driver version 11.2.0.1.0.
         // It passes with 10.2.0.1.0 (maybe others).
         OpenJPAEntityManagerFactorySPI emf =

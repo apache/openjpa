@@ -26,9 +26,16 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -37,16 +44,11 @@ import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.ModRuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest4;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest5;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestSavepoints extends BaseKernelTest {
-
-    /**
-     * Creates a new instance of TestSavepoints
-     */
-    public TestSavepoints(String name) {
-        super(name);
-    }
-
     protected String getSavepointPlugin() {
         return "in-mem";
     }
@@ -58,12 +60,13 @@ public class TestSavepoints extends BaseKernelTest {
         return properties;
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(ModRuntimeTest1.class, ModRuntimeTest2.class, RuntimeTest4.class, RuntimeTest5.class);
     }
 
-    public void testSimple() {
+    @Test
+    void simple() {
         doSimpleTest(true, 0, 0);
         doSimpleTest(true, 2, 0);
         doSimpleTest(true, 0, 2);
@@ -129,7 +132,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testCleanOrdering() {
+    @Test
+    void cleanOrdering() {
         OpenJPAEntityManager pm = getPM();
         ModRuntimeTest1 pc = new ModRuntimeTest1("orig", 1);
         startTx(pm);
@@ -156,7 +160,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testLastSavepoint() {
+    @Test
+    void lastSavepoint() {
         OpenJPAEntityManager pm = getPM();
         ModRuntimeTest1 pc = new ModRuntimeTest1("orig", 1);
         startTx(pm);
@@ -186,7 +191,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNewRollback() {
+    @Test
+    void newRollback() {
         doNewRollbackTest(false, 0, 0);
         doNewRollbackTest(false, 2, 0);
         doNewRollbackTest(false, 0, 2);
@@ -228,7 +234,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNewRelation() {
+    @Test
+    void newRelation() {
         doNewRelationTest(true, 0, 0);
         doNewRelationTest(true, 2, 0);
         doNewRelationTest(true, 0, 2);
@@ -300,7 +307,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNullRelation() {
+    @Test
+    void nullRelation() {
         doNullRelationTest(true, 0, 0);
         doNullRelationTest(true, 2, 0);
         doNullRelationTest(true, 0, 2);
@@ -359,7 +367,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testCollection() {
+    @Test
+    void collection() {
         doCollectionTest(true, 0, 0);
         doCollectionTest(true, 2, 0);
         doCollectionTest(true, 0, 2);
@@ -451,7 +460,8 @@ public class TestSavepoints extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testChangeTracker() {
+    @Test
+    void changeTracker() {
         OpenJPAEntityManager pm = getPM();
         startTx(pm);
         RuntimeTest4 pc = new RuntimeTest4("orig");

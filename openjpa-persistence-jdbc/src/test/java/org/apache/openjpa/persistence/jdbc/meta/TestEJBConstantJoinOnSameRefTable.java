@@ -18,25 +18,24 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4;
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBConstantJoinOnSameRefTable
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBConstantJoinOnSameRefTable extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int oid;
 
-	public TestEJBConstantJoinOnSameRefTable(String name)
-	{
-		super(name);
-	}
-
-	@Override
+    @BeforeEach
     @SuppressWarnings("unchecked")
-	public void setUp ()
+    void setUp()
 	{
 		deleteAll(ConstantJoinPC4.class);
 		deleteAll(ConstantJoinPC5.class);
@@ -56,7 +55,8 @@ public class TestEJBConstantJoinOnSameRefTable
 		endEm(pm);
 	}
 
-	public void testConstantManyToMany ()
+    @Test
+    void constantManyToMany()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -78,7 +78,8 @@ public class TestEJBConstantJoinOnSameRefTable
 	}
 
 
-	public void testConstantOneToOne1 ()
+    @Test
+    void constantOneToOne1()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -90,7 +91,8 @@ public class TestEJBConstantJoinOnSameRefTable
 		endEm(pm);
 	}
 
-	public void testSharedJoinTableModifications ()
+    @Test
+    void sharedJoinTableModifications()
 	{
 		EntityManager pm = currentEntityManager();
 		ConstantJoinPC4 pc4 = pm.find(ConstantJoinPC4.class, oid);

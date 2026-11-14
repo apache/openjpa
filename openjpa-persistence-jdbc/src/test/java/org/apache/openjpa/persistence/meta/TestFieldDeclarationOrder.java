@@ -19,21 +19,25 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPC;
 import org.apache.openjpa.persistence.meta.common.apps.FieldOrderPCSubclass;
+import org.junit.jupiter.api.Test;
 
 public class TestFieldDeclarationOrder
     extends AbstractTestCase {
 
-    public TestFieldDeclarationOrder(String test) {
-        super(test, "metacactusapp");
+    public TestFieldDeclarationOrder() {
+        super("metacactusapp");
     }
 
-    public void testSubclass() {
+    @Test
+    void subclass() {
         ClassMetaData meta = JPAFacadeHelper
             .getMetaData(getEmf(),
                 FieldOrderPCSubclass.class);
@@ -53,7 +57,8 @@ public class TestFieldDeclarationOrder
         assertEquals("undeclaredSubField", fmds[10].getName());
     }
 
-    public void testSuperclass() {
+    @Test
+    void superclass() {
         ClassMetaData meta = JPAFacadeHelper
             .getMetaData(getEmf(),
                 FieldOrderPC.class);

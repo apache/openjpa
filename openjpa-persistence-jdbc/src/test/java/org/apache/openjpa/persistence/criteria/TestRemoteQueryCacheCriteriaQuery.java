@@ -26,12 +26,14 @@ import jakarta.persistence.metamodel.Metamodel;
 
 import org.apache.openjpa.persistence.datacache.SerializingConcurrentQueryCache;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
+class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
     protected EntityType<Department> department_ = null;
     protected OpenJPACriteriaBuilder cb;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp("openjpa.DataCache", "true", "openjpa.QueryCache",
             SerializingConcurrentQueryCache.SERIALIZING_CONCURRENT_QUERY_CACHE, Department.class, Employee.class,
@@ -46,7 +48,8 @@ public class TestRemoteQueryCacheCriteriaQuery extends SingleEMFTestCase {
         }
     }
 
-    public void test() {
+    @Test
+    void test() {
         CriteriaQuery<Department> q = cb.createQuery(Department.class);
         Root<Department> dept = q.from(Department.class);
         q.select(dept).where(cb.equal(dept.get(department_.getSingularAttribute("name", String.class)), "test"));

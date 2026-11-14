@@ -18,15 +18,17 @@
  */
 package org.apache.openjpa.jira1794;
 
+import org.junit.jupiter.api.BeforeEach;
+
 /**
  * OPENJPA-1794
  * Verifies the return value of aggregate functions when a query result
  * set is empty.  In this variation, the compatibility flag
  * is set so 0 is expected.
  */
-public class TestCompatAggregateFunctions extends TestAggregateFunctions {
+class TestCompatAggregateFunctions extends TestAggregateFunctions {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                     "openjpa.Compatibility", "ReturnNullOnAggregateResult=false",

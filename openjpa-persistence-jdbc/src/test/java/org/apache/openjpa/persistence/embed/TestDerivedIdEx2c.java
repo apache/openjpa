@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Regression test for OPENJPA-2968: the @MapsId columns of a non-@Embeddable
@@ -31,9 +36,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * its fields. DID2cEmployeeId declares lastName before firstName, the reverse
  * of the @JoinColumns order of DID2cDependent.
  */
-public class TestDerivedIdEx2c extends SingleEMFTestCase {
+class TestDerivedIdEx2c extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             DID2cEmployee.class,
@@ -52,7 +57,8 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
         return dep;
     }
 
-    public void testFindDoesNotDependOnIdClassFieldOrder() {
+    @Test
+    void findDoesNotDependOnIdClassFieldOrder() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);
@@ -60,7 +66,7 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
 
         DID2cDependent found = em.find(DID2cDependent.class,
             new DID2cDependentId("Joe", new DID2cEmployeeId("Sam", "Vaughn")));
-        assertNotNull("Should find dependent by EmbeddedId key", found);
+        assertNotNull(found, "Should find dependent by EmbeddedId key");
         assertNotNull(found.getId().getEmpPK());
         assertEquals("Sam", found.getId().getEmpPK().getFirstName());
         assertEquals("Vaughn", found.getId().getEmpPK().getLastName());
@@ -69,7 +75,8 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testQueryViaEmbeddedIdPath() {
+    @Test
+    void queryViaEmbeddedIdPath() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);
@@ -86,7 +93,8 @@ public class TestDerivedIdEx2c extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testQueryViaRelation() {
+    @Test
+    void queryViaRelation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         create(em);

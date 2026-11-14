@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
-public class TestValue  {
+class TestValue  {
 
     private static class SimpleValue extends Value {
 
@@ -53,7 +56,7 @@ public class TestValue  {
     }
 
     @Test
-    public void testSetAliasesByValue() {
+    void setAliasesByValue() {
         String alias = "alias";
         String aName = "Johnny";
         String bName = "Pete";
@@ -62,13 +65,13 @@ public class TestValue  {
         SimpleValue sValue = new SimpleValue();
         sValue.setAliases(aStrings);
         sValue.setAlias(alias, bName);
-        assertEquals("Did not set the new alias", bName,
-                sValue.getAliases()[1]);
-        assertEquals("Array of aliases not set by value", aName, aStrings[1]);
+        assertEquals(bName, sValue.getAliases()[1],
+                "Did not set the new alias");
+        assertEquals(aName, aStrings[1], "Array of aliases not set by value");
     }
 
     @Test
-    public void testEquivalentValueCanBeSet() {
+    void equivalentValueCanBeSet() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");
         v.addEquivalentKey("eqivalent1");
@@ -84,7 +87,7 @@ public class TestValue  {
     }
 
     @Test
-    public void testEquivalentValuesAreUnmodifable() {
+    void equivalentValuesAreUnmodifable() {
         SimpleValue v = new SimpleValue();
         v.setProperty("main");
         v.addEquivalentKey("eqivalent1");

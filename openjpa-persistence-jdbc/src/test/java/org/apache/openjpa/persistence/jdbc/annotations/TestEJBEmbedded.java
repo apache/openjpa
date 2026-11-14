@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,13 +38,15 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for embedded
  *
  * @author Steve Kim
  */
-public class TestEJBEmbedded extends SingleEMFTestCase {
+class TestEJBEmbedded extends SingleEMFTestCase {
 
     private static final String CLOB;
 
@@ -53,14 +57,15 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         CLOB = buf.toString();
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
 //        ,"openjpa.Log","SQL=trace"
         );
     }
 
-    public void testEmbedded() {
+    @Test
+    void embedded() {
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -92,7 +97,8 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testEmbeddedMetaData() {
+    @Test
+    void embeddedMetaData() {
         ClassMetaData ownerMeta =
             JPAFacadeHelper.getMetaData(emf, EmbedOwner.class);
         FieldMetaData fmd = ownerMeta.getField("embed");
@@ -149,14 +155,19 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
             }
         }
     }
-    public void testNullNoCache() {
+
+    @Test
+    void nullNoCache() {
         nullTestLogic(false);
     }
-    public void testNullCacheEnabled() {
+
+    @Test
+    void nullCacheEnabled() {
         nullTestLogic(true);
     }
 
-    public void testMappingTransferAndOverride() {
+    @Test
+    void mappingTransferAndOverride() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().getMapping
             (EmbedOwner.class, null, true);
@@ -174,11 +185,10 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         if (dict.getPreferredType(Types.CLOB) == Types.CLOB) {
             if (dict.maxEmbeddedClobSize > 0)
-                assertTrue(fm.getStrategy() instanceof
-                    MaxEmbeddedClobFieldStrategy);
+                assertInstanceOf(MaxEmbeddedClobFieldStrategy.class, fm.getStrategy());
             else
-                assertTrue(fm.getHandler() instanceof ClobValueHandler);
+                assertInstanceOf(ClobValueHandler.class, fm.getHandler());
         } else
-            assertTrue(fm.getStrategy() instanceof StringFieldStrategy);
+            assertInstanceOf(StringFieldStrategy.class, fm.getStrategy());
     }
 }

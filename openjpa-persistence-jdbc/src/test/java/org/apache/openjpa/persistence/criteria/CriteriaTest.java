@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.criteria.results.Bar;
 import org.apache.openjpa.persistence.criteria.results.Foo;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Generic utility to run Criteria tests.
@@ -50,9 +53,8 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         return CLASSES;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
         if (getEntityManagerFactory() == null) {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
@@ -61,11 +63,6 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         setDictionary();
         em = getEntityManagerFactory().createEntityManager();
         cb = getEntityManagerFactory().getCriteriaBuilder();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        releaseResources();
     }
 
     @Override

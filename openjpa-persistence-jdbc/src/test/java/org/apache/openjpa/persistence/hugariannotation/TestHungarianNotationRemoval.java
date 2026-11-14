@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.hugariannotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,16 +36,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Date: 02-Nov-2007
  * Time: 21:36:36
  */
-public class TestHungarianNotationRemoval extends SingleEMFTestCase {
+class TestHungarianNotationRemoval extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(HungarianNotationFieldDuplicates.class,
             HungarianNotationFields.class, OtherClass.class, CLEAR_TABLES,
             "openjpa.jdbc.MappingDefaults", "removeHungarianNotation=true");
     }
 
-    public void testSimpleColumnNameTruncation() {
+    @Test
+    void simpleColumnNameTruncation() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFields.class);
 
@@ -54,12 +60,13 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
                 continue;
 
             assertTrue(
-                    "Failed to removed Hungarian Notation, resulting column name : "
-                            + name, name.toUpperCase(Locale.ROOT).startsWith("FOOBAR"));
+                    name.toUpperCase(Locale.ROOT).startsWith("FOOBAR"), "Failed to removed Hungarian Notation, resulting column name : "
+                            + name);
         }
     }
 
-    public void testCustomNameNotAltered() {
+    @Test
+    void customNameNotAltered() {
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFields.class);
 
@@ -74,7 +81,7 @@ public class TestHungarianNotationRemoval extends SingleEMFTestCase {
         that would turn into duplicates. Even doing this will not be
         foolproof, as a duplicate column might come from a subclass or an
         embedded class.
-    public void testDuplicateColumnNameTruncation() {
+    @Test void duplicateColumnNameTruncation() {
 
         ClassMapping cm = (ClassMapping) JPAFacadeHelper
             .getMetaData(emf, HungarianNotationFieldDuplicates.class);

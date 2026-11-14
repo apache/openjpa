@@ -18,28 +18,34 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests detachment for bidirectional one-many relationship
  *
  * @author David Ezzio
  */
-public class TestDetachmentOneMany
+class TestDetachmentOneMany
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DetachmentOneManyParent.class, DetachmentOneManyChild.class);
     }
 
-    public void testDetachment() {
+    @Test
+    void detachment() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();
@@ -48,11 +54,12 @@ public class TestDetachmentOneMany
         DetachmentOneManyParent parent = em.find(DetachmentOneManyParent.class,
             id);
         assertNotNull(parent);
-        assertFalse("The parent was not detached", em.contains(parent));
+        assertFalse(em.contains(parent), "The parent was not detached");
         em.close();
     }
 
-    public void testFetchWithDetach() {
+    @Test
+    void fetchWithDetach() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();
@@ -65,16 +72,17 @@ public class TestDetachmentOneMany
         assertEquals(2, parent.getChildren().size());
         DetachmentOneManyChild child0 = parent.getChildren().get(0);
         DetachmentOneManyChild child1 = parent.getChildren().get(1);
-        assertNotNull("Did not find expected first child", child0);
-        assertNotNull("Did not find expected second child", child1);
+        assertNotNull(child0, "Did not find expected first child");
+        assertNotNull(child1, "Did not find expected second child");
         assertEquals("child0", child0.getName());
-        assertFalse("The first child was not detached", em.contains(child0));
+        assertFalse(em.contains(child0), "The first child was not detached");
         assertEquals("child1", child1.getName());
-        assertFalse("The second child was not detached", em.contains(child1));
+        assertFalse(em.contains(child1), "The second child was not detached");
         em.close();
     }
 
-    public void testFetchWithDetachForToOneRelationship() {
+    @Test
+    void fetchWithDetachForToOneRelationship() {
         long id = createParentAndChildren();
 
         EntityManager em = emf.createEntityManager();
@@ -84,8 +92,8 @@ public class TestDetachmentOneMany
             id);
         assertNotNull(parent);
         assertEquals(2, parent.getChildren().size());
-        assertEquals("ToOne relationship was not eagerly fetched",
-              parent, parent.getChildren().get(0).getParent());
+        assertEquals(parent,
+              parent.getChildren().get(0).getParent(), "ToOne relationship was not eagerly fetched");
         em.close();
     }
 
@@ -105,21 +113,16 @@ public class TestDetachmentOneMany
         long id = parent.getId();
         assertNotNull(parent.getChildren());
         assertEquals(2, parent.getChildren().size());
-        assertTrue("The parent is not managed", em.contains(parent));
+        assertTrue(em.contains(parent), "The parent is not managed");
         DetachmentOneManyChild child0 = parent.getChildren().get(0);
         DetachmentOneManyChild child1 = parent.getChildren().get(1);
         assertEquals("child0", child0.getName());
         assertEquals("child1", child1.getName());
-        assertEquals("The first child has no relationship to the parent",
-            parent, child0.getParent());
-        assertEquals("The second child has no relationship to the parent",
-            parent, child1.getParent());
+        assertEquals(parent,
+            child0.getParent(), "The first child has no relationship to the parent");
+        assertEquals(parent,
+            child1.getParent(), "The second child has no relationship to the parent");
         em.close();
         return id;
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestDetachmentOneMany.class);
-    }
 }
-

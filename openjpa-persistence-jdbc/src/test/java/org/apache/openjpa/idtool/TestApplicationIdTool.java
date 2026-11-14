@@ -16,25 +16,25 @@
  */
 package org.apache.openjpa.idtool;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.openjpa.enhance.ApplicationIdTool;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3;
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for the ApplicationIdTool from openjpa-kernel.
  * We cannot test it over in the openjpa-kernel package as
  * we'd not be able to also test JPA features.
  */
-public class TestApplicationIdTool {
+class TestApplicationIdTool {
 
     @Test
-    public void testApplicationIdTool_wIdClassAnnotation() throws Exception{
+    void applicationIdToolWIdClassAnnotation() throws Exception{
         String entityJavaFile = "./src/test/java/" + AutoIncrementPC3.class.getName().replace(".", "/") + ".java";
         final String outputDir = "./target/idtooltest/";
         ApplicationIdTool.main(new String[]{"-s","Id", entityJavaFile, "-d", outputDir});
@@ -45,7 +45,7 @@ public class TestApplicationIdTool {
     }
 
     @Test
-    public void testApplicationIdTool_freshClass() throws Exception{
+    void applicationIdToolFreshClass() throws Exception{
         String entityJavaFile = "./src/test/java/" + RecordsPerYear.class.getName().replace(".", "/") + ".java";
         final String outputDir = "./target/idtooltest/";
         ApplicationIdTool.main(new String[]{"-s","Id", entityJavaFile, "-d", outputDir});

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -28,6 +30,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.kernel.Filters;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JDBC Escape Syntax date/time strings in query.
@@ -36,7 +39,7 @@ import org.apache.openjpa.kernel.Filters;
  * @author Pinaki Poddar
  *
  */
-public class TestDateStringConversion extends CriteriaTest {
+class TestDateStringConversion extends CriteriaTest {
     private static final String OPEN_BRACKET  = "{";
     private static final String CLOSE_BRACKET = "}";
     private static final String SINGLE_QUOTE  = "'";
@@ -69,7 +72,8 @@ public class TestDateStringConversion extends CriteriaTest {
      * Dependent.endDate.
      *
      */
-    public void testDateString() {
+    @Test
+    void dateString() {
         createData("testDateString");
         long now = System.currentTimeMillis();
 
@@ -98,7 +102,8 @@ public class TestDateStringConversion extends CriteriaTest {
      * Hence does not require, as in the the earlier case, to use different
      * escape string.
      */
-    public void testDateStringAsParameter() {
+    @Test
+    void dateStringAsParameter() {
         createData("testDateStringAsParameter");
         long now = System.currentTimeMillis();
 
@@ -136,34 +141,37 @@ public class TestDateStringConversion extends CriteriaTest {
         return OPEN_BRACKET + key + SINGLE_QUOTE + time.toString() + SINGLE_QUOTE + CLOSE_BRACKET;
     }
 
-    public void testJDBCEscapeSyntaxTimestamp() {
+    @Test
+    void jdbcEscapeSyntaxTimestamp() {
         Timestamp ts = new Timestamp(System.currentTimeMillis());
         String s = "{ts '" + ts.toString() + "'}";
         assertTrue(Filters.isJDBCTemporalSyntax(s));
         assertNotNull(Filters.parseJDBCTemporalSyntax(s));
         Object converted = Filters.convert(s, Timestamp.class);
-        assertTrue(converted instanceof Timestamp);
-        assertEquals("Original=" + s + " Converted " + converted, ts.toString(), converted.toString());
+        assertInstanceOf(Timestamp.class, converted);
+        assertEquals(ts.toString(), converted.toString(), "Original=" + s + " Converted " + converted);
     }
 
-    public void testJDBCEscapeSyntaxTime() {
+    @Test
+    void jdbcEscapeSyntaxTime() {
         Time t = new Time(System.currentTimeMillis());
         String s = "{t '" + t.toString() + "'}";
         assertTrue(Filters.isJDBCTemporalSyntax(s));
         assertNotNull(Filters.parseJDBCTemporalSyntax(s));
         Object converted = Filters.convert(s, Time.class);
-        assertTrue(converted instanceof Time);
-        assertEquals("Original=" + s + " Converted " + converted, t.toString(), converted.toString());
+        assertInstanceOf(Time.class, converted);
+        assertEquals(t.toString(), converted.toString(), "Original=" + s + " Converted " + converted);
     }
 
-    public void testJDBCEscapeSyntaxDate() {
+    @Test
+    void jdbcEscapeSyntaxDate() {
         Date d = new Date(System.currentTimeMillis());
         String s = "{d '" + d.toString() + "'}";
         assertTrue(Filters.isJDBCTemporalSyntax(s));
         assertNotNull(Filters.parseJDBCTemporalSyntax(s));
         Object converted = Filters.convert(s, Date.class);
-        assertTrue(converted instanceof Date);
-        assertEquals("Original=" + s + " Converted " + converted, d.toString(), converted.toString());
+        assertInstanceOf(Date.class, converted);
+        assertEquals(d.toString(), converted.toString(), "Original=" + s + " Converted " + converted);
     }
 
     void assertSameResult(CriteriaQuery<Dependent> c, String jpql) {

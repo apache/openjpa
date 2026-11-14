@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.query.domain.Chess;
@@ -25,6 +29,8 @@ import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.jdbc.query.domain.IndoorGame;
 import org.apache.openjpa.persistence.jdbc.query.domain.Scrabble;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Aggregate Query that has no record.
@@ -35,10 +41,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
+class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
                 "openjpa.Compatibility", "ReturnNullOnAggregateResult=false",  //OPENJPA-1794
@@ -48,7 +54,8 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
     }
 
 
-    public void testSumWithNoResult() {
+    @Test
+    void sumWithNoResult() {
         String jpql = "SELECT SUM(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
@@ -57,7 +64,8 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         assertEquals(result, Long.valueOf(0));
     }
 
-    public void testAvgWithNoResult() {
+    @Test
+    void avgWithNoResult() {
         String jpql = "SELECT AVG(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
@@ -66,7 +74,8 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         assertEquals(result, Integer.valueOf(0));
     }
 
-    public void testCountWithNoResult() {
+    @Test
+    void countWithNoResult() {
         String jpql = "SELECT COUNT(g.nTile) FROM Scrabble g";
 
         Long result = (Long)em.createQuery(jpql).getSingleResult();
@@ -75,7 +84,8 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         assertEquals(result, Long.valueOf(0));
     }
 
-    public void testMaxWithNoResult() {
+    @Test
+    void maxWithNoResult() {
         String jpql = "SELECT MAX(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();
@@ -84,7 +94,8 @@ public class TestAggregateQueryWithNoResult extends SingleEMFTestCase {
         assertEquals(result, Integer.valueOf(0));
     }
 
-    public void testMinWithNoResult() {
+    @Test
+    void minWithNoResult() {
         String jpql = "SELECT MIN(g.nTile) FROM Scrabble g";
 
         Integer result = (Integer)em.createQuery(jpql).getSingleResult();

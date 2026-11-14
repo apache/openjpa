@@ -21,16 +21,19 @@ package org.apache.openjpa.persistence.optlockex.timestamp;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * Test create for JIRA OPENJPA-2476, see it for a very detailed
  * description of the issue.
  */
 public class TestTimestampOptLockEx extends SingleEMFTestCase {
-
     @Override
-    public void setUp() {
+    protected boolean isSupported(DBDictionary dict) {
         // By default we'd round a Timestamp to the nearest millisecond on Oracle (see DBDictionary.datePrecision
         // and DBDictionary.setTimestamp) and nearest microsecond on DB2 (see DB2Dictionary.datePrecision and
         // DBDictionary.setTimestamp) when sending the value to the db...if we change datePrecision to 1, we round to
@@ -43,18 +46,19 @@ public class TestTimestampOptLockEx extends SingleEMFTestCase {
         // I've only been testing on Oracle and DB2 and not sure how other DBs treat a Timestamps precision
         // by default.  In VersionTSEntity I use a Timestamp(3) but this is not supported on, at least, Derby
         // and older versions of DB2...at this time I'll enable only on Oracle.
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.OracleDictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+        return dict instanceof OracleDictionary;
+    }
 
+    @BeforeEach
+    public void setUp() {
         // Set datePrecision=1000000 for Oracle since we are using Timestamp(3)....on Oracle
         // the default is 1000000 so we shouldn't need to set it, but lets set it to future
         // proof the test.
         super.setUp(DROP_TABLES, "openjpa.jdbc.DBDictionary", "datePrecision=1000000", VersionTSEntity.class);
     }
 
-    public void testUpdate() {
+    @Test
+    void update() {
         poplulate();
         //This loop is necessary since we need a timestamp which has been rounded up
         //by the database, or by OpenJPA such that the in-memory version of the Timestamp

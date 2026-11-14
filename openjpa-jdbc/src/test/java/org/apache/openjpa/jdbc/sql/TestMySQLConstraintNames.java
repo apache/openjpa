@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
@@ -29,7 +29,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Named foreign key, unique and primary key constraints on MySQL and MariaDB
@@ -40,25 +40,25 @@ import org.junit.Test;
  * name, so a later <code>DROP FOREIGN KEY &lt;name&gt;</code> fails. The old
  * form stays available with <code>ConstraintNameMode=mid</code>.
  */
-public class TestMySQLConstraintNames {
+class TestMySQLConstraintNames {
 
     @Test
-    public void testMySQLNamedConstraints() {
+    void mySQLNamedConstraints() {
         assertNamedConstraints(new MySQLDictionary());
     }
 
     @Test
-    public void testMariaDBNamedConstraints() {
+    void mariaDBNamedConstraints() {
         assertNamedConstraints(new MariaDBDictionary());
     }
 
     @Test
-    public void testMySQLConstraintNameModeMid() {
+    void mySQLConstraintNameModeMid() {
         assertConstraintNameModeMid(new MySQLDictionary());
     }
 
     @Test
-    public void testMariaDBConstraintNameModeMid() {
+    void mariaDBConstraintNameModeMid() {
         assertConstraintNameModeMid(new MariaDBDictionary());
     }
 

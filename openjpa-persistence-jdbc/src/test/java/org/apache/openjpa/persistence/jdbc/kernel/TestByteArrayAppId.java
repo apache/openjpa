@@ -27,6 +27,18 @@ package org.apache.openjpa.persistence.jdbc.kernel;
  */
 
 
+import static org.junit.jupiter.api.Assertions.*;
+
+/*
+ * TestByteArrayAppId.java
+ *
+ * Created on October 2, 2006, 10:56 AM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +59,9 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.ByteArrayPKPCId;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestByteArrayAppId extends BaseJDBCTest {
@@ -55,18 +70,12 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     private static int TEST_COUNT = 0;
     private static OpenJPAEntityManagerFactory _pmf = null;
 
-    /** Creates a new instance of TestByteArrayAppId */
-    public TestByteArrayAppId(String name)
-    {
-    	super(name);
-    }
-
     public boolean skipTest() {
         return getCurrentPlatform() != AbstractTestCase.Platform.DB2;
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         // we have to use getbytes/setbytes for byte arrays to work properly
         if (!_init) {
             _pmf =(OpenJPAEntityManagerFactory) getEmf(getProps());
@@ -92,9 +101,9 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         TEST_COUNT++;
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
-    throws Exception {
+        throws Exception {
         // closing the pmf every time slows things down too much b/c
         // schema reflection is so slow on DB2
         if (TEST_COUNT >= 9) {
@@ -122,7 +131,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     /**
      * Tests that application identity classes are returned correctly.
      */
-    public void testGetObjectIdClass() {
+    @Test
+    void getObjectIdClass() {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager pm = OpenJPAPersistence.cast (em);
 
@@ -138,7 +148,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     /**
      * Tests finding an instance by a manually-created id value.
      */
-    public void testGetSubclassObjectById() {
+    @Test
+    void getSubclassObjectById() {
         ByteArrayPKPC2 bytes2 = getChild();
         assertNotNull(bytes2);
         assertEquals(1, bytes2.getPK()[0]);
@@ -157,7 +168,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     /**
      * Tests finding an instance by a manually-created id value.
      */
-    public void testGetObjectById() {
+    @Test
+    void getObjectById() {
         ByteArrayPKPC bytes = getParent();
         assertNotNull(bytes);
         assertEquals(3, bytes.getPK()[0]);
@@ -172,7 +184,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
      * Tests that the oid instances returned from the pm are copied to
      * prevent by-reference modification by the user.
      */
-    public void testGetObjectId() {
+    @Test
+    void getObjectId() {
 
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
@@ -184,7 +197,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         oid.pk = new byte[]{ 1, 2 };
         ByteArrayPKPC bytes = (ByteArrayPKPC) kem.getObjectId(oid);
         ByteArrayPKPCId oidCopy = (ByteArrayPKPCId) kem.getObjectId(bytes);
-        assertTrue("Oid not copied.", oid != oidCopy);
+        assertNotSame(oid, oidCopy, "Oid not copied.");
         assertEquals(1, oidCopy.pk[0]);
         assertEquals(2, oidCopy.pk[1]);
 
@@ -195,7 +208,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     /**
      * Tests that changing primary key values will fail.
      */
-    public void testChangeIdentity() {
+    @Test
+    void changeIdentity() {
         ByteArrayPKPC2 bytes = getChild();
         OpenJPAEntityManager pm = OpenJPAPersistence.getEntityManager(bytes);
         startTx(pm);
@@ -214,7 +228,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
     /**
      * Tests that pk fields are retained on state transition to hollow.
      */
-    public void testPKRetain() {
+    @Test
+    void pKRetain() {
         ByteArrayPKPC2 bytes = getChild();
         OpenJPAEntityManager pm = OpenJPAPersistence.getEntityManager(bytes);
 
@@ -241,7 +256,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         pm.close();
     }
 
-    public void testDeleteAndInsert() {
+    @Test
+    void deleteAndInsert() {
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
 
@@ -289,7 +305,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         kem.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         EntityManager pm = _pmf.createEntityManager();
         //FIXME jthomas - partly commented
         //Query q = pm.newQuery(ByteArrayPKPC.class, "pk == bytes");
@@ -305,7 +322,8 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         pm.close();
     }
 
-    public void testConflictingIds() {
+    @Test
+    void conflictingIds() {
         OpenJPAEntityManager pm = _pmf.createEntityManager();
         startTx(pm);
 

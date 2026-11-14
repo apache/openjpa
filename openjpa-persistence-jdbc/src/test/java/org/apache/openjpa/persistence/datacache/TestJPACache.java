@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 
 import jakarta.persistence.EntityManager;
@@ -25,10 +27,12 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestJPACache extends SingleEMFTestCase {
+class TestJPACache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CachedPerson.class, CachedManager.class, CachedEmployee.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm");
@@ -86,17 +90,19 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>org.apache.openjpa.persistence.StoreCache</li>
      * </ul>
      */
-    public void testInterfacesReturned() {
+    @Test
+    void interfacesReturned() {
         Object cache = emf.getCache();
-        assertNotNull("Cache is not enabled", cache);
-        assertTrue(cache instanceof jakarta.persistence.Cache);
-        assertTrue(cache instanceof org.apache.openjpa.persistence.StoreCache);
+        assertNotNull(cache, "Cache is not enabled");
+        assertInstanceOf(jakarta.persistence.Cache.class, cache);
+        assertInstanceOf(org.apache.openjpa.persistence.StoreCache.class, cache);
     }
 
     /**
      * Ensure that an Entity is not inserted in the cache until the transaction commits.
      */
-    public void testContains() {
+    @Test
+    void contains() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -128,7 +134,8 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>CachedPerson id:1 is found in the cache after evicting CachedPerson id:11</li>
      * </ul>
      */
-    public void testEvictInstance() {
+    @Test
+    void evictInstance() {
         populate();
         assertInCache(CachedPerson.class, 10);
         assertInCache(CachedPerson.class, 11);
@@ -150,7 +157,8 @@ public class TestJPACache extends SingleEMFTestCase {
      * <li>Any instance of CachedManager or CachedEmployee is found in the cache after calling evict()</li>
      * </ul>
      */
-    public void testEvictClass() {
+    @Test
+    void evictClass() {
         populate();
         assertInCache(CachedPerson.class, 10);
         assertInCache(CachedPerson.class, 11);
@@ -177,7 +185,8 @@ public class TestJPACache extends SingleEMFTestCase {
      * </ul>
      *
      */
-    public void testEvictAll() {
+    @Test
+    void evictAll() {
         populate();
 
         assertInCache(CachedPerson.class, 10);
@@ -196,7 +205,8 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     // test methods for bad input.
-    public void testContainsNullEntity() {
+    @Test
+    void containsNullEntity() {
         try {
             emf.getCache().contains(null, 1);
             fail("Expected ArgumentException when calling  " + "contains(<null>, <nonNull>)");
@@ -205,7 +215,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testContainsNonEntityClass() {
+    @Test
+    void containsNonEntityClass() {
         try {
             emf.getCache().contains(Object.class, 1);
             fail("Expected ArgumentException when calling " + "contains(<nonEntityClass>, <nonNull>");
@@ -214,15 +225,18 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testContainsNullPrimaryKey() {
+    @Test
+    void containsNullPrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, null));
     }
 
-    public void testContainsNegativePrimaryKey() {
+    @Test
+    void containsNegativePrimaryKey() {
         assertFalse(emf.getCache().contains(CachedPerson.class, -1));
     }
 
-    public void testContainsInvalidPrimaryKeyType() {
+    @Test
+    void containsInvalidPrimaryKeyType() {
         try{
             emf.getCache().contains(CachedPerson.class, "abcd");
             fail();
@@ -231,7 +245,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testEvictNullInstance() {
+    @Test
+    void evictNullInstance() {
         try {
             emf.getCache().evict(null, 1);
             fail("Expected ArgumentException when calling " + "evict(<null>, <id");
@@ -240,7 +255,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testEvictNonEntityInstance() {
+    @Test
+    void evictNonEntityInstance() {
         try {
             emf.getCache().evict(Object.class, 1);
             fail("Expected ArgumentException when calling " + "evict(<null>, <id");
@@ -249,15 +265,18 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testEvictNullPrimaryKey() {
+    @Test
+    void evictNullPrimaryKey() {
         emf.getCache().evict(CachedPerson.class, null);
     }
 
-    public void testEvictNegativePrimaryKey() {
+    @Test
+    void evictNegativePrimaryKey() {
         emf.getCache().evict(CachedPerson.class, -1);
     }
 
-    public void testEvictInvalidPrimaryKeyType() {
+    @Test
+    void evictInvalidPrimaryKeyType() {
         try{
             emf.getCache().evict(CachedPerson.class, "abcd");
             fail();
@@ -266,7 +285,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testEvictNullClass() {
+    @Test
+    void evictNullClass() {
         try {
             emf.getCache().evict(null);
             fail("Expected ArgumentException when calling " + "evict(<null>");
@@ -275,7 +295,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testEvictNonEntity() {
+    @Test
+    void evictNonEntity() {
         try {
             emf.getCache().evict(Object.class);
             fail("Expected ArgumentException when calling " + "evict(<nonEntity>");
@@ -284,7 +305,8 @@ public class TestJPACache extends SingleEMFTestCase {
         }
     }
 
-    public void testIllegalStateExceptionAfterClose() {
+    @Test
+    void illegalStateExceptionAfterClose() {
         emf.close();
         try {
             emf.getCache();
@@ -294,7 +316,9 @@ public class TestJPACache extends SingleEMFTestCase {
             // expected
         }
     }
-    public void testIllegalStateExceptionGetAfterClose() {
+
+    @Test
+    void illegalStateExceptionGetAfterClose() {
         emf.getCache();  // populate the EntityManagerFactoryImpl's wrapper for the StoreCache.
         emf.close();
         try {
@@ -315,8 +339,8 @@ public class TestJPACache extends SingleEMFTestCase {
      *            PrimaryKey of the entity.
      */
     private void assertInCache(Class<?> cls, Object primaryKey) {
-        assertTrue(String.format("%s:%s should exist in cache", cls.toString(), primaryKey.toString()), emf.getCache()
-            .contains(cls, primaryKey));
+        assertTrue(emf.getCache()
+            .contains(cls, primaryKey), String.format("%s:%s should exist in cache", cls.toString(), primaryKey.toString()));
     }
 
     /**
@@ -328,8 +352,8 @@ public class TestJPACache extends SingleEMFTestCase {
      *            PrimaryKey of the entity.
      */
     private void assertNotInCache(Class<?> cls, Object primaryKey) {
-        assertFalse(String.format("%s:%s should not exist in cache", cls.toString(), primaryKey.toString()), emf
-            .getCache().contains(cls, primaryKey));
+        assertFalse(emf
+            .getCache().contains(cls, primaryKey), String.format("%s:%s should not exist in cache", cls.toString(), primaryKey.toString()));
     }
 
 }

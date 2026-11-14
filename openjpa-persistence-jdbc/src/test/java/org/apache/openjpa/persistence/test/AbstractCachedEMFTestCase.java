@@ -35,8 +35,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
  *
  */
 public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestCase {
-    private static FixedMap<EMFKey, OpenJPAEntityManagerFactorySPI> _emfs =
-        new FixedMap<>();
+    private static FixedMap<EMFKey, OpenJPAEntityManagerFactorySPI> _emfs = new FixedMap<>();
 
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.inheritance.jointable.onetomany;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test an inheritance type of 'joinable' where a OneToMany relationship is used
@@ -32,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJointableOneToMany extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UMLType.class, UMLPrimitiveType.class, UMLClass.class,
             UMLPackage.class, UMLNamed.class, CLEAR_TABLES);
@@ -88,7 +93,8 @@ public class TestJointableOneToMany extends SingleEMFTestCase {
         }
     }
 
-    public void test() {
+    @Test
+    void test() {
         EntityManager em = emf.createEntityManager();
         try {
             // Verify the Class exists, and that from it we can get the Package.

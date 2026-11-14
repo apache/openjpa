@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -25,9 +28,11 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.datacache.common.apps.M2MEntityE;
 import org.apache.openjpa.persistence.datacache.common.apps.M2MEntityF;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestM2MInDataCache extends SingleEMFTestCase {
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm", M2MEntityE.class, M2MEntityF.class,
             CLEAR_TABLES);
@@ -84,7 +89,8 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
      * Test if child list is in order after new child list is added in setup().
      *
      */
-    public void testM2MDataCache() {
+    @Test
+    void m2mDataCache() {
         EntityManager em = emf.createEntityManager();
         populate(em);
         em.close();
@@ -101,7 +107,8 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testEagerFetch() {
+    @Test
+    void eagerFetch() {
         EntityManager em = emf.createEntityManager();
         populate(em);
         em.close();

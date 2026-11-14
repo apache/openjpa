@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,10 +35,12 @@ import jakarta.persistence.spi.ProviderUtil;
 
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestProviderUtil extends SingleEMFTestCase{
+class TestProviderUtil extends SingleEMFTestCase{
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, EagerEmbedRel.class,
@@ -46,7 +51,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies an entity and its persistent attributes are in the proper
      * LOADED state.
      */
-    public void testIsLoadedEager() {
+    @Test
+    void isLoadedEager() {
         verifyIsLoadedEagerState(LoadState.LOADED);
     }
 
@@ -54,7 +60,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
-    public void testNotLoadedLazy() {
+    @Test
+    void notLoadedLazy() {
         verifyIsLoadedLazyState(LoadState.NOT_LOADED);
     }
 
@@ -62,7 +69,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies an entity and its persistent attributes are in the proper
      * LOADED state.
      */
-    public void testIsLoadedLazy() {
+    @Test
+    void isLoadedLazy() {
         verifyIsLoadedLazyState(LoadState.LOADED);
     }
 
@@ -70,7 +78,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
-    public void testNotLoadedEager() {
+    @Test
+    void notLoadedEager() {
         verifyIsLoadedEagerState(LoadState.NOT_LOADED);
     }
 
@@ -176,7 +185,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
      * Verifies that an entity and attributes are considered loaded if they
      * are assigned by the application.
      */
-    public void testIsApplicationLoaded() {
+    @Test
+    void isApplicationLoaded() {
         ProviderUtil pu = getProviderUtil();
         EntityManager em = emf.createEntityManager();
         Eager ee = createEagerEntity(true);
@@ -205,7 +215,8 @@ public class TestProviderUtil extends SingleEMFTestCase{
     /*
      * Verifies that an entity not managed by a PU
      */
-    public void testIsLoadedUnknown() {
+    @Test
+    void isLoadedUnknown() {
         ProviderUtil pu = getProviderUtil();
 
         Eager ee = new EagerEntity();

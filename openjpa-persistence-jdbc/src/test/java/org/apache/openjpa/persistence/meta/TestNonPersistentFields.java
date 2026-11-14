@@ -19,12 +19,16 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.NonPersistentFieldsPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests that fields that should not be persistent actually aren't.</p>
@@ -36,18 +40,19 @@ public class TestNonPersistentFields
 
     private ClassMetaData _meta = null;
 
-    public TestNonPersistentFields(String test) {
-        super(test, "metacactusapp");
+    public TestNonPersistentFields() {
+        super("metacactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         MetaDataRepository repos = new OpenJPAConfigurationImpl().
             newMetaDataRepositoryInstance();
         _meta = repos.getMetaData(NonPersistentFieldsPC.class, null, true);
     }
 
-    public void testNonPersistentFields() {
+    @Test
+    void nonPersistentFields() {
         FieldMetaData[] fmds = _meta.getFields();
         assertEquals(5, fmds.length);
         assertEquals("persistentField", fmds[0].getName());

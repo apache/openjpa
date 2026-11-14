@@ -19,61 +19,61 @@
 package org.apache.openjpa.tools.maven.test;
 
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.apache.openjpa.tools.maven.recursive.Cat;
 import org.apache.openjpa.tools.maven.recursive.Human;
+import org.junit.jupiter.api.Test;
 
-public class NonRecursiveRelationsTest {
+class NonRecursiveRelationsTest {
+
+    private static final String ALICE = "Alice";
+
     @Test
-    public void testRelationAccessedViaRecursiveRelationship() {
-        final String ALICE = "Alice";
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestUnit");
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
+    void relationAccessedViaRecursiveRelationship() {
+        try (EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestUnit")) {
+            int kitten1Id;
+            try (EntityManager em = emf.createEntityManager()) {
+                em.getTransaction().begin();
 
-        Human alice = new Human();
-        alice.setName(ALICE);
-        em.persist(alice);
-        Human bob = new Human();
-        bob.setName("Bob");
-        em.persist(bob);
+                Human alice = new Human();
+                alice.setName(ALICE);
+                em.persist(alice);
+                Human bob = new Human();
+                bob.setName("Bob");
+                em.persist(bob);
 
-        Cat parent = new Cat();
-        parent.setHuman(alice);
-        em.persist(parent);
+                Cat parent = new Cat();
+                parent.setHuman(alice);
+                em.persist(parent);
 
-        Cat kitten1 = new Cat();
-        kitten1.setParent(parent);
-        kitten1.setHuman(bob);
-        em.persist(kitten1);
+                Cat kitten1 = new Cat();
+                kitten1.setParent(parent);
+                kitten1.setHuman(bob);
+                em.persist(kitten1);
 
-        // Add a sibling that belongs to the same human so that later, when we are finding kitten1, parent will not be
-        // loaded directly, but instead via the path `kitten1.human.cats.parent`. Needed to reproduce
-        Cat kitten2 = new Cat();
-        kitten2.setParent(parent);
-        kitten2.setHuman(bob);
-        em.persist(kitten2);
+                // Add a sibling that belongs to the same human so that later, when we are finding kitten1, parent
+                // will not be loaded directly, but instead via the path `kitten1.human.cats.parent`. Needed to reproduce
+                Cat kitten2 = new Cat();
+                kitten2.setParent(parent);
+                kitten2.setHuman(bob);
+                em.persist(kitten2);
 
-        em.getTransaction().commit();
+                em.getTransaction().commit();
+                kitten1Id = kitten1.getId();
+            }
 
-        int catId = parent.getId();
-        int kitten1Id = kitten1.getId();
-
-        em.close();
-        em = emf.createEntityManager();
-
-        Cat jpqlKitten_1 = em.createQuery("SELECT c FROM Cat c WHERE c.id = :id", Cat.class)
-                .setParameter("id", kitten1Id)
-                .getSingleResult();
-        Cat kitten_1 = em.find(Cat.class, kitten1Id);
-        assertEquals(ALICE, kitten_1.getParent().getHuman().getName());
-        assertEquals(ALICE, jpqlKitten_1.getParent().getHuman().getName());
-
-        em.close();
+            try (EntityManager em = emf.createEntityManager()) {
+                Cat jpqlKitten1 = em.createQuery("SELECT c FROM Cat c WHERE c.id = :id", Cat.class)
+                        .setParameter("id", kitten1Id)
+                        .getSingleResult();
+                Cat kitten1 = em.find(Cat.class, kitten1Id);
+                assertEquals(ALICE, kitten1.getParent().getHuman().getName());
+                assertEquals(ALICE, jpqlKitten1.getParent().getHuman().getName());
+            }
+        }
     }
 }

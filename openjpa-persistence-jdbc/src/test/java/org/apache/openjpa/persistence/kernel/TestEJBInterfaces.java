@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -25,6 +29,8 @@ import org.apache.openjpa.persistence.kernel.common.apps.InterfaceHolder;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl1;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl2;
 import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for persistent interfaces.
@@ -33,18 +39,19 @@ import org.apache.openjpa.persistence.kernel.common.apps.InterfaceTestImpl3;
  */
 public class TestEJBInterfaces extends AbstractTestCase {
 
-    public TestEJBInterfaces(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBInterfaces() {
+        super("kernelcactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(InterfaceTestImpl1.class, InterfaceTestImpl2.class, InterfaceTestImpl3.class,
             InterfaceHolder.class);
     }
 
     @SuppressWarnings("unchecked")
-    public void testInterfaceField() {
+    @Test
+    void interfaceField() {
         EntityManager em2 = currentEntityManager();
         startTx(em2);
 

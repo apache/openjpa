@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that runtime subclass enhancement works for entities extending
@@ -32,9 +39,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Before the fix, this threw VerifyError: "Bad access to protected init method"
  * in the generated pcsubclass writeReplace() method.
  */
-public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
+class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedCoffeeEntity.class,
@@ -45,7 +52,8 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
     /**
      * Mirrors TCK setup — pcsubclass generation triggers writeReplace().
      */
-    public void testCreateEMWithProtectedConstructorSuperclass() {
+    @Test
+    void createEMWithProtectedConstructorSuperclass() {
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
@@ -55,7 +63,8 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Mirrors TCK createTestData + entityAPITest2 (find) + entityAPITest5 (remove).
      * Persist multiple entities, find by PK, remove, verify removal.
      */
-    public void testPersistFindRemove() {
+    @Test
+    void persistFindRemove() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(1, "hazelnut", 1.0f));
@@ -68,14 +77,14 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
 
         // find
         UnenhancedCoffeeEntity found = em.find(UnenhancedCoffeeEntity.class, 1);
-        assertNotNull("Entity should be found by PK", found);
+        assertNotNull(found, "Entity should be found by PK");
         assertEquals("hazelnut", found.getBrandName());
         assertEquals(Float.valueOf(1.0f), found.getPrice());
 
         // find returns null for non-existent PK (TCK entityAPITest2)
         UnenhancedCoffeeEntity notFound =
             em.find(UnenhancedCoffeeEntity.class, 99);
-        assertNull("find() should return null for non-existent PK", notFound);
+        assertNull(notFound, "find() should return null for non-existent PK");
 
         // remove (TCK entityAPITest5)
         em.getTransaction().begin();
@@ -85,8 +94,8 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.clear();
 
-        assertNull("Removed entity should not be found",
-            em.find(UnenhancedCoffeeEntity.class, 1));
+        assertNull(em.find(UnenhancedCoffeeEntity.class, 1),
+            "Removed entity should not be found");
 
         em.close();
     }
@@ -95,7 +104,8 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Mirrors TCK entityAPITest8 (merge).
      * Modify a detached entity, merge it back, verify update.
      */
-    public void testMerge() {
+    @Test
+    void merge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(10, "original", 5.0f));
@@ -128,7 +138,8 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
      * Mirrors TCK entityAPITest14 (JPQL query on inherited field).
      * Query using a field inherited from the MappedSuperclass.
      */
-    public void testQueryInheritedField() {
+    @Test
+    void queryInheritedField() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new UnenhancedCoffeeEntity(20, "decaf blend", 3.0f));
@@ -141,10 +152,10 @@ public class TestUnenhancedProtectedConstructor extends SingleEMFTestCase {
             "SELECT c FROM UnenhancedCoffeeEntity c WHERE c.brandName LIKE '%decaf%'",
             UnenhancedCoffeeEntity.class).getResultList();
 
-        assertEquals("Should find 2 decaf coffees", 2, results.size());
+        assertEquals(2, results.size(), "Should find 2 decaf coffees");
         for (UnenhancedCoffeeEntity c : results) {
-            assertTrue("Brand should contain 'decaf'",
-                c.getBrandName().contains("decaf"));
+            assertTrue(c.getBrandName().contains("decaf"),
+                "Brand should contain 'decaf'");
         }
 
         em.close();

@@ -18,19 +18,25 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestRefresh extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestRefresh extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Item.class,
              "openjpa.AutoDetach", "commit",
@@ -38,7 +44,8 @@ public class TestRefresh extends SingleEMTestCase {
              "openjpa.RemoteCommitProvider", "sjvm");
     }
 
-    public void testFlushRefreshNewInstance() {
+    @Test
+    void flushRefreshNewInstance() {
         em.getTransaction().begin();
         Item item = new Item();
         item.setItemData("Test Data");
@@ -55,7 +62,8 @@ public class TestRefresh extends SingleEMTestCase {
      * "The retrieveMode property is ignored for the refresh method,
      *  which always causes data to be retrieved from the database, not the cache."
      */
-    public void testRefreshBypassL2Cache() {
+    @Test
+    void refreshBypassL2Cache() {
         String original = "Original L2 Cached Data";
         String sneakUpdate = "Sneak Update";
         em.getTransaction().begin();
@@ -90,7 +98,8 @@ public class TestRefresh extends SingleEMTestCase {
         em.getTransaction().rollback();
     }
 
-    public void testCacheRetrieveModeSetting() {
+    @Test
+    void cacheRetrieveModeSetting() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
         Map<String, Object> properties = em.getProperties();
@@ -99,10 +108,11 @@ public class TestRefresh extends SingleEMTestCase {
             fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
         }
         Object mode = properties.get(JPAProperties.CACHE_RETRIEVE_MODE);
-        assertEquals(mode, CacheRetrieveMode.USE);
+        assertEquals(CacheRetrieveMode.USE, mode);
     }
 
-    public void testCacheStoreModeSetting() {
+    @Test
+    void cacheStoreModeSetting() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.setProperty(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.USE);
         Map<String, Object> properties = em.getProperties();
@@ -111,10 +121,11 @@ public class TestRefresh extends SingleEMTestCase {
             fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
         }
         Object mode = properties.get(JPAProperties.CACHE_STORE_MODE);
-        assertEquals(mode, CacheStoreMode.USE);
+        assertEquals(CacheStoreMode.USE, mode);
     }
 
-    public void testRefreshAfterRemove() {
+    @Test
+    void refreshAfterRemove() {
         try {
             em.getTransaction().begin();
             Item item = new Item();
@@ -131,7 +142,8 @@ public class TestRefresh extends SingleEMTestCase {
         }
     }
 
-    public void testFindWithCacheRetrieveProperty() {
+    @Test
+    void findWithCacheRetrieveProperty() {
         String key = "Test property in find.";
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -165,12 +177,13 @@ public class TestRefresh extends SingleEMTestCase {
         assertNotCached(Item.class, id);
 
         Object mode = em.getProperties().get(JPAProperties.CACHE_STORE_MODE);
-        assertEquals(mode, CacheStoreMode.USE);
+        assertEquals(CacheStoreMode.USE, mode);
         mode = em.getProperties().get(JPAProperties.CACHE_RETRIEVE_MODE);
-        assertEquals(mode, CacheRetrieveMode.USE);
+        assertEquals(CacheRetrieveMode.USE, mode);
     }
 
-    public void testRefreshWithCacheRetrieveProperty() {
+    @Test
+    void refreshWithCacheRetrieveProperty() {
         String key = "Test property in refresh.";
         String updatedKey = "Updated test property in refresh.";
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -213,17 +226,17 @@ public class TestRefresh extends SingleEMTestCase {
         assertNotCached(Item.class, id);
 
         Object mode = em.getProperties().get(JPAProperties.CACHE_STORE_MODE);
-        assertEquals(mode, CacheStoreMode.USE);
+        assertEquals(CacheStoreMode.USE, mode);
         mode = em.getProperties().get(JPAProperties.CACHE_RETRIEVE_MODE);
-        assertEquals(mode, CacheRetrieveMode.USE);
+        assertEquals(CacheRetrieveMode.USE, mode);
     }
 
     void assertCached(Class<?> cls, Object oid) {
-        assertTrue(cls + ":" + oid + " should be in L2 cache, but not", emf.getCache().contains(cls, oid));
+        assertTrue(emf.getCache().contains(cls, oid), cls + ":" + oid + " should be in L2 cache, but not");
     }
 
     void assertNotCached(Class<?> cls, Object oid) {
-        assertTrue(cls + ":" + oid + " should not be in L2 cache, but is", !emf.getCache().contains(cls, oid));
+        assertFalse(emf.getCache().contains(cls, oid), cls + ":" + oid + " should not be in L2 cache, but is");
     }
 
 }

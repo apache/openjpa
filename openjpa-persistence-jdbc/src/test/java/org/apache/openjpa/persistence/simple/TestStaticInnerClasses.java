@@ -18,23 +18,29 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that JPA 3.2 allows entity and embeddable classes to be
  * static inner classes.
  */
-public class TestStaticInnerClasses extends SingleEMFTestCase {
+class TestStaticInnerClasses extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, StaticInnerEntity.InnerEntity.class,
                 StaticInnerEntity.InnerEmbeddable.class);
     }
 
-    public void testPersistAndFindInnerEntity() {
+    @Test
+    void persistAndFindInnerEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         StaticInnerEntity.InnerEntity e = new StaticInnerEntity.InnerEntity();
@@ -56,7 +62,8 @@ public class TestStaticInnerClasses extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testQueryInnerEntity() {
+    @Test
+    void queryInnerEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         StaticInnerEntity.InnerEntity e = new StaticInnerEntity.InnerEntity();

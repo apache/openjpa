@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.lockmgr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -26,11 +29,13 @@ import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test find, lock and refresh em methods against non-versioned entity.
  */
-public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
+class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
 
     private String empTableName;
 
@@ -39,7 +44,7 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployeeNonVersion.class
             , "openjpa.LockManager", "mixed"
@@ -51,7 +56,8 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.find(lockMode) on non-versioned entity.
      */
-    public void testFindNonVersionWithLock() {
+    @Test
+    void findNonVersionWithLock() {
         commonFindNonVerWithLock(LockModeType.NONE);
         commonFindNonVerWithLock(LockModeType.READ);
         commonFindNonVerWithLock(LockModeType.WRITE);
@@ -93,7 +99,8 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.lock(lockMode) on non-versioned entity.
      */
-    public void testLockNonVersionWithLock() {
+    @Test
+    void lockNonVersionWithLock() {
         commonLockNonVerWithLock(LockModeType.NONE);
         commonLockNonVerWithLock(LockModeType.READ);
         commonLockNonVerWithLock(LockModeType.WRITE);
@@ -136,7 +143,8 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
     /*
      * Test em.refresh(lockMode) on non-versioned entity.
      */
-    public void testRefreshNonVersionWithLock() {
+    @Test
+    void refreshNonVersionWithLock() {
         commonRefreshNonVerWithLock(LockModeType.NONE);
         commonRefreshNonVerWithLock(LockModeType.READ);
         commonRefreshNonVerWithLock(LockModeType.WRITE);

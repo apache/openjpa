@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Perform basic operations on an entity with interface relations that use
@@ -30,15 +36,16 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestTargetedIFaceRelations
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestTargetedIFaceRelations extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TargetedIFaceRelationParent.class);
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         TargetedIFaceRelationParent parent = new TargetedIFaceRelationParent();
         parent.setName("parent");
         TargetedIFaceRelationParent child = new TargetedIFaceRelationParent();
@@ -65,9 +72,4 @@ public class TestTargetedIFaceRelations
             getIFace());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestTargetedIFaceRelations.class);
-    }
 }
-

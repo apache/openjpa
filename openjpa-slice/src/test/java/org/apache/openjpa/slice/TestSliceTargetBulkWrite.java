@@ -18,17 +18,23 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The target hint confines bulk statements to the slices it names, the way
  * it confines a query.
  */
-public class TestSliceTargetBulkWrite extends SliceTestCase {
+class TestSliceTargetBulkWrite extends SliceTestCase {
 
     private List<String> sliceNames;
 
@@ -37,7 +43,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         return "slice";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, CLEAR_TABLES,
             "openjpa.slice.DistributionPolicy", UniformDistributionPolicy.class.getName());
@@ -49,7 +55,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
             em.getTransaction().begin();
             // the active slices are only resolved once a broker has connected
             sliceNames = ((DistributedConfiguration) emf.getConfiguration()).getActiveSliceNames();
-            assertTrue("need at least two slices, got " + sliceNames, sliceNames.size() > 1);
+            assertTrue(sliceNames.size() > 1, "need at least two slices, got " + sliceNames);
             for (int i = 0; i < 4 * sliceNames.size(); i++) {
                 PObject pc = new PObject();
                 pc.setValue(0);
@@ -79,7 +85,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
-    public void testJpqlBulkUpdateRunsOnTheTargetSlice() {
+    @Test
+    void jpqlBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -91,7 +98,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(0, countIn(other, 42));
     }
 
-    public void testJpqlBulkUpdateRunsOnAllHintedSlices() {
+    @Test
+    void jpqlBulkUpdateRunsOnAllHintedSlices() {
         seed();
 
         int updated = run("update PObject p set p.value = 42", false,
@@ -103,7 +111,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
-    public void testJpqlBulkDeleteRunsOnTheTargetSlice() {
+    @Test
+    void jpqlBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -114,7 +123,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(other, 0));
     }
 
-    public void testNativeBulkUpdateRunsOnTheTargetSlice() {
+    @Test
+    void nativeBulkUpdateRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -126,7 +136,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(0, countIn(other, 42));
     }
 
-    public void testNativeBulkDeleteRunsOnTheTargetSlice() {
+    @Test
+    void nativeBulkDeleteRunsOnTheTargetSlice() {
         seed();
         String target = sliceNames.get(0);
         String other = sliceNames.get(1);
@@ -138,7 +149,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         assertEquals(4, countIn(other, 0));
     }
 
-    public void testBulkUpdateWithoutTargetRunsOnAllSlices() {
+    @Test
+    void bulkUpdateWithoutTargetRunsOnAllSlices() {
         seed();
 
         int updated;
@@ -154,7 +166,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
-    public void testUnknownTargetFails() {
+    @Test
+    void unknownTargetFails() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -164,7 +177,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
                     .executeUpdate();
                 fail("a target that names no active slice must fail");
             } catch (IllegalArgumentException e) {
-                assertTrue(e.getMessage(), e.getMessage().contains("NoSuchSlice"));
+                assertTrue(e.getMessage().contains("NoSuchSlice"), e.getMessage());
             } finally {
                 if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
@@ -176,7 +189,8 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
         }
     }
 
-    public void testUnknownTargetFailsForAQuery() {
+    @Test
+    void unknownTargetFailsForAQuery() {
         seed();
         try (EntityManager em = emf.createEntityManager()) {
             em.createQuery("select p from PObject p")
@@ -184,7 +198,7 @@ public class TestSliceTargetBulkWrite extends SliceTestCase {
                 .getResultList();
             fail("a target that names no active slice must fail");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("NoSuchSlice"));
+            assertTrue(e.getMessage().contains("NoSuchSlice"), e.getMessage());
         }
     }
 }

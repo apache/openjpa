@@ -18,15 +18,15 @@
  */
 package org.apache.openjpa.lib.identifier;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-
-public class TestIdentifiers extends AbstractTestCase {
+class TestIdentifiers extends AbstractTestCase {
 
     @Test
-    public void testIdentifierConversion() {
+    void identifierConversion() {
 
         // Create a naming configs used for testing.
         IdentifierConfiguration defConfig = new IdConfigurationTestImpl();

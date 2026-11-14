@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -32,6 +35,9 @@ import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestBeforeCommit extends AbstractPersistenceTestCase implements TransactionListener {
 
@@ -41,8 +47,8 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         if (emf == null) {
             emf = createEMF(AnEntity.class);
         }
@@ -63,14 +69,15 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
         super.tearDown();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) emf.createEntityManager();
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();
@@ -109,7 +116,8 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.close();
     }
 
-    public void testEmptyTransaction() {
+    @Test
+    void emptyTransaction() {
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) emf.createEntityManager();
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();

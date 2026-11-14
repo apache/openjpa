@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.dynamicschema;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Locale;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +30,8 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -53,14 +58,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Tim McConnell
  * @since 2.0.0
  */
-public class TestDynamicSchemas extends SingleEMFTestCase {
+class TestDynamicSchemas extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     }
 
 
-    public void testDerbyDynamicSchema() {
+    @Test
+    void derbyDynamicSchema() {
         OpenJPAEntityManagerFactorySPI derbyEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -72,7 +78,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testDB2DynamicSchema() {
+    @Test
+    void db2DynamicSchema() {
         OpenJPAEntityManagerFactorySPI db2EMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -84,7 +91,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testOracleDynamicSchema() {
+    @Test
+    void oracleDynamicSchema() {
         OpenJPAEntityManagerFactorySPI oracleEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -96,7 +104,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testAccessDynamicSchema() {
+    @Test
+    void accessDynamicSchema() {
         OpenJPAEntityManagerFactorySPI accessEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -108,7 +117,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testSQLServerDynamicSchema() {
+    @Test
+    void sqlServerDynamicSchema() {
         OpenJPAEntityManagerFactorySPI sqlserverEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -120,7 +130,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testMariaDBDynamicSchema() {
+    @Test
+    void mariaDBDynamicSchema() {
         OpenJPAEntityManagerFactorySPI mysqlEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -132,7 +143,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testMySQLDynamicSchema() {
+    @Test
+    void mySQLDynamicSchema() {
         OpenJPAEntityManagerFactorySPI mysqlEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -144,7 +156,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testPostgresDynamicSchema() {
+    @Test
+    void postgresDynamicSchema() {
         OpenJPAEntityManagerFactorySPI postgresEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -156,7 +169,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testInformixDynamicSchema() {
+    @Test
+    void informixDynamicSchema() {
         OpenJPAEntityManagerFactorySPI informixEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -168,7 +182,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testSybaseDynamicSchema() {
+    @Test
+    void sybaseDynamicSchema() {
         OpenJPAEntityManagerFactorySPI sybaseEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -180,7 +195,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
-    public void testFirebirdDynamicSchema() {
+    @Test
+    void firebirdDynamicSchema() {
         OpenJPAEntityManagerFactorySPI firebirdEMF =
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL",
@@ -234,8 +250,8 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
         for (Column column : columns) {
             assertTrue(column.getName().length() > 0);
             assertTrue(column.getName().length() <= dict.maxColumnNameLength);
-            assertFalse("Column" + column.getName(), dict.getInvalidColumnWordSet().
-                contains(column.getName().toUpperCase(Locale.ROOT)));
+            assertFalse(dict.getInvalidColumnWordSet().
+                contains(column.getName().toUpperCase(Locale.ROOT)), "Column" + column.getName());
         }
     }
 }

@@ -17,22 +17,27 @@
  * under the License.
  */
 package org.apache.openjpa.jdbc.sql.identifier;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test operations on DBIdentifier and QualifiedDBIdentifier.
  *
  */
-public class TestDBIdentifiers {
+class TestDBIdentifiers {
 
     @Test
-    public void testSchemaOps() {
+    void schemaOps() {
         // Use a schema name with punctuation.  It will get normalized with
         // delimiters.
         QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("my.schema"));
@@ -40,8 +45,8 @@ public class TestDBIdentifiers {
         assertTrue(DBIdentifier.equal(p1, s1));
         assertEquals("\"my.schema\"", p1.getName());
         assertEquals("\"my.schema\"", s1.getName());
-        assertEquals(p1.getType(), DBIdentifierType.SCHEMA);
-        assertEquals(s1.getType(), DBIdentifierType.SCHEMA);
+        assertEquals(DBIdentifierType.SCHEMA, p1.getType());
+        assertEquals(DBIdentifierType.SCHEMA, s1.getType());
         assertFalse(s1 instanceof QualifiedDBIdentifier);
 
         QualifiedDBIdentifier p2 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("SCHEMA"));
@@ -49,14 +54,14 @@ public class TestDBIdentifiers {
         assertFalse(DBIdentifier.equal(p2, s2));
         assertEquals("SCHEMA", p2.getName());
         assertEquals("SCHEMA2", s2.getName());
-        assertEquals(p2.getType(), DBIdentifierType.SCHEMA);
-        assertEquals(s2.getType(), DBIdentifierType.SCHEMA);
-        assertTrue(p2 instanceof QualifiedDBIdentifier);
+        assertEquals(DBIdentifierType.SCHEMA, p2.getType());
+        assertEquals(DBIdentifierType.SCHEMA, s2.getType());
+        assertInstanceOf(QualifiedDBIdentifier.class, p2);
         assertFalse(s2 instanceof QualifiedDBIdentifier);
     }
 
     @Test
-    public void testTableOps() {
+    void tableOps() {
         DBIdentifier name = DBIdentifier.newTable("table");
         assertEquals("table", name.getName());
 
@@ -101,20 +106,20 @@ public class TestDBIdentifiers {
             DBIdentifier.newTable("\"my table\""));
         QualifiedDBIdentifier p3 = QualifiedDBIdentifier.newPath(DBIdentifier.newSchema("schema"),
             DBIdentifier.newTable("my_table"));
-        assertTrue(p1.equals(p2));
-        assertFalse(p1.equals(p3));
-        assertFalse(p2.equals(p3));
+        assertEquals(p1, p2);
+        assertNotEquals(p1, p3);
+        assertNotEquals(p2, p3);
         assertFalse(p1.equals(null));
-        assertFalse(p1.equals(DBIdentifier.NULL));
+        assertNotEquals(DBIdentifier.NULL, p1);
     }
 
     @Test
-    public void testColumnOps() {
+    void columnOps() {
 
         DBIdentifier c0 = DBIdentifier.newColumn("\"col.1\"");
         assertEquals("\"col.1\"", c0.getName());
-        assertTrue (c0 instanceof QualifiedDBIdentifier);
-        assertEquals(c0.getType(), DBIdentifierType.COLUMN);
+        assertInstanceOf(QualifiedDBIdentifier.class, c0);
+        assertEquals(DBIdentifierType.COLUMN, c0.getType());
 
         // Test 3 part column name with mixed delimiting
         DBIdentifier c1 = DBIdentifier.newColumn("column 1");
@@ -134,7 +139,7 @@ public class TestDBIdentifiers {
     }
 
     @Test
-    public void testDBIdentifierOps() {
+    void dBIdentifierOps() {
 
         // Test truncate
         DBIdentifier n1 = DBIdentifier.newColumn("abcdefgh");
@@ -164,7 +169,7 @@ public class TestDBIdentifiers {
         // Test clone
         DBIdentifier cn1 = DBIdentifier.newTable("sch.tbl");
         DBIdentifier cn2 = cn1.clone();
-        assertFalse(cn1 == cn2);
+        assertNotSame(cn1, cn2);
         assertEquals(cn1.getName(), cn2.getName());
         assertEquals(cn1, cn2);
 
@@ -193,7 +198,7 @@ public class TestDBIdentifiers {
     }
 
     @Test
-    public void testPathOps() {
+    void pathOps() {
 
         // Test equals operator with case insensitive names
         QualifiedDBIdentifier p1 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),
@@ -220,15 +225,15 @@ public class TestDBIdentifiers {
         DBIdentifier n3 = DBIdentifier.newColumn("Column_1");
         p6.setPath(n1);
         assertEquals("Schema_1", n1.getName());
-        assertEquals(n1.getType(), DBIdentifierType.SCHEMA);
+        assertEquals(DBIdentifierType.SCHEMA, n1.getType());
 
         p6.setPath(n2);
         assertEquals("Table_1", n2.getName());
-        assertEquals(n2.getType(), DBIdentifierType.TABLE);
+        assertEquals(DBIdentifierType.TABLE, n2.getType());
 
         p6.setPath(n3);
         assertEquals("Column_1", n3.getName());
-        assertEquals(n3.getType(), DBIdentifierType.COLUMN);
+        assertEquals(DBIdentifierType.COLUMN, n3.getType());
 
         // Test isDelimited method
         QualifiedDBIdentifier p7 = QualifiedDBIdentifier.newPath(DBIdentifier.newTable("MyTable"),

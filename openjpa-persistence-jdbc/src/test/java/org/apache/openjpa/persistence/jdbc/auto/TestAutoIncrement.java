@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.auto;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
@@ -25,10 +29,13 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestAutoIncrement extends SingleEMTestCase {
+class TestAutoIncrement extends SingleEMTestCase {
     boolean disabled = false;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, AutoIncrementEntity.class);
         DBDictionary dic = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -44,7 +51,8 @@ public class TestAutoIncrement extends SingleEMTestCase {
         createZeroIdEntity();
     }
 
-    public void test() {
+    @Test
+    void test() {
         if (disabled) {
             return;
         }
@@ -52,13 +60,14 @@ public class TestAutoIncrement extends SingleEMTestCase {
         AutoIncrementEntity e1 = em.find(AutoIncrementEntity.class, 0);
         assertNotNull(e1);
         AutoIncrementEntity e2 = new AutoIncrementEntity();
-        assertEquals(null, e2.getId());
+        assertNull(e2.getId());
         em.persist(e2);
         em.getTransaction().commit();
         assertNotEquals(null, e2.getId());
     }
 
-    public void testMergeNewEntity() {
+    @Test
+    void mergeNewEntity() {
         if (disabled) {
             return;
         }

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +37,8 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestFakeRemoteEvents extends AbstractTestCase {
@@ -46,16 +51,17 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
 
     private static RemoteCommitProviderTestImpl currentProvider;
 
-    public TestFakeRemoteEvents(String s) {
-        super(s, "eventcactusapp");
+    public TestFakeRemoteEvents() {
+        super("eventcactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
-    public void testListener() {
+    @Test
+    void listener() {
 
         Map propsMap = new HashMap();
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -94,8 +100,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.updated.size() == 0);
-        assertTrue(transactionListener.deleted.size() == 0);
+        assertEquals(0, transactionListener.updated.size());
+        assertEquals(0, transactionListener.deleted.size());
 
         // simulate modifications
         ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration()
@@ -111,8 +117,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.added.size() == 0);
-        assertTrue(transactionListener.deleted.size() == 0);
+        assertEquals(0, transactionListener.added.size());
+        assertEquals(0, transactionListener.deleted.size());
 
         // simulate a delete
         ((OpenJPAEntityManagerFactorySPI) factory).getConfiguration()
@@ -128,11 +134,12 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(transactionListener.added.size() == 0);
-        assertTrue(transactionListener.updated.size() == 0);
+        assertEquals(0, transactionListener.added.size());
+        assertEquals(0, transactionListener.updated.size());
     }
 
-    public void testProvider() {
+    @Test
+    void provider() {
         RemoteCommitProviderTestImpl provider;
         OpenJPAEntityManager pm;
         synchronized (currentProviderLock) {
@@ -162,8 +169,8 @@ public class TestFakeRemoteEvents extends AbstractTestCase {
             }
         }
         assertTrue(pass);
-        assertTrue(provider.updated.size() == 0);
-        assertTrue(provider.deleted.size() == 0);
+        assertEquals(0, provider.updated.size());
+        assertEquals(0, provider.deleted.size());
     }
 
     boolean equals(Object added, Object oid) {

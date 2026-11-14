@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,12 +34,12 @@ import java.util.List;
 import java.util.MissingResourceException;
 
 import org.apache.openjpa.lib.util.Options;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
+class TestAnchorParsing {
 
-public class TestAnchorParsing extends TestCase {
-
-    public void testFQAnchor() {
+    @Test
+    void fQAnchor() {
         String fqLoc = "META-INF/persistence.xml#test";
         Options opts = new Options();
         opts.setProperty("p", fqLoc);
@@ -44,11 +50,13 @@ public class TestAnchorParsing extends TestCase {
         assertEquals(fqLoc, locs.get(0));
     }
 
-    public void testNoResource() {
+    @Test
+    void noResource() {
         allHelper(null);
     }
 
-    public void testNoAnchor() {
+    @Test
+    void noAnchor() {
         allHelper("META-INF/persistence.xml");
     }
 
@@ -69,7 +77,8 @@ public class TestAnchorParsing extends TestCase {
         assertTrue(locs.contains("META-INF/persistence.xml#invalid"));
     }
 
-    public void testProductDerivationsLoadResource() {
+    @Test
+    void productDerivationsLoadResource() {
         ProductDerivations.load(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml",
             "foo", null);
@@ -97,7 +106,8 @@ public class TestAnchorParsing extends TestCase {
         }
     }
 
-    public void testNonexistantResourceLoad() {
+    @Test
+    void nonexistantResourceLoad() {
         try {
             ProductDerivations.load("nonexistant-resource", null, null);
             fail("resource 'nonexistant-resource' should not exist");
@@ -106,7 +116,8 @@ public class TestAnchorParsing extends TestCase {
         }
     }
 
-    public void testProductDerivationsLoadFile() throws IOException {
+    @Test
+    void productDerivationsLoadFile() throws Exception {
         File validFile = resourceToTemporaryFile(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml");
 
@@ -130,7 +141,8 @@ public class TestAnchorParsing extends TestCase {
         validFile = null;
     }
 
-    public void testNonexistantFileLoad() {
+    @Test
+    void nonexistantFileLoad() {
         File f = new File("this-should-not-exist");
         assertFalse(f.exists());
         try {

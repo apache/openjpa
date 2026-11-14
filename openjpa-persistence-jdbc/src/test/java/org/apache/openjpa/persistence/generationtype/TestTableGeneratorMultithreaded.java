@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,9 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
     public final int ALLOC_SIZE = 100000;
@@ -36,7 +41,7 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
     public final int LOOPS = 100000;
     public final int THREADS = 5;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Dog.class, CLEAR_TABLES
         // , "openjpa.Log", "SQL=trace", "openjpa.ConnectionFactoryProperties","PrintParameters=true"
@@ -49,12 +54,13 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
 
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
-    public void testAllIdsAreUsed() throws Exception {
+    @Test
+    void allIdsAreUsed() throws Exception {
         List<WorkerThread> threads = new ArrayList<>();
         for (int i = 0; i < THREADS; i++) {
             threads.add(new WorkerThread(emf));

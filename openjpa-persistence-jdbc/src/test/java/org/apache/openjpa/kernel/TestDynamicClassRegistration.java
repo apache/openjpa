@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 
 import jakarta.persistence.EntityManager;
@@ -31,28 +35,31 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="excluded")
-public class TestDynamicClassRegistration
+@AllowFailure(message = "excluded")
+class TestDynamicClassRegistration
     extends AbstractCachedEMFTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf1;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
         emf1 = createNamedEMF("empty-pu");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         clear(emf1);
         closeEMF(emf1);
     }
 
-    public void testEnhancedDynamicClassRegistration()
-        throws ClassNotFoundException {
+    @Test
+    void enhancedDynamicClassRegistration()
+        throws Exception {
         assertTrue(
             PersistenceCapable.class.isAssignableFrom(SimpleEntity.class));
 
@@ -68,7 +75,8 @@ public class TestDynamicClassRegistration
         em.close();
     }
 
-    public void testUnenhancedDynamicClassRegistration() {
+    @Test
+    void unenhancedDynamicClassRegistration() {
         assertFalse(PersistenceCapable.class.isAssignableFrom(
             UnenhancedFieldAccess.class));
 

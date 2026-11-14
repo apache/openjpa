@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.sql;
 import java.lang.reflect.Proxy;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,14 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class TestDBDictionary {
+class TestDBDictionary {
     @Test
-    public void snakeCase() {
+    void snakeCase() {
         final DBDictionary dictionary = new DBDictionary();
         assertEquals("foo", dictionary.toSnakeCase("foo"));
         assertEquals("foo_bar", dictionary.toSnakeCase("fooBar"));
@@ -51,7 +50,7 @@ public class TestDBDictionary {
      * rounded to the dictionary's datePrecision (OPENJPA-3034).
      */
     @Test
-    public void timestampPrecision() {
+    void timestampPrecision() {
         final DBDictionary dictionary = new DBDictionary();
         assertEquals(dictionary.datePrecision, dictionary.getTimestampPrecision(null));
         Column col = new Column();
@@ -59,7 +58,7 @@ public class TestDBDictionary {
         int expected = 1_000_000_000;
         for (int digits = 0; digits <= 9; digits++) {
             col.setPrecision(digits);
-            assertEquals("digits " + digits, expected, dictionary.getTimestampPrecision(col));
+            assertEquals(expected, dictionary.getTimestampPrecision(col), "digits " + digits);
             expected /= 10;
         }
         // not a number of fractional digits, e.g. the precision of a procedure parameter
@@ -72,7 +71,7 @@ public class TestDBDictionary {
      * names to upper case, then in lower case (the former fallback) and finally in upper case.
      */
     @Test
-    public void storedProcedureNameCandidates() {
+    void storedProcedureNameCandidates() {
         DBDictionary dict = new DBDictionary();
         dict.schemaCase = DBDictionary.SCHEMA_CASE_UPPER;
         assertEquals(Arrays.asList("GetEmp", "GETEMP", "getemp"), dict.getStoredProcedureNameCandidates("GetEmp"));
@@ -91,7 +90,7 @@ public class TestDBDictionary {
      * procedure is not cached, so a later lookup queries the database again.
      */
     @Test
-    public void unknownStoredProcedureClosesResultSets() throws SQLException {
+    void unknownStoredProcedureClosesResultSets() throws Exception {
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(new JDBCConfigurationImpl());
         dict.schemaCase = DBDictionary.SCHEMA_CASE_UPPER;

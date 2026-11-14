@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * Separate testcase from TestEntityListeners to avoid the declaration of
@@ -29,7 +34,7 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
 
     private static final int MSC_LISTENER_ENTITY = 4;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;
@@ -46,7 +51,8 @@ public class TestMSCEntityListeners extends SingleEMFTestCase {
         return "msclistener-pu";
     }
 
-    public void testMSCEntityListeners() {
+    @Test
+    void mscEntityListeners() {
         helper(MSC_LISTENER_ENTITY);
     }
 

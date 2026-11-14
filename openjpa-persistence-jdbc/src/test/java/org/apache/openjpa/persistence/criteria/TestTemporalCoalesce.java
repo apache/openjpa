@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -35,15 +37,18 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Temporal values used as the fallback of a COALESCE or as a CASE result in the
  * selection and ordering of a criteria query must not be written unquoted into
  * the SQL (OPENJPA-2935).
  */
-public class TestTemporalCoalesce extends SingleEMFTestCase {
+class TestTemporalCoalesce extends SingleEMFTestCase {
     private CriteriaBuilder cb;
 
+    @BeforeEach
     @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, TemporalHolder.class);
@@ -66,36 +71,44 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
         }
     }
 
-    public void testTimestamp() {
+    @Test
+    void timestamp() {
         verify("due", Timestamp.valueOf("2025-04-08 11:56:02.0"), Timestamp.valueOf("2020-01-02 03:04:05.0"));
     }
 
-    public void testSqlDate() {
+    @Test
+    void sqlDate() {
         verify("dueDate", Date.valueOf("2025-04-08"), Date.valueOf("2020-01-02"));
     }
 
-    public void testSqlTime() {
+    @Test
+    void sqlTime() {
         verify("dueTime", Time.valueOf("11:56:02"), Time.valueOf("03:04:05"));
     }
 
-    public void testUtilDate() {
+    @Test
+    void utilDate() {
         verify("dueUtilDate", new java.util.Date(Timestamp.valueOf("2025-04-08 11:56:02.0").getTime()),
                 new java.util.Date(Timestamp.valueOf("2020-01-02 03:04:05.0").getTime()));
     }
 
-    public void testLocalDateTime() {
+    @Test
+    void localDateTime() {
         verify("dueLocalDateTime", LocalDateTime.of(2025, 4, 8, 11, 56, 2), LocalDateTime.of(2020, 1, 2, 3, 4, 5));
     }
 
-    public void testLocalDate() {
+    @Test
+    void localDate() {
         verify("dueLocalDate", LocalDate.of(2025, 4, 8), LocalDate.of(2020, 1, 2));
     }
 
-    public void testLocalTime() {
+    @Test
+    void localTime() {
         verify("dueLocalTime", LocalTime.of(11, 56, 2), LocalTime.of(3, 4, 5));
     }
 
-    public void testTimestampInCase() {
+    @Test
+    void timestampInCase() {
         Timestamp fallback = Timestamp.valueOf("2020-01-02 03:04:05.0");
         for (boolean limit : new boolean[] { false, true }) {
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -114,7 +127,8 @@ public class TestTemporalCoalesce extends SingleEMFTestCase {
      * A value that is not a date, time or timestamp and has no literal form is bound,
      * not written as its unquoted toString().
      */
-    public void testCharacter() {
+    @Test
+    void character() {
         for (boolean limit : new boolean[] { false, true }) {
             CriteriaQuery<Tuple> cq = cb.createTupleQuery();
             Root<TemporalHolder> root = cq.from(TemporalHolder.class);

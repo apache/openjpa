@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.jdbc.procedure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -27,9 +33,12 @@ import jakarta.persistence.StoredProcedureQuery;
 
 import org.apache.openjpa.jdbc.procedure.derby.Procedures;
 import org.apache.openjpa.jdbc.procedure.entity.EntityWithStoredProcedure;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for StoredProcedureQuery fixes:
@@ -39,13 +48,16 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
-
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
               "openjpa.DynamicEnhancementAgent", "false",
               EntityWithStoredProcedure.class, EntityWithStoredProcedure.Mapping2.class);
-        setSupportedDatabases(DerbyDictionary.class);
     }
 
     /**
@@ -53,7 +65,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * for a position that does not correspond to any registered parameter.
      * Uses positional parameters (like the TCK does).
      */
-    public void testGetOutputParameterValueInvalidPosition() throws Exception {
+    @Test
+    void getOutputParameterValueInvalidPosition() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XTWO", true);
@@ -89,7 +102,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * when the parameter belongs to a different query.
      * Uses positional parameters (like the TCK does).
      */
-    public void testGetParameterValueFromDifferentQuery() throws Exception {
+    @Test
+    void getParameterValueFromDifferentQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XINOUT", true);
@@ -130,7 +144,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Test that getSingleResult() throws NoResultException directly
      * (not wrapped in PersistenceException) when no results are returned.
      */
-    public void testGetSingleResultNoResultException() throws Exception {
+    @Test
+    void getSingleResultNoResultException() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE NORESULT", true);
@@ -154,7 +169,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Test that getSingleResult() throws NonUniqueResultException directly
      * (not wrapped in PersistenceException) when multiple results are returned.
      */
-    public void testGetSingleResultNonUniqueResultException() throws Exception {
+    @Test
+    void getSingleResultNonUniqueResultException() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             // Insert test data
@@ -190,7 +206,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * Test that a named parameter explicitly bound to null is not replaced by
      * the value registered under the position of that parameter.
      */
-    public void testExplicitNullNamedParameterWinsOverPosition() throws Exception {
+    @Test
+    void explicitNullNamedParameterWinsOverPosition() throws Exception {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
 
@@ -220,7 +237,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
     /**
      * Test that IN parameters following an OUT parameter are bound at their position.
      */
-    public void testInParameterAfterOutParameter() throws Exception {
+    @Test
+    void inParameterAfterOutParameter() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);
@@ -246,7 +264,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * The value of a numeric OUT parameter is returned in the numeric type the parameter was registered
      * with, as databases report it in their own type (e.g. a BigDecimal for an INTEGER on Oracle).
      */
-    public void testOutParameterHasRegisteredNumericType() throws Exception {
+    @Test
+    void outParameterHasRegisteredNumericType() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);
@@ -272,7 +291,8 @@ public class TestStoredProcedureQueryFixes extends SingleEMFTestCase {
      * A numeric OUT value that does not fit into the registered type is returned unchanged instead of being
      * truncated.
      */
-    public void testOutParameterIsNotNarrowedWithLoss() throws Exception {
+    @Test
+    void outParameterIsNotNarrowedWithLoss() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             exec(em, "DROP PROCEDURE XSUM", true);

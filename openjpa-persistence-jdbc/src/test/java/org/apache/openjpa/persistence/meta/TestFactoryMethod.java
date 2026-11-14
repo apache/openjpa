@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
@@ -30,6 +32,8 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.MetaTest7;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>
@@ -42,12 +46,12 @@ public class TestFactoryMethod extends AbstractTestCase {
     private MetaDataRepository _repos = null;
     private ClassMetaData _metaTest7 = null;
 
-    public TestFactoryMethod(String test) {
-        super(test, "metacactusapp");
+    public TestFactoryMethod() {
+        super("metacactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         _repos = getRepository();
         _metaTest7 = _repos.getMetaData(MetaTest7.class, null, true);
     }
@@ -64,7 +68,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * Tests that getFactoryMethod() identifies the method using both the name and the type. This is required when the
      * factory method is overloaded - i.e. same name but different types.
      */
-    public void testFactoryMatchesByType() {
+    @Test
+    void factoryMatchesByType() {
         FieldMetaData fieldMetaData = _metaTest7.getField("status");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -74,9 +79,9 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            String.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(String.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 
     /**
@@ -84,7 +89,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * factory method is overloaded - i.e. same name but different types. This tests that an Externalizer returning int
      * can be matched with a Factory taking long (a widening conversion).
      */
-    public void testFactoryMatchesByTypeWidening() {
+    @Test
+    void factoryMatchesByTypeWidening() {
         FieldMetaData fieldMetaData = _metaTest7.getField("intLongStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -94,9 +100,9 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            long.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(long.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 
     /**
@@ -104,7 +110,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * factory method is overloaded - i.e. same name but different types. This tests that an Externalizer returning int
      * can be matched with a Factory taking Integer (a boxing conversion).
      */
-    public void testFactoryMatchesByTypeBoxing() {
+    @Test
+    void factoryMatchesByTypeBoxing() {
         FieldMetaData fieldMetaData = _metaTest7.getField("intIntegerStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -114,9 +121,9 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            Integer.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(Integer.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 
     /**
@@ -124,7 +131,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * factory method is overloaded - i.e. same name but different types. This tests that an Externalizer returning
      * Integer can be matched with a Factory taking Integer (an identity conversion).
      */
-    public void testFactoryMatchesByTypeWrapper() {
+    @Test
+    void factoryMatchesByTypeWrapper() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerIntegerStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -134,9 +142,9 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            Integer.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(Integer.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 
     /**
@@ -144,7 +152,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * factory method is overloaded - i.e. same name but different types. This tests that an Externalizer returning
      * Integer can be matched with a Factory taking int (an unboxing conversion).
      */
-    public void testFactoryMatchesByTypeUnboxing() {
+    @Test
+    void factoryMatchesByTypeUnboxing() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerIntStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -154,9 +163,9 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            int.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(int.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 
     /**
@@ -165,7 +174,8 @@ public class TestFactoryMethod extends AbstractTestCase {
      * Integer can be matched with a Factory taking long (an unboxing conversion following by a widening primitive
      * conversion).
      */
-    public void testFactoryMatchesByTypeUnboxingWidening() {
+    @Test
+    void factoryMatchesByTypeUnboxingWidening() {
         FieldMetaData fieldMetaData = _metaTest7.getField("integerLongStatus");
 
         Member factoryMember = fieldMetaData.getFactoryMethod();
@@ -175,8 +185,8 @@ public class TestFactoryMethod extends AbstractTestCase {
         Method factoryMethod = (Method) factoryMember;
 
         Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-        assertEquals("Both valueOf methods take just 1 parameter", 1, parameterTypes.length);
-        assertEquals("Need to match the type of the underlying field " + "or the factory method will fail when called",
-            long.class, parameterTypes[0]);
+        assertEquals(1, parameterTypes.length, "Both valueOf methods take just 1 parameter");
+        assertEquals(long.class,
+            parameterTypes[0], "Need to match the type of the underlying field " + "or the factory method will fail when called");
     }
 }

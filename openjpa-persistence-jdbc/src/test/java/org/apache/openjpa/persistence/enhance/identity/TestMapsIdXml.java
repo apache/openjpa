@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMapsIdXml extends SingleEMFTestCase {
     public int numEmployees = 4;
@@ -38,7 +42,7 @@ public class TestMapsIdXml extends SingleEMFTestCase {
     public int eId1 = 1;
     public int dId1 = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES);
     }
@@ -52,7 +56,8 @@ public class TestMapsIdXml extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 1, case(b)
      */
-    public void testMapsId1Xml() {
+    @Test
+    void mapsId1Xml() {
         createObj1Xml();
         findObj1Xml();
         queryObj1Xml();

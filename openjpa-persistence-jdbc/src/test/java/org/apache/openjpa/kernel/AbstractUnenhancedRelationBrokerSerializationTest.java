@@ -18,15 +18,20 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.UnenhancedSubtype;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.util.ImplHelper;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractUnenhancedRelationBrokerSerializationTest<T>
     extends AbstractBrokerSerializationTest<T> {
 
-    public void testNewUnenhancedSMsRegisteredGlobally() {
+    @Test
+    void newUnenhancedSMsRegisteredGlobally() {
         OpenJPAEntityManager em = emf.createEntityManager();
         OpenJPAEntityManager em2 = null;
         try {

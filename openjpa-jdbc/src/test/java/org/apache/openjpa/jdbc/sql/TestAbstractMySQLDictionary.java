@@ -19,11 +19,11 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -35,14 +35,14 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The defaults that {@link MySQLDictionary} and {@link MariaDBDictionary}
  * share through {@link AbstractMySQLDictionary} and those they keep apart,
  * and the words that MySQL 8.0 and later and MariaDB reserve (OPENJPA-3074).
  */
-public class TestAbstractMySQLDictionary {
+class TestAbstractMySQLDictionary {
 
     private static final List<String> MYSQL_8_WORDS = List.of("RANK", "DENSE_RANK", "ROW_NUMBER", "LAG",
         "LEAD", "GROUPS", "WINDOW", "OVER", "CUME_DIST", "PERCENT_RANK", "NTILE", "FIRST_VALUE", "LAST_VALUE",
@@ -66,30 +66,30 @@ public class TestAbstractMySQLDictionary {
         "SHOW", "USE", "LONG", "SIGNAL");
 
     @Test
-    public void testSharedDefaults() {
+    void sharedDefaults() {
         for (AbstractMySQLDictionary dict : List.of(new MySQLDictionary(), new MariaDBDictionary())) {
             String name = dict.getClass().getSimpleName();
-            assertEquals(name, "innodb", dict.tableType);
-            assertTrue(name, dict.useClobs);
-            assertFalse(name, dict.driverDeserializesBlobs);
-            assertFalse(name, dict.optimizeMultiTableDeletes);
-            assertEquals(name, "`", dict.getLeadingDelimiter());
-            assertEquals(name, "SELECT NOW()", dict.validationSQL);
-            assertEquals(name, "DATETIME", dict.timestampTypeName);
-            assertEquals(name, "TEXT", dict.clobTypeName);
-            assertEquals(name, "SIGNED", dict.longCastTypeName);
-            assertEquals(name, "CHAR(0)", dict.searchStringNoEscape);
-            assertEquals(name, 64, dict.maxColumnNameLength);
-            assertTrue(name, dict.backslashEscapesInStringLiterals);
-            assertTrue(name, dict.supportsAutoAssign);
-            assertFalse(name, dict.storeCharsAsNumbers);
-            assertFalse(name, dict.supportsXMLColumn);
-            assertEquals(name, 0, dict.dateFractionDigits);
+            assertEquals("innodb", dict.tableType, name);
+            assertTrue(dict.useClobs, name);
+            assertFalse(dict.driverDeserializesBlobs, name);
+            assertFalse(dict.optimizeMultiTableDeletes, name);
+            assertEquals("`", dict.getLeadingDelimiter(), name);
+            assertEquals("SELECT NOW()", dict.validationSQL, name);
+            assertEquals("DATETIME", dict.timestampTypeName, name);
+            assertEquals("TEXT", dict.clobTypeName, name);
+            assertEquals("SIGNED", dict.longCastTypeName, name);
+            assertEquals("CHAR(0)", dict.searchStringNoEscape, name);
+            assertEquals(64, dict.maxColumnNameLength, name);
+            assertTrue(dict.backslashEscapesInStringLiterals, name);
+            assertTrue(dict.supportsAutoAssign, name);
+            assertFalse(dict.storeCharsAsNumbers, name);
+            assertFalse(dict.supportsXMLColumn, name);
+            assertEquals(0, dict.dateFractionDigits, name);
         }
     }
 
     @Test
-    public void testDefaultsThatDiffer() {
+    void defaultsThatDiffer() {
         MySQLDictionary mysql = new MySQLDictionary();
         MariaDBDictionary mariadb = new MariaDBDictionary();
         assertEquals("MySQL", mysql.platform);
@@ -121,15 +121,15 @@ public class TestAbstractMySQLDictionary {
      * dictionaries.
      */
     @Test
-    public void testPublicFieldsAreConfigurable() {
+    void publicFieldsAreConfigurable() {
         String props = "TableType=MyISAM, UseClobs=false, DriverDeserializesBlobs=true, OptimizeMultiTableDeletes=true";
         for (AbstractMySQLDictionary dict : List.of(new MySQLDictionary(), new MariaDBDictionary())) {
             String name = dict.getClass().getSimpleName();
             Configurations.configureInstance(dict, new JDBCConfigurationImpl(), props, "DBDictionary");
-            assertEquals(name, "MyISAM", dict.tableType);
-            assertFalse(name, dict.useClobs);
-            assertTrue(name, dict.driverDeserializesBlobs);
-            assertTrue(name, dict.optimizeMultiTableDeletes);
+            assertEquals( "MyISAM", dict.tableType, name);
+            assertFalse(dict.useClobs, name);
+            assertTrue(dict.driverDeserializesBlobs, name);
+            assertTrue(dict.optimizeMultiTableDeletes, name);
         }
     }
 
@@ -138,7 +138,7 @@ public class TestAbstractMySQLDictionary {
      * overrides the methods that moved to the common superclass.
      */
     @Test
-    public void testUserSubclass() {
+    void userSubclass() {
         MySQLDictionary dict = new MySQLDictionary() {
             {
                 tableType = "MyISAM";
@@ -154,7 +154,7 @@ public class TestAbstractMySQLDictionary {
         Table table = new Table(DBIdentifier.newTable("T1"), null);
         table.addColumn(DBIdentifier.newColumn("C1")).setJavaType(JavaTypes.INT);
         String sql = dict.getCreateTableSQL(table)[0];
-        assertTrue(sql, sql.endsWith(" ENGINE = MyISAM COMMENT = 'custom'"));
+        assertTrue(sql.endsWith(" ENGINE = MyISAM COMMENT = 'custom'"), sql);
     }
 
     /**
@@ -162,11 +162,11 @@ public class TestAbstractMySQLDictionary {
      * named after such a word keeps its name, quoted.
      */
     @Test
-    public void testMySQL8ReservedWordsAreDelimited() {
+    void mySQL8ReservedWordsAreDelimited() {
         MySQLDictionary dict = configure(new MySQLDictionary(), null);
         for (String word : MYSQL_8_WORDS) {
-            assertTrue(word, dict.getInvalidColumnWordSet().contains(word));
-            assertTrue(word, dict.reservedWordSet.contains(word));
+            assertTrue(dict.getInvalidColumnWordSet().contains(word), word);
+            assertTrue(dict.reservedWordSet.contains(word), word);
         }
         assertEquals("\"rank\"", validColumnName(dict, "rank"));
         assertEquals("\"window\"", validColumnName(dict, "window"));
@@ -186,17 +186,17 @@ public class TestAbstractMySQLDictionary {
      * so that a table named after one of them is delimited as well.
      */
     @Test
-    public void testInvalidColumnWordsAreReservedForTables() {
+    void invalidColumnWordsAreReservedForTables() {
         for (AbstractMySQLDictionary dict : List.of(configure(new MySQLDictionary(), null),
             configure(new MariaDBDictionary(), null))) {
             String name = dict.getClass().getSimpleName();
             for (String word : TABLE_WORDS) {
-                assertTrue(name + " " + word, dict.getInvalidColumnWordSet().contains(word));
-                assertTrue(name + " " + word, dict.reservedWordSet.contains(word));
+                assertTrue(dict.getInvalidColumnWordSet().contains(word), name + " " + word);
+                assertTrue(dict.reservedWordSet.contains(word), name + " " + word);
             }
-            assertEquals(name, "\"Dual\"", validTableName(dict, "Dual"));
-            assertEquals(name, "\"Range\"", validTableName(dict, "Range"));
-            assertEquals(name, "\"limit\"", validColumnName(dict, "limit"));
+            assertEquals("\"Dual\"", validTableName(dict, "Dual"), name);
+            assertEquals("\"Range\"", validTableName(dict, "Range"), name);
+            assertEquals("\"limit\"", validColumnName(dict, "limit"), name);
         }
         assertTrue(configure(new MySQLDictionary(), null).reservedWordSet.contains("NTILE"));
         // MariaDB does not reserve them, so a table keeps its undelimited name
@@ -211,7 +211,7 @@ public class TestAbstractMySQLDictionary {
      * table or column named after such a word keeps its name, quoted.
      */
     @Test
-    public void testMariaDBDelimitsReservedWords() {
+    void mariaDBDelimitsReservedWords() {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
         assertEquals("\"LINEAR\"", validTableName(mariadb, "LINEAR"));
         assertEquals("\"Order\"", validTableName(mariadb, "Order"));
@@ -229,7 +229,7 @@ public class TestAbstractMySQLDictionary {
      * it is built from the name with the <code>0</code> appended.
      */
     @Test
-    public void testNamesBuiltFromADelimitedName() {
+    void namesBuiltFromADelimitedName() {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
         DBIdentifier order = mariadb.getValidTableName(DBIdentifier.newTable("Order"), new Schema());
         assertEquals("\"Order_items\"", DBIdentifier.combine(order, "items").getName());
@@ -249,16 +249,16 @@ public class TestAbstractMySQLDictionary {
      * <code>OFFSET</code> or <code>RETURNING</code>.
      */
     @Test
-    public void testMariaDBReservesOnlySomeOfTheWords() {
+    void mariaDBReservesOnlySomeOfTheWords() {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
         assertEquals("WINDOW", validColumnName(mariadb, "window"));
         assertEquals("WINDOW", validTableName(mariadb, "Window"));
         assertEquals("\"over\"", validColumnName(mariadb, "over"));
         MySQLDictionary mysql = configure(new MySQLDictionary(), null);
         for (String word : MARIADB_WORDS) {
-            assertTrue(word, mariadb.getInvalidColumnWordSet().contains(word));
-            assertTrue(word, mariadb.reservedWordSet.contains(word));
-            assertFalse(word, mysql.getInvalidColumnWordSet().contains(word));
+            assertTrue(mariadb.getInvalidColumnWordSet().contains(word), word);
+            assertTrue(mariadb.reservedWordSet.contains(word), word);
+            assertFalse(mysql.getInvalidColumnWordSet().contains(word), word);
         }
     }
 
@@ -269,11 +269,11 @@ public class TestAbstractMySQLDictionary {
      * as the other reserved words.
      */
     @Test
-    public void testMariaDBReservesFunctionNamesForTables() {
+    void mariaDBReservesFunctionNamesForTables() {
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), null);
         for (String word : List.of("NTILE", "RANK", "NOW", "GROUP_CONCAT", "STDDEV", "COUNT", "MAX")) {
-            assertTrue(word, mariadb.reservedWordSet.contains(word));
-            assertFalse(word, mariadb.getInvalidColumnWordSet().contains(word));
+            assertTrue(mariadb.reservedWordSet.contains(word), word);
+            assertFalse(mariadb.getInvalidColumnWordSet().contains(word), word);
         }
         assertEquals("\"Ntile\"", validTableName(mariadb, "Ntile"));
         assertEquals("\"Rank\"", validTableName(mariadb, "Rank"));
@@ -295,7 +295,7 @@ public class TestAbstractMySQLDictionary {
      * on MySQL; MariaDB appends a <code>0</code> to them again.
      */
     @Test
-    public void testCompatibilityKeepsTheEarlierNames() {
+    void compatibilityKeepsTheEarlierNames() {
         MySQLDictionary mysql = configure(new MySQLDictionary(), "UpdatedReservedWords=false");
         assertEquals("RANK", validColumnName(mysql, "rank"));
         assertEquals("WINDOW", validColumnName(mysql, "window"));
@@ -309,8 +309,8 @@ public class TestAbstractMySQLDictionary {
         assertEquals("\"ROWS\"", validTableName(mysql, "ROWS"));
         assertEquals("\"LIBRARY\"", validTableName(mysql, "LIBRARY"));
         for (String word : TABLE_WORDS) {
-            assertTrue(word, mysql.getInvalidColumnWordSet().contains(word));
-            assertFalse(word, mysql.reservedWordSet.contains(word));
+            assertTrue(mysql.getInvalidColumnWordSet().contains(word), word);
+            assertFalse(mysql.reservedWordSet.contains(word), word);
         }
 
         MariaDBDictionary mariadb = configure(new MariaDBDictionary(), "UpdatedReservedWords=false");
@@ -323,12 +323,12 @@ public class TestAbstractMySQLDictionary {
         assertEquals("DUAL", validTableName(mariadb, "Dual"));
         assertEquals("ORDER0", validTableName(mariadb, "Order"));
         for (String word : MARIADB_WORDS) {
-            assertFalse(word, mariadb.getInvalidColumnWordSet().contains(word));
-            assertFalse(word, mariadb.reservedWordSet.contains(word));
+            assertFalse(mariadb.getInvalidColumnWordSet().contains(word), word);
+            assertFalse(mariadb.reservedWordSet.contains(word), word);
         }
         for (String word : TABLE_WORDS) {
-            assertTrue(word, mariadb.getInvalidColumnWordSet().contains(word));
-            assertFalse(word, mariadb.reservedWordSet.contains(word));
+            assertTrue(mariadb.getInvalidColumnWordSet().contains(word), word);
+            assertFalse(mariadb.reservedWordSet.contains(word), word);
         }
     }
 
@@ -341,7 +341,7 @@ public class TestAbstractMySQLDictionary {
      * (OPENJPA-3076).
      */
     @Test
-    public void testReservedWordsAreDelimitedPerDictionary() {
+    void reservedWordsAreDelimitedPerDictionary() {
         for (boolean mysqlFirst : new boolean[] {true, false}) {
             MySQLDictionary mysql = mysqlFirst ? configure(new MySQLDictionary(), null) : null;
             DerbyDictionary derby = configure(new DerbyDictionary(), null);
@@ -384,7 +384,7 @@ public class TestAbstractMySQLDictionary {
      * word (OPENJPA-3076).
      */
     @Test
-    public void testNormalize() {
+    void normalize() {
         MySQLDictionary mysql = configure(new MySQLDictionary(), null);
 
         DBIdentifier plain = DBIdentifier.newTable("Item");

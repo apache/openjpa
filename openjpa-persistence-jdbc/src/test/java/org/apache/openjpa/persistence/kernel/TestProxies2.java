@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -27,24 +29,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.lib.util.collections.ComparableComparator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
 import org.apache.openjpa.util.Proxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestProxies2 extends BaseKernelTest {
+@DynamicEnhancementTest
+class TestProxies2 extends BaseKernelTest {
 
     private int _oid = 0;
     private Date _date = null;
     private java.sql.Date _sqlDate = null;
     private java.sql.Timestamp _timestamp = null;
 
-    public TestProxies2(String casename) {
-        super(casename);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(ProxiesPC.class);
 
         OpenJPAEntityManager pm = getPM(false, false);
@@ -93,7 +95,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testStringSet() {
+    @Test
+    void stringSet() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -122,16 +125,17 @@ public class TestProxies2 extends BaseKernelTest {
 
         set = pc.getStringSet();
         assertEquals(4, set.size());
-        assertTrue(!set.contains("val1"));
+        assertFalse(set.contains("val1"));
         assertTrue(set.contains("val2"));
         assertTrue(set.contains("val3"));
-        assertTrue(!set.contains("val4"));
+        assertFalse(set.contains("val4"));
         assertTrue(set.contains("val5"));
         assertTrue(set.contains(null));
         endEm(pm);
     }
 
-    public void testStringMap() {
+    @Test
+    void stringMap() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -166,7 +170,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testProxySet() {
+    @Test
+    void proxySet() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -213,14 +218,15 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testProxyMap() {
+    @Test
+    void proxyMap() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
 
         // check that orig values are correct
         Map map = pc.getProxyMap();
-        assertEquals("original map size is correct: 3", 3, map.size());
+        assertEquals(3, map.size(), "original map size is correct: 3");
         ProxiesPC map1 = (ProxiesPC) map.get("key1");
         ProxiesPC map2 = (ProxiesPC) map.get("key2");
         ProxiesPC map3 = (ProxiesPC) map.get("key3");
@@ -256,7 +262,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testReplace() {
+    @Test
+    void replace() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -279,38 +286,33 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testComparators() {
+    @Test
+    void comparators() {
         // make sure the system uses the initial field value to find
         // comparators
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
-        assertNotNull("pc is null", pc);
-        assertTrue("pc.getComp() is not instanceof Proxy",
-            pc.getComp() instanceof Proxy);
-        assertTrue(
-  "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator",
-            ((TreeSet) pc.getComp())
-                .comparator() instanceof ComparableComparator);
+        assertNotNull(pc, "pc is null");
+        assertInstanceOf(Proxy.class, pc.getComp(), "pc.getComp() is not instanceof Proxy");
+        assertInstanceOf(ComparableComparator.class, ((TreeSet) pc.getComp())
+            .comparator(), "(TreeSet) is not pc.getComp()).comparator() instanceof ComparableComparator");
         pm.evict(pc);
         endTx(pm);
 
         // see if it still saves comparator after transition to hollow
         // and back
-        assertTrue("pc.getComp() is not instanceof ProxyTreeSet",
-            pc.getComp() instanceof Proxy);
+        assertInstanceOf(Proxy.class, pc.getComp(), "pc.getComp() is not instanceof ProxyTreeSet");
         Comparator compart = ((TreeSet) pc.getComp()).comparator();
-        assertNotNull("compart is null", compart);
-        assertTrue(
-  "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator",
-            ((TreeSet) pc.getComp())
-                .comparator() instanceof ComparableComparator);
+        assertNotNull(compart, "compart is null");
+        assertInstanceOf(ComparableComparator.class, ((TreeSet) pc.getComp())
+            .comparator(), "((TreeSet) is not pc.getComp()).comparator()instanceof ComparableComparator");
 
         endEm(pm);
     }
 
     //    FIX ME: Moving fix to essex
-    /*public void testList() {
+    /*@Test void list() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -370,7 +372,7 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testListDisablesChangeTracking() {
+    @Test void listDisablesChangeTracking() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -424,7 +426,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 */
-    public void testChangeListOrder() {
+    @Test
+    void changeListOrder() {
         OpenJPAEntityManager pm = getPM(false, false);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -458,7 +461,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDate() {
+    @Test
+    void date() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -471,7 +475,7 @@ public class TestProxies2 extends BaseKernelTest {
         assertEquals(_date.getDate(), date.getDate());
 
         // make sure proxied
-        assertTrue(!pm.isDirty(pc));
+        assertFalse(pm.isDirty(pc));
         date.setTime(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         assertTrue(pm.isDirty(pc));
 
@@ -480,7 +484,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testSQLDate() {
+    @Test
+    void sqlDate() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -493,7 +498,7 @@ public class TestProxies2 extends BaseKernelTest {
         assertEquals(_sqlDate.getDate(), date.getDate());
 
         // make sure proxied
-        assertTrue(!pm.isDirty(pc));
+        assertFalse(pm.isDirty(pc));
         date.setTime(System.currentTimeMillis() + 1000 * 60 * 60 * 24);
         assertTrue(pm.isDirty(pc));
 
@@ -502,7 +507,8 @@ public class TestProxies2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testTimestamp() {
+    @Test
+    void timestamp() {
         OpenJPAEntityManager pm = getPM(true, true);
         startTx(pm);
         ProxiesPC pc = pm.find(ProxiesPC.class, _oid);
@@ -515,7 +521,7 @@ public class TestProxies2 extends BaseKernelTest {
         assertEquals(_timestamp.getDate(), tstamp.getDate());
 
         // make sure proxied
-        assertTrue(!pm.isDirty(pc));
+        assertFalse(pm.isDirty(pc));
         tstamp.setNanos(100);
         assertTrue(pm.isDirty(pc));
 

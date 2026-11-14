@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Reproduces exact TCK patterns for mapkeytemporal and mapkey.Client2.
@@ -32,7 +36,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestTckMapKeyFixes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             TckMktDept.class,
@@ -128,11 +132,11 @@ public class TestTckMapKeyFixes extends SingleEMFTestCase {
 
         // Verify Department 1 (mapKeyTemporal)
         TckMktDept found1 = em.find(TckMktDept.class, 1);
-        assertNotNull("Department1 should be found", found1);
+        assertNotNull(found1, "Department1 should be found");
 
         // Verify Department4 (elementCollection)
         TckMktDept4 found4 = em.find(TckMktDept4.class, 8);
-        assertNotNull("Department4 should be found", found4);
+        assertNotNull(found4, "Department4 should be found");
 
         em.close();
     }
@@ -144,7 +148,8 @@ public class TestTckMapKeyFixes extends SingleEMFTestCase {
      * and flushes. OpenJPA should not throw "unmanaged object" error since
      * the FK is non-writable.
      */
-    public void testJoinColumnUpdatableWithDetachedRef() {
+    @Test
+    void joinColumnUpdatableWithDetachedRef() {
         // First transaction: create departments and employees
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -172,7 +177,7 @@ public class TestTckMapKeyFixes extends SingleEMFTestCase {
         em.getTransaction().begin();
 
         TckMkEmp2 foundEmp2 = em.find(TckMkEmp2.class, 6);
-        assertNotNull("Employee2 should be found", foundEmp2);
+        assertNotNull(foundEmp2, "Employee2 should be found");
 
         // dept2 is detached (from prior closed EM)
         foundEmp2.setDepartment(dept2);
@@ -184,7 +189,7 @@ public class TestTckMapKeyFixes extends SingleEMFTestCase {
         // Re-find: since FK is not updatable, department should still be dept1
         // (or null, depending on the DB state)
         foundEmp2 = em.find(TckMkEmp2.class, 6);
-        assertNotNull("Employee2 should still be found", foundEmp2);
+        assertNotNull(foundEmp2, "Employee2 should still be found");
 
         em.getTransaction().commit();
         em.close();

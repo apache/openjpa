@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +36,8 @@ import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.QueryImpl;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that we can detect if a query is using query parameters for fields whose values are externalized.
@@ -47,13 +51,13 @@ import junit.framework.TestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestExternalizedParameter extends TestCase {
+public class TestExternalizedParameter {
     private static String RESOURCE = "META-INF/persistence.xml";
     private static String UNIT_NAME = "PreparedQuery";
     private static EntityManagerFactory emf;
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -65,7 +69,8 @@ public class TestExternalizedParameter extends TestCase {
         }
     }
 
-    public void testNoFalseAlarmOnExternalizedParameterDetection() {
+    @Test
+    void noFalseAlarmOnExternalizedParameterDetection() {
         String jpql = "select b from Book b where b.title=:title";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();
@@ -77,7 +82,8 @@ public class TestExternalizedParameter extends TestCase {
         assertFalse(isUsingExternalizedParameter(exps[0]));
     }
 
-    public void testCanDetectExternalizedSingleParameterValue() {
+    @Test
+    void canDetectExternalizedSingleParameterValue() {
         String jpql = "select b from Book b where b.token=:token";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();
@@ -89,7 +95,8 @@ public class TestExternalizedParameter extends TestCase {
         assertTrue(isUsingExternalizedParameter(exps[0]));
     }
 
-    public void testCanDetectExternalizedMixedParameterValue() {
+    @Test
+    void canDetectExternalizedMixedParameterValue() {
         String jpql = "select b from Book b where b.token=:token and b.title = :title";
         EntityManager em = emf.createEntityManager();
         Map<String, Object> params = new HashMap<>();

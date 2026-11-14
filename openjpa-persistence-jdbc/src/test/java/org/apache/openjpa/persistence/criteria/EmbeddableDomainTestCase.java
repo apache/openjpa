@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
@@ -56,6 +58,7 @@ import org.apache.openjpa.persistence.embed.Item1;
 import org.apache.openjpa.persistence.embed.Item2;
 import org.apache.openjpa.persistence.embed.Item3;
 import org.apache.openjpa.persistence.embed.VicePresident;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  */
@@ -80,21 +83,16 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
         return CLASSES;
     }
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         if (getEntityManagerFactory() == null) {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
             assertNotNull(getEntityManagerFactory());
-            setDictionary();
         }
+        setDictionary();
         em = getEntityManagerFactory().createEntityManager();
         cb = getEntityManagerFactory().getCriteriaBuilder();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        releaseResources();
     }
 
     @Override

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -26,6 +28,9 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;
 import org.apache.openjpa.persistence.kernel.common.apps.ObjectCollectionHolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Collections of type {@link Object} can hold all
@@ -35,11 +40,12 @@ import org.apache.openjpa.persistence.kernel.common.apps.ObjectCollectionHolder;
  */
 public class TestEJBObjectCollections extends AbstractTestCase {
 
-    public TestEJBObjectCollections(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBObjectCollections() {
+        super("kernelcactusapp");
     }
 
-    public void testHashSet() {
+    @Test
+    void hashSet() {
         assertEquals(1, add(new Object[]{ "Foo" }, 1).getHashSet().size());
         assertEquals(1, add(new Object[]{ "Foo" }, 2).getHashSet().size());
 
@@ -48,13 +54,13 @@ public class TestEJBObjectCollections extends AbstractTestCase {
             .getHashSet().size());
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(ObjectCollectionHolder.class);
         deleteAll(AllFieldsTypeTest.class);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }

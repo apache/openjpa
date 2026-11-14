@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.flush;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Asserts how <code>openjpa.IgnoreChanges=true</code> interacts with the flush mode.
@@ -39,7 +43,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * departure from the visibility guarantee for SELECTs, and nothing about the flush mode
  * re-enables it.
  */
-public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
+class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
 
     private static final String ANY_UPDATE = "(?i).*UPDATE\\s+FLUSH_.*";
     private static final String UPDATE_CUSTOMER = "(?i).*UPDATE\\s+FLUSH_CUSTOMER.*";
@@ -47,7 +51,7 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
     private static final String JPQL =
         "SELECT o FROM UnenhancedFlushOrder o WHERE o.customer.name = 'Michael Bouschen'";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedFlushSpouse.class,
               UnenhancedFlushCustomer.class,
@@ -71,7 +75,8 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * With the flush mode inherited from the persistence context, IgnoreChanges keeps
      * its documented effect: the query runs against the datastore and nothing is flushed.
      */
-    public void testIgnoreChangesSuppressesFlushForInheritedFlushMode() {
+    @Test
+    void ignoreChangesSuppressesFlushForInheritedFlushMode() {
         try (EntityManager em = emf.createEntityManager()) {
             assertEquals(FlushModeType.AUTO, em.getFlushMode());
             em.getTransaction().begin();
@@ -92,7 +97,8 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * and IgnoreChanges opts out of the visibility guarantee for either trigger, so the
      * query still runs against the datastore.
      */
-    public void testExplicitAutoOnQueryKeepsIgnoreChanges() {
+    @Test
+    void explicitAutoOnQueryKeepsIgnoreChanges() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -115,7 +121,8 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * in particular the query must still be executed against the datastore rather than
      * in memory over the whole extent.
      */
-    public void testAutoThenCommitBehavesLikeCommitAlone() {
+    @Test
+    void autoThenCommitBehavesLikeCommitAlone() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(UnenhancedFlushCustomer.class, "10").setName("Michael Bouschen");
@@ -140,7 +147,8 @@ public class TestQueryFlushIgnoreChanges extends SQLListenerTestCase {
      * {@code addNamedQuery()} must not lose the option either: the registration replays
      * the source query's flush mode, which is never unset.
      */
-    public void testIgnoreChangesSurvivesNamedQueryRoundTrip() {
+    @Test
+    void ignoreChangesSurvivesNamedQueryRoundTrip() {
         emf.addNamedQuery("TestQueryFlushIgnoreChanges.byName",
             emf.createEntityManager().createQuery(JPQL, UnenhancedFlushOrder.class));
         try (EntityManager em = emf.createEntityManager()) {

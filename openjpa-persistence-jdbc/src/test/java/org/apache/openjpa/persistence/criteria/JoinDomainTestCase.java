@@ -18,12 +18,15 @@
  */
  package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.BeforeEach;
 
-public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
+ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
     protected static OpenJPAEntityManagerFactorySPI emf = null;
     protected static SQLAuditor auditor = null;
 
@@ -34,22 +37,16 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         return new Class[]{A.class,B.class,C.class,D.class};
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+     @BeforeEach
+     public void setUp() throws Exception {
         if (getEntityManagerFactory() == null) {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
             assertNotNull(getEntityManagerFactory());
-            setDictionary();
         }
+        setDictionary();
         em = getEntityManagerFactory().createEntityManager();
         cb = getEntityManagerFactory().getCriteriaBuilder();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        releaseResources();
     }
 
     @Override

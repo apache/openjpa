@@ -26,13 +26,15 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.kernel.EntityF;
 import org.apache.openjpa.jdbc.kernel.EntityG;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestCascadeMerge extends SingleEMFTestCase {
+class TestCascadeMerge extends SingleEMFTestCase {
 
     private EntityG enG1;
     private EntityG enG2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,EntityF.class, EntityG.class);
 
@@ -47,7 +49,8 @@ public class TestCascadeMerge extends SingleEMFTestCase {
         enG2.setId(2);
     }
 
-    public void testCascadeMerge() {
+    @Test
+    void cascadeMerge() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

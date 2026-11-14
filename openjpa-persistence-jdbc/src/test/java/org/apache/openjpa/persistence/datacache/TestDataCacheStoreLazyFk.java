@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
+class TestDataCacheStoreLazyFk extends SQLListenerTestCase {
     Object[] p = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(p);
     }
 
-    public void testCacheHit() throws Exception {
+    @Test
+    void cacheHit() throws Exception {
         EntityManagerImpl em = (EntityManagerImpl) emf.createEntityManager();
         // Change the eager field to lazy to make testing easier.
         ClassMetaData cmd =

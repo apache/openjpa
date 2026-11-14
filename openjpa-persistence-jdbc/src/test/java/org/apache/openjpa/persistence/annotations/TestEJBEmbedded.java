@@ -18,25 +18,33 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedOwner;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.EmbedValue;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for embedded
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 @AllowFailure(message="excluded")
 public class TestEJBEmbedded extends AnnotationTestCase
 {
 
-	public TestEJBEmbedded(String name)
+	public TestEJBEmbedded()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
     private static final String CLOB;
@@ -48,13 +56,14 @@ public class TestEJBEmbedded extends AnnotationTestCase
         CLOB = buf.toString();
     }
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         deleteAll (EmbedOwner.class);
     }
 
-    public void testEmbedded()
+    @Test
+    void embedded()
     {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -83,7 +92,8 @@ public class TestEJBEmbedded extends AnnotationTestCase
         endEm(em);
     }
 
-    public void testNull() {
+    @Test
+    void testNull() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         EmbedOwner owner = new EmbedOwner();
@@ -104,7 +114,8 @@ public class TestEJBEmbedded extends AnnotationTestCase
         startTx(em);
     }
 
-//    public void testMappingTransferAndOverride() {
+//    @Test
+//    void mappingTransferAndOverride() {
 //        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
 //        ClassMapping cls = conf.getMappingRepositoryInstance().getMapping
 //            (EmbedOwner.class, null, true);

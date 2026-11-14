@@ -18,20 +18,24 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * TREAT(x AS Middle) over a three level single table hierarchy must match
  * instances of Middle and of its subclasses, but not of the root class.
  */
-public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
+class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(TProduct.class, TSoftwareProduct.class, TGameProduct.class,
             TLineItem.class, TOrder.class, DROP_TABLES);
@@ -69,7 +73,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatJoinIncludesSubclasses() {
+    @Test
+    void treatJoinIncludesSubclasses() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TSoftwareProduct) s",
@@ -79,7 +84,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatJoinLeafClass() {
+    @Test
+    void treatJoinLeafClass() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT s.name FROM TLineItem l JOIN TREAT(l.product AS TGameProduct) s",
@@ -88,7 +94,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatInWhereExclusiveProperty() {
+    @Test
+    void treatInWhereExclusiveProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).genre = 'FPS'",
@@ -97,7 +104,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatInWhereCommonProperty() {
+    @Test
+    void treatInWhereCommonProperty() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p WHERE TREAT(p AS TGameProduct).revisionNumber = 2.0",
@@ -106,7 +114,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatInWhereRestrictsOnlyItsPredicate() {
+    @Test
+    void treatInWhereRestrictsOnlyItsPredicate() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TProduct p "
@@ -117,7 +126,8 @@ public class TestTreatSubclassDiscriminator extends SQLListenerTestCase {
         }
     }
 
-    public void testTreatInWhereOnJoinVariable() {
+    @Test
+    void treatInWhereOnJoinVariable() {
         try (EntityManager em = emf.createEntityManager()) {
             List<String> results = em.createQuery(
                 "SELECT p.name FROM TLineItem l JOIN l.product p "

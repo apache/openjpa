@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.sql.Array;
@@ -59,10 +61,8 @@ import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.Id;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>
@@ -77,12 +77,12 @@ import static org.junit.Assert.assertEquals;
  * @author Albert Lee
  */
 
-public class TestUpdateManagerFlushException {
+class TestUpdateManagerFlushException {
 
     private TestUpdateManager updMgr;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         updMgr = new TestUpdateManager();
     }
 
@@ -92,7 +92,7 @@ public class TestUpdateManagerFlushException {
      * the order the original exceptions are thrown.
      */
     @Test
-    public void testAddRetrieve() {
+    void addRetrieve() {
 
         Collection states = new ArrayList<OpenJPAStateManager>();
         states.add(new TestOpenJPAStateManager());
@@ -102,12 +102,12 @@ public class TestUpdateManagerFlushException {
         assertEquals(3, exceps.size());
 
         Iterator<Exception> itr = exceps.iterator();
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.populateRowManager");
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.flush");
-        assertEquals(itr.next().getMessage(),
-            "TestUpdateManager.customInsert");
+        assertEquals(
+            "TestUpdateManager.populateRowManager", itr.next().getMessage());
+        assertEquals(
+            "TestUpdateManager.flush", itr.next().getMessage());
+        assertEquals(
+            "TestUpdateManager.customInsert", itr.next().getMessage());
     }
 
     /*

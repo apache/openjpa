@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,20 +27,22 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
         emf = createEMF(MapHolder.class, MapEmbeddable.class, "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm", "openjpa.RuntimeUnenhancedClasses", "unsupported");
         populate();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
@@ -61,7 +65,8 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
         em.close();
     }
 
-    public void testMapContents() {
+    @Test
+    void mapContents() {
         EntityManager em = emf.createEntityManager();
 
         MapHolder mh = em.find(MapHolder.class, 10);
@@ -69,13 +74,11 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
         assertNotNull(mh);
 
         for (Object o : mh.getEmbeddableMap().keySet()) {
-            assertTrue("Expected key to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName(),
-                o instanceof MapEmbeddable);
+            assertInstanceOf(MapEmbeddable.class, o, "Expected key to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
         }
 
         for (Object o : mh.getEmbeddableMap().values()) {
-            assertTrue("Expected value to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName(),
-                o instanceof MapEmbeddable);
+            assertInstanceOf(MapEmbeddable.class, o, "Expected value to be instanceof MapEmbeddable but was " + o.getClass().getCanonicalName());
         }
         em.close();
     }

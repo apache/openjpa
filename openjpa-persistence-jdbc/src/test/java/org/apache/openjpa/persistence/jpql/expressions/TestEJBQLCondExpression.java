@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,17 +31,19 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBQLCondExpression extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5;
 
-    public TestEJBQLCondExpression(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBQLCondExpression() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CompUser.class);
         EntityManager em = currentEntityManager();
         startTx(em);
@@ -74,63 +80,68 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testNothing() {
+    @Test
+    void nothing() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o FROM CompUser o";
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("the size of the list is not 6", 6, result.size());
+        assertNotNull(result, "the list is null");
+        assertEquals(6, result.size(), "the size of the list is not 6");
 
         endEm(em);
     }
 
-    public void testBetweenExpr() {
+    @Test
+    void betweenExpr() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM CompUser o WHERE" +
             " o.age BETWEEN 19 AND 40 AND o.computerName = 'PC'";
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 2, result.size());
-        assertTrue("result dont contain shannon", result.contains("Shannon"));
-        assertTrue("result dont contain ugo", result.contains("Ugo"));
+        assertNotNull(result, "the list is null");
+        assertEquals(2, result.size(), "they are not equal");
+        assertTrue(result.contains("Shannon"), "result dont contain shannon");
+        assertTrue(result.contains("Ugo"), "result dont contain ugo");
 
         endEm(em);
     }
 
-    public void testNotBetweenExpr() {
+    @Test
+    void notBetweenExpr() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM CompUser o " +
             "WHERE o.age NOT BETWEEN 19 AND 40 AND o.computerName= 'PC'";
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 0, result.size());
+        assertNotNull(result, "the list is null");
+        assertEquals(0, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    public void testInExpr() {
+    @Test
+    void inExpr() {
         EntityManager em = currentEntityManager();
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age IN (29, 40, 10)";
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
+        assertNotNull(result, "the list is null");
         assertEquals(4, result.size());
-        assertTrue("seetha is not in the list", result.contains("Seetha"));
-        assertTrue("jacob is not in the list", result.contains("Jacob"));
-        assertTrue("famzy is not in the list", result.contains("Famzy"));
+        assertTrue(result.contains("Seetha"), "seetha is not in the list");
+        assertTrue(result.contains("Jacob"), "jacob is not in the list");
+        assertTrue(result.contains("Famzy"), "famzy is not in the list");
 
         endEm(em);
     }
 
-    public void testNotInExpr() {
+    @Test
+    void notInExpr() {
         EntityManager em = currentEntityManager();
         String query =
             "SELECT o.name FROM CompUser o WHERE o.age NOT IN (29, 40, 10)";
@@ -145,7 +156,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testLikeExpr() {
+    @Test
+    void likeExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
@@ -196,7 +208,8 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
      * to keep holding when the query is executed again from the prepared
      * query cache.
      */
-    public void testLikeWithoutEscapeTreatsBackslashLiterally() {
+    @Test
+    void likeWithoutEscapeTreatsBackslashLiterally() {
         EntityManager em = currentEntityManager();
 
         String literal = "SELECT o.name FROM CompUser o WHERE o.name LIKE 'tes\\%'";
@@ -204,32 +217,33 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         for (int i = 0; i < 2; i++) {
             List result = em.createQuery(literal).getResultList();
-            assertEquals("literal pattern, run " + i, 1, result.size());
+            assertEquals(1, result.size(), "literal pattern, run " + i);
             assertEquals("tes\\ter", result.get(0));
 
             result = em.createQuery(param).setParameter(1, "tes\\%").getResultList();
-            assertEquals("bound pattern, run " + i, 1, result.size());
+            assertEquals(1, result.size(), "bound pattern, run " + i);
             assertEquals("tes\\ter", result.get(0));
 
             // a lone backslash is not a wildcard either
             result = em.createQuery(param).setParameter(1, "tes\\").getResultList();
-            assertEquals("non-wildcard pattern, run " + i, 0, result.size());
+            assertEquals(0, result.size(), "non-wildcard pattern, run " + i);
 
             // '_' is still a wildcard and matches the backslash
             result = em.createQuery(param).setParameter(1, "tes_ter").getResultList();
-            assertEquals("single wildcard, run " + i, 1, result.size());
+            assertEquals(1, result.size(), "single wildcard, run " + i);
 
             // an empty ESCAPE clause names no escape character either
             result = em.createQuery(param + " ESCAPE ''").
                 setParameter(1, "tes\\%").getResultList();
-            assertEquals("empty escape clause, run " + i, 1, result.size());
+            assertEquals(1, result.size(), "empty escape clause, run " + i);
             assertEquals("tes\\ter", result.get(0));
         }
 
         endEm(em);
     }
 
-    public void testNullExpr() {
+    @Test
+    void nullExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT o.name FROM CompUser o WHERE o.age IS NOT NULL" +
@@ -237,16 +251,17 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("the list size is not 2", 2, result.size());
-        assertTrue("the result doesnt contain ugo", result.contains("Ugo"));
-        assertTrue("the result doesnt contain shannon",
-            result.contains("Shannon"));
+        assertNotNull(result, "the list is null");
+        assertEquals(2, result.size(), "the list size is not 2");
+        assertTrue(result.contains("Ugo"), "the result doesnt contain ugo");
+        assertTrue(result.contains("Shannon"),
+            "the result doesnt contain shannon");
 
         endEm(em);
     }
 
-    public void testNullExpr2() {
+    @Test
+    void nullExpr2() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -254,13 +269,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 0, result.size());
+        assertNotNull(result, "the list is null");
+        assertEquals(0, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    public void testIsEmptyExpr() {
+    @Test
+    void isEmptyExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -268,13 +284,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 0, result.size());
+        assertNotNull(result, "the list is null");
+        assertEquals(0, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    public void testIsEmptyExpr2() {
+    @Test
+    void isEmptyExpr2() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -282,18 +299,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 6, result.size());
+        assertNotNull(result, "the list is null");
+        assertEquals(6, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    /**
-     * TO BE TESTED LATER WITH A DIFF DATABASE
-     * public void testMemberOfExpr(){}
-     */
-
-    public void testExistExpr() {
+    @Test
+    void existExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT DISTINCT o.name FROM CompUser o WHERE EXISTS" +
@@ -301,17 +314,18 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 6, result.size());
-        assertTrue("Seetha is not list", result.contains("Seetha"));
-        assertTrue("Shannon is not list", result.contains("Shannon"));
-        assertTrue("jacob is not list", result.contains("Jacob"));
-        assertTrue("ugo is not list", result.contains("Ugo"));
+        assertNotNull(result, "the list is null");
+        assertEquals(6, result.size(), "they are not equal");
+        assertTrue(result.contains("Seetha"), "Seetha is not list");
+        assertTrue(result.contains("Shannon"), "Shannon is not list");
+        assertTrue(result.contains("Jacob"), "jacob is not list");
+        assertTrue(result.contains("Ugo"), "ugo is not list");
 
         endEm(em);
     }
 
-    public void testNotExistExpr() {
+    @Test
+    void notExistExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -321,13 +335,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("list is null", result);
-        assertEquals("they are not equal", 0, result.size());
+        assertNotNull(result, "list is null");
+        assertEquals(0, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    public void testAnyExpr() {
+    @Test
+    void anyExpr() {
         EntityManager em = currentEntityManager();
 
         String query =
@@ -337,13 +352,14 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         List result = em.createQuery(query).getResultList();
 
-        assertNotNull("list is null", result);
-        assertEquals("they are not equal", 0, result.size());
+        assertNotNull(result, "list is null");
+        assertEquals(0, result.size(), "they are not equal");
 
         endEm(em);
     }
 
-    public void testConstructorExpr() {
+    @Test
+    void constructorExpr() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT NEW org.apache.openjpa.persistence.common.apps" +
@@ -352,11 +368,11 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         MaleUser male = (MaleUser) em.createQuery(query).getSingleResult();
 
-        assertNotNull("the list is null", male);
-        assertEquals("the names dont match", "Seetha", male.getName());
-        assertEquals("computer names dont match", "MAC",
-            male.getComputerName());
-        assertEquals("the ages dont match", 40, male.getAge());
+        assertNotNull(male, "the list is null");
+        assertEquals("Seetha", male.getName(), "the names dont match");
+        assertEquals("MAC", male.getComputerName(),
+            "computer names dont match");
+        assertEquals(40, male.getAge(), "the ages dont match");
 
         endEm(em);
     }

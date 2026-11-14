@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-public class TestMultiColumnVersionXML extends TestMultiColumnVersion {
-    @Override
+import org.junit.jupiter.api.BeforeEach;
+
+class TestMultiColumnVersionXML extends TestMultiColumnVersion {
+    @BeforeEach
     public void setUp() {
         super.setUp();
     }

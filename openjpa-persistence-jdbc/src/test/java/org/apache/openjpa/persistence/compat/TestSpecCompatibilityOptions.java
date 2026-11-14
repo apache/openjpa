@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +42,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestSpecCompatibilityOptions
 extends AbstractCachedEMFTestCase {
@@ -48,7 +54,8 @@ extends AbstractCachedEMFTestCase {
      * Verifies compatibility options and spec level are appropriate
      * for a version 2 persistence.xml
      */
-    public void testJPA1CompatibilityOptions() {
+    @Test
+    void jpa1CompatibilityOptions() {
         OpenJPAEntityManagerFactorySPI emf =
         (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("persistence_1_0",
@@ -64,7 +71,7 @@ extends AbstractCachedEMFTestCase {
             assertEquals("NONE", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
             assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-            assertEquals(spec.getVersion(), 1);
+            assertEquals(1, spec.getVersion());
         } finally {
             closeEMF(emf);
         }
@@ -74,7 +81,8 @@ extends AbstractCachedEMFTestCase {
      * Verifies compatibility options and spec level are appropriate
      * for a version 2 persistence.xml
      */
-    public void testJPA2CompatibilityOptions() {
+    @Test
+    void jpa2CompatibilityOptions() {
         OpenJPAEntityManagerFactorySPI emf =
         (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("persistence_2_0",
@@ -91,7 +99,7 @@ extends AbstractCachedEMFTestCase {
             assertEquals("AUTO", vMode);
             Specification spec = emf.getConfiguration().getSpecificationInstance();
             assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-            assertEquals(spec.getVersion(), 2);
+            assertEquals(2, spec.getVersion());
         } finally {
             closeEMF(emf);
         }
@@ -102,7 +110,8 @@ extends AbstractCachedEMFTestCase {
      * An exceptioin will be thrown when a bi-directional relation is detected in
      * a mapped superclass.
      */
-    public void testMappedSuperClass() {
+    @Test
+    void mappedSuperClass() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityA.class);
         types.add(EntityB.class);
@@ -167,7 +176,8 @@ extends AbstractCachedEMFTestCase {
      *  without @JoinTable will result in an exception thrown by openjpa.
      *
      */
-    public void testOneToManyRelation() {
+    @Test
+    void oneToManyRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(EntityC_B1MFK.class);
@@ -393,7 +403,8 @@ extends AbstractCachedEMFTestCase {
         em.clear();
     }
 
-    public void testOneToManyMapRelation() {
+    @Test
+    void oneToManyMapRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_U1M_Map_FK.class);
         types.add(Uni_1ToM_Map_FK.class);
@@ -662,7 +673,8 @@ extends AbstractCachedEMFTestCase {
         em.getTransaction().commit();
     }
 
-    public void testUniManyToOneUsingJoinTable() {
+    @Test
+    void uniManyToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(Uni_MTo1_JT.class);
@@ -731,7 +743,8 @@ extends AbstractCachedEMFTestCase {
         em.getTransaction().commit();
     }
 
-    public void testOneToOneUsingJoinTable() {
+    @Test
+    void oneToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_B11JT.class);
         types.add(EntityC_U11JT.class);

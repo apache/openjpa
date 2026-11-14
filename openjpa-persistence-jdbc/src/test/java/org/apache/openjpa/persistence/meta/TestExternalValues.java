@@ -19,6 +19,11 @@
 package org.apache.openjpa.persistence.meta;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +34,8 @@ import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Tests the {@link ExternalValuesFieldMapping}.</p>
@@ -39,17 +46,18 @@ import org.apache.openjpa.persistence.meta.common.apps.ExternalValues;
 public class TestExternalValues
     extends AbstractTestCase {
 
-    public TestExternalValues(String test) {
-        super(test, "metacactusapp");
+    public TestExternalValues() {
+        super("metacactusapp");
     }
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
         deleteAll(ExternalValues.class);
     }
 
-    public void testInsert() {
+    @Test
+    void insert() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -77,15 +85,16 @@ public class TestExternalValues
         assertEquals(4, pc.getIntToFloat());
         assertEquals(4, pc.getLongToChar());
         assertEquals((short) 4, pc.getShortToString());
-        assertTrue(4.5f == pc.getFloatToBoolean());
-        assertTrue(4.5 == pc.getDoubleToByte());
+        assertEquals(4.5f, pc.getFloatToBoolean());
+        assertEquals(4.5, pc.getDoubleToByte());
         assertEquals('f', pc.getCharToInt());
         assertEquals("foo", pc.getStringToLong());
 
         endEm(pm);
     }
 
-    public void testComplexStrings() {
+    @Test
+    void complexStrings() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -105,7 +114,8 @@ public class TestExternalValues
         endEm(pm);
     }
 
-    public void testAllNull() {
+    @Test
+    void allNull() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -121,7 +131,8 @@ public class TestExternalValues
         endEm(pm);
     }
 
-    public void testPositionalBindingQueryParameterEqualsDeclaredType() {
+    @Test
+    void positionalBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
 
@@ -137,7 +148,8 @@ public class TestExternalValues
         }
     }
 
-    public void testNamedBindingQueryParameterEqualsDeclaredType() {
+    @Test
+    void namedBindingQueryParameterEqualsDeclaredType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);
 
@@ -153,7 +165,8 @@ public class TestExternalValues
         }
     }
 
-    public void testPositionalBindingQueryParameterNotEqualsExternalizedType() {
+    @Test
+    void positionalBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(1,4);
         createInstance(uuid);
 
@@ -170,7 +183,8 @@ public class TestExternalValues
        }
     }
 
-    public void testNamedBindingQueryParameterNotEqualsExternalizedType() {
+    @Test
+    void namedBindingQueryParameterNotEqualsExternalizedType() {
         UUID uuid = new UUID(2,4);
         createInstance(uuid);
 

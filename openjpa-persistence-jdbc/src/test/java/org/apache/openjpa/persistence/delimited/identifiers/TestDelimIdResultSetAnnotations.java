@@ -18,16 +18,23 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDelimIdResultSetAnnotations
-        extends SQLListenerTestCase {
+class TestDelimIdResultSetAnnotations extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     int id = 0;
     Car car;
@@ -38,14 +45,12 @@ public class TestDelimIdResultSetAnnotations
     Chevrolet2 chevrolet2;
 
     @Override
-    public void setUp() throws Exception {
-        setSupportedDatabases(
-            org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-            org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DerbyDictionary || dict instanceof DB2Dictionary;
+    }
 
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp(
             org.apache.openjpa.persistence.delimited.identifiers.Car.class,
             org.apache.openjpa.persistence.delimited.identifiers.Pontiac.class,
@@ -60,7 +65,7 @@ public class TestDelimIdResultSetAnnotations
         assertNotNull(em);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         if (em != null && em.isOpen()) {
             em.close();
@@ -88,7 +93,8 @@ public class TestDelimIdResultSetAnnotations
         pontiac.setModelYear("2005");
     }
 
-    public void testCreate() {
+    @Test
+    void create() {
         id++;
         createPontiac(id);
         id++;
@@ -118,8 +124,8 @@ public class TestDelimIdResultSetAnnotations
 
         for (Object[] result : results) {
             assertEquals(2, result.length);
-            assertTrue(result[0] instanceof Car2);
-            assertTrue(result[1] instanceof String);
+            assertInstanceOf(Car2.class, result[0]);
+            assertInstanceOf(String.class, result[1]);
             Car2 car2 = (Car2)result[0];
             String modelYear = (String)result[1];
             if (car2.getModel().equals("G6")) {

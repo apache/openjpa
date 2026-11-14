@@ -26,6 +26,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,8 +38,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMultiThreaded extends BaseKernelTest {
+class TestMultiThreaded extends BaseKernelTest {
 
     static int serial = 5;
     static int threads = 5;
@@ -45,18 +52,8 @@ public class TestMultiThreaded extends BaseKernelTest {
     private Object id;
     private String name;
 
-    /**
-     * Creates a new instance of TestMultiThreaded
-     */
-    public TestMultiThreaded() {
-    }
-
-    public TestMultiThreaded(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         OpenJPAEntityManager pm2 = getPM();
@@ -76,7 +73,7 @@ public class TestMultiThreaded extends BaseKernelTest {
         startTx(pm);
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
         throws Exception {
         try {
@@ -88,61 +85,68 @@ public class TestMultiThreaded extends BaseKernelTest {
         super.tearDown();
     }
 
-    public void testgetTransaction() {
+    @Test
+    void testgetTransaction() {
         mttest(serial, threads, iterations);
         pm.getTransaction();
     }
 
-    public void testGetObjectById() {
+    @Test
+    void getObjectById() {
         mttest(serial, threads, iterations);
         assertNotNull(pm.find(RuntimeTest1.class, id));
     }
 
-    public void testQueryExecution() {
+    @Test
+    void queryExecution() {
         mttest(serial, threads, iterations);
         OpenJPAQuery q = pm.createQuery("select o from RuntimeTest1 o "
             + "where o.stringField = '" + name + "'");
         assertEquals(1, q.getResultList().size());
     }
 
-    public void testDeletePersistent() {
+    @Test
+    void deletePersistent() {
         mttest(serial, threads, iterations);
         pm.removeAll(pm.createQuery("select o from RuntimeTest1 o "
             + "where o.stringField = '" + name + "'").getResultList());
     }
 
-    public void testRefreshAll() {
+    @Test
+    void refreshAll() {
         mttest(serial, threads, iterations);
         pm.refreshAll();
     }
 
-    public void testEvictAll() {
+    @Test
+    void evictAll() {
         mttest(serial, threads, iterations);
         pm.evictAll();
     }
 
-    public void testIterateExtent()
+    @Test
+    void iterateExtent()
         throws Throwable {
         if (timeout(120 * 1000)) return;
 
         mttest(serial, threads, iterations);
 
-        assertTrue("Transaction should have been active",
-            pm.getTransaction().isActive());
+        assertTrue(pm.getTransaction().isActive(),
+            "Transaction should have been active");
 
         for (int i = 0; i < 3; i++) {
             pm.persist(new RuntimeTest1("testIterateExtent" + Math.random(),
                 (int) (Math.random() * Integer.MAX_VALUE)));
         }
 
-        assertTrue("Transaction should have been active",
-            pm.getTransaction().isActive());
+        assertTrue(pm.getTransaction().isActive(),
+            "Transaction should have been active");
 
         for (Iterator i = pm.createExtent(RuntimeTest1.class, true).iterator();
             i.hasNext(); i.next())
             ;
 
-        assertTrue("Transaction should have been active",
-            pm.getTransaction().isActive());
+        assertTrue(pm.getTransaction().isActive(),
+            "Transaction should have been active");
     }
 }

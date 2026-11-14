@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,15 +40,18 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Apache Derby has sequence objects since 10.6, so a
  * <code>@SequenceGenerator</code> is backed by a real sequence there rather
  * than by a row of the OpenJPA sequence table (OPENJPA-3034).
  */
-public class TestDerbyNativeSequence extends SQLListenerTestCase {
+class TestDerbyNativeSequence extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(NamedSeqGenEntity.class, CLEAR_TABLES);
     }
@@ -64,17 +69,18 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
         if (dict() instanceof DerbyDictionary) {
             return true;
         }
-        System.out.println(getClass().getName() + "." + getName() + " skipped: not running on Apache Derby");
+        System.out.println(getClass().getName() + "." + getTestName() + " skipped: not running on Apache Derby");
         return false;
     }
 
-    public void testDerbyDeclaresSequences() {
+    @Test
+    void derbyDeclaresSequences() {
         if (!isDerby()) {
             return;
         }
         DBDictionary dict = dict();
         assertEquals("VALUES (NEXT VALUE FOR {0})", dict.nextSequenceQuery);
-        assertTrue("Derby has no ALTER SEQUENCE", dict.disableAlterSeqenceIncrementBy);
+        assertTrue(dict.disableAlterSeqenceIncrementBy, "Derby has no ALTER SEQUENCE");
 
         Sequence seq = new Sequence(DBIdentifier.newSequence("OJPA3034_SEQ"), null);
         seq.setInitialValue(10);
@@ -89,14 +95,15 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
      * Identifiers are drawn from the sequence, a block of allocationSize per
      * NEXT VALUE FOR, and no ALTER SEQUENCE is attempted.
      */
-    public void testGeneratorUsesTheSequence() {
+    @Test
+    void generatorUsesTheSequence() {
         if (!isDerby()) {
             return;
         }
         MetaDataRepository repos = emf.getConfiguration().getMetaDataRepositoryInstance();
         repos.getMetaData(NamedSeqGenEntity.class, null, true);
         Seq seq = repos.getSequenceMetaData(NamedSeqGenEntity.GENERATOR, null, true).getInstance(null);
-        assertTrue(seq.getClass().getName(), seq instanceof NativeJDBCSeq);
+        assertInstanceOf(NativeJDBCSeq.class, seq, seq.getClass().getName());
 
         int count = 2 * NamedSeqGenEntity.ALLOCATE + 1;
         List<Long> ids = new ArrayList<>();
@@ -119,26 +126,27 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
         }
 
         for (int i = 1; i < ids.size(); i++) {
-            assertEquals("identifiers of one block are consecutive: " + ids, ids.get(i - 1) + 1, (long) ids.get(i));
+            assertEquals(ids.get(i - 1) + 1, (long) ids.get(i), "identifiers of one block are consecutive: " + ids);
         }
-        assertTrue(ids.toString(), ids.get(0) >= NamedSeqGenEntity.INITIAL);
+        assertTrue(ids.get(0) >= NamedSeqGenEntity.INITIAL, ids.toString());
 
         int nextValues = 0;
         for (String sql : sql) {
-            assertFalse(sql, sql.toUpperCase().contains("ALTER SEQUENCE"));
-            assertFalse(sql, sql.toUpperCase().contains("OPENJPA_SEQUENCES_TABLE"));
+            assertFalse(sql.toUpperCase().contains("ALTER SEQUENCE"), sql);
+            assertFalse(sql.toUpperCase().contains("OPENJPA_SEQUENCES_TABLE"), sql);
             if (sql.toUpperCase().contains("NEXT VALUE FOR " + NamedSeqGenEntity.SEQUENCE)) {
                 nextValues++;
             }
         }
-        assertEquals("one NEXT VALUE FOR per block of allocationSize", 3, nextValues);
+        assertEquals(3, nextValues, "one NEXT VALUE FOR per block of allocationSize");
     }
 
     /**
      * The schema tool finds the sequence it created, and the drop statement
      * Derby requires (with RESTRICT) removes it.
      */
-    public void testSequenceIsReflectedAndDropped() throws Exception {
+    @Test
+    void sequenceIsReflectedAndDropped() throws Exception {
         if (!isDerby()) {
             return;
         }
@@ -176,7 +184,8 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
      * to other callers. OpenJPA reads the increment and draws every
      * identifier from the sequence instead.
      */
-    public void testPreExistingSequenceWithSmallerIncrement() throws Exception {
+    @Test
+    void preExistingSequenceWithSmallerIncrement() throws Exception {
         if (!isDerby()) {
             return;
         }
@@ -209,7 +218,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
                     NamedSeqGenEntity e = new NamedSeqGenEntity();
                     e.setName("e" + i);
                     em.persist(e);
-                    assertTrue("duplicate id " + e.getId(), ids.add(e.getId()));
+                    assertTrue(ids.add(e.getId()), "duplicate id " + e.getId());
                     // another client of the same sequence
                     try (Statement stmnt = conn.createStatement();
                          ResultSet rs = stmnt.executeQuery("VALUES (NEXT VALUE FOR "
@@ -228,7 +237,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
 
             Set<Long> both = new HashSet<>(ids);
             both.retainAll(drawnElsewhere);
-            assertTrue("identifiers also handed out by the database: " + both, both.isEmpty());
+            assertTrue(both.isEmpty(), "identifiers also handed out by the database: " + both);
             int nextValues = 0;
             for (String sql : sql) {
                 if (sql.toUpperCase().contains("NEXT VALUE FOR " + NamedSeqGenEntity.SEQUENCE)) {
@@ -236,7 +245,7 @@ public class TestDerbyNativeSequence extends SQLListenerTestCase {
                 }
             }
             // the statements of the other client are counted as well
-            assertEquals("one NEXT VALUE FOR per identifier", 2 * count, nextValues);
+            assertEquals(2 * count, nextValues, "one NEXT VALUE FOR per identifier");
         } finally {
             // leave it to the next test to create the sequence OpenJPA's way
             try (Connection conn = conf.getDataSource2(null).getConnection();

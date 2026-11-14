@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +30,8 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.meta.common.apps.OrderByPC;
 import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRel;
 import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRelSub;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the <code>order-by</code> field extension.</p>
@@ -37,25 +41,28 @@ import org.apache.openjpa.persistence.meta.common.apps.OrderByPCRelSub;
 public class TestOrderBy
     extends AbstractTestCase {
 
-    public TestOrderBy(String test) {
-        super(test, "metacactusapp");
+    public TestOrderBy() {
+        super("metacactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(OrderByPCRel.class);
         deleteAll(OrderByPC.class);
     }
 
-    public void testStringList() {
+    @Test
+    void stringList() {
         stringListTest(false, false);
     }
 
-    public void testEagerParallelStringList() {
+    @Test
+    void eagerParallelStringList() {
         stringListTest(true, true);
     }
 
-    public void testEagerJoinStringList() {
+    @Test
+    void eagerJoinStringList() {
         stringListTest(true, false);
     }
 
@@ -94,7 +101,8 @@ public class TestOrderBy
         endEm(pm);
     }
 
-    public void testIntArray() {
+    @Test
+    void intArray() {
         int[] ints = new int[]{ 9, 0, 5, 1, 3, 7, 8, 2, 6, 4, };
         OrderByPC pc = new OrderByPC();
         pc.setId(1L);
@@ -116,27 +124,33 @@ public class TestOrderBy
         endEm(pm);
     }
 
-    public void testOrderByPK() {
+    @Test
+    void orderByPK() {
         orderByPKTest(false, false, false);
     }
 
-    public void testEagerJoinOrderByPK() {
+    @Test
+    void eagerJoinOrderByPK() {
         orderByPKTest(true, false, false);
     }
 
-    public void testEagerParallelOrderByPK() {
+    @Test
+    void eagerParallelOrderByPK() {
         orderByPKTest(true, true, false);
     }
 
-    public void testOneToManyOrderByPK() {
+    @Test
+    void oneToManyOrderByPK() {
         orderByPKTest(false, false, true);
     }
 
-    public void testEagerJoinOneToManyOrderByPK() {
+    @Test
+    void eagerJoinOneToManyOrderByPK() {
         orderByPKTest(true, false, true);
     }
 
-    public void testEagerParallelOneToManyOrderByPK() {
+    @Test
+    void eagerParallelOneToManyOrderByPK() {
         orderByPKTest(true, true, true);
     }
 
@@ -189,7 +203,8 @@ public class TestOrderBy
         endEm(pm);
     }
 
-    public void testOrderByRelatedField() {
+    @Test
+    void orderByRelatedField() {
         String[] strs = new String[]{
             "9", "0", "5", "1", "3", "7", "8", "2", "6", "4",
         };
@@ -219,15 +234,18 @@ public class TestOrderBy
         endEm(pm);
     }
 
-    public void testOrderByPKAndRelatedField() {
+    @Test
+    void orderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(false, false);
     }
 
-    public void testEagerJoinOrderByPKAndRelatedField() {
+    @Test
+    void eagerJoinOrderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(true, false);
     }
 
-    public void testEagerParallelOrderByPKAndRelatedField() {
+    @Test
+    void eagerParallelOrderByPKAndRelatedField() {
         orderByPKAndRelatedFieldTest(true, true);
     }
 

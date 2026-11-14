@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -27,6 +31,8 @@ import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <code>ResolveConverterTypeHierarchy=false</code> restores the OpenJPA 4.1.x
@@ -36,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * attribute is mapped as a serialized object, and an auto apply converter of
  * that kind or of a parameterized attribute type is not applied.
  */
-public class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
+class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedColumnTypeEntity.class, RankConverter.class, BoxConverter.class,
             DROP_TABLES, "openjpa.Compatibility", "ResolveConverterTypeHierarchy=false");
@@ -58,7 +64,7 @@ public class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
 
     private void assertColumn(String field, int javaType, int... sqlTypes) {
         Column col = column(field);
-        assertEquals(field + " java type", javaType, col.getJavaType());
+        assertEquals(javaType, col.getJavaType(), field + " java type");
         for (int sqlType : sqlTypes) {
             if (col.getType() == sqlType) {
                 return;
@@ -72,26 +78,31 @@ public class TestConvertedColumnTypeCompat extends SingleEMFTestCase {
             Types.VARBINARY, Types.BINARY);
     }
 
-    public void testDirectlyDeclaredConvertersKeepTheirColumnType() {
+    @Test
+    void directlyDeclaredConvertersKeepTheirColumnType() {
         assertColumn("converted", JavaTypes.STRING, Types.VARCHAR);
         assertColumn("code", JavaTypes.LONG_OBJ, Types.BIGINT, Types.NUMERIC, Types.DECIMAL);
     }
 
-    public void testConverterWithGenericSuperclassIsSerialized() {
+    @Test
+    void converterWithGenericSuperclassIsSerialized() {
         assertSerialized("inheritedCode");
     }
 
-    public void testConverterWithAttributeConverterSubinterfaceIsSerialized() {
+    @Test
+    void converterWithAttributeConverterSubinterfaceIsSerialized() {
         assertSerialized("interfaceCode");
     }
 
-    public void testAutoApplyConverterWithGenericSuperclassIsNotRegistered() {
+    @Test
+    void autoApplyConverterWithGenericSuperclassIsNotRegistered() {
         column("rating");
         assertNull(repository().getAutoApplyConverter(Rank.class));
         assertSerialized("rating");
     }
 
-    public void testAutoApplyConverterOfParameterizedTypeIsNotRegistered() {
+    @Test
+    void autoApplyConverterOfParameterizedTypeIsNotRegistered() {
         column("box");
         assertNull(repository().getAutoApplyConverter(Box.class));
         assertSerialized("box");

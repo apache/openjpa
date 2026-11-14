@@ -18,17 +18,16 @@
  */
 package org.apache.openjpa.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.StoreManager;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 
@@ -36,7 +35,7 @@ import jakarta.persistence.SchemaValidationException;
  * Tests that {@link SchemaManagerImpl} reports a store which does not implement the
  * schema operations as an unsupported operation rather than as a schema failure.
  */
-public class TestSchemaManagerImpl {
+class TestSchemaManagerImpl {
 
     /**
      * A minimal, non-JDBC {@link AbstractBrokerFactory} which inherits the default
@@ -100,17 +99,17 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateReportsUnsupportedOperationInsteadOfValidationFailure() {
+    void validateReportsUnsupportedOperationInsteadOfValidationFailure() {
         SchemaManager schemaManager = new SchemaManagerImpl(new NoSchemaBrokerFactory());
 
         UnsupportedOperationException uoe =
                 assertThrows(UnsupportedOperationException.class, schemaManager::validate);
-        assertNotNull("the unsupported operation must carry a message", uoe.getMessage());
-        assertTrue(uoe.getMessage(), uoe.getMessage().contains("schema validation"));
+        assertNotNull(uoe.getMessage(), "the unsupported operation must carry a message");
+        assertTrue(uoe.getMessage().contains("schema validation"), uoe.getMessage());
     }
 
     @Test
-    public void testCreateDropAndTruncateReportUnsupportedOperation() {
+    void createDropAndTruncateReportUnsupportedOperation() {
         SchemaManager schemaManager = new SchemaManagerImpl(new NoSchemaBrokerFactory());
 
         assertThrows(UnsupportedOperationException.class, () -> schemaManager.create(true));
@@ -119,7 +118,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateWrapsRealValidationFailures() {
+    void validateWrapsRealValidationFailures() {
         SchemaManager schemaManager = new SchemaManagerImpl(new FailingBrokerFactory());
 
         SchemaValidationException sve =
@@ -130,7 +129,7 @@ public class TestSchemaManagerImpl {
     }
 
     @Test
-    public void testValidateNeverReportsANullMessage() {
+    void validateNeverReportsANullMessage() {
         SchemaManager schemaManager = new SchemaManagerImpl(new SilentlyFailingBrokerFactory());
 
         SchemaValidationException sve =

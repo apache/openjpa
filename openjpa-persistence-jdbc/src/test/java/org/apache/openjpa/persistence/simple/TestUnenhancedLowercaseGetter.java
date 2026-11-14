@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entities with lowercase property names after get/set prefix
@@ -28,9 +33,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * enhancement (subclass-redefinition), mirroring the TCK Order entity
  * pattern.
  */
-public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
+class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedLowercaseGetterOrder.class,
             CLEAR_TABLES,
@@ -41,7 +46,8 @@ public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
      * Mirrors TCK core.entityManager.Client1#mergeTest:
      * merge a new entity, clear, find, assert description persisted.
      */
-    public void testMergeWithLowercaseGetter() {
+    @Test
+    void mergeWithLowercaseGetter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -63,7 +69,8 @@ public class TestUnenhancedLowercaseGetter extends SingleEMFTestCase {
     /**
      * Tests persist and find with lowercase getter.
      */
-    public void testPersistAndFindLowercaseGetter() {
+    @Test
+    void persistAndFindLowercaseGetter() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

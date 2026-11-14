@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.UnenhancedPropertyAccess;
@@ -26,11 +28,13 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestPessimisticPNonTransToPDirty
+class TestPessimisticPNonTransToPDirty
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedPropertyAccess.class, CLEAR_TABLES, "openjpa.RuntimeUnenhancedClasses", "supported");
 
@@ -42,7 +46,8 @@ public class TestPessimisticPNonTransToPDirty
         em.close();
     }
 
-    public void testPNonTransToPDirty() {
+    @Test
+    void pNonTransToPDirty() {
         em.setOptimistic(false);
         UnenhancedPropertyAccess o = (UnenhancedPropertyAccess)
             em.createQuery("select o from UnenhancedPropertyAccess o")

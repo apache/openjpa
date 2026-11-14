@@ -18,31 +18,31 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSubstring extends SingleEMTestCase {
-
+class TestSubstring extends SingleEMTestCase {
     @Override
-    public void setUp() {
-        super.setUp(SimpleEntity.class, CLEAR_TABLES,
-            "openjpa.Compatibility", "JPQL=extended");
-
+    protected boolean isSupported(DBDictionary dict) {
         // Expressions as substring parameters fail on PostgreSQL.
         // The same problem exists with LOCATE.
         // Possible fix: use CAST to integer as we do with DB2.
-        if ("testSubstringWithExpressionsInWhere".equals(getName())) {
-            setUnsupportedDatabases(PostgresDictionary.class);
-            if (isTestsDisabled()) {
-                getLog().trace(getName() +
-                    " - Skipping test - Expressions as substring parameters fail on PostgreSQL.");
-                return;
-            }
-        }
+        return !("substringWithExpressionsInWhere".equals(getTestName()) && dict instanceof PostgresDictionary);
+    }
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp(SimpleEntity.class, CLEAR_TABLES,
+            "openjpa.Compatibility", "JPQL=extended");
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -51,7 +51,8 @@ public class TestSubstring extends SingleEMTestCase {
         em.close();
     }
 
-    public void testSingleCharacterSubstringInWhere() {
+    @Test
+    void singleCharacterSubstringInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1, 1) = 'b'").getSingleResult());
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
@@ -60,7 +61,8 @@ public class TestSubstring extends SingleEMTestCase {
             "where substring(o.value, 3, 1) = 'r'").getSingleResult());
     }
 
-    public void testMultiCharacterSubstringInWhere() {
+    @Test
+    void multiCharacterSubstringInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1, 2) = 'ba'").getSingleResult());
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
@@ -73,7 +75,8 @@ public class TestSubstring extends SingleEMTestCase {
             "where substring(o.value, 3) = 'r'").getSingleResult());
     }
 
-    public void testSubstringInSelect() {
+    @Test
+    void substringInSelect() {
         assertEquals("b", em.createQuery("select substring(o.value, 1, 1) " +
             "from simple o").getSingleResult());
         assertEquals("a", em.createQuery("select substring(o.value, 2, 1) " +
@@ -84,7 +87,8 @@ public class TestSubstring extends SingleEMTestCase {
             "from simple o").getSingleResult());
     }
 
-    public void testSubstringInMemory() {
+    @Test
+    void substringInMemory() {
         List<SimpleEntity> allEntities = em.createQuery("select o from simple o", SimpleEntity.class).getResultList();
         Object inMemoryResult = em.createQuery("select substring(o.value, 1, 1) from simple o")
             .setCandidateCollection(allEntities).getSingleResult();
@@ -94,7 +98,8 @@ public class TestSubstring extends SingleEMTestCase {
         assertEquals("ar", inMemoryResult);
     }
 
-    public void testSubstringWithExpressionsInWhere() {
+    @Test
+    void substringWithExpressionsInWhere() {
         assertEquals((long) 1, em.createQuery("select count(o) from simple o " +
             "where substring(o.value, 1+1, 1+1) = 'ar'").getSingleResult());
     }

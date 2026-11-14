@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,50 +29,60 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceConfiguration;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestEntityManagerFactory extends TestCase {
+@DynamicEnhancementTest
+class TestEntityManagerFactory {
 
     /*
      * This test uses a mis-configured persistence unit to verify that we will
      * not connect to the database when an unused emf is closed.
      */
-    public void testCloseUnusedEMF() {
+    @Test
+    void closeUnusedEMF() {
         EntityManagerFactory emf =
                 Persistence.createEntityManagerFactory("invalid");
         emf.close();
     }
-	
-	public void testEMFCreation() {
+
+    @Test
+    void emfCreation() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
-		
+
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory(conf);
 		assertNotNull(emf);
 		EntityManager em = emf.createEntityManager();
 		assertNotNull(em);
-		
+
 		String countJPQL = "SELECT COUNT(DISTINCT a) FROM AllFieldTypes AS a";
 		long count = em.createQuery(countJPQL, Long.class).getSingleResult();
 		assertEquals(0L, count);
-		
+
 		AllFieldTypes aft = new AllFieldTypes();
 		em.getTransaction().begin();
 		em.persist(aft);
 		em.getTransaction().commit();
-		
+
 		assertNotNull(aft.getUniqueId());
 		count = em.createQuery(countJPQL, Long.class).getSingleResult();
 		assertEquals(1l, count);
-		
+
+		// do not leave the row behind: its datastore id comes from the shared
+		// OPENJPA_SEQUENCE_TABLE, which other tests reset (deleteTableContents)
+		em.getTransaction().begin();
+		em.remove(aft);
+		em.getTransaction().commit();
+
 		em.close();
 		emf.close();
 	}
 
-	public void testEMFCreationDoesNotMutateConfiguration() {
+    @Test
+    void emfCreationDoesNotMutateConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -81,7 +94,8 @@ public class TestEntityManagerFactory extends TestCase {
 		assertEquals(before, conf.properties());
 	}
 
-	public void testRepeatedEMFCreationFromSameConfiguration() {
+    @Test
+    void repeatedEMFCreationFromSameConfiguration() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
@@ -97,7 +111,8 @@ public class TestEntityManagerFactory extends TestCase {
 		assertEquals(mdf1, mdf2);
 	}
 
-	public void testEMFCreationMergesUserMetaDataFactory() {
+    @Test
+    void emfCreationMergesUserMetaDataFactory() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.property("openjpa.MetaDataFactory", "jpa");
@@ -110,7 +125,8 @@ public class TestEntityManagerFactory extends TestCase {
 		emf.close();
 	}
 
-	public void testEMFCreationHonoursMappingFiles() {
+    @Test
+    void emfCreationHonoursMappingFiles() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.managedClass(AllFieldTypes.class);
 		conf.mappingFile("org/apache/openjpa/persistence/simple/persistence-configuration-orm.xml");

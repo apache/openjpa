@@ -18,14 +18,14 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The tables a schema generation script drops are tracked statically, because
@@ -33,10 +33,10 @@ import org.junit.Test;
  * therefore be partitioned, so that one persistence unit cannot consume or
  * clear the entries of another.
  */
-public class TestSchemaToolDroppedTables {
+class TestSchemaToolDroppedTables {
 
-    @After
-    public void clearTracking() {
+    @AfterEach
+    void clearTracking() {
         SchemaTool.clearDroppedTables();
     }
 
@@ -50,36 +50,36 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testKeyIsTheConfigurationId() {
+    void keyIsTheConfigurationId() {
         assertEquals("unit-a", SchemaTool.trackingKey(conf("unit-a", "jdbc:h2:mem:x")));
     }
 
     @Test
-    public void testKeyFallsBackToTheConnectionWithoutAnId() {
+    void keyFallsBackToTheConnectionWithoutAnId() {
         assertEquals("jdbc:h2:mem:x", SchemaTool.trackingKey(conf(null, "jdbc:h2:mem:x")));
     }
 
     @Test
-    public void testKeyIsStableWithNeitherIdNorConnection() {
+    void keyIsStableWithNeitherIdNorConnection() {
         assertEquals(SchemaTool.trackingKey(conf(null, null)),
             SchemaTool.trackingKey(conf(null, null)));
     }
 
     @Test
-    public void testOnePersistenceUnitDoesNotSeeAnothersDrop() {
+    void onePersistenceUnitDoesNotSeeAnothersDrop() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         JDBCConfiguration b = conf("unit-b", "jdbc:h2:mem:b");
 
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
 
-        assertFalse("unit-b must not see unit-a's drop",
-            SchemaTool.isDroppedTable(b, "FOO"));
-        assertTrue("unit-a must see its own drop",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertFalse(SchemaTool.isDroppedTable(b, "FOO"),
+            "unit-b must not see unit-a's drop");
+        assertTrue(SchemaTool.isDroppedTable(a, "FOO"),
+            "unit-a must see its own drop");
     }
 
     @Test
-    public void testTwoFactoriesOfOneUnitShareTheTracking() {
+    void twoFactoriesOfOneUnitShareTheTracking() {
         // this is what lets a factory see what a closed generateSchema()
         // factory dropped; the two are separate configuration instances
         SchemaTool.trackScriptDdl(conf("unit-a", "jdbc:h2:mem:a"), "DROP TABLE FOO");
@@ -88,7 +88,7 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testClearingOneUnitLeavesAnotherIntact() {
+    void clearingOneUnitLeavesAnotherIntact() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         JDBCConfiguration b = conf("unit-b", "jdbc:h2:mem:b");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
@@ -96,13 +96,13 @@ public class TestSchemaToolDroppedTables {
 
         SchemaTool.clearDroppedTables(b);
 
-        assertTrue("clearing unit-b must not discard unit-a's tracking",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertTrue(SchemaTool.isDroppedTable(a, "FOO"),
+            "clearing unit-b must not discard unit-a's tracking");
         assertFalse(SchemaTool.isDroppedTable(b, "FOO"));
     }
 
     @Test
-    public void testCreatingTheTableAgainForgetsIt() {
+    void creatingTheTableAgainForgetsIt() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
         SchemaTool.trackScriptDdl(a, "CREATE TABLE FOO (ID INTEGER)");
@@ -111,12 +111,12 @@ public class TestSchemaToolDroppedTables {
     }
 
     @Test
-    public void testEntryIsConsumedWhenNotSpecCompliant() {
+    void entryIsConsumedWhenNotSpecCompliant() {
         JDBCConfiguration a = conf("unit-a", "jdbc:h2:mem:a");
         SchemaTool.trackScriptDdl(a, "DROP TABLE FOO");
 
         assertTrue(SchemaTool.isDroppedTable(a, "FOO"));
-        assertFalse("the entry suppresses one create only",
-            SchemaTool.isDroppedTable(a, "FOO"));
+        assertFalse(SchemaTool.isDroppedTable(a, "FOO"),
+            "the entry suppresses one create only");
     }
 }

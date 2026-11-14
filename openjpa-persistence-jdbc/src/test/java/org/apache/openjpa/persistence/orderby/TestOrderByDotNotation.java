@@ -18,12 +18,17 @@
  */
 package org.apache.openjpa.persistence.orderby;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests @OrderBy with dot notation on ElementCollection of embeddables
@@ -35,9 +40,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - propertyDotNotationTest
  * - fieldDotNotationTest
  */
-public class TestOrderByDotNotation extends SingleEMFTestCase {
+class TestOrderByDotNotation extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             UnenhancedObOwnerProperty.class,
@@ -53,7 +58,8 @@ public class TestOrderByDotNotation extends SingleEMFTestCase {
      * Expected order DESC: 88444, 01824, 01801
      * Corresponds to: addr2, addr3, addr1
      */
-    public void testPropertyDotNotationOrderBy() {
+    @Test
+    void propertyDotNotationOrderBy() {
         UnenhancedObAddress addr1 = new UnenhancedObAddress(
             "1 Network Drive", "Burlington", "MA",
             new UnenhancedObZipCode("01801"));
@@ -101,7 +107,8 @@ public class TestOrderByDotNotation extends SingleEMFTestCase {
      * Addresses have zip codes: 01801, 88444, 01824.
      * Expected order DESC: 88444, 01824, 01801
      */
-    public void testFieldDotNotationOrderBy() {
+    @Test
+    void fieldDotNotationOrderBy() {
         UnenhancedObAddress addr1 = new UnenhancedObAddress(
             "1 Network Drive", "Burlington", "MA",
             new UnenhancedObZipCode("01801"));

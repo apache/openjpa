@@ -18,17 +18,18 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.slice.jdbc.DistributedJDBCConfiguration;
 
 public abstract class SliceTestCase extends SingleEMFTestCase {
     @Override
-    protected void setUp(Object... props) {
+    public void setUp(Object... props) {
         super.setUp(props);
-        assertTrue(emf.getClass() + " is not a slice configuration. Check" +
-            " that BrokerFactory for the persistence unit is set to slice",
-             emf.getConfiguration() instanceof DistributedJDBCConfiguration);
+        assertInstanceOf(DistributedJDBCConfiguration.class, emf.getConfiguration(), emf.getClass()
+                + " is not a slice configuration. Check that BrokerFactory for the persistence unit is set to slice");
 
     }
 

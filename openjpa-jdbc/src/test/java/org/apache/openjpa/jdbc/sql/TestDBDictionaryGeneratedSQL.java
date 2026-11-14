@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -29,17 +29,18 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.util.UserException;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class TestDBDictionaryGeneratedSQL {
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
     @Test
-    public void testCreateTableLongNameException() {
+    void createTableLongNameException() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -71,7 +72,7 @@ public class TestDBDictionaryGeneratedSQL {
 
 
     @Test
-    public void testThrowsExceptionWithSchemaSet() {
+    void throwsExceptionWithSchemaSet() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -103,7 +104,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testSchemaNameIsNotConsidered() {
+    void schemaNameIsNotConsidered() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -132,7 +133,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testOverrideProperty() {
+    void overrideProperty() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -165,7 +166,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testOverridePropertyShortName() {
+    void overridePropertyShortName() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -195,7 +196,7 @@ public class TestDBDictionaryGeneratedSQL {
     }
 
     @Test
-    public void testDropColumnWithDelimiters() {
+    void dropColumnWithDelimiters() {
         final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
 
@@ -222,6 +223,6 @@ public class TestDBDictionaryGeneratedSQL {
 
         String[] sqls = dict.getDropColumnSQL(column);
         assertEquals(1, sqls.length);
-        assertEquals(sqls[0], "ALTER TABLE `NameIsRight` DROP COLUMN `MyColumn`");
+        assertEquals("ALTER TABLE `NameIsRight` DROP COLUMN `MyColumn`", sqls[0]);
     }
 }

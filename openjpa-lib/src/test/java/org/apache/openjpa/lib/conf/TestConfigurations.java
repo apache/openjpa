@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
 import org.apache.openjpa.lib.util.Options;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -33,10 +34,10 @@ import static org.junit.Assert.*;
  *
  * @author Abe White
  */
-public class TestConfigurations extends AbstractTestCase {
+class TestConfigurations extends AbstractTestCase {
 
     @Test
-    public void testParsePlugin() {
+    void parsePlugin() {
         String str = null;
         assertNull(Configurations.getClassName(str));
         assertNull(Configurations.getProperties(str));
@@ -61,7 +62,7 @@ public class TestConfigurations extends AbstractTestCase {
     }
 
     @Test
-    public void testParseProperties() {
+    void parseProperties() {
         Options opts = Configurations.parseProperties(null);
         assertEquals(0, opts.size());
 
@@ -89,7 +90,7 @@ public class TestConfigurations extends AbstractTestCase {
     }
 
     @Test
-    public void testCombinePlugins() {
+    void combinePlugins() {
         assertPluginsCombined("jpa", null,
             null, null,
             "jpa", null);

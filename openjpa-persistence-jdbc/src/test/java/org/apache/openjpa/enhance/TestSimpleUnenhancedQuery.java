@@ -17,9 +17,13 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A simple query fails with unenhanced (or runtime enhanced classes)
@@ -32,8 +36,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
-	@Override
+class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
 		setUp(CLEAR_TABLES, UnenhancedPObject.class,"openjpa.RuntimeUnenhancedClasses", "supported");
 		EntityManager em = emf.createEntityManager();
@@ -42,7 +46,8 @@ public class TestSimpleUnenhancedQuery extends SingleEMFTestCase {
 		em.getTransaction().commit();
 	}
 
-	public void testExtentQuery() {
+    @Test
+    void extentQuery() {
 		EntityManager em = emf.createEntityManager();
 		assertFalse(em.createQuery("SELECT p FROM UnenhancedPObject p")
 				.getResultList().isEmpty());

@@ -26,25 +26,23 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigInteger;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.RestoreStateType;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchGroupTestObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestRestoreValues extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestRestoreValues
-     */
-    public TestRestoreValues(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(FetchGroupTestObject.class);
 
         FetchGroupTestObject pc = new FetchGroupTestObject();
@@ -74,12 +72,13 @@ public class TestRestoreValues extends BaseKernelTest {
         return pm;
     }
 
-    public void testUnloadedFieldDirtiedBeforeLoadedField() {
+    @Test
+    void unloadedFieldDirtiedBeforeLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
 
-        assertNotNull("fetch object is null", pc);
+        assertNotNull(pc, "fetch object is null");
 
         startTx(pm);
         pc.setB("3");
@@ -92,7 +91,8 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testUnloadedFieldDirtiedAfterLoadedField() {
+    @Test
+    void unloadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
@@ -108,7 +108,8 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testLoadedFieldDirtiedAfterLoadedField() {
+    @Test
+    void loadedFieldDirtiedAfterLoadedField() {
         OpenJPAEntityManager pm = getPM();
         FetchGroupTestObject pc = (FetchGroupTestObject) pm.find
             (FetchGroupTestObject.class, _oid);
@@ -125,7 +126,8 @@ public class TestRestoreValues extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testNewInstanceUnmodifiedInTransaction() {
+    @Test
+    void newInstanceUnmodifiedInTransaction() {
         FetchGroupTestObject pc = new FetchGroupTestObject();
         pc.setA(2);
         pc.setB("3");

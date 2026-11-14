@@ -18,10 +18,18 @@
  */
 package org.apache.openjpa.jta;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.lang.reflect.Method;
+
 import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 /**
  * Simulates a container transaction around a test method.
@@ -44,48 +52,36 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public abstract class ContainerTest extends SingleEMFTestCase {
+public class TransactionWrapper implements InvocationInterceptor {
     ManagedRuntime runtime;
 
     @Override
-    public void setUp(Object...props) {
-        super.setUp(props);
+    public void interceptTestMethod(Invocation<Void> invocation,
+            ReflectiveInvocationContext<Method> invocationContext,
+            ExtensionContext extensionContext) throws Throwable
+    {
+        SingleEMFTestCase test = (SingleEMFTestCase)extensionContext.getRequiredTestInstance();
+        OpenJPAEntityManagerFactorySPI emf = test.getEmf();
         runtime = emf.getConfiguration().getManagedRuntimeInstance();
         assertNotNull(runtime);
-    }
 
-    @Override
-    public void runTest() throws Throwable {
         TransactionManager txm = runtime.getTransactionManager();
         txm.begin();
         try {
-            super.runTest();
+            invocation.proceed();
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
-        }
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        try {
+        } finally {
             if (emf != null && emf.isOpen()) {
                 // can't use AbstractPersistenceTestCase.closeEMF() due to using managed transactions
                 // closeAllOpenEMs(emf);
                 emf.close();
             }
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful()) {
-                throw e;
-            }
-        } finally {
-            emf = null;
         }
     }
 
-    protected void commit() {
+    public void commit() {
         try {
             runtime.getTransactionManager().commit();
         } catch (Throwable e) {
@@ -93,13 +89,11 @@ public abstract class ContainerTest extends SingleEMFTestCase {
         }
     }
 
-    protected void rollback() {
+    public void rollback() {
         try {
             runtime.getTransactionManager().rollback();
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-
-
 }

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.lib.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -26,14 +29,12 @@ import java.io.Writer;
 
 import javax.xml.parsers.SAXParser;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import static org.junit.Assert.*;
 
 
 /**
@@ -42,7 +43,7 @@ import static org.junit.Assert.*;
  *
  * @author Abe White
  */
-public class TestDocTypeReader {
+class TestDocTypeReader {
 
     private String _docType = null;
     private String _validXML = null;
@@ -53,8 +54,8 @@ public class TestDocTypeReader {
     private String _xmlWithDocType = null;
 
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         StringBuilder docType = new StringBuilder();
         docType.append("<!DOCTYPE foo [\n");
         docType.append("\t<!ELEMENT foo (bar)>\n");
@@ -108,7 +109,7 @@ public class TestDocTypeReader {
      * Test against expected doc type inclusion behavior.
      */
     @Test
-    public void testIncludesDocType() throws IOException {
+    void includesDocType() throws Exception {
         assertEquals(_validXML, getIncludedString(_validXML, null, 1));
         assertEquals(_validXML, getIncludedString(_validXML, null, 7));
         assertEquals(_validHTML, getIncludedString(_validHTML, null, 1));
@@ -130,7 +131,7 @@ public class TestDocTypeReader {
      * doc types.
      */
     @Test
-    public void testStreamWithDocType() throws IOException {
+    void streamWithDocType() throws Exception {
         assertEquals(_xmlWithDocType, getIncludedString
             (_xmlWithDocType, null, 1));
         assertEquals(_xmlWithDocType, getIncludedString
@@ -176,7 +177,7 @@ public class TestDocTypeReader {
      * Test that validation occurs correctly.
      */
     @Test
-    public void testValidation() throws IOException, SAXException {
+    void validation() throws Exception {
         SAXParser parser = XMLFactory.getSAXParser(false, false);
         InputSource source = new InputSource();
 

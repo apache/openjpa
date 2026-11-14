@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -26,6 +29,8 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that CriteriaDelete/CriteriaUpdate on an entity whose table does
@@ -38,9 +43,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * auto-created. This mirrors the TCK scenario where the DoesNotExist
  * table is intentionally absent from the DDL scripts.
  */
-public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase {
+class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedDoesNotExistEntity.class,
               "openjpa.RuntimeUnenhancedClasses", "supported",
@@ -52,7 +57,8 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
      * CriteriaDelete on non-existent table should throw RuntimeException
      * and mark transaction for rollback.
      */
-    public void testCriteriaDeleteOnNonExistentTable() {
+    @Test
+    void criteriaDeleteOnNonExistentTable() {
         EntityManager em = emf.createEntityManager();
         boolean pass = false;
         try {
@@ -70,8 +76,8 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
                     + "CriteriaDelete on non-existent table");
             } catch (RuntimeException e) {
                 // expected
-                assertTrue("Transaction should be marked for rollback",
-                    em.getTransaction().getRollbackOnly());
+                assertTrue(em.getTransaction().getRollbackOnly(),
+                    "Transaction should be marked for rollback");
                 pass = true;
             }
         } finally {
@@ -80,7 +86,7 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
             }
             em.close();
         }
-        assertTrue("Test should have passed", pass);
+        assertTrue(pass, "Test should have passed");
     }
 
     /**
@@ -88,7 +94,8 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
      * CriteriaUpdate on non-existent table should throw RuntimeException
      * and mark transaction for rollback.
      */
-    public void testCriteriaUpdateOnNonExistentTable() {
+    @Test
+    void criteriaUpdateOnNonExistentTable() {
         EntityManager em = emf.createEntityManager();
         boolean pass = false;
         try {
@@ -109,8 +116,8 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
                     + "CriteriaUpdate on non-existent table");
             } catch (RuntimeException e) {
                 // expected
-                assertTrue("Transaction should be marked for rollback",
-                    em.getTransaction().getRollbackOnly());
+                assertTrue(em.getTransaction().getRollbackOnly(),
+                    "Transaction should be marked for rollback");
                 pass = true;
             }
         } finally {
@@ -119,6 +126,6 @@ public class TestUnenhancedRollbackOnNonExistentTable extends SingleEMFTestCase 
             }
             em.close();
         }
-        assertTrue("Test should have passed", pass);
+        assertTrue(pass, "Test should have passed");
     }
 }

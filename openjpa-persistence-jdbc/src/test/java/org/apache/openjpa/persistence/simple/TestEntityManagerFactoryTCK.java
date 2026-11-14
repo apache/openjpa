@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,6 +52,8 @@ import jakarta.persistence.criteria.Subquery;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPA 3.2 EntityManagerFactory methods:
@@ -53,9 +61,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - getMetamodel on closed EMF throws IllegalStateException
  * - callInTransaction
  */
-public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
+class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, AllFieldTypes.class, PropertyAccessMember.class);
     }
@@ -64,7 +72,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * Test that addNamedQuery preserves MaxResults from the source query
      * and that createNamedQuery returns a query with those MaxResults.
      */
-    public void testAddNamedQueryMaxResults() {
+    @Test
+    void addNamedQueryMaxResults() {
         EntityManager em = emf.createEntityManager();
         try {
             // Insert test data
@@ -86,14 +95,14 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
             // Create named query and verify maxResults is preserved
             Query namedQuery = em.createNamedQuery("testMaxQuery");
-            assertEquals("MaxResults should be preserved from addNamedQuery",
-                2, namedQuery.getMaxResults());
+            assertEquals(2,
+                namedQuery.getMaxResults(), "MaxResults should be preserved from addNamedQuery");
 
             // Execute and verify only 2 results returned
             em.getTransaction().begin();
             List results = namedQuery.getResultList();
-            assertEquals("Should return maxResults number of results",
-                2, results.size());
+            assertEquals(2,
+                results.size(), "Should return maxResults number of results");
             em.getTransaction().commit();
 
             // Verify changing maxResults on instance doesn't affect template
@@ -102,8 +111,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
             // New instance should still have original maxResults
             Query namedQuery2 = em.createNamedQuery("testMaxQuery");
-            assertEquals("Template maxResults should be unchanged",
-                2, namedQuery2.getMaxResults());
+            assertEquals(2,
+                namedQuery2.getMaxResults(), "Template maxResults should be unchanged");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -115,7 +124,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test that addNamedQuery preserves FlushMode from the source query.
      */
-    public void testAddNamedQueryFlushMode() {
+    @Test
+    void addNamedQueryFlushMode() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create a JPQL query with FlushMode.AUTO
@@ -128,8 +138,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
             // Create named query and verify flushMode is preserved
             Query namedQuery = em.createNamedQuery("testFlushQuery");
-            assertEquals("FlushMode should be preserved from addNamedQuery",
-                FlushModeType.AUTO, namedQuery.getFlushMode());
+            assertEquals(FlushModeType.AUTO,
+                namedQuery.getFlushMode(), "FlushMode should be preserved from addNamedQuery");
 
             // Change flush mode on instance
             namedQuery.setFlushMode(FlushModeType.COMMIT);
@@ -137,8 +147,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
             // New instance should still have original flush mode
             Query namedQuery2 = em.createNamedQuery("testFlushQuery");
-            assertEquals("Template FlushMode should be unchanged",
-                FlushModeType.AUTO, namedQuery2.getFlushMode());
+            assertEquals(FlushModeType.AUTO,
+                namedQuery2.getFlushMode(), "Template FlushMode should be unchanged");
         } finally {
             em.close();
         }
@@ -147,7 +157,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test that addNamedQuery preserves LockMode from the source query.
      */
-    public void testAddNamedQueryLockMode() {
+    @Test
+    void addNamedQueryLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create a JPQL query with LockMode.NONE
@@ -162,23 +173,23 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             em.getTransaction().begin();
             Query namedQuery = em.createNamedQuery("testLockQuery");
             LockModeType lmt = namedQuery.getLockMode();
-            assertNotNull("LockMode should not be null", lmt);
-            assertEquals("LockMode should be preserved from addNamedQuery",
-                LockModeType.NONE, lmt);
+            assertNotNull(lmt, "LockMode should not be null");
+            assertEquals(LockModeType.NONE,
+                lmt, "LockMode should be preserved from addNamedQuery");
 
             // Change lock mode on instance
             namedQuery.setLockMode(LockModeType.PESSIMISTIC_READ);
             LockModeType newLmt = namedQuery.getLockMode();
-            assertTrue("LockMode should be changed",
-                newLmt == LockModeType.PESSIMISTIC_READ
-                || newLmt == LockModeType.PESSIMISTIC_WRITE);
+            assertTrue(newLmt == LockModeType.PESSIMISTIC_READ
+                || newLmt == LockModeType.PESSIMISTIC_WRITE,
+                "LockMode should be changed");
             em.getTransaction().commit();
 
             // New instance should still have original lock mode
             em.getTransaction().begin();
             Query namedQuery2 = em.createNamedQuery("testLockQuery");
-            assertEquals("Template LockMode should be unchanged",
-                LockModeType.NONE, namedQuery2.getLockMode());
+            assertEquals(LockModeType.NONE,
+                namedQuery2.getLockMode(), "Template LockMode should be unchanged");
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
@@ -191,7 +202,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test that addNamedQuery can replace an existing named query.
      */
-    public void testAddNamedQueryReplacement() {
+    @Test
+    void addNamedQueryReplacement() {
         EntityManager em = emf.createEntityManager();
         try {
             // Register a query with maxResults=1
@@ -210,8 +222,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             emf.addNamedQuery("replaceableQuery", query2);
 
             Query nq2 = em.createNamedQuery("replaceableQuery");
-            assertEquals("Replaced query should have new maxResults",
-                5, nq2.getMaxResults());
+            assertEquals(5,
+                nq2.getMaxResults(), "Replaced query should have new maxResults");
         } finally {
             em.close();
         }
@@ -220,7 +232,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test that addNamedQuery works with native queries.
      */
-    public void testAddNamedQueryNative() {
+    @Test
+    void addNamedQueryNative() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create a native query with maxResults
@@ -233,8 +246,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
 
             // Create named query and verify maxResults is preserved
             Query namedQuery = em.createNamedQuery("testNativeQuery");
-            assertEquals("MaxResults should be preserved for native query",
-                1, namedQuery.getMaxResults());
+            assertEquals(1,
+                namedQuery.getMaxResults(), "MaxResults should be preserved for native query");
         } finally {
             em.close();
         }
@@ -243,7 +256,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test that getMetamodel() on a closed EMF throws IllegalStateException.
      */
-    public void testGetMetamodelAfterCloseThrowsIllegalState() {
+    @Test
+    void getMetamodelAfterCloseThrowsIllegalState() {
         // Create a separate EMF so we can close it without affecting
         // other tests
         EntityManagerFactory separateEmf = createEMF(AllFieldTypes.class);
@@ -266,7 +280,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * Test callInTransaction: persist an entity inside the transaction
      * function and verify it is committed.
      */
-    public void testCallInTransaction() {
+    @Test
+    void callInTransaction() {
         // Use callInTransaction to persist an entity
         AllFieldTypes result = emf.callInTransaction(em -> {
             AllFieldTypes aft = new AllFieldTypes();
@@ -275,8 +290,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             return aft;
         });
 
-        assertNotNull("Result from callInTransaction should not be null",
-            result);
+        assertNotNull(result,
+            "Result from callInTransaction should not be null");
 
         // Verify the entity was committed to the database
         EntityManager em = emf.createEntityManager();
@@ -286,7 +301,7 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
                 + "WHERE a.stringField = 'callInTransaction'",
                 Long.class);
             long count = q.getSingleResult();
-            assertEquals("Entity should be committed to database", 1L, count);
+            assertEquals(1L, count, "Entity should be committed to database");
         } finally {
             em.close();
         }
@@ -295,7 +310,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test callInTransaction rolls back on exception.
      */
-    public void testCallInTransactionRollback() {
+    @Test
+    void callInTransactionRollback() {
         try {
             emf.callInTransaction(em -> {
                 AllFieldTypes aft = new AllFieldTypes();
@@ -316,8 +332,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
                 + "WHERE a.stringField = 'shouldBeRolledBack'",
                 Long.class);
             long count = q.getSingleResult();
-            assertEquals("Entity should not be in database after rollback",
-                0L, count);
+            assertEquals(0L,
+                count, "Entity should not be in database after rollback");
         } finally {
             em.close();
         }
@@ -326,7 +342,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     /**
      * Test runInTransaction: persist an entity and verify commit.
      */
-    public void testRunInTransaction() {
+    @Test
+    void runInTransaction() {
         emf.runInTransaction(em -> {
             AllFieldTypes aft = new AllFieldTypes();
             aft.setStringField("runInTransaction");
@@ -341,7 +358,7 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
                 + "WHERE a.stringField = 'runInTransaction'",
                 Long.class);
             long count = q.getSingleResult();
-            assertEquals("Entity should be committed to database", 1L, count);
+            assertEquals(1L, count, "Entity should be committed to database");
         } finally {
             em.close();
         }
@@ -352,7 +369,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * This mirrors the TCK addNamedQueryMaxResultTest which fails with
      * AbstractMethodError when criteria queries are stored and recreated.
      */
-    public void testAddNamedQueryCriteriaMaxResults() {
+    @Test
+    void addNamedQueryCriteriaMaxResults() {
         EntityManager em = emf.createEntityManager();
         try {
             // Insert test data
@@ -379,20 +397,20 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             em.getTransaction().begin();
             TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
                 "criteria_max_query", AllFieldTypes.class);
-            assertEquals("MaxResults should be preserved for criteria query",
-                2, namedQuery.getMaxResults());
+            assertEquals(2,
+                namedQuery.getMaxResults(), "MaxResults should be preserved for criteria query");
 
             List<AllFieldTypes> results = namedQuery.getResultList();
-            assertEquals("Should return maxResults number of results",
-                2, results.size());
+            assertEquals(2,
+                results.size(), "Should return maxResults number of results");
             em.getTransaction().commit();
 
             // Verify changing maxResults on instance doesn't affect template
             namedQuery.setMaxResults(3);
             TypedQuery<AllFieldTypes> namedQuery2 = em.createNamedQuery(
                 "criteria_max_query", AllFieldTypes.class);
-            assertEquals("Template maxResults should be unchanged",
-                2, namedQuery2.getMaxResults());
+            assertEquals(2,
+                namedQuery2.getMaxResults(), "Template maxResults should be unchanged");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -405,7 +423,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * Test addNamedQuery with criteria-based TypedQuery preserves FlushMode.
      * Mirrors TCK addNamedQueryFlushModeTest.
      */
-    public void testAddNamedQueryCriteriaFlushMode() {
+    @Test
+    void addNamedQueryCriteriaFlushMode() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create criteria query with FlushMode.AUTO
@@ -421,15 +440,15 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             // Recreate and verify flush mode
             TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
                 "criteria_flush_query", AllFieldTypes.class);
-            assertEquals("FlushMode should be preserved for criteria query",
-                FlushModeType.AUTO, namedQuery.getFlushMode());
+            assertEquals(FlushModeType.AUTO,
+                namedQuery.getFlushMode(), "FlushMode should be preserved for criteria query");
 
             // Change on instance should not affect template
             namedQuery.setFlushMode(FlushModeType.COMMIT);
             TypedQuery<AllFieldTypes> namedQuery2 = em.createNamedQuery(
                 "criteria_flush_query", AllFieldTypes.class);
-            assertEquals("Template FlushMode should be unchanged",
-                FlushModeType.AUTO, namedQuery2.getFlushMode());
+            assertEquals(FlushModeType.AUTO,
+                namedQuery2.getFlushMode(), "Template FlushMode should be unchanged");
         } finally {
             em.close();
         }
@@ -439,7 +458,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * Test addNamedQuery with criteria-based TypedQuery preserves LockMode.
      * Mirrors TCK addNamedQueryLockModeTest.
      */
-    public void testAddNamedQueryCriteriaLockMode() {
+    @Test
+    void addNamedQueryCriteriaLockMode() {
         EntityManager em = emf.createEntityManager();
         try {
             // Create criteria query with LockMode.NONE
@@ -457,9 +477,9 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             TypedQuery<AllFieldTypes> namedQuery = em.createNamedQuery(
                 "criteria_lock_query", AllFieldTypes.class);
             LockModeType lmt = namedQuery.getLockMode();
-            assertNotNull("LockMode should not be null", lmt);
-            assertEquals("LockMode should be preserved for criteria query",
-                LockModeType.NONE, lmt);
+            assertNotNull(lmt, "LockMode should not be null");
+            assertEquals(LockModeType.NONE,
+                lmt, "LockMode should be preserved for criteria query");
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
@@ -475,7 +495,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * so re-labelling the named query as JPQL either fails to parse or silently
      * changes the query.
      */
-    public void testAddNamedQueryCriteriaWithParameter() {
+    @Test
+    void addNamedQueryCriteriaWithParameter() {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -510,7 +531,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * A string literal of a criteria query is rendered unescaped by the CQL
      * toString(), so a named query derived from that string would not parse.
      */
-    public void testAddNamedQueryCriteriaWithQuotedLiteral() {
+    @Test
+    void addNamedQueryCriteriaWithQuotedLiteral() {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -539,7 +561,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * by the CQL toString(), so a named query derived from that string would not
      * parse.
      */
-    public void testAddNamedQueryCriteriaWithSubquery() {
+    @Test
+    void addNamedQueryCriteriaWithSubquery() {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -576,7 +599,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * rendering is not parseable JPQL; a replay that went back through that
      * string would fail rather than return the rows.
      */
-    public void testAddNamedQueryCriteriaRepeatedReplay() {
+    @Test
+    void addNamedQueryCriteriaRepeatedReplay() {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -628,7 +652,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * so two named queries registered from the same tree are two objects over
      * one piece of state. Replaying both concurrently must still be safe.
      */
-    public void testAddNamedQueryCriteriaConcurrentReplayOfTwoSnapshots() throws Exception {
+    @Test
+    void addNamedQueryCriteriaConcurrentReplayOfTwoSnapshots() throws Exception {
         seedCriteriaData();
         final String[] names = {"criteria_shared_tree_a", "criteria_shared_tree_b"};
         EntityManager em = emf.createEntityManager();
@@ -661,7 +686,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * the QueryMetaData is shared by every replay, so its translation to a
      * kernel expression tree must not be corrupted by a concurrent replay.
      */
-    public void testAddNamedQueryCriteriaConcurrentReplay() throws Exception {
+    @Test
+    void addNamedQueryCriteriaConcurrentReplay() throws Exception {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -746,7 +772,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * A criteria update and a criteria delete are registered through the same
      * path and have no lock mode to capture, so they must be replayable too.
      */
-    public void testAddNamedQueryCriteriaUpdateAndDelete() {
+    @Test
+    void addNamedQueryCriteriaUpdateAndDelete() {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -787,7 +814,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * criteria query, a set operation is not snapshotted when it is handed to
      * createQuery(), so the named query shares the very trees the caller built.
      */
-    public void testAddNamedQueryCriteriaSetOperation() throws Exception {
+    @Test
+    void addNamedQueryCriteriaSetOperation() throws Exception {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -812,8 +840,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             assertEquals(List.of("named0", "named1"), selected(em.createQuery(union).getResultList()));
 
             for (int i = 0; i < 3; i++) {
-                assertEquals("replay " + i, List.of("named0", "named1"),
-                    selected(em.createNamedQuery("criteria_union_query").getResultList()));
+                assertEquals(List.of("named0", "named1"), selected(em.createNamedQuery("criteria_union_query").getResultList()),
+                    "replay " + i);
             }
         } finally {
             em.close();
@@ -828,7 +856,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * own, so they too must be replayable concurrently. Both match no row, so
      * every replay is expected to update nothing, whichever order they run in.
      */
-    public void testAddNamedQueryCriteriaUpdateAndDeleteConcurrentReplay() throws Exception {
+    @Test
+    void addNamedQueryCriteriaUpdateAndDeleteConcurrentReplay() throws Exception {
         seedCriteriaData();
         EntityManager em = emf.createEntityManager();
         try {
@@ -906,7 +935,8 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
      * Verifies that the returned entity from callInTransaction can be
      * found and compared via equals() with an entity from find().
      */
-    public void testCallInTransactionPropertyAccessEquals() {
+    @Test
+    void callInTransactionPropertyAccessEquals() {
         final int MEMBER_ID = 42;
 
         PropertyAccessMember member = emf.callInTransaction(em -> {
@@ -916,23 +946,23 @@ public class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
             return m;
         });
 
-        assertNotNull("Result from callInTransaction should not be null",
-            member);
+        assertNotNull(member,
+            "Result from callInTransaction should not be null");
 
         // Find the entity via a different EntityManager
         EntityManager em = emf.createEntityManager();
         try {
             PropertyAccessMember found = em.find(PropertyAccessMember.class,
                 MEMBER_ID);
-            assertNotNull("Entity should be found after callInTransaction",
-                found);
-            assertEquals("Entity memberId should match",
-                MEMBER_ID, found.getMemberId());
-            assertEquals("Entity memberName should match",
-                String.valueOf(MEMBER_ID), found.getMemberName());
+            assertNotNull(found,
+                "Entity should be found after callInTransaction");
+            assertEquals(MEMBER_ID,
+                found.getMemberId(), "Entity memberId should match");
+            assertEquals(String.valueOf(MEMBER_ID),
+                found.getMemberName(), "Entity memberName should match");
             // This is the key assertion: equals() with getClass() check
-            assertEquals("Persisted and found entities should be equal",
-                member, found);
+            assertEquals(member,
+                found, "Persisted and found entities should be equal");
         } finally {
             em.close();
         }

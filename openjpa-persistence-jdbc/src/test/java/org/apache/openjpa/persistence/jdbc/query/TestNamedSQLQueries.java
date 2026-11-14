@@ -27,27 +27,21 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.NamedSQL;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestNamedSQLQueries
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestNamedSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-
-    /** Creates a new instance of TestNamedSQLQueries */
-    public TestNamedSQLQueries() {
-    }
-
-    public TestNamedSQLQueries(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(NamedSQL.class);
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -64,7 +58,8 @@ public class TestNamedSQLQueries
         pm.close();
     }
 
-    public void testNamedQuery() {
+    @Test
+    void namedQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = (OpenJPAQuery) pm.createNativeQuery("cls",NamedSQL.class);
 
@@ -76,7 +71,8 @@ public class TestNamedSQLQueries
         pm.close();
     }
 
-    public void testSystem() {
+    @Test
+    void system() {
         // test top-level package.jdoquery
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         //FIXME jthomas

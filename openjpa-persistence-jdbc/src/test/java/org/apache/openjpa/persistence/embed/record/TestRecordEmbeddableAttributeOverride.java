@@ -18,23 +18,30 @@
  */
 package org.apache.openjpa.persistence.embed.record;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests record embeddables with @AttributeOverride to map the same
  * record type to different column names within one entity.
  */
-public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
+class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(WarehouseEntity.class, AddressRecord.class,
                 CLEAR_TABLES);
     }
 
-    public void testPersistAndLoadWithAttributeOverride() {
+    @Test
+    void persistAndLoadWithAttributeOverride() {
         final AddressRecord ship =
                 new AddressRecord("10 Dock Rd", "PortCity", "30001");
         final AddressRecord bill =
@@ -67,7 +74,8 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em2.close();
     }
 
-    public void testUpdateOneOverriddenEmbeddable() {
+    @Test
+    void updateOneOverriddenEmbeddable() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Update",
                 new AddressRecord("Old Ship St", "OldCity", "11111"),
                 new AddressRecord("Old Bill St", "OldCity", "22222"));
@@ -103,7 +111,8 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em3.close();
     }
 
-    public void testDeleteWithAttributeOverride() {
+    @Test
+    void deleteWithAttributeOverride() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Delete",
                 new AddressRecord("S", "C", "00000"),
                 new AddressRecord("S2", "C2", "99999"));
@@ -129,7 +138,8 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em3.close();
     }
 
-    public void testOneEmbeddableNull() {
+    @Test
+    void oneEmbeddableNull() {
         final WarehouseEntity wh = new WarehouseEntity("WH-Partial",
                 new AddressRecord("Ship St", "ShipCity", "55555"),
                 null);
@@ -150,7 +160,8 @@ public class TestRecordEmbeddableAttributeOverride extends SingleEMFTestCase {
         em2.close();
     }
 
-    public void testRecordEqualityAcrossOverrides() {
+    @Test
+    void recordEqualityAcrossOverrides() {
         final AddressRecord same =
                 new AddressRecord("Same St", "SameCity", "77777");
         final WarehouseEntity wh =

@@ -20,6 +20,9 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -40,22 +43,19 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.jdbc.common.apps.RawSQL;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-
-public class TestRawSQL extends BaseJDBCTest {
+class TestRawSQL extends BaseJDBCTest {
 
     /** Creates a new instance of TestRawSQL */
     private Object[] _oids = new Object[3];
     private String[] _strings = new String[]{ "a", "b", "c" };
     private int[] _ints = new int[]{ 1, 2, 3 };
 
-    public TestRawSQL(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(RawSQL.class);
         EntityManager em = currentEntityManager();
         Broker broker = JPAFacadeHelper.toBroker(em);
@@ -72,7 +72,8 @@ public class TestRawSQL extends BaseJDBCTest {
         em.close();
     }
 
-    public void testLoadWithResult()
+    @Test
+    void loadWithResult()
         throws Exception {
 
         EntityManager em = currentEntityManager();
@@ -95,7 +96,8 @@ public class TestRawSQL extends BaseJDBCTest {
         em.close();
     }
 
-        public void testLoadWithPCROP()
+    @Test
+    void loadWithPCROP()
         throws Exception {
 
         EntityManager em = currentEntityManager();

@@ -18,34 +18,41 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Calendar;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Calendar @Id with runtime enhancement (unenhanced entity),
  * mirroring the TCK entity A2_Property which uses property access
  * with @Id @Temporal(TemporalType.DATE) on a Calendar getter.
  */
-public class TestUnenhancedCalendarId extends SingleEMFTestCase {
+class TestUnenhancedCalendarId extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedCalendarIdPropertyEntity.class,
             "openjpa.RuntimeUnenhancedClasses", "supported");
     }
 
-    public void testCreateEMFWithCalendarId() {
+    @Test
+    void createEMFWithCalendarId() {
         // Verify that creating the EMF with a Calendar @Id entity doesn't throw
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
     }
 
-    public void testPersistAndFindWithCalendarId() {
+    @Test
+    void persistAndFindWithCalendarId() {
         Calendar now = Calendar.getInstance();
         // Truncate to day precision to match @Temporal(DATE)
         now.set(Calendar.HOUR_OF_DAY, 0);
@@ -64,7 +71,7 @@ public class TestUnenhancedCalendarId extends SingleEMFTestCase {
 
         UnenhancedCalendarIdPropertyEntity found =
             em.find(UnenhancedCalendarIdPropertyEntity.class, now);
-        assertNotNull("Entity should be found by Calendar id", found);
+        assertNotNull(found, "Entity should be found by Calendar id");
         assertEquals("test", found.getStringVersion());
 
         em.close();

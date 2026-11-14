@@ -18,35 +18,35 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that dictionaries without measured invalid table words do not change
  * default table and sequence names, even if they are reserved words.
  */
-public class TestValidDefaultTableName {
+class TestValidDefaultTableName {
 
     @Test
-    public void testDefaultTableNamesAreNotChanged() throws Exception {
+    void defaultTableNamesAreNotChanged() throws Exception {
         for (Class<? extends DBDictionary> cls : List.of(DBDictionary.class, DB2Dictionary.class, H2Dictionary.class,
                 HSQLDictionary.class, MariaDBDictionary.class, MySQLDictionary.class, OracleDictionary.class,
                 PostgresDictionary.class, SQLServerDictionary.class)) {
             DBDictionary dict = cls.getDeclaredConstructor().newInstance();
             Configurations.configureInstance(dict, new JDBCConfigurationImpl(), (String) null, "DBDictionary");
-            assertTrue(cls.getSimpleName(), dict.getInvalidTableWordSet().isEmpty());
+            assertTrue(dict.getInvalidTableWordSet().isEmpty(), cls.getSimpleName());
             for (String name : List.of("Window", "Order", "User", "SELECT", "Current_date", "Person")) {
                 DBIdentifier sName = DBIdentifier.newTable(name);
-                assertSame(cls.getSimpleName() + " " + name, sName, dict.getValidDefaultTableName(sName));
+                assertSame(sName, dict.getValidDefaultTableName(sName), cls.getSimpleName() + " " + name);
                 DBIdentifier seqName = DBIdentifier.newSequence(name);
-                assertSame(cls.getSimpleName() + " " + name, seqName, dict.getValidDefaultSequenceName(seqName));
+                assertSame(seqName, dict.getValidDefaultSequenceName(seqName), cls.getSimpleName() + " " + name);
             }
         }
     }

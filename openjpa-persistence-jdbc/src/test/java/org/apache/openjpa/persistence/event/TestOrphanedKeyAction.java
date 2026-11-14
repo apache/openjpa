@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.event;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +34,8 @@ import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.util.OpenJPAException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test the {@link OrphanedKeyAction} plugin.</p>
@@ -38,17 +43,16 @@ import org.apache.openjpa.util.OpenJPAException;
  * @author Abe White
  */
 @AllowFailure(message="surefire excluded")
-public class TestOrphanedKeyAction
-    extends AbstractTestCase {
+public class TestOrphanedKeyAction extends AbstractTestCase {
 
     private Object _oid = null;
 
-    public TestOrphanedKeyAction(String s) {
-        super(s, "eventcactusapp");
+    public TestOrphanedKeyAction() {
+        super("eventcactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         RuntimeTest1 pc = new RuntimeTest1();
@@ -70,7 +74,8 @@ public class TestOrphanedKeyAction
         endEm(pm);
     }
 
-    public void testLog() {
+    @Test
+    void log() {
         Map map = getOrphanedKeyConfiguration("log(Level=FATAL)");
 
         OpenJPAEntityManagerFactory pmf = getEmf(map);
@@ -88,7 +93,8 @@ public class TestOrphanedKeyAction
         pmf.close();
     }
 
-    public void testException() {
+    @Test
+    void exception() {
         Map map = getOrphanedKeyConfiguration("exception");
         OpenJPAEntityManagerFactory pmf = getEmf(map);
 
@@ -111,7 +117,8 @@ public class TestOrphanedKeyAction
         pmf.close();
     }
 
-    public void testNone() {
+    @Test
+    void none() {
         Map map = getOrphanedKeyConfiguration("none");
         OpenJPAEntityManagerFactory pmf = getEmf(map);
         OpenJPAEntityManager pm = pmf.createEntityManager();

@@ -18,12 +18,21 @@
  */
 package org.apache.openjpa.persistence.jpql.treatjoinon;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for JPQL TREAT, JOIN ON, and embeddable query result handling.
@@ -35,12 +44,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - Scientific notation with TREAT
  * - Embeddable objects from query projections are not managed
  */
-public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
+class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
-        setUp(TProduct.class, TSoftwareProduct.class, 
-                TCustomSoftwareProduct.class, TLineItem.class, 
+        setUp(TProduct.class, TSoftwareProduct.class,
+                TCustomSoftwareProduct.class, TLineItem.class,
                 TOrder.class, TCustomer.class, TCountry.class,
                 DROP_TABLES);
         createTestData();
@@ -65,7 +74,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         sp3.setName("Software C");
         sp3.setRevisionNumber(1.0);
         em.persist(sp3);
-        
+
         TCustomSoftwareProduct cs1 = new TCustomSoftwareProduct();
         cs1.setName("Custom Software A");
         cs1.setRevisionNumber(1.0);
@@ -101,10 +110,10 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         li3.setProduct(hw);
         li3.setOrder(order2);
         em.persist(li3);
-        
+
         TOrder order3 = new TOrder();
         em.persist(order3);
-        
+
         TLineItem li4 = new TLineItem();
         li4.setQuantity(1);
         li4.setProduct(cs1);
@@ -128,7 +137,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test TREAT in WHERE clause: TREAT(p AS TSoftwareProduct).revisionNumber
      * Corresponds to TCK treatInWhereClauseTest
      */
-    public void testTreatInWhereClause() {
+    @Test
+    void treatInWhereClause() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -145,7 +155,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testTreatLeafInWhereClause() {
+    @Test
+    void treatLeafInWhereClause() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -164,7 +175,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test TREAT in WHERE with D suffix for double literal.
      * Corresponds to TCK appropriateSuffixesTest
      */
-    public void testTreatWithDoubleSuffix() {
+    @Test
+    void treatWithDoubleSuffix() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -185,7 +197,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test TREAT in WHERE with scientific notation.
      * Corresponds to TCK sqlApproximateNumericLiteralTest
      */
-    public void testTreatWithScientificNotation() {
+    @Test
+    void treatWithScientificNotation() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -206,7 +219,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test JOIN TREAT(path AS SubType) alias.
      * Corresponds to TCK treatJoinClassTest
      */
-    public void testTreatJoinClass() {
+    @Test
+    void treatJoinClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -217,7 +231,7 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
         // TREAT join should only return software products (not hardware)
         // We have 3 line items with software products (sp1, sp2, cp1) and 1 with hardware
         assertNotNull(results);
-        assertEquals("TREAT join should return software products, including the especialized ones", 3, results.size());
+        assertEquals(3, results.size(), "TREAT join should return software products, including the especialized ones");
         assertTrue(results.contains("Software A"));
         assertTrue(results.contains("Software B"));
         assertTrue(results.contains("Custom Software A"));
@@ -232,7 +246,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test JOIN ... ON (condition) clause.
      * Corresponds to TCK joinOnExpressionTest
      */
-    public void testJoinOnExpression() {
+    @Test
+    void joinOnExpression() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -251,7 +266,8 @@ public class TestTreatJoinOnEmbeddable extends SingleEMFTestCase {
      * Test that embeddable objects returned from query projections are not managed.
      * Corresponds to TCK embeddableNotManagedTest
      */
-    public void testEmbeddableNotManagedInQueryResult() {
+    @Test
+    void embeddableNotManagedInQueryResult() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

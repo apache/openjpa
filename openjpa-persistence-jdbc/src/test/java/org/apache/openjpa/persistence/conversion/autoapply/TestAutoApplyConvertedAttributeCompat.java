@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.conversion.autoapply;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.sql.SQLException;
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.Attribute;
@@ -32,21 +38,23 @@ import jakarta.persistence.metamodel.Attribute;
  * declared <code>@Basic</code> still gets its converter, since 4.1.x rejected
  * it.
  */
-public class TestAutoApplyConvertedAttributeCompat extends AbstractAutoApplyTestCase {
+class TestAutoApplyConvertedAttributeCompat extends AbstractAutoApplyTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUpUnit(List.of(UnenhancedAutoApplyCompatEntity.class,
             UnenhancedAutoApplyBasicEntity.class),
             "openjpa.Compatibility", "MapAutoApplyConvertedFields=false");
     }
 
-    public void testUnannotatedAttributesAreNotMapped() {
+    @Test
+    void unannotatedAttributesAreNotMapped() {
         assertNull(persistentField(UnenhancedAutoApplyCompatEntity.class, "sku"));
         assertNull(persistentField(UnenhancedAutoApplyCompatEntity.class, "weight"));
     }
 
-    public void testValuesAreNotStored() throws SQLException {
+    @Test
+    void valuesAreNotStored() throws SQLException {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedAutoApplyCompatEntity e = new UnenhancedAutoApplyCompatEntity();
@@ -66,14 +74,16 @@ public class TestAutoApplyConvertedAttributeCompat extends AbstractAutoApplyTest
         assertNull(columnType("AA_COMPAT", "WEIGHT"));
     }
 
-    public void testMetamodelHasNoSuchAttributes() {
+    @Test
+    void metamodelHasNoSuchAttributes() {
         List<String> names = emf.getMetamodel()
             .entity(UnenhancedAutoApplyCompatEntity.class).getAttributes().stream()
             .map(Attribute::getName).toList();
         assertEquals(List.of("id"), names);
     }
 
-    public void testBasicAttributesAreStillConverted() {
+    @Test
+    void basicAttributesAreStillConverted() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedAutoApplyBasicEntity e = new UnenhancedAutoApplyBasicEntity();

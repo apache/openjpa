@@ -21,29 +21,31 @@ package org.apache.openjpa.persistence.jpql.literals;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.BooleanRepresentationFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestLiteralInSQL extends SQLListenerTestCase {
+class TestLiteralInSQL extends SQLListenerTestCase {
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof PostgresDictionary || (dict instanceof H2Dictionary && dict.getMajorVersion() > 1);
+    }
+
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, "openjpa.jdbc.QuerySQLCache", "false");
     }
 
-    public void testTrueInSQL() {
+    @Test
+    void trueInSQL() {
         EntityManager em = emf.createEntityManager();
 
         em = emf.createEntityManager();
-        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
-        //Disable on Postgres for now....
-        if (dict instanceof PostgresDictionary || (dict instanceof H2Dictionary && dict.getMajorVersion() > 1)) {
-            setTestsDisabled(true);
-            return;
-        }
 
         resetSQL();
         Query q = em.createQuery("SELECT f FROM AllFieldTypes f WHERE f.booleanField=true");
@@ -58,7 +60,9 @@ public class TestLiteralInSQL extends SQLListenerTestCase {
         q.getResultList();
         // The literal should not be converted to a parameter marker since UseLiteralInSQL is true.
         // However, the literal should be converted to a 1 because we store boolean as int/smallint.
-        assertContainsSQL("booleanField = 1");
+        DBDictionary dict = getDBDictionary();
+        String val = BooleanRepresentationFactory.BOOLEAN.equals(dict.getBooleanRepresentation()) ? "true" : "1";
+        assertContainsSQL("booleanField = " + val);
 
     }
 }

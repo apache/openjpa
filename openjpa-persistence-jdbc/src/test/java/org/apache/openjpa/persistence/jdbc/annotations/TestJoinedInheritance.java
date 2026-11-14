@@ -18,24 +18,29 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for InheritanceType.JOINED
  *
  * @author Steve Kim
  */
-public class TestJoinedInheritance extends SingleEMFTestCase {
+class TestJoinedInheritance extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
             CLEAR_TABLES);
     }
 
-    public void testInheritance() {
+    @Test
+    void inheritance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest3 pc = new AnnoTest3();

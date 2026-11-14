@@ -20,6 +20,10 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,36 +34,13 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementOpOrderPCSub;
 import org.apache.openjpa.persistence.jdbc.common.apps.OpOrder;
 import org.apache.openjpa.persistence.jdbc.common.apps.OpOrderPCSub;
+import org.junit.jupiter.api.Test;
 
 
-public class TestOperationOrderUpdateManager
-    extends AbstractTestCase {
-
-
-//	private boolean  = true;//Boolean.valueOf(bool);
-
-
+class TestOperationOrderUpdateManager extends AbstractTestCase {
     private static boolean _mapped = false;
 
     private EntityManagerFactory emf;
-
-    /*protected boolean skipTest() {
-        if (!getName().startsWith("testAuto"))
-            return false;
-
-		emf = getEmf();
-
-        JDBCConfiguration conf =
-            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
-            OpenJPAPersistence.cast(emf)).getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-        return !dict.supportsAutoAssign;
-    }
-*/
-    public TestOperationOrderUpdateManager(String name)
-    {
-    	super(name);
-    }
 
     private void insertTest(boolean autoAssign) {
         OpOrder oid = (autoAssign) ? insertAutoAssign() : insert();
@@ -255,37 +236,45 @@ public class TestOperationOrderUpdateManager
     }
 
 
-    public void testInsert() {
+    @Test
+    void testInsert() {
         insertTest(false);
     }
 
-    public void testAutoAssignInsert() {
+    @Test
+    void autoAssignInsert() {
         insertTest(true);
     }
 
 
-    public void testDeleteCircular() {
+    @Test
+    void deleteCircular() {
         deleteCircularTest(false);
     }
 
-    public void testAutoAssignDeleteCircular() {
+    @Test
+    void autoAssignDeleteCircular() {
         deleteCircularTest(true);
     }
 
-    public void testDelete() {
+    @Test
+    void delete() {
         deleteTest(false);
     }
 
-    public void testAutoAssignDelete() {
+    @Test
+    void autoAssignDelete() {
         deleteTest(true);
     }
 
 
-    public void testInsertCircularConstraint() {
+    @Test
+    void insertCircularConstraint() {
         insertCircularConstraintTest(false);
     }
 
-    public void testAutoAssignInsertCircularConstraint() {
+    @Test
+    void autoAssignInsertCircularConstraint() {
         insertCircularConstraintTest(true);
     }
 

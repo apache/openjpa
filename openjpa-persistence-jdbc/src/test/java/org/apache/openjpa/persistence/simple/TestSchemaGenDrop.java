@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,23 +29,26 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that Persistence.generateSchema() with database.action=drop
  * and a drop-script-source actually drops the table.
  * Reproduces TCK se.schemaGeneration.annotations.table pattern.
  */
-public class TestSchemaGenDrop extends SingleEMFTestCase {
+class TestSchemaGenDrop extends SingleEMFTestCase {
 
     private static final String SCHEMA_DIR = System.getProperty("java.io.tmpdir")
         + File.separator + "openjpa_schemagen_test";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
-    public void testDropViaGenerateSchema() throws Exception {
+    @Test
+    void dropViaGenerateSchema() throws Exception {
         File dir = new File(SCHEMA_DIR);
         dir.mkdirs();
 
@@ -63,10 +69,10 @@ public class TestSchemaGenDrop extends SingleEMFTestCase {
 
         Persistence.generateSchema("test", props);
 
-        assertTrue("Create script should exist", new File(createFile).exists());
-        assertTrue("Drop script should exist", new File(dropFile).exists());
-        assertTrue("Create script should have content", new File(createFile).length() > 0);
-        assertTrue("Drop script should have content", new File(dropFile).length() > 0);
+        assertTrue(new File(createFile).exists(), "Create script should exist");
+        assertTrue(new File(dropFile).exists(), "Drop script should exist");
+        assertTrue(new File(createFile).length() > 0, "Create script should have content");
+        assertTrue(new File(dropFile).length() > 0, "Drop script should have content");
 
         // Step 2: Verify data persists (table exists from setUp)
         EntityManager em = emf.createEntityManager();

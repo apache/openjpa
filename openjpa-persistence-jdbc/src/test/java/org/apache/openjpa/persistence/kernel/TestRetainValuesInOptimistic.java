@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -34,25 +37,16 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestRetainValuesInOptimistic extends BaseKernelTest {
+class TestRetainValuesInOptimistic extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestRetainValuesInOptimistic
-     */
-    public TestRetainValuesInOptimistic() {
-    }
-
-    public TestRetainValuesInOptimistic(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
         throws Exception {
-        super.setUp();
 
         deleteAll(RuntimeTest1.class);
 
@@ -65,12 +59,14 @@ public class TestRetainValuesInOptimistic extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testRetain() {
+    @Test
+    void retain() {
         clearTest(true);
         optLockTest(true);
     }
 
-    public void testNotRetain() {
+    @Test
+    void notRetain() {
         clearTest(false);
         optLockTest(false);
     }

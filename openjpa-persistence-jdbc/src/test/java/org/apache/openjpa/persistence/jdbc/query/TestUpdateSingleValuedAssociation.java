@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.Cache;
@@ -27,6 +31,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
 import org.apache.openjpa.persistence.jdbc.query.domain.Application;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that update query can set single-valued association field to non-null
@@ -41,12 +47,13 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 	private static boolean MUST_BE_NULL = true;
 
-	@Override
-	public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
 		super.setUp(CLEAR_TABLES, Application.class, Applicant.class);
 	}
 
-	public void testUpdateSingleValuedAssociationToNullViaParameter() {
+    @Test
+    void updateSingleValuedAssociationToNullViaParameter() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
 
@@ -56,7 +63,8 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		assertUserNullity(MUST_BE_NULL);
 	}
 
-	public void testUpdateSingleValuedAssociationToNullViaLiteral() {
+    @Test
+    void updateSingleValuedAssociationToNullViaLiteral() {
 		createApplicationWithNonNullApplicant();
 		assertUserNullity(!MUST_BE_NULL);
 
@@ -66,7 +74,8 @@ public class TestUpdateSingleValuedAssociation extends SingleEMFTestCase {
 		assertUserNullity(MUST_BE_NULL);
 	}
 
-	public void testUpdateSingleValuedAssociationToNonNullViaParameter() {
+    @Test
+    void updateSingleValuedAssociationToNonNullViaParameter() {
 		Application pc = createApplicationWithNullApplicant();
 		assertNull(pc.getUser());
 

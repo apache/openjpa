@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that sibling classes with a shared id value declared in their
@@ -30,10 +33,10 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestSharedMappedSuperclassIdValue
+class TestSharedMappedSuperclassIdValue
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, NoGenMappedSuperclassBase.class,
                 NoGenMappedSuperclassL2.class, NoGenEntityL3.class,
@@ -56,7 +59,8 @@ public class TestSharedMappedSuperclassIdValue
         em.close();
     }
 
-    public void testFind() {
+    @Test
+    void find() {
         EntityManager em = emf.createEntityManager();
         NoGenEntityL3 ent = em.find(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
@@ -71,7 +75,8 @@ public class TestSharedMappedSuperclassIdValue
         em.close();
     }
 
-    public void testGetReference() {
+    @Test
+    void getReference() {
         EntityManager em = emf.createEntityManager();
         NoGenEntityL3 ent = em.getReference(NoGenEntityL3.class, 1L);
         assertNotNull(ent);
@@ -87,9 +92,4 @@ public class TestSharedMappedSuperclassIdValue
 
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestSharedMappedSuperclassIdValue.class);
-    }
 }
-

@@ -18,23 +18,29 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestStringId extends AbstractPersistenceTestCase {
+class TestStringId extends AbstractPersistenceTestCase {
     private static EntityManagerFactory _emf;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
         _emf = createEMF(StringIdEntity.class);
 
         cleanup();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(_emf);
         _emf = null;
@@ -49,7 +55,8 @@ public class TestStringId extends AbstractPersistenceTestCase {
         em.close();
     }
 
-    public void testTrailingWhitespace() {
+    @Test
+    void trailingWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId("ABC ");
 
@@ -60,17 +67,18 @@ public class TestStringId extends AbstractPersistenceTestCase {
         assertTrue(em.contains(sie1));
 
         StringIdEntity sie2 = em.find(StringIdEntity.class, "ABC");
-        assertSame("Find should return the same instance with trailing whitespace", sie1, sie2);
+        assertSame(sie1, sie2, "Find should return the same instance with trailing whitespace");
 
         StringIdEntity sie3 = em.find(StringIdEntity.class, "ABC  ");
-        assertSame("Find should return the same instance with trailing whitespace", sie1, sie3);
+        assertSame(sie1, sie3, "Find should return the same instance with trailing whitespace");
 
-        assertNotSame("Leading WS should not match", sie1, em.find(StringIdEntity.class, " ABC"));
+        assertNotSame(sie1, em.find(StringIdEntity.class, " ABC"), "Leading WS should not match");
 
         em.close();
     }
 
-    public void testLeadingWhitespace() {
+    @Test
+    void leadingWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId(" ABC");
 
@@ -81,18 +89,19 @@ public class TestStringId extends AbstractPersistenceTestCase {
         assertTrue(em.contains(sie1));
 
         StringIdEntity sie2 = em.find(StringIdEntity.class, "ABC");
-        assertNotSame("Find should not return the same instance with leading whitespace", sie1, sie2);
+        assertNotSame(sie1, sie2, "Find should not return the same instance with leading whitespace");
 
         StringIdEntity sie3 = em.find(StringIdEntity.class, "   ABC");
-        assertNotSame("Find should not return the same instance with leading whitespace", sie1, sie3);
+        assertNotSame(sie1, sie3, "Find should not return the same instance with leading whitespace");
 
         assertSame(sie1, em.find(StringIdEntity.class, " ABC"));
 
-        assertNotSame("Trailing WS should not match", sie1, em.find(StringIdEntity.class, "ABC "));
+        assertNotSame(sie1, em.find(StringIdEntity.class, "ABC "), "Trailing WS should not match");
         em.close();
     }
 
-    public void testInnerWhitespace() {
+    @Test
+    void innerWhitespace() {
         StringIdEntity sie1 = new StringIdEntity();
         sie1.setId("A B C");
 
@@ -103,14 +112,14 @@ public class TestStringId extends AbstractPersistenceTestCase {
         assertTrue(em.contains(sie1));
 
         StringIdEntity sie2 = em.find(StringIdEntity.class, "ABC");
-        assertNotSame("Find should not return the same instance with inner whitespace", sie1, sie2);
+        assertNotSame(sie1, sie2, "Find should not return the same instance with inner whitespace");
 
         StringIdEntity sie3 = em.find(StringIdEntity.class, "   ABC");
-        assertNotSame("Find should not return the same instance with inner whitespace", sie1, sie3);
+        assertNotSame(sie1, sie3, "Find should not return the same instance with inner whitespace");
 
         assertSame(sie1, em.find(StringIdEntity.class, "A B C"));
 
-        assertNotSame("Trailing WS should not match", sie1, em.find(StringIdEntity.class, "ABC "));
+        assertNotSame(sie1, em.find(StringIdEntity.class, "ABC "), "Trailing WS should not match");
 
         em.close();
     }

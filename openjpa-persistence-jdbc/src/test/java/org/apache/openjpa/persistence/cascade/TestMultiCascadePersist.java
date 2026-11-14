@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.cascade;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -28,15 +31,18 @@ import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMultiCascadePersist extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
       setUp(DROP_TABLES, Vertex.class, VertexType.class, Edge.class);
     }
 
-    public void testSingleTransaction() {
+    @Test
+    void singleTransaction() {
         OpenJPAEntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
 

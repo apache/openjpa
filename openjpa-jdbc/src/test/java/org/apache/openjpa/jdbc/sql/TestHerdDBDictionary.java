@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -38,13 +39,14 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.StoreContext;
 import org.hsqldb.types.Types;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
-import org.junit.Test;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class TestHerdDBDictionary {
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
 
     final Statement mockStatement = context.mock(Statement.class);
     final Connection mockConnection = context.mock(Connection.class);
@@ -55,12 +57,12 @@ public class TestHerdDBDictionary {
     final StoreContext sc = null;
 
     @Test
-    public void testBootDBDictionaryWithUserSchemaName() throws Exception {
+    void bootDBDictionaryWithUserSchemaName() throws Exception {
         testBootDBDictionary(true);
     }
 
     @Test
-    public void testBootDBDictionaryWithoutUserSchemaName() throws Exception {
+    void bootDBDictionaryWithoutUserSchemaName() throws Exception {
         testBootDBDictionary(false);
     }
 

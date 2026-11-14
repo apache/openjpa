@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
@@ -30,14 +32,16 @@ import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPQL subquery
  */
-public class TestSubquery
+class TestSubquery
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Magazine.class, Publisher.class, Employee.class,
@@ -222,7 +226,8 @@ public class TestSubquery
 
         };
 
-    public void testSubquery2() {
+    @Test
+    void subquery2() {
         EntityManager em = emf.createEntityManager();
         for (int i = 0; i < querys2.length; i++) {
             String q = querys2[i];
@@ -234,7 +239,8 @@ public class TestSubquery
     }
 
 
-    public void testSubquery() {
+    @Test
+    void subquery() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
 
@@ -276,7 +282,8 @@ public class TestSubquery
      * originally caused problems for DBDictionaries which used DATABASE
      * syntax.
      */
-    public void testSubSelectMaxDateRange() {
+    @Test
+    void subSelectMaxDateRange() {
         String query =
             "SELECT e,d from Employee e, Dependent d "
                 + "WHERE e.empId = :empid "
@@ -292,7 +299,8 @@ public class TestSubquery
         em.close();
     }
 
-    public void testUpdateWithCorrelatedSubquery() {
+    @Test
+    void updateWithCorrelatedSubquery() {
         String update = "update Customer c set c.creditRating = ?1 where EXISTS" +
            " (select o from  in(c.orders)  o)";
         EntityManager em = emf.createEntityManager();

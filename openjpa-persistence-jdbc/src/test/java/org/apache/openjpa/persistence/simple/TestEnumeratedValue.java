@@ -18,24 +18,30 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 @EnumeratedValue for custom enum-to-DB mapping.
  */
-public class TestEnumeratedValue extends SingleEMFTestCase {
+class TestEnumeratedValue extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, EnumeratedValueEntity.class);
     }
 
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueEntity e = new EnumeratedValueEntity();
@@ -52,7 +58,8 @@ public class TestEnumeratedValue extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testAllEnumValues() {
+    @Test
+    void allEnumValues() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueStatus.values().length; i++) {
@@ -74,7 +81,8 @@ public class TestEnumeratedValue extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testStoredAsCustomValue() {
+    @Test
+    void storedAsCustomValue() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueEntity e = new EnumeratedValueEntity();

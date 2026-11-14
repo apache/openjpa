@@ -18,25 +18,27 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.query.common.apps.RuntimeTest2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
+class TestEJBDeleteUpdateImpl extends BaseQueryTest {
 
     RuntimeTest1 runt1;
     RuntimeTest2 runt2;
     Entity1 ent;
 
-    public TestEJBDeleteUpdateImpl(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
         deleteAll(RuntimeTest2.class);
         deleteAll(Entity1.class);
@@ -61,7 +63,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testUpdate1() {
+    @Test
+    void update1() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -93,7 +96,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testUpdate2() {
+    @Test
+    void update2() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -128,7 +132,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testDelete1() {
+    @Test
+    void delete1() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -154,7 +159,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testDelete2() {
+    @Test
+    void delete2() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);
@@ -177,7 +183,8 @@ public class TestEJBDeleteUpdateImpl extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testUpdate3() {
+    @Test
+    void update3() {
         OpenJPAEntityManager em =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(em);

@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.pudefaults;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * OPENJPA-2494: This test verifies that a schema defined in an orm's
@@ -29,16 +34,19 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * in other scenarios.
  */
 public class TestSchemaPUDefault extends SQLListenerTestCase {
-
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DB2Dictionary;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PUDefaultSchemaEntity.class, PUSchemaInSequenceAnnotationEntity.class,
             PUSchemaInTableAnnotationEntity.class, PUSchemaInTableMappingEntity.class,
             PUSchemaInSequenceMappingEntity.class);
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -48,7 +56,8 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         return "puDefault";
     }
 
-    public void testSchemaInPUDefault() {
+    @Test
+    void schemaInPUDefault() {
         persist(new PUDefaultSchemaEntity());
 
         // The Sequence and Table SQL should use the PU default schema
@@ -56,7 +65,8 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         assertContainsSQL("INSERT INTO schemaInPUDefaults.PUDefaultSchemaEntity");
     }
 
-    public void testSchemaInSequenceAnnotation() {
+    @Test
+    void schemaInSequenceAnnotation() {
         persist(new PUSchemaInSequenceAnnotationEntity());
 
         // The Sequence SQL should use the schema defined in the annotation
@@ -65,7 +75,8 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         assertContainsSQL("INSERT INTO schemaInPUDefaults.PUSchemaInSequenceAnnotationEntity");
     }
 
-    public void testSchemaInTableAnnotation() {
+    @Test
+    void schemaInTableAnnotation() {
         persist(new PUSchemaInTableAnnotationEntity());
 
         // The Sequence SQL should use the schema defined in the PU default schema
@@ -74,7 +85,8 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         assertContainsSQL("INSERT INTO schemaInTableAnnotation.PUSchemaInTable");
     }
 
-    public void testSchemaInTableMapping() {
+    @Test
+    void schemaInTableMapping() {
         persist(new PUSchemaInTableMappingEntity());
 
         // The Sequence SQL should use the schema defined in the PU default schema
@@ -83,7 +95,8 @@ public class TestSchemaPUDefault extends SQLListenerTestCase {
         assertContainsSQL("INSERT INTO schemaInTableMapping.PUSchemaInTableMapping");
     }
 
-    public void testSchemaInSequenceMapping() {
+    @Test
+    void schemaInSequenceMapping() {
         persist(new PUSchemaInSequenceMappingEntity());
 
         // The Sequence SQL should use the schema defined in the mapping file

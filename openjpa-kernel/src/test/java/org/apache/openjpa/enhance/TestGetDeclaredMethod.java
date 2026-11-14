@@ -18,23 +18,25 @@
  */
 package org.apache.openjpa.enhance;
 
-import org.junit.Test;
-
 import java.lang.reflect.Method;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that {@link Reflection#getDeclaredMethod(Class, String, Class)}
  * returns the most-derived class's method when called from a type hierarchy.
  * See OPENJPA-251.
  */
-public class TestGetDeclaredMethod {
+class TestGetDeclaredMethod {
 
     @Test
-    public void testGetDeclaredMethod() {
+    void getDeclaredMethod() {
         Method meth =
             Reflection.getDeclaredMethod(Impl.class, "getObject", null);
         assertEquals(Impl.class, meth.getDeclaringClass());
@@ -42,7 +44,7 @@ public class TestGetDeclaredMethod {
     }
 
     @Test
-    public void testMostDerived() throws NoSuchMethodException {
+    void mostDerived() throws Exception {
         Method impl = Impl.class.getDeclaredMethod("getObject");
         Method iface = Iface.class.getDeclaredMethod("getObject");
         Method other = Other.class.getDeclaredMethod("getObject");
@@ -59,7 +61,7 @@ public class TestGetDeclaredMethod {
     }
 
     @Test
-    public void testGenerics() throws NoSuchMethodException {
+    void generics() throws Exception {
         List<Method> meths = new ArrayList<>();
         for (Method meth : GenericsImpl.class.getDeclaredMethods()) {
             if ("getObject".equals(meth.getName()))

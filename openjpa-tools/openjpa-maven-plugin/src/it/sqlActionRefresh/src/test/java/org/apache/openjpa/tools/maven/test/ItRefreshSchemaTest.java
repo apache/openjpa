@@ -18,37 +18,35 @@
  */
 package org.apache.openjpa.tools.maven.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
-public class ItRefreshSchemaTest {
+import org.junit.jupiter.api.Test;
+
+class ItRefreshSchemaTest {
 
     /** contains the directory where all generated results are placed */
-    private final static String TARGET_DIR = "target";
+    private static final String TARGET_DIR = "target";
 
     /** the file containing the generated SQL syntax */
-    private final static String SQL_FILE = "database.sql";
+    private static final String SQL_FILE = "database.sql";
 
     /** if the SQL generation has been successful, the following result should be in the SQL file */
-    private final static String VALID_SQL = "ALTER TABLE TEST_ENTITY ADD COLUMN VAL2 VARCHAR(100);";
+    private static final String VALID_SQL = "ALTER TABLE TEST_ENTITY ADD COLUMN VAL2 VARCHAR(100);";
 
     /**
      * check if the generated SQL script is correct.
-     * @throws Exception
      */
     @Test
-    public void testSqlGeneration() throws Exception
-    {
-        File sqlFile = new File( TARGET_DIR, SQL_FILE );
-        BufferedReader in = new BufferedReader( new FileReader( sqlFile ) );
-        String sqlIn = in.readLine();
-        assertEquals( VALID_SQL, sqlIn );
-        sqlIn = in.readLine();
-        assertTrue(sqlIn == null || sqlIn.trim().length() == 0);
+    void sqlGeneration() throws Exception {
+        try (BufferedReader in = new BufferedReader(new FileReader(new File(TARGET_DIR, SQL_FILE)))) {
+            assertEquals(VALID_SQL, in.readLine());
+            String next = in.readLine();
+            assertTrue(next == null || next.isBlank());
+        }
     }
-
 }

@@ -18,18 +18,22 @@
  */
 package org.apache.openjpa.persistence.lifecycle;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.relations.BidiChild;
 import org.apache.openjpa.persistence.relations.BidiParent;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMergeAndPersistWithManagedRelation
+class TestMergeAndPersistWithManagedRelation
     extends SingleEMTestCase {
 
     private long childId;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BidiParent.class, BidiChild.class, CLEAR_TABLES);
 
@@ -44,7 +48,8 @@ public class TestMergeAndPersistWithManagedRelation
         em.close();
     }
 
-    public void testPersistWithManagedRelation() {
+    @Test
+    void persistWithManagedRelation() {
         BidiParent parent = new BidiParent();
         BidiChild child = em.find(BidiChild.class, childId);
         parent.setOneToOneChild(child);
@@ -59,7 +64,8 @@ public class TestMergeAndPersistWithManagedRelation
         assertNotNull(parent);
     }
 
-    public void testMergeWithManagedRelation() {
+    @Test
+    void mergeWithManagedRelation() {
         BidiParent parent = new BidiParent();
         BidiChild child = em.find(BidiChild.class, childId);
         parent.setOneToOneChild(child);

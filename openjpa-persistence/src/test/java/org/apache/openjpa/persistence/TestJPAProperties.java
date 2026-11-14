@@ -24,22 +24,21 @@ import jakarta.persistence.PessimisticLockScope;
 
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests the conversion of user supplied property values to values consumable by the kernel.
  */
-public class TestJPAProperties {
+class TestJPAProperties {
 
     @Test
-    public void testStringConvertedToSpecificationEnum() {
+    void stringConvertedToSpecificationEnum() {
         assertEquals(CacheRetrieveMode.USE, JPAProperties.convertToKernelValue(CacheRetrieveMode.class,
             JPAProperties.CACHE_RETRIEVE_MODE, "USE"));
         assertEquals(CacheStoreMode.BYPASS, JPAProperties.convertToKernelValue(CacheStoreMode.class,
@@ -49,7 +48,7 @@ public class TestJPAProperties {
     }
 
     @Test
-    public void testStringConvertedToKernelEnum() {
+    void stringConvertedToKernelEnum() {
         assertEquals(DataCacheStoreMode.REFRESH, JPAProperties.convertToKernelValue(DataCacheStoreMode.class,
             JPAProperties.CACHE_STORE_MODE, "REFRESH"));
         assertEquals(DataCacheRetrieveMode.BYPASS, JPAProperties.convertToKernelValue(DataCacheRetrieveMode.class,
@@ -57,7 +56,7 @@ public class TestJPAProperties {
     }
 
     @Test
-    public void testEnumConvertedAcrossSpecificationAndKernel() {
+    void enumConvertedAcrossSpecificationAndKernel() {
         assertEquals(DataCacheStoreMode.REFRESH, JPAProperties.convertToKernelValue(DataCacheStoreMode.class,
             JPAProperties.CACHE_STORE_MODE, CacheStoreMode.REFRESH));
         assertEquals(CacheStoreMode.REFRESH, JPAProperties.convertToKernelValue(CacheStoreMode.class,
@@ -69,7 +68,7 @@ public class TestJPAProperties {
     }
 
     @Test
-    public void testMatchingEnumIsPassedThrough() {
+    void matchingEnumIsPassedThrough() {
         assertSame(CacheRetrieveMode.BYPASS, JPAProperties.convertToKernelValue(CacheRetrieveMode.class,
             JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS));
         assertSame(DataCacheStoreMode.USE, JPAProperties.convertToKernelValue(DataCacheStoreMode.class,
@@ -77,27 +76,27 @@ public class TestJPAProperties {
     }
 
     @Test
-    public void testInvalidEnumStringFails() {
+    void invalidEnumStringFails() {
         try {
             JPAProperties.convertToKernelValue(CacheRetrieveMode.class, JPAProperties.CACHE_RETRIEVE_MODE, "NOPE");
             fail("Expected an IllegalArgumentException for an invalid cache retrieve mode");
         } catch (IllegalArgumentException iae) {
             String message = iae.getMessage();
-            assertTrue(message, message.contains(JPAProperties.CACHE_RETRIEVE_MODE));
-            assertTrue(message, message.contains("NOPE"));
-            assertTrue(message, message.contains("USE"));
-            assertTrue(message, message.contains("BYPASS"));
+            assertTrue(message.contains(JPAProperties.CACHE_RETRIEVE_MODE), message);
+            assertTrue(message.contains("NOPE"), message);
+            assertTrue(message.contains("USE"), message);
+            assertTrue(message.contains("BYPASS"), message);
         }
     }
 
     @Test
-    public void testNullValues() {
+    void nullValues() {
         assertNull(JPAProperties.convertToKernelValue(CacheStoreMode.class, JPAProperties.CACHE_STORE_MODE, null));
         assertNull(JPAProperties.convertToKernelValue(CacheStoreMode.class, JPAProperties.CACHE_STORE_MODE, "null"));
     }
 
     @Test
-    public void testNonEnumValuesAreUnchanged() {
+    void nonEnumValuesAreUnchanged() {
         assertEquals(Integer.valueOf(12345), JPAProperties.convertToKernelValue(Integer.class,
             JPAProperties.QUERY_TIMEOUT, "12345"));
         assertEquals(Integer.valueOf(500), JPAProperties.convertToKernelValue(int.class,
@@ -109,7 +108,7 @@ public class TestJPAProperties {
     }
 
     @Test
-    public void testLockScopeString() {
+    void lockScopeString() {
         assertEquals(PessimisticLockScope.EXTENDED, JPAProperties.convertToKernelValue(PessimisticLockScope.class,
             JPAProperties.LOCK_SCOPE, "EXTENDED"));
     }

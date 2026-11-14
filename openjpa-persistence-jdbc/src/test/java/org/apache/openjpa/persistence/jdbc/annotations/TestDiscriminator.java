@@ -18,21 +18,26 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test discriminator mappings.</p>
  *
  * @author Abe White
  */
-public class TestDiscriminator
+class TestDiscriminator
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class,
             CLEAR_TABLES);
@@ -42,7 +47,7 @@ public class TestDiscriminator
 //        setUp(Entity1.class, Entity2.class, AnnoTest1.class, CLEAR_TABLES);
     }
 
-//    public void testNoDefaultJoinedDiscriminatorWithoutColumn() {
+//    @Test void noDefaultJoinedDiscriminatorWithoutColumn() {
 //        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
 //        ClassMapping cls = conf.getMappingRepositoryInstance().
 //            getMapping(Entity1.class, null, true);
@@ -57,19 +62,19 @@ public class TestDiscriminator
 //        assertEquals(0, cls.getDiscriminator().getColumns().length);
 //    }
 
-    public void testJoinedDiscriminatorWithColumn() {
+    @Test
+    void joinedDiscriminatorWithColumn() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         MappingRepository repo = conf.getMappingRepositoryInstance();
         ClassMapping cls = repo.getMapping(AnnoTest1.class,
             null, true);
-        assertTrue(cls.getDiscriminator().getStrategy()
-            instanceof ValueMapDiscriminatorStrategy);
+        assertInstanceOf(ValueMapDiscriminatorStrategy.class, cls.getDiscriminator().getStrategy());
         assertEquals(1, cls.getDiscriminator().getColumns().length);
         assertEquals("ANNOCLS", cls.getDiscriminator().getColumns()[0].
             getName());
     }
 
-//    public void testDefaultFlatDiscriminator() {
+//    @Test void defaultFlatDiscriminator() {
 //        ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
 //            getMappingRepositoryInstance().getMapping(Entity2.class,
 //            null, true);

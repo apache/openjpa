@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.embed.lazy;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +37,9 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
+class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
     protected List<String> _sql = new ArrayList<>();
 
@@ -42,7 +48,8 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
      * lazy embeddable (openjpa:persistent) with a mix of eager and lazy fields are lazily
      * loaded (or not) as expected.
      */
-    public void testLazyEmbeddableFields() throws Exception {
+    @Test
+    void lazyEmbeddableFields() throws Exception {
         _sql.clear();
         HashMap<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.JDBCListeners",
@@ -82,14 +89,14 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
             _sql.clear();
 
             Recliner r2 = em.find(Recliner.class, recId);
-            assertNotNull("Find returned null object", r2);
+            assertNotNull(r2, "Find returned null object");
             assertTrue(selectContains("REC_TABLE", _sql, "REC_STYLE", "RECID_ID", "RECID_COLOR"));
             assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME",
                 "BH_DIAMETER", "BH_DEPTH"));
             em.detach(r2);
             // Lazy embeds should be null after detach.
-            assertNull("Embedded field guy is null before getter is called", r2.getGuy());
-            assertNull("Embedded field holder is null before getter is called", r2.getHolder());
+            assertNull(r2.getGuy(), "Embedded field guy is null before getter is called");
+            assertNull(r2.getHolder(), "Embedded field holder is null before getter is called");
 
             // verify lazy embeds will load on access post-detach and merge
             r2 = em.merge(r2);
@@ -99,7 +106,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
             _sql.clear();
             // verify lazy embeds will load on access after find
             r2 = em.find(Recliner.class, recId);
-            assertNotNull("Find returned null object", r2);
+            assertNotNull(r2, "Find returned null object");
             assertTrue(selectContains("REC_TABLE", _sql, "REC_STYLE", "RECID_ID", "RECID_COLOR"));
             assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT", "GUY_NAME",
                 "BH_DIAMETER", "BH_DEPTH"));
@@ -114,7 +121,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
     private void verifyLazyLoading(Recliner r2) {
         _sql.clear();
         Guy g = r2.getGuy();
-        assertNotNull("Guy is not null", g);
+        assertNotNull(g, "Guy is not null");
         assertTrue(selectContains("REC_TABLE", _sql, "GUY_NAME"));
         assertFalse(selectContains("REC_TABLE", _sql, "GUY_HEIGHT", "GUY_WEIGHT"));
         _sql.clear();
@@ -125,7 +132,7 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
         _sql.clear();
         BeverageHolder holder = r2.getHolder();
-        assertNotNull("Holder is not null", holder);
+        assertNotNull(holder, "Holder is not null");
         assertTrue(selectContains("REC_TABLE", _sql, "BH_DEPTH"));
         assertFalse(selectContains("REC_TABLE", _sql, "BH_DIAMETER"));
         _sql.clear();
@@ -175,11 +182,6 @@ public class TestLazyEmbeddable extends AbstractPersistenceTestCase {
 
         try {
             clear(emf1);
-        } catch (Exception e) {
-            // if a test failed, swallow any exceptions that happen
-            // during tear-down, as these just mask the original problem.
-            if (testResult.wasSuccessful())
-                throw e;
         } finally {
             closeEMF(emf1);
         }

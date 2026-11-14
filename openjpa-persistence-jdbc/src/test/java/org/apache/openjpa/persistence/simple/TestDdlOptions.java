@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -26,18 +30,21 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 options member on DDL annotations.
  */
-public class TestDdlOptions extends SingleEMFTestCase {
+class TestDdlOptions extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, OptionsEntity.class);
     }
 
-    public void testColumnOptionsInMetadata() {
+    @Test
+    void columnOptionsInMetadata() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(OptionsEntity.class, null, true);
@@ -49,7 +56,8 @@ public class TestDdlOptions extends SingleEMFTestCase {
         assertEquals("CHECK (name IS NOT NULL)", cols[0].getOptions());
     }
 
-    public void testColumnOptionsInDdl() {
+    @Test
+    void columnOptionsInDdl() {
         ClassMapping mapping = (ClassMapping) emf.getConfiguration()
             .getMetaDataRepositoryInstance()
             .getMetaData(OptionsEntity.class, null, true);
@@ -62,11 +70,12 @@ public class TestDdlOptions extends SingleEMFTestCase {
         assertEquals(1, ddl.length);
 
         // The column DDL should contain the options string
-        assertTrue("DDL should contain column options: " + ddl[0],
-            ddl[0].contains("CHECK (name IS NOT NULL)"));
+        assertTrue(ddl[0].contains("CHECK (name IS NOT NULL)"),
+            "DDL should contain column options: " + ddl[0]);
     }
 
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OptionsEntity e = new OptionsEntity();

@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta.vertical;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -35,31 +38,13 @@ import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub1;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub1Sub2;
 import org.apache.openjpa.persistence.jdbc.common.apps.BaseSub2;
+import org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase;
 import org.apache.openjpa.util.Id;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSubclassJoinGetObjectById
-    extends org.apache.openjpa.persistence.jdbc.kernel.TestSQLListenerTestCase {
-
-
+public class TestSubclassJoinGetObjectById extends TestSQLListenerTestCase {
     private String _outer = "OUTER";
-
-    /** Creates a new instance of TestSubclassJoinGetObjectById */
-    public TestSubclassJoinGetObjectById(String name)
-    {
-    	super(name);
-    }
-
-
-    public boolean skipTest() {
-        //FIXME
-        /*
-        return super.skipTest()
-            || ((JDBCConfiguration) getConfiguration()).
-            getDBDictionaryInstance().joinSyntax == Join.SYNTAX_TRADITIONAL;
-         */
-        return false;
-    }
 
     @Override
     public void setUpTestCase() {
@@ -76,8 +61,9 @@ public class TestSubclassJoinGetObjectById
        deleteAll(Base.class);
     }
 
-    public void testBase()
-    throws Exception {
+    @Test
+    void base()
+        throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
         Object oid = persist(pc);
@@ -106,8 +92,9 @@ public class TestSubclassJoinGetObjectById
         assertSQL(_outer);
     }
 
-    public void testBadId()
-    throws Exception {
+    @Test
+    void badId()
+        throws Exception {
         Base pc = new Base();
         pc.setBaseField(1);
         Object oid = persist(pc);
@@ -123,8 +110,9 @@ public class TestSubclassJoinGetObjectById
         pm.close();
     }
 
-    public void testLeaf()
-    throws Exception {
+    @Test
+    void leaf()
+        throws Exception {
         BaseSub1Sub2 pc = new BaseSub1Sub2();
         pc.setBaseField(4);
         pc.setBaseSub1Field(5);
@@ -156,8 +144,9 @@ public class TestSubclassJoinGetObjectById
         assertSQL(_outer);
     }
 
-    public void testLeaf2()
-    throws Exception {
+    @Test
+    void leaf2()
+        throws Exception {
         BaseSub2 pc = new BaseSub2();
         pc.setBaseField(3);
         pc.setBaseSub2Field(4);
@@ -188,8 +177,9 @@ public class TestSubclassJoinGetObjectById
         assertSQL(_outer);
     }
 
-    public void testMid()
-    throws Exception {
+    @Test
+    void mid()
+        throws Exception {
         BaseSub1 pc = new BaseSub1();
         pc.setBaseField(2);
         pc.setBaseSub1Field(3);

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,6 +28,8 @@ import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that FlushModeType.AUTO causes pending changes to be flushed
@@ -33,14 +38,9 @@ import org.apache.openjpa.persistence.query.common.apps.Entity1;
  * This verifies the fix for the JPA TCK flushModeTest5 failure where
  * a modified entity was not visible in a query with FlushModeType.AUTO.
  */
-public class TestFlushModeAutoQuery extends BaseQueryTest {
-
-    public TestFlushModeAutoQuery(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+class TestFlushModeAutoQuery extends BaseQueryTest {
+    @BeforeEach
+    void setUp() {
         deleteAll(Entity1.class);
 
         // Create test data
@@ -57,13 +57,14 @@ public class TestFlushModeAutoQuery extends BaseQueryTest {
      * (unflushed) changes made in the same transaction are visible
      * to the query. This corresponds to JPA TCK flushModeTest5.
      */
-    public void testFlushModeAutoSeesUnflushedChanges() {
+    @Test
+    void flushModeAutoSeesUnflushedChanges() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         // Modify an entity without flushing
         Entity1 e = em.find(Entity1.class, 100L);
-        assertNotNull("Entity should exist", e);
+        assertNotNull(e, "Entity should exist");
         e.setStringField("modified");
 
         // Query with FlushModeType.AUTO should see the modification
@@ -74,9 +75,9 @@ public class TestFlushModeAutoQuery extends BaseQueryTest {
         @SuppressWarnings("unchecked")
         List<Entity1> results = q.getResultList();
 
-        assertEquals("FlushModeType.AUTO should flush pending changes "
-            + "before query, making the modified entity visible",
-            1, results.size());
+        assertEquals(1,
+            results.size(), "FlushModeType.AUTO should flush pending changes "
+            + "before query, making the modified entity visible");
         assertEquals(100L, results.get(0).getPk());
 
         endTx(em);
@@ -87,12 +88,13 @@ public class TestFlushModeAutoQuery extends BaseQueryTest {
      * Tests that FlushModeType.COMMIT does NOT flush changes before
      * the query (the query may not see unflushed changes via DB).
      */
-    public void testFlushModeCommitMayNotSeeChanges() {
+    @Test
+    void flushModeCommitMayNotSeeChanges() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         Entity1 e = em.find(Entity1.class, 100L);
-        assertNotNull("Entity should exist", e);
+        assertNotNull(e, "Entity should exist");
         e.setStringField("invisible");
 
         // With COMMIT mode, the query may execute in-memory or

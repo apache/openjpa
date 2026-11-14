@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.querycache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,11 +29,13 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestQuerySQLCache extends SQLListenerTestCase {
+class TestQuerySQLCache extends SQLListenerTestCase {
     EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
             DROP_TABLES,
@@ -53,7 +59,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         em.clear();
     }
 
-    public void testNullParamsWithNumericPosition01() {
+    @Test
+    void nullParamsWithNumericPosition01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -92,7 +99,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertEquals(1, resultListNull2.size());
     }
 
-    public void testNullParamsWithNumericPosition02() {
+    @Test
+    void nullParamsWithNumericPosition02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -133,7 +141,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         assertEquals(1, resultListNull2.size());
     }
 
-    public void testNullParamsWithNamedQuery01() {
+    @Test
+    void nullParamsWithNamedQuery01() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());
@@ -176,7 +185,8 @@ public class TestQuerySQLCache extends SQLListenerTestCase {
         em.clear();
     }
 
-    public void testNullParamsWithNamedQuery02() {
+    @Test
+    void nullParamsWithNamedQuery02() {
         // Verify Query SQL Cache is enabled
         EntityManagerImpl eml = (EntityManagerImpl) em;
         assertTrue(eml.getQuerySQLCache());

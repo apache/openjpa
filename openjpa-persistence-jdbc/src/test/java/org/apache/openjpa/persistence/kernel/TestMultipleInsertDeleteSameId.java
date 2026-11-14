@@ -18,20 +18,26 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMultipleInsertDeleteSameId
+class TestMultipleInsertDeleteSameId
     extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(RuntimeTest1.class, CLEAR_TABLES);
     }
 
-    public void testMultipleInsertDelete() {
+    @Test
+    void multipleInsertDelete() {
         em.getTransaction().begin();
 
         RuntimeTest1 o = new RuntimeTest1("one", 99);

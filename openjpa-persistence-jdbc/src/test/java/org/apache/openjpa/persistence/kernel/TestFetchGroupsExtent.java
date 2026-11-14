@@ -38,16 +38,6 @@ import org.apache.openjpa.persistence.kernel.common.apps.
 
 public class TestFetchGroupsExtent extends TestFetchGroups {
 
-    /**
-     * Creates a new instance of TestFetchGroupsExtent
-     */
-    public TestFetchGroupsExtent() {
-    }
-
-    public TestFetchGroupsExtent(String s) {
-        super(s);
-    }
-
     @Override
     protected FetchGroupTestObject getO1(OpenJPAEntityManager pm) {
         Extent e = (Extent) pm.createExtent(FetchGroupTestObject.class,

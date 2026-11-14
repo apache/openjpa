@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.access.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Date;
 
 import jakarta.persistence.Query;
@@ -28,10 +31,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestXMLExplicitAccess extends SingleEMFTestCase {
+class TestXMLExplicitAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)");
@@ -42,12 +47,14 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
     protected String getPersistenceUnitName() {
         return "Access-1";
     }
+
     /**
      * Validates the use of field level access on an
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
-    public void testClassSpecifiedFieldAccess() {
+    @Test
+    void classSpecifiedFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -77,7 +84,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity, mappedsuperclass, and embeddable at the
      * class level.
      */
-    public void testClassSpecifiedPropertyAccess() {
+    @Test
+    void classSpecifiedPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -109,7 +117,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * on specific methods.
      */
 
-    public void testClassSpecifiedMixedSinglePCFieldAccess() {
+    @Test
+    void classSpecifiedMixedSinglePCFieldAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -133,7 +142,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLDefFieldMixedPropAccess dfmpa2 =
             (XMLDefFieldMixedPropAccess)qry.getSingleResult();
         assertEquals(dfmpa, dfmpa2);
-        assertEquals(dfmpa2.getStringField(), "XMLDFMPA");
+        assertEquals("XMLDFMPA", dfmpa2.getStringField());
 
         try {
             qry = em.createNamedQuery("XMLDFMPA.badQuery");
@@ -157,7 +166,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * defined at the class level and property access defined
      * on specific methods.
      */
-    public void testClassSpecifiedMixedSinglePCPropertyAccess() {
+    @Test
+    void classSpecifiedMixedSinglePCPropertyAccess() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -179,7 +189,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLDefPropMixedFieldAccess dpmfa2 =
             (XMLDefPropMixedFieldAccess)qry.getSingleResult();
         assertEquals(dpmfa, dpmfa2);
-        assertEquals(dpmfa2.getStrProp(), "XMLDPMFA");
+        assertEquals("XMLDPMFA", dpmfa2.getStrProp());
 
         try {
             qry = em.createNamedQuery("XMLDPMFA.badQuery");
@@ -201,7 +211,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using field access and an entity
      * subclass using property access get mapped properly.
      */
-    public void testAbstractMappedSuperField() {
+    @Test
+    void abstractMappedSuperField() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-XML",
@@ -232,7 +243,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLPropertySub ps2 =
             (XMLPropertySub)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "AbsMappedSuperName");
+        assertEquals("AbsMappedSuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -258,7 +269,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates that a mapped superclass using property access and an entity
      * subclass using field access get mapped properly.
      */
-    public void testAbstractMappedSuperProperty() {
+    @Test
+    void abstractMappedSuperProperty() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -290,7 +302,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLFieldSub fs2 =
             (XMLFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "AbsMappedSuperName");
+        assertEquals("AbsMappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -317,7 +329,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
-    public void testMappedSuperField() {
+    @Test
+    void mappedSuperField() {
 
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
@@ -349,7 +362,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLPropertySub2 ps2 =
             (XMLPropertySub2)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "MappedSuperName");
+        assertEquals("MappedSuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -376,7 +389,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * entity subclass using property access get mapped properly.
      * The subclass uses a storage field in the superclass.
      */
-    public void testMappedSuperProperty() {
+    @Test
+    void mappedSuperProperty() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -402,7 +416,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLFieldSub2 fs2 =
             (XMLFieldSub2)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "MappedSuperName");
+        assertEquals("MappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -427,7 +441,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * persistent classes within an inheritance hierarchy that uses
      * MappedSuperclass.
      */
-    public void testMixedMappedSuper() {
+    @Test
+    void mixedMappedSuper() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLMixedFieldSub fs = new XMLMixedFieldSub();
@@ -454,7 +469,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLMixedFieldSub fs2 =
             (XMLMixedFieldSub)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "XMLMixedMappedSuperName");
+        assertEquals("XMLMixedMappedSuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -479,7 +494,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
-    public void testEntityFieldDefaultInheritance() {
+    @Test
+    void entityFieldDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLFieldSub3 fs = new XMLFieldSub3();
@@ -508,7 +524,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLFieldSub3 fs2 =
             (XMLFieldSub3)qry.getSingleResult();
         assertEquals(fs, fs2);
-        assertEquals(fs2.getName(), "EntitySuperName");
+        assertEquals("EntitySuperName", fs2.getName());
         assertEquals(fs2.getCreateDate().toString(), now.toString());
 
         try {
@@ -531,7 +547,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLSuperPropertyEntity spe2 =
             (XMLSuperPropertyEntity)qry.getSingleResult();
         assertEquals(spe, spe2);
-        assertEquals(spe2.getName(), "SuperPropertyEntity");
+        assertEquals("SuperPropertyEntity", spe2.getName());
 
         try {
             // This query ensures that a subclass property didn't somehow get
@@ -558,7 +574,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * an inheritance hierarchy which uses default Entity inheritance.
      * NOTE: be sure to test with all forms of inheritance.
      */
-    public void testEntityPropertyDefaultInheritance() {
+    @Test
+    void entityPropertyDefaultInheritance() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLPropertySub3 ps = new XMLPropertySub3();
@@ -587,7 +604,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLPropertySub3 ps2 =
             (XMLPropertySub3)qry.getSingleResult();
         assertEquals(ps, ps2);
-        assertEquals(ps2.getName(), "EntitySuperName");
+        assertEquals("EntitySuperName", ps2.getName());
         assertEquals(ps2.getCreateDate().toString(), now.toString());
 
         try {
@@ -610,7 +627,7 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
         XMLSuperFieldEntity sfe2 =
             (XMLSuperFieldEntity)qry.getSingleResult();
         assertEquals(sfe2, sfe2);
-        assertEquals(sfe2.getName(), "SuperFieldEntity");
+        assertEquals("SuperFieldEntity", sfe2.getName());
 
         try {
             // This query ensures that a subclass property didn't somehow get
@@ -636,9 +653,10 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with field access can be used within an
      * entity with property access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
-    public void testEmbeddablesField() {
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
+    void embeddablesField() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLEmbedFieldAccess efa = new XMLEmbedFieldAccess();
@@ -685,9 +703,10 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with property access can be used within an
      * entity with field access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
-    public void testEmbeddablesProperty() {
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
+    void embeddablesProperty() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLEmbedPropAccess epa = new XMLEmbedPropAccess();
@@ -736,9 +755,10 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * Validates an embeddable with mixed access can be used within an
      * entity with mixed access
      */
-    @AllowFailure(value=true,
-        message="Support for explicit Access on embeddables is not complete.")
-    public void testMixedEmbeddables() {
+    @AllowFailure(value = true,
+        message = "Support for explicit Access on embeddables is not complete.")
+    @Test
+    void mixedEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         XMLEmbedMixedAccess ema = new XMLEmbedMixedAccess();

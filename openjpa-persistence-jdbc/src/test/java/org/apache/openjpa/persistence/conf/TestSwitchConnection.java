@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conf;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +28,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.RollbackException;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test only works in Derby due to the simple-JNDI setup
@@ -52,19 +55,18 @@ public class TestSwitchConnection extends SingleEMFTestCase {
     }
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        // Disable for non-Derby, due to connectionUserName to schema mapping failures
+        return dict instanceof DerbyDictionary;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(Person.class, CLEAR_TABLES);
-        OpenJPAEntityManager em = emf.createEntityManager();
-        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        if (!(conf.getDBDictionaryInstance() instanceof DerbyDictionary)) {
-            // Disable for non-Derby, due to connectionUserName to schema mapping failures
-            setTestsDisabled(true);
-            getLog().trace("TestOverrideNonJtaDataSource can only be executed against Derby w/o a schema");
-        } else {
-            // create an EMF for each database.
-            init(defaultJndiName);
-            init(jndiNames[0]);
-        }
+
+        // create an EMF for each database.
+        init(defaultJndiName);
+        init(jndiNames[0]);
     }
 
     protected EntityManagerFactory getEmf(String ...props) {
@@ -97,13 +99,15 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         return "TestCfSwitching";
     }
 
-    public void testConnectionFactoryName() {
+    @Test
+    void connectionFactoryName() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactoryName", jndiNames[0]);
     }
 
-    public void testJtaDataSource() {
+    @Test
+    void jtaDataSource() {
         // Disable for non-Derby.
         // split out so that we can try jakarta.persistence.jtaDataSource in the future.
         overridePropertyOnEM("jakarta.persistence.jtaDataSource", jndiNames[0]);
@@ -148,7 +152,7 @@ public class TestSwitchConnection extends SingleEMFTestCase {
                 em.getTransaction().commit();
                 fail("Should not be able to commit the same row a second time");
             } catch (RollbackException rbe) {
-                assertTrue(rbe.getCause() instanceof EntityExistsException);
+                assertInstanceOf(EntityExistsException.class, rbe.getCause());
                 // expected
             }
 
@@ -158,7 +162,7 @@ public class TestSwitchConnection extends SingleEMFTestCase {
                 em1.getTransaction().commit();
                 fail("Should not be able to commit the same row a second time");
             } catch (RollbackException rbe) {
-                assertTrue(rbe.getCause() instanceof EntityExistsException);
+                assertInstanceOf(EntityExistsException.class, rbe.getCause());
                 // expected
             }
             em.close();
@@ -168,7 +172,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testInvalidCfName() throws Exception {
+    @Test
+    void invalidCfName() throws Exception {
         // Disable for non-Derby.
         // ensure EM creation fails - when provided an invalid JNDI name
         EntityManagerFactory emf1 = null;
@@ -185,7 +190,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testDataCache() {
+    @Test
+    void dataCache() {
         EntityManagerFactory emf1 = null;
 
         try {
@@ -202,7 +208,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testQueryCache() {
+    @Test
+    void queryCache() {
         EntityManagerFactory emf1 = null;
 
         try {
@@ -219,7 +226,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testSyncMappings() {
+    @Test
+    void syncMappings() {
         EntityManagerFactory emf1 = null;
 
         try {

@@ -18,24 +18,29 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
 
     public TestEJBDeleteUpdateImpl() {
+        super("jpqlclausescactusapp");
     }
 
-    public TestEJBDeleteUpdateImpl(String name) {
-        super(name, "jpqlclausescactusapp");
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(RuntimeTest1.class);
 
         EntityManager em = currentEntityManager();
@@ -54,7 +59,8 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testUpdate1() {
+    @Test
+    void update1() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -84,7 +90,8 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         em.close();
     }
 
-    public void testUpdate2() {
+    @Test
+    void update2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -116,7 +123,8 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testDelete1() {
+    @Test
+    void delete1() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -142,7 +150,8 @@ public class TestEJBDeleteUpdateImpl extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testDelete2() {
+    @Test
+    void delete2() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

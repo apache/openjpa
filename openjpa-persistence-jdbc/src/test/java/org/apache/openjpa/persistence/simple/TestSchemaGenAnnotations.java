@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Locale;
@@ -29,6 +33,10 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests for JPA schema generation annotations:
@@ -36,29 +44,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - @SecondaryTable with @PrimaryKeyJoinColumn (secondaryTable TCK test)
  * - @SequenceGenerator name used as database sequence name (sequenceGenerator TCK test)
  */
-public class TestSchemaGenAnnotations extends SingleEMFTestCase {
-
-    private File tempDir;
-
-    @Override
+class TestSchemaGenAnnotations extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() throws Exception {
-        tempDir = Files.createTempDirectory("openjpa-sga-test").toFile();
         setUp(SchemaGenDept.class, SchemaGenEmp.class,
               SchemaGenSecondary.class);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        if (tempDir != null) {
-            File[] files = tempDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    f.delete();
-                }
-            }
-            tempDir.delete();
-        }
     }
 
     /**
@@ -66,7 +56,8 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * generates ALTER TABLE ... ADD CONSTRAINT MYCONSTRANT FOREIGN KEY
      * in the create script.
      */
-    public void testJoinColumnForeignKeyConstraint() throws Exception {
+    @Test
+    void joinColumnForeignKeyConstraint(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -83,37 +74,38 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String createUpper = createSql.toUpperCase(Locale.ROOT);
 
-        assertTrue("Should contain CREATE TABLE SCHEMAGENEMP: " + createSql,
-            createUpper.contains("CREATE TABLE SCHEMAGENEMP"));
-        assertTrue("Should contain CREATE TABLE SCHEMAGENDEPT: " + createSql,
-            createUpper.contains("CREATE TABLE SCHEMAGENDEPT"));
-        assertTrue("Should contain FK_DEPT column: " + createSql,
-            createUpper.contains("FK_DEPT"));
-        assertTrue("Should contain THEORDERCOLUMN: " + createSql,
-            createUpper.contains("THEORDERCOLUMN"));
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENEMP"),
+            "Should contain CREATE TABLE SCHEMAGENEMP: " + createSql);
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENDEPT"),
+            "Should contain CREATE TABLE SCHEMAGENDEPT: " + createSql);
+        assertTrue(createUpper.contains("FK_DEPT"),
+            "Should contain FK_DEPT column: " + createSql);
+        assertTrue(createUpper.contains("THEORDERCOLUMN"),
+            "Should contain THEORDERCOLUMN: " + createSql);
         // The key check: named FK constraint, "CONSTRAINT <name> FOREIGN KEY (<cols>)"
         // (the TCK checks exactly this form).
         String expected = namedForeignKey("MYCONSTRANT", "(FK_DEPT)");
-        assertTrue("Should contain " + expected + ": " + createSql, createUpper.contains(expected));
+        assertTrue(createUpper.contains(expected), "Should contain " + expected + ": " + createSql);
 
         // Check drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         String dropUpper = dropSql.toUpperCase(Locale.ROOT);
-        assertTrue("Drop script should contain DROP TABLE SCHEMAGENEMP: " + dropSql,
-            dropUpper.contains("DROP TABLE") && dropUpper.contains("SCHEMAGENEMP"));
-        assertTrue("Drop script should contain DROP TABLE SCHEMAGENDEPT: " + dropSql,
-            dropUpper.contains("DROP TABLE") && dropUpper.contains("SCHEMAGENDEPT"));
+        assertTrue(dropUpper.contains("DROP TABLE") && dropUpper.contains("SCHEMAGENEMP"),
+            "Drop script should contain DROP TABLE SCHEMAGENEMP: " + dropSql);
+        assertTrue(dropUpper.contains("DROP TABLE") && dropUpper.contains("SCHEMAGENDEPT"),
+            "Drop script should contain DROP TABLE SCHEMAGENDEPT: " + dropSql);
     }
 
     /**
      * Test that @SecondaryTable generates the secondary table with PK join
      * column and FK constraint in the create script.
      */
-    public void testSecondaryTableGeneration() throws Exception {
+    @Test
+    void secondaryTableGeneration(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 
@@ -131,28 +123,28 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String createUpper = createSql.toUpperCase(Locale.ROOT);
 
-        assertTrue("Should contain CREATE TABLE SCHEMAGENSIMPLE: " + createSql,
-            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"));
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"),
+            "Should contain CREATE TABLE SCHEMAGENSIMPLE: " + createSql);
         // The key check: secondary table is created
-        assertTrue("Should contain CREATE TABLE SCHEMAGENSIMPLE_SECOND: " + createSql,
-            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"));
-        assertTrue("Should contain SECONDARY_ID column: " + createSql,
-            createUpper.contains("SECONDARY_ID"));
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"),
+            "Should contain CREATE TABLE SCHEMAGENSIMPLE_SECOND: " + createSql);
+        assertTrue(createUpper.contains("SECONDARY_ID"),
+            "Should contain SECONDARY_ID column: " + createSql);
         // FK constraint: "CONSTRAINT <name> FOREIGN KEY (<cols>)", as checked by the TCK.
         String expected = namedForeignKey("MYCONSTRAINT", "");
-        assertTrue("Should contain " + expected + ": " + createSql, createUpper.contains(expected));
+        assertTrue(createUpper.contains(expected), "Should contain " + expected + ": " + createSql);
 
         // Drop script
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         String dropUpper = dropSql.toUpperCase(Locale.ROOT);
-        assertTrue("Drop should contain SCHEMAGENSIMPLE: " + dropSql,
-            dropUpper.contains("SCHEMAGENSIMPLE"));
-        assertTrue("Drop should contain SCHEMAGENSIMPLE_SECOND: " + dropSql,
-            dropUpper.contains("SCHEMAGENSIMPLE_SECOND"));
+        assertTrue(dropUpper.contains("SCHEMAGENSIMPLE"),
+            "Drop should contain SCHEMAGENSIMPLE: " + dropSql);
+        assertTrue(dropUpper.contains("SCHEMAGENSIMPLE_SECOND"),
+            "Drop should contain SCHEMAGENSIMPLE_SECOND: " + dropSql);
 
         // TCK secondaryTableTest expects either:
         // 1. ALTER TABLE ... SCHEMAGENSIMPLE_SECOND DROP (constraint), or
@@ -163,9 +155,9 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
         boolean hasCascade = dropUpper.contains("DROP TABLE")
             && dropUpper.contains("SCHEMAGENSIMPLE_SECOND")
             && dropUpper.contains("CASCADE CONSTRAINTS");
-        assertTrue("Drop script should contain ALTER TABLE DROP CONSTRAINT "
+        assertTrue(hasAlterDrop || hasCascade, "Drop script should contain ALTER TABLE DROP CONSTRAINT "
             + "or DROP TABLE CASCADE CONSTRAINTS for secondary table FK: "
-            + dropSql, hasAlterDrop || hasCascade);
+            + dropSql);
     }
 
     /**
@@ -174,7 +166,8 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
      * We verify the SequenceMetaData directly since Derby does not support
      * native sequences.
      */
-    public void testSequenceGeneratorNameUsedAsSequenceName() throws Exception {
+    @Test
+    void sequenceGeneratorNameUsedAsSequenceName() throws Exception {
         // Use a separate EMF that includes the sequence entity
         // Disable SynchronizeMappings to avoid Derby sequence errors
         EntityManagerFactory emf2 = createEMF(
@@ -189,9 +182,9 @@ public class TestSchemaGenAnnotations extends SingleEMFTestCase {
             SequenceMetaData seqMeta = oemf2.getConfiguration()
                 .getMetaDataRepositoryInstance()
                 .getSequenceMetaData("MYSEQGENERATOR", null, true);
-            assertNotNull("Sequence metadata should be found", seqMeta);
-            assertEquals("Sequence name should be MYSEQGENERATOR (generator name)",
-                "MYSEQGENERATOR", seqMeta.getSequence());
+            assertNotNull(seqMeta, "Sequence metadata should be found");
+            assertEquals("MYSEQGENERATOR",
+                seqMeta.getSequence(), "Sequence name should be MYSEQGENERATOR (generator name)");
         } finally {
             closeEMF(emf2);
         }

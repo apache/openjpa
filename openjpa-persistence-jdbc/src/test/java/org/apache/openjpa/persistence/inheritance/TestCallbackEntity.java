@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Random;
 
 import jakarta.persistence.EntityManager;
@@ -26,8 +28,9 @@ import org.apache.openjpa.persistence.inheritance.entity.BaseCallback;
 import org.apache.openjpa.persistence.inheritance.entity.XMLCallback;
 import org.apache.openjpa.persistence.inheritance.entity.XMLSuperCallback;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestCallbackEntity
+class TestCallbackEntity
     extends SingleEMFTestCase {
 
     @Override
@@ -42,7 +45,8 @@ public class TestCallbackEntity
      * inheritance of XML defined types.  Per JPA spec, the superclass must
      * be queried to determine the access type.
      */
-    public void testCallbackEntity() {
+    @Test
+    void callbackEntity() {
 
         EntityManager em = emf.createEntityManager();
         BaseCallback bc = new BaseCallback();

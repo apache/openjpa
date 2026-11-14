@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.lib.rop;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,10 +32,8 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import org.apache.openjpa.lib.test.AbstractTestCase;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link ResultList} implementations.
@@ -67,7 +70,7 @@ public abstract class ResultListTest extends AbstractTestCase {
         };
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         List results = new ArrayList(100);
         for (int i = 0; i < 100; i++)
@@ -79,7 +82,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIterator() {
+    void iterator() {
         for (ResultList list : _lists) {
             Iterator itr = list.iterator();
             int count = 0;
@@ -96,7 +99,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testIteratorModification() {
+    void iteratorModification() {
         for (ResultList list : _lists) {
             try {
                 Iterator itr = list.iterator();
@@ -110,7 +113,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorForward() {
+    void listIteratorForward() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator();
             int count = 0;
@@ -129,7 +132,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorIndex() {
+    void listIteratorIndex() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator(50);
             int count = 50;
@@ -148,7 +151,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorReverse() {
+    void listIteratorReverse() {
         for (ResultList list : _lists) {
             ListIterator itr = list.listIterator(100);
             int count = 99;
@@ -167,7 +170,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testListIteratorModification() {
+    void listIteratorModification() {
         for (ResultList list : _lists) {
             try {
                 ListIterator itr = list.listIterator();
@@ -181,14 +184,14 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testMultipleIterations() {
-        testListIteratorIndex();
-        testListIteratorForward();
-        testListIteratorReverse();
+    void multipleIterations() {
+        listIteratorIndex();
+        listIteratorForward();
+        listIteratorReverse();
     }
 
     @Test
-    public void testContains() {
+    void contains() {
         for (ResultList list : _lists) {
             assertTrue(list.contains("0"));
             assertTrue(list.contains("50"));
@@ -204,7 +207,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testModification() {
+    void modification() {
         for (ResultList list : _lists) {
             try {
                 list.add("foo");
@@ -228,7 +231,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetBegin() {
+    void getBegin() {
         for (ResultList list : _lists) {
             for (int j = 0; j < 10; j++)
                 assertEquals(String.valueOf(j), list.get(j));
@@ -242,14 +245,14 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetMiddle() {
+    void getMiddle() {
         for (ResultList list : _lists)
             for (int j = 50; j < 60; j++)
                 assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
-    public void testGetEnd() {
+    void getEnd() {
         for (ResultList list : _lists) {
             for (int j = 90; j < 100; j++)
                 assertEquals(String.valueOf(j), list.get(j));
@@ -263,36 +266,36 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetReverse() {
+    void getReverse() {
         for (ResultList list : _lists)
             for (int j = 99; j > -1; j--)
                 assertEquals(String.valueOf(j), list.get(j));
     }
 
     @Test
-    public void testMultipleGet() {
-        testGetMiddle();
-        testGetBegin();
-        testGetEnd();
+    void multipleGet() {
+        getMiddle();
+        getBegin();
+        getEnd();
 
         // take list size and traverse list to cache values if not already
         for (ResultList list : _lists) list.size();
-        testListIteratorForward();
+        listIteratorForward();
 
-        testGetMiddle();
-        testGetBegin();
-        testGetEnd();
+        getMiddle();
+        getBegin();
+        getEnd();
     }
 
     @Test
-    public void testSize() {
+    void size() {
         for (ResultList list : _lists)
             assertTrue(list.size() == 100
                     || list.size() == Integer.MAX_VALUE);
     }
 
     @Test
-    public void testEmpty() {
+    void empty() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
         for (ResultObjectProvider rop : rops) {
@@ -303,7 +306,7 @@ public abstract class ResultListTest extends AbstractTestCase {
     }
 
     @Test
-    public void testSubList() {
+    void subList() {
         ResultObjectProvider[] rops = getResultObjectProviders
             (Collections.EMPTY_LIST);
         for (ResultObjectProvider rop : rops) {

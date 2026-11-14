@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.integration.persistence.provider;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -36,10 +38,11 @@ import java.util.jar.JarOutputStream;
 import jakarta.persistence.spi.PersistenceProvider;
 import jakarta.persistence.spi.PersistenceProviderResolver;
 import jakarta.persistence.spi.PersistenceProviderResolverHolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestPersistenceProviderResolver extends TestCase {
+class TestPersistenceProviderResolver {
     File persistenceProviderFile;
     File targetJar1;
     File targetJar2;
@@ -53,9 +56,8 @@ public class TestPersistenceProviderResolver extends TestCase {
     ClassLoader originalLoader = null;
     TempUrlLoader tempLoader = null;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
 
         currentDir = System.getProperty("user.dir");
 
@@ -75,21 +77,22 @@ public class TestPersistenceProviderResolver extends TestCase {
         originalLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @AfterEach
+    void tearDown() throws Exception {
         // Restore the original classloader, in case there was an exception
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
-    public void testDefault() {
+    @Test
+    void testDefault() {
         List<String> providerNames = new LinkedList<>();
         providerNames.add(openjpaProvider);
         checkProviders(providerNames);
     }
 
 
-    public void testDefaultMultipleJars() throws Exception {
+    @Test
+    void defaultMultipleJars() throws Exception {
         String[] contents = new String[]{dummyProvider1};
         buildFile("testPersistenceProviderResolver1", contents);
         buildTargetJar(targetJar1);
@@ -104,7 +107,8 @@ public class TestPersistenceProviderResolver extends TestCase {
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
-    public void testDefaultMultipleProviders() throws Exception {
+    @Test
+    void defaultMultipleProviders() throws Exception {
         String[] contents = new String[]{dummyProvider1, dummyProvider2};
         buildFile("testPersistenceProviderResolver2", contents);
         buildTargetJar(targetJar2);
@@ -122,7 +126,8 @@ public class TestPersistenceProviderResolver extends TestCase {
         Thread.currentThread().setContextClassLoader(originalLoader);
     }
 
-    public void testClearCachedProviders() {
+    @Test
+    void clearCachedProviders() {
         PersistenceProviderResolver resolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         List<PersistenceProvider> providers = resolver.getPersistenceProviders();
@@ -134,13 +139,14 @@ public class TestPersistenceProviderResolver extends TestCase {
         checkProviders(providerNames);
     }
 
-    public void testNonDefaultResolver() {
+    @Test
+    void nonDefaultResolver() {
         PersistenceProviderResolver originalResolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(dummyResolver);
         PersistenceProviderResolver retrievedResolver =
             PersistenceProviderResolverHolder.getPersistenceProviderResolver();
-        assertTrue(retrievedResolver instanceof DummyPersistenceProviderResolver);
+        assertInstanceOf(DummyPersistenceProviderResolver.class, retrievedResolver);
 
         PersistenceProviderResolverHolder.setPersistenceProviderResolver(originalResolver);
     }

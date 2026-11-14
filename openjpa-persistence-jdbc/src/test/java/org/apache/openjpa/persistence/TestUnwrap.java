@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +38,16 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestUnwrap extends SingleEMFTestCase {
+class TestUnwrap extends SingleEMFTestCase {
 
     /**
      * Tests a query can be unwrapped as an instance of a series of class or
      * interface.
      */
-    public void testValidQueryUnwrap() {
+    @Test
+    void validQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Query query = em.createQuery(QueryLanguages.LANG_SQL,"");
 
@@ -62,7 +69,8 @@ public class TestUnwrap extends SingleEMFTestCase {
      * Tests a EntityManager can be unwrapped as an instance of a series of
      * class or interface.
      */
-    public void testValidEntityManagerUnwrap() {
+    @Test
+    void validEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] validCasts = new Class[] {
@@ -82,7 +90,8 @@ public class TestUnwrap extends SingleEMFTestCase {
      * Tests a EntityManager can be unwrapped as an instance of a series of
      * class or interface.
      */
-    public void testValidOtherUnwrap() {
+    @Test
+    void validOtherUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] validCasts = new Class[] {
@@ -96,7 +105,8 @@ public class TestUnwrap extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testConnectionUnwrap() throws Exception {
+    @Test
+    void connectionUnwrap() throws Exception {
         String dbDict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().getClass().getName();
 
         EntityManager em = emf.createEntityManager();
@@ -145,7 +155,8 @@ public class TestUnwrap extends SingleEMFTestCase {
         }
     }
 
-    public void testNegativeConnectionUnwrap() {
+    @Test
+    void negativeConnectionUnwrap() {
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
 
@@ -171,7 +182,8 @@ public class TestUnwrap extends SingleEMFTestCase {
      * And each such failure raises a Persistence Exception and causes an active transaction
      * to rollback.
      */
-    public void testInvalidEntityManagerUnwrap() {
+    @Test
+    void invalidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
 
         Class<?>[] invalidCasts = new Class[] {
@@ -199,7 +211,8 @@ public class TestUnwrap extends SingleEMFTestCase {
      * And each such failure raises a Persistence Exception and causes an active transaction
      * to rollback.
      */
-    public void testInvalidQueryUnwrap() {
+    @Test
+    void invalidQueryUnwrap() {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         Class<?>[] invalidCasts = new Class[] {

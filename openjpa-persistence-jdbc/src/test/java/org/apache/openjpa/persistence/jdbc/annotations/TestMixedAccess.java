@@ -21,10 +21,12 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import jakarta.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestMixedAccess extends AbstractCachedEMFTestCase {
+class TestMixedAccess extends AbstractCachedEMFTestCase {
 
-    public void testMixedAccessEntityError() {
+    @Test
+    void mixedAccessEntityError() {
         EntityManagerFactory emf = null;
         try {
             emf = createEMF(UnenhancedMixedAccess.class, "openjpa.RuntimeUnenhancedClasses", "supported");
@@ -39,7 +41,8 @@ public class TestMixedAccess extends AbstractCachedEMFTestCase {
         }
     }
 
-    public void testInappropriateTransientError() {
+    @Test
+    void inappropriateTransientError() {
         EntityManagerFactory emf = null;
         try {
             emf = createEMF(UnenhancedInappropriateTransient.class, "openjpa.RuntimeUnenhancedClasses", "supported");

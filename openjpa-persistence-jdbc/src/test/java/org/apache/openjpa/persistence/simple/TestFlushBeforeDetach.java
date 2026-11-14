@@ -27,14 +27,18 @@ import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestFlushBeforeDetach extends SQLListenerTestCase {
+@DynamicEnhancementTest
+class TestFlushBeforeDetach extends SQLListenerTestCase {
 
     private int _id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
       setUp(Item.class,"openjpa.Compatibility",
                 "default(flushBeforeDetach=false,copyOnDetach=true)");
@@ -52,7 +56,8 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testClear() {
+    @Test
+    void clear() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -66,7 +71,8 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testDetach() {
+    @Test
+    void detach() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -80,7 +86,8 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testDetachAll() {
+    @Test
+    void detachAll() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -94,7 +101,8 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testDetachAllCollection() {
+    @Test
+    void detachAllCollection() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -110,7 +118,8 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testSerialize() throws Exception {
+    @Test
+    void serialize() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

@@ -21,18 +21,20 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.util.Arrays;
 
 import jakarta.persistence.LockModeType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test JPA 2.0 LockMode type permutation behaviors with "mixed" lock manager.
  */
-public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
+class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
 
     @Override
     protected String getPersistenceUnitName() {
         return "locking-test";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
@@ -41,7 +43,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     }
 
     /* ======== Thread 1 : Read Lock ============*/
-    public void testLockReadRead() {
+    @Test
+    void lockReadRead() {
         commonLockTest(
             "testLock(Read,Commit/Read,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -52,7 +55,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockReadWrite() {
+    @Test
+    void lockReadWrite() {
         commonLockTest(
             "testLock(Read,Commit/Write,Commit)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -63,7 +67,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockReadPessimisticRead() {
+    @Test
+    void lockReadPessimisticRead() {
         commonLockTest(
             "testLock(Read,Commit/PessimisticRead,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -74,7 +79,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockReadPessimisticWrite() {
+    @Test
+    void lockReadPessimisticWrite() {
         commonLockTest(
             "testLock(Read,Commit/PessimisticWrite,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -85,7 +91,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockReadPessimisticForceInc() {
+    @Test
+    void lockReadPessimisticForceInc() {
         commonLockTest(
             "testLock(Read,Commit/PessimisticForceInc,Commit)",
             LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -97,7 +104,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     }
 
     /* ======== Thread 1 : Write Lock ============*/
-    public void testLockWriteRead() {
+    @Test
+    void lockWriteRead() {
         commonLockTest(
             "testLock(Write,Commit/Read,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -108,7 +116,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockWriteWrite() {
+    @Test
+    void lockWriteWrite() {
         commonLockTest(
             "testLock(Write,Commit/Write,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -119,7 +128,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockWritePessimisticRead() {
+    @Test
+    void lockWritePessimisticRead() {
         commonLockTest(
             "testLock(Write,Commit/PessimisticRead,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -130,7 +140,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockWritePessimisticWrite() {
+    @Test
+    void lockWritePessimisticWrite() {
         commonLockTest(
             "testLock(Write,Commit/PessimisticWrite,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -141,7 +152,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockWritePessimisticForceInc() {
+    @Test
+    void lockWritePessimisticForceInc() {
         commonLockTest(
             "testLock(Write,Commit/PessimisticForceInc,Commit)",
             LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass,
@@ -153,7 +165,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     }
 
     /* ======== Thread 1 : PessimisticRead Lock ============*/
-    public void testLockPessimisticReadRead() {
+    @Test
+    void lockPessimisticReadRead() {
         commonLockTest(
             "testLock(PessimisticRead,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -164,7 +177,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimisticReadWrite() {
+    @Test
+    void lockPessimisticReadWrite() {
         commonLockTest(
             "testLock(PessimisticRead,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -175,7 +189,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimisticReadPessimisticRead() {
+    @Test
+    void lockPessimisticReadPessimisticRead() {
         commonLockTest(
             "testLock(PessimisticRead,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -187,7 +202,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimisticReadPessimisticWrite() {
+    @Test
+    void lockPessimisticReadPessimisticWrite() {
         commonLockTest(
             "testLock(PessimisticRead,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -199,7 +215,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimisticReadPessimisticForceInc() {
+    @Test
+    void lockPessimisticReadPessimisticForceInc() {
         commonLockTest(
             "testLock(PessimisticRead,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -212,7 +229,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     }
 
     /* ======== Thread 1 : Pessimsitic Write Lock ============*/
-    public void testLockPessimsiticWriteRead() {
+    @Test
+    void lockPessimsiticWriteRead() {
         commonLockTest(
             "testLock(PessimsiticWrite,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -223,7 +241,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimsiticWriteWrite() {
+    @Test
+    void lockPessimsiticWriteWrite() {
         commonLockTest(
             "testLock(PessimsiticWrite,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -234,7 +253,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimsiticWritePessimisticRead() {
+    @Test
+    void lockPessimsiticWritePessimisticRead() {
         commonLockTest(
             "testLock(PessimsiticWrite,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -246,7 +266,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimsiticWritePessimisticWrite() {
+    @Test
+    void lockPessimsiticWritePessimisticWrite() {
         commonLockTest(
             "testLock(PessimsiticWrite,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -258,7 +279,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimsiticWritePessimisticForceInc() {
+    @Test
+    void lockPessimsiticWritePessimisticForceInc() {
         commonLockTest(
             "testLock(PessimsiticWrite,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -271,7 +293,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
     }
 
     /* ======== Thread 1 : Pessimsitic Force Increment Lock ============*/
-    public void testLockPessimsiticForceIncRead() {
+    @Test
+    void lockPessimsiticForceIncRead() {
         commonLockTest(
             "testLock(PessimsiticForceInc,Commit/Read,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -282,7 +305,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.READ, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimsiticForceIncWrite() {
+    @Test
+    void lockPessimsiticForceIncWrite() {
         commonLockTest(
             "testLock(PessimsiticForceInc,Commit/Write,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -293,7 +317,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.WRITE, Act.RollbackTx, 1, null, null);
     }
 
-    public void testLockPessimsiticForceIncPessimisticRead() {
+    @Test
+    void lockPessimsiticForceIncPessimisticRead() {
         commonLockTest(
             "testLock(PessimsiticForceInc,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -305,7 +330,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_READ, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimsiticForceIncPessimisticWrite() {
+    @Test
+    void lockPessimsiticForceIncPessimisticWrite() {
         commonLockTest(
             "testLock(PessimsiticForceInc,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -317,7 +343,8 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
             LockModeType.PESSIMISTIC_WRITE, Act.RollbackTx, 1, ExpectingOptimisticLockExClass, null);
     }
 
-    public void testLockPessimsiticForceIncPessimisticForceInc() {
+    @Test
+    void lockPessimsiticForceIncPessimisticForceInc() {
         commonLockTest(
             "testLock(PessimsiticForceInc,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,

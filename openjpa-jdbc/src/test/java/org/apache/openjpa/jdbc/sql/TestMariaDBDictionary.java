@@ -20,11 +20,11 @@ package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -43,7 +43,7 @@ import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link MariaDBDictionary}, in particular the version gate that
@@ -52,28 +52,28 @@ import org.junit.Test;
  * {@link DBDictionary#connectedConfiguration(Connection)}, and the SQL that
  * creates and reflects on sequences (OPENJPA-3014).
  */
-public class TestMariaDBDictionary {
+class TestMariaDBDictionary {
 
     private static final String NEXT_SEQUENCE_QUERY = "SELECT NEXTVAL({0})";
 
     @Test
-    public void testNoSequenceSupportBefore103() throws Exception {
+    void noSequenceSupportBefore103() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("10.2.44-MariaDB"));
-        assertNull("MariaDB 10.2 has no sequence objects", dict.nextSequenceQuery);
-        assertNull("no sequence support means no CREATE SEQUENCE",
-            dict.getCreateSequenceSQL(sequence()));
+        assertNull(dict.nextSequenceQuery, "MariaDB 10.2 has no sequence objects");
+        assertNull(dict.getCreateSequenceSQL(sequence()),
+            "no sequence support means no CREATE SEQUENCE");
     }
 
     @Test
-    public void testSequenceSupportFrom103() throws Exception {
+    void sequenceSupportFrom103() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("10.3.39-MariaDB"));
         assertEquals(NEXT_SEQUENCE_QUERY, dict.nextSequenceQuery);
     }
 
     @Test
-    public void testSequenceSupportOnMariaDB11() throws Exception {
+    void sequenceSupportOnMariaDB11() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("11.8.2-MariaDB"));
         assertEquals(NEXT_SEQUENCE_QUERY, dict.nextSequenceQuery);
@@ -89,11 +89,11 @@ public class TestMariaDBDictionary {
      * gate has to see through the prefix.
      */
     @Test
-    public void testSequenceSupportWithReplicationCompatibilityPrefix() throws Exception {
+    void sequenceSupportWithReplicationCompatibilityPrefix() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("5.5.5-10.3.39-MariaDB"));
-        assertEquals("10.3 reported as 5.5.5-10.3.39-MariaDB must report sequence support",
-            NEXT_SEQUENCE_QUERY, dict.nextSequenceQuery);
+        assertEquals(NEXT_SEQUENCE_QUERY,
+            dict.nextSequenceQuery, "10.3 reported as 5.5.5-10.3.39-MariaDB must report sequence support");
     }
 
     /**
@@ -104,14 +104,14 @@ public class TestMariaDBDictionary {
      * version comes from.
      */
     @Test
-    public void testSequenceSupportWithPrefixedVendorSuffix() throws Exception {
+    void sequenceSupportWithPrefixedVendorSuffix() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("5.5.5-11.4.2-MariaDB-ubu2404"));
         assertEquals(NEXT_SEQUENCE_QUERY, dict.nextSequenceQuery);
     }
 
     @Test
-    public void testPrefixedVersionBelow103KeepsTheFallback() throws Exception {
+    void prefixedVersionBelow103KeepsTheFallback() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("5.5.5-10.2.44-MariaDB"));
         assertNull(dict.nextSequenceQuery);
@@ -124,18 +124,18 @@ public class TestMariaDBDictionary {
      * version has to produce the same DDL types as the plain one.
      */
     @Test
-    public void testPrefixedVersionGetsTheSameTemporalTypesAsThePlainForm() throws Exception {
+    void prefixedVersionGetsTheSameTemporalTypesAsThePlainForm() throws Exception {
         for (String productVersion : new String[] { "10.2.44-MariaDB", "5.5.5-10.2.44-MariaDB" }) {
             MariaDBDictionary dict = newConfiguredDictionary(null);
             dict.connectedConfiguration(connection(productVersion));
-            assertEquals(productVersion, "DATETIME{0}", dict.timestampTypeName);
-            assertEquals(productVersion, 6, dict.dateFractionDigits);
-            assertTrue(productVersion, dict.fractionalTypeNameSet.contains("DATETIME{0}"));
+            assertEquals("DATETIME{0}", dict.timestampTypeName, productVersion);
+            assertEquals(6, dict.dateFractionDigits, productVersion);
+            assertTrue(dict.fractionalTypeNameSet.contains("DATETIME{0}"), productVersion);
         }
     }
 
     @Test
-    public void testPre102KeepsWholeSecondTemporalTypes() throws Exception {
+    void pre102KeepsWholeSecondTemporalTypes() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("10.1.48-MariaDB"));
         assertEquals("DATETIME", dict.timestampTypeName);
@@ -143,7 +143,7 @@ public class TestMariaDBDictionary {
     }
 
     @Test
-    public void testMajorMinorVersionsStripTheCompatibilityPrefix() {
+    void majorMinorVersionsStripTheCompatibilityPrefix() {
         assertVersion(10, 3, "10.3.39-MariaDB");
         assertVersion(10, 3, "5.5.5-10.3.39-MariaDB");
         assertVersion(11, 4, "5.5.5-11.4.2-MariaDB-ubu2404");
@@ -152,28 +152,28 @@ public class TestMariaDBDictionary {
 
     private static void assertVersion(int maj, int min, String productVersion) {
         int[] versions = MariaDBDictionary.getMajorMinorVersions(productVersion);
-        assertEquals(productVersion, maj, versions[0]);
-        assertEquals(productVersion, min, versions[1]);
+        assertEquals(maj, versions[0], productVersion);
+        assertEquals(min, versions[1], productVersion);
     }
 
     @Test
-    public void testExplicitNextSequenceQuerySurvivesOnModernMariaDB() throws Exception {
+    void explicitNextSequenceQuerySurvivesOnModernMariaDB() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary("NextSequenceQuery='SELECT NEXT VALUE FOR {0}'");
         assertEquals("SELECT NEXT VALUE FOR {0}", dict.nextSequenceQuery);
         dict.connectedConfiguration(connection("11.8.2-MariaDB"));
-        assertEquals("an explicitly configured NextSequenceQuery must not be overridden",
-            "SELECT NEXT VALUE FOR {0}", dict.nextSequenceQuery);
+        assertEquals("SELECT NEXT VALUE FOR {0}",
+            dict.nextSequenceQuery, "an explicitly configured NextSequenceQuery must not be overridden");
     }
 
     @Test
-    public void testExplicitNextSequenceQuerySurvivesOnLegacyMariaDB() throws Exception {
+    void explicitNextSequenceQuerySurvivesOnLegacyMariaDB() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary("NextSequenceQuery='SELECT NEXT VALUE FOR {0}'");
         dict.connectedConfiguration(connection("10.2.44-MariaDB"));
         assertEquals("SELECT NEXT VALUE FOR {0}", dict.nextSequenceQuery);
     }
 
     @Test
-    public void testProgrammaticPublicFieldAssignmentSurvives() throws Exception {
+    void programmaticPublicFieldAssignmentSurvives() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.nextSequenceQuery = "SELECT NEXT VALUE FOR {0}";
         dict.connectedConfiguration(connection("11.8.2-MariaDB"));
@@ -181,7 +181,7 @@ public class TestMariaDBDictionary {
     }
 
     @Test
-    public void testDictionaryDeclaresNoSequenceSupportBeforeConnecting() {
+    void dictionaryDeclaresNoSequenceSupportBeforeConnecting() {
         assertNull(new MariaDBDictionary().nextSequenceQuery);
     }
 
@@ -190,14 +190,14 @@ public class TestMariaDBDictionary {
      * adds gaps: the sequence is created with NOCACHE.
      */
     @Test
-    public void testCreateSequenceIsNoCache() throws Exception {
+    void createSequenceIsNoCache() throws Exception {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection("11.8.2-MariaDB"));
         String[] sql = dict.getCreateSequenceSQL(sequence());
         assertNotNull(sql);
         assertEquals(1, sql.length);
-        assertTrue(sql[0], sql[0].toUpperCase().startsWith("CREATE SEQUENCE "));
-        assertTrue("expected a NOCACHE suffix, got " + sql[0], sql[0].endsWith(" NOCACHE"));
+        assertTrue(sql[0].toUpperCase().startsWith("CREATE SEQUENCE "), sql[0]);
+        assertTrue(sql[0].endsWith(" NOCACHE"), "expected a NOCACHE suffix, got " + sql[0]);
     }
 
     /**
@@ -208,44 +208,44 @@ public class TestMariaDBDictionary {
      * server.
      */
     @Test
-    public void testSequencesSQLIsScopedToTheConnectedDatabase() {
+    void sequencesSQLIsScopedToTheConnectedDatabase() {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         String sql = dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL);
-        assertTrue(sql, sql.contains("TABLE_TYPE = 'SEQUENCE'"));
-        assertTrue("an unqualified lookup must not span every database on the server: " + sql,
-            sql.contains("TABLE_SCHEMA = DATABASE()"));
-        assertEquals("no identifier is bound, so there must be no parameter marker: " + sql,
-            -1, sql.indexOf('?'));
+        assertTrue(sql.contains("TABLE_TYPE = 'SEQUENCE'"), sql);
+        assertTrue(sql.contains("TABLE_SCHEMA = DATABASE()"),
+            "an unqualified lookup must not span every database on the server: " + sql);
+        assertEquals(-1,
+            sql.indexOf('?'), "no identifier is bound, so there must be no parameter marker: " + sql);
     }
 
     @Test
-    public void testSequencesSQLBindsTheSchemaOnly() {
+    void sequencesSQLBindsTheSchemaOnly() {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         String sql = dict.getSequencesSQL(DBIdentifier.newSchema("APPDB"), DBIdentifier.NULL);
-        assertTrue(sql, sql.contains("UPPER(TABLE_SCHEMA) = UPPER(?)"));
-        assertTrue("an explicit schema replaces the DATABASE() scope: " + sql,
-            !sql.contains("DATABASE()"));
-        assertEquals("exactly one bound identifier: " + sql, sql.indexOf('?'), sql.lastIndexOf('?'));
+        assertTrue(sql.contains("UPPER(TABLE_SCHEMA) = UPPER(?)"), sql);
+        assertFalse(sql.contains("DATABASE()"),
+            "an explicit schema replaces the DATABASE() scope: " + sql);
+        assertEquals(sql.indexOf('?'), sql.lastIndexOf('?'), "exactly one bound identifier: " + sql);
     }
 
     @Test
-    public void testSequencesSQLBindsTheSequenceOnly() {
+    void sequencesSQLBindsTheSequenceOnly() {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         String sql = dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.newSequence("OJPA3014_SEQ"));
-        assertTrue(sql, sql.contains("TABLE_SCHEMA = DATABASE()"));
-        assertTrue(sql, sql.contains("UPPER(TABLE_NAME) = UPPER(?)"));
-        assertEquals("exactly one bound identifier: " + sql, sql.indexOf('?'), sql.lastIndexOf('?'));
+        assertTrue(sql.contains("TABLE_SCHEMA = DATABASE()"), sql);
+        assertTrue(sql.contains("UPPER(TABLE_NAME) = UPPER(?)"), sql);
+        assertEquals(sql.indexOf('?'), sql.lastIndexOf('?'), "exactly one bound identifier: " + sql);
     }
 
     @Test
-    public void testSequencesSQLBindsSchemaBeforeSequence() {
+    void sequencesSQLBindsSchemaBeforeSequence() {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         String sql = dict.getSequencesSQL(DBIdentifier.newSchema("APPDB"),
             DBIdentifier.newSequence("OJPA3014_SEQ"));
         int schemaIdx = sql.indexOf("UPPER(TABLE_SCHEMA)");
         int seqIdx = sql.indexOf("UPPER(TABLE_NAME)");
-        assertTrue(sql, schemaIdx > 0 && seqIdx > 0);
-        assertTrue("getSequences() binds the schema first: " + sql, schemaIdx < seqIdx);
+        assertTrue(schemaIdx > 0 && seqIdx > 0, sql);
+        assertTrue(schemaIdx < seqIdx, "getSequences() binds the schema first: " + sql);
     }
 
     /**
@@ -253,21 +253,21 @@ public class TestMariaDBDictionary {
      * get the column length appended, MariaDB rejects a size on JSON (OPENJPA-3018).
      */
     @Test
-    public void testJsonColumnDefinitionHasNoSize() {
+    void jsonColumnDefinitionHasNoSize() {
         MariaDBDictionary dict = newConfiguredDictionary(null);
         assertEquals("json", dict.getTypeName(column(Types.VARCHAR, "json", 255)));
         assertEquals("VARCHAR(255)", dict.getTypeName(column(Types.VARCHAR, null, 255)));
     }
 
     @Test
-    public void testExtractWeekIsIsoWeek() {
+    void extractWeekIsIsoWeek() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("WEEK({1}, 3)", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
         assertEquals("EXTRACT(DAY FROM {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
     }
 
     @Test
-    public void testExtractSecondKeepsFraction() {
+    void extractSecondKeepsFraction() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("(EXTRACT(SECOND FROM {1}) + EXTRACT(MICROSECOND FROM {1}) / 1000000.0)",
             dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
@@ -281,7 +281,7 @@ public class TestMariaDBDictionary {
      * room for a fraction (OPENJPA-3062).
      */
     @Test
-    public void testDecimalPrecisionAndScaleAreKept() {
+    void decimalPrecisionAndScaleAreKept() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("NUMERIC(10, 2)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 2)));
         assertEquals("NUMERIC(10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 0)));
@@ -294,7 +294,7 @@ public class TestMariaDBDictionary {
     }
 
     @Test
-    public void testUnsizedDecimalKeepsFraction() {
+    void unsizedDecimalKeepsFraction() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
         assertEquals("NUMERIC(65, 30)", dict.getTypeName(decimal(JavaTypes.NUMBER, 0, 0)));
@@ -311,21 +311,21 @@ public class TestMariaDBDictionary {
      * so that the column can still be created.
      */
     @Test
-    public void testUnsizedDecimalScaleIsCapped() {
+    void unsizedDecimalScaleIsCapped() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("NUMERIC(65, 38)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 38)));
         assertEquals("NUMERIC(65, 38)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 43)));
     }
 
     @Test
-    public void testUnsizedIntegralDecimalIsUnchanged() {
+    void unsizedIntegralDecimalIsUnchanged() {
         DBDictionary dict = newConfiguredDictionary(null);
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGINTEGER, 0, 0)));
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.LONG, 0, 0)));
     }
 
     @Test
-    public void testDecimalColumnDefinitionIsUnchanged() {
+    void decimalColumnDefinitionIsUnchanged() {
         DBDictionary dict = newConfiguredDictionary(null);
         Column col = decimal(JavaTypes.BIGDECIMAL, 0, 0);
         col.setTypeName("NUMERIC");
@@ -335,7 +335,7 @@ public class TestMariaDBDictionary {
     }
 
     @Test
-    public void testConfiguredDecimalTypeNameIsKept() {
+    void configuredDecimalTypeNameIsKept() {
         DBDictionary dict = newConfiguredDictionary(null);
         dict.numericTypeName = "DECIMAL(19,4)";
         assertEquals("DECIMAL(19,4)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
@@ -351,18 +351,18 @@ public class TestMariaDBDictionary {
      * table there (OPENJPA-3036).
      */
     @Test
-    public void testBulkTargetInSubselectFrom111() throws Exception {
+    void bulkTargetInSubselectFrom111() throws Exception {
         for (String productVersion : new String[] { "10.11.19-MariaDB", "11.0.6-MariaDB",
             "5.5.5-10.11.19-MariaDB" }) {
             MariaDBDictionary dict = newConfiguredDictionary(null);
             dict.connectedConfiguration(connection(productVersion));
-            assertFalse(productVersion, dict.allowsBulkTargetInSubselect);
+            assertFalse(dict.allowsBulkTargetInSubselect, productVersion);
         }
         for (String productVersion : new String[] { "11.1.6-MariaDB", "11.4.13-MariaDB-ubu2404",
             "12.3.3-MariaDB-ubu2404" }) {
             MariaDBDictionary dict = newConfiguredDictionary(null);
             dict.connectedConfiguration(connection(productVersion));
-            assertTrue(productVersion, dict.allowsBulkTargetInSubselect);
+            assertTrue(dict.allowsBulkTargetInSubselect, productVersion);
         }
     }
 
@@ -371,7 +371,7 @@ public class TestMariaDBDictionary {
      * into a plain string literal, which gives COALESCE or CASE a string result (OPENJPA-2935).
      */
     @Test
-    public void testDateTimeLiteralIsTyped() {
+    void dateTimeLiteralIsTyped() {
         DBDictionary dict = new MariaDBDictionary();
         assertEquals("DATE '2020-01-02'", dict.toJDBCEscapedDateTimeLiteral("{d '2020-01-02'}", Literal.TYPE_DATE));
         assertEquals("TIME '03:04:05'", dict.toJDBCEscapedDateTimeLiteral("{t '03:04:05'}", Literal.TYPE_TIME));
@@ -394,7 +394,7 @@ public class TestMariaDBDictionary {
      * OpenJPA's decorators.
      */
     @Test
-    public void testReplicationConnection() throws Exception {
+    void replicationConnection() throws Exception {
         MariaDBDictionary dict = new MariaDBDictionary();
         assertTrue(dict.isReplicationConnection(
             connectionWithUrl("jdbc:mariadb:replication://primary,replica/test")));

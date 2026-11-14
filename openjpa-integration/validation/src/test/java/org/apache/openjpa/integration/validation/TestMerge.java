@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.integration.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.validation.ConstraintViolationException;
 
@@ -27,6 +33,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the Bean Validation support when using the em.merge()
@@ -34,20 +43,19 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestMerge extends AbstractPersistenceTestCase {
+class TestMerge extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
         emf = (OpenJPAEntityManagerFactorySPI)
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
                 "org/apache/openjpa/integration/validation/persistence.xml");
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
@@ -58,7 +66,8 @@ public class TestMerge extends AbstractPersistenceTestCase {
      * Verifies constraint validation occurs on a "new" merged entity only after
      * the state of the persistent entity is properly set.
      */
-    public void testMergeNew() {
+    @Test
+    void mergeNew() {
         getLog().trace("testMergeNew() started");
 
         // Part 1 - Create and persist a valid entity
@@ -70,8 +79,8 @@ public class TestMerge extends AbstractPersistenceTestCase {
             @SuppressWarnings("deprecation")
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
 
             Person p = createPerson(em);
             em.getTransaction().begin();
@@ -109,7 +118,8 @@ public class TestMerge extends AbstractPersistenceTestCase {
      * Verifies constraint validation occurs on a "new" merged entity only after
      * the state of the persistent entity is properly set.
      */
-    public void testMergeExisting() {
+    @Test
+    void mergeExisting() {
         getLog().trace("testMergeExisting() started");
 
         // Part 1 - Create and persist a valid entity
@@ -121,8 +131,8 @@ public class TestMerge extends AbstractPersistenceTestCase {
             @SuppressWarnings("deprecation")
             OpenJPAConfiguration conf = em.getConfiguration();
             assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
+            assertTrue(conf.getValidationMode().equalsIgnoreCase("AUTO"),
+                "ValidationMode");
 
             // Create and persist a new entity
             Person p = createPerson(em);

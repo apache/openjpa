@@ -19,21 +19,26 @@
 package org.apache.openjpa.persistence.enhance;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.enhance.common.apps.NoClone;
 import org.apache.openjpa.persistence.enhance.common.apps.PCClone;
 import org.apache.openjpa.persistence.enhance.common.apps.SubclassClone;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestClone
-    extends AbstractTestCase {
+public class TestClone extends AbstractTestCase {
 
-    public TestClone(String name) {
-        super(name, "enhancecactusapp");
+    public TestClone() {
+        super("enhancecactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         deleteAll(NoClone.class);
         deleteAll(PCClone.class);
@@ -43,7 +48,8 @@ public class TestClone
     /**
      * test no clone method declared.
      */
-    public void testNoClone() {
+    @Test
+    void noClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -61,7 +67,8 @@ public class TestClone
     /**
      * test subclass which we cannot handle safely
      */
-    public void testSubclassClone() {
+    @Test
+    void subclassClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);
@@ -81,7 +88,8 @@ public class TestClone
     /**
      * test explicit clone call
      */
-    public void testPCClone() {
+    @Test
+    void pCClone() {
         OpenJPAEntityManager pm =
             (OpenJPAEntityManager) currentEntityManager();
         startTx(pm);

@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.InheritanceType;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -26,21 +29,24 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test enums and the @Enumerated annotation.
  *
  * @author Abe White
  */
-public class TestEnumerated
+class TestEnumerated
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
-    public void testMapping() {
+    @Test
+    void mapping() {
         ClassMapping cls = (ClassMapping) emf.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class,
             null, true);
@@ -63,7 +69,8 @@ public class TestEnumerated
         assertEquals(JavaTypes.STRING, fm.getColumns()[0].getJavaType());
     }
 
-    public void testBehavior() {
+    @Test
+    void behavior() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(1);

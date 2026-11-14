@@ -18,25 +18,32 @@
  */
 package org.apache.openjpa.persistence.property;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestAccessMods
+class TestAccessMods
     extends SingleEMFTestCase {
 
-        @Override
-        public void setUp() {
+    @BeforeEach
+    public void setUp() {
             setUp("openjpa.Compatibility", "PrivatePersistentProperties=false",
                 DROP_TABLES, AccessModsEntity.class);
         }
 
-        /**
-         * Verifies that when the PrivatePersistentProperties compat option
-         * is false, non-transient public and protected properties should be
-         * persistent.  Private should not be persistent.
-         */
-        public void testAccessMods() {
+    /**
+     * Verifies that when the PrivatePersistentProperties compat option
+     * is false, non-transient public and protected properties should be
+     * persistent.  Private should not be persistent.
+     */
+    @Test
+    void accessMods() {
             EntityManager em = emf.createEntityManager();
 
             AccessModsEntity ame = new AccessModsEntity();

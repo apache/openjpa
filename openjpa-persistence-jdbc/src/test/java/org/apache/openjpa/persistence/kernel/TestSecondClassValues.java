@@ -26,6 +26,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.Collator;
@@ -43,8 +45,9 @@ import java.util.Map;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.SCOTest;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestSecondClassValues extends BaseKernelTest {
 
@@ -55,18 +58,8 @@ public class TestSecondClassValues extends BaseKernelTest {
 
     private String newline = System.getProperty("line.separator");
 
-    /**
-     * Creates a new instance of TestSecondClassValues
-     */
-    public TestSecondClassValues() {
-    }
-
-    public TestSecondClassValues(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         pm = getPM(true, false);
     }
 
@@ -74,7 +67,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         return ((int) (Math.random() * 20)) + 5;
     }
 
-    public void testMapDeletion() {
+    @Test
+    void mapDeletion() {
         OpenJPAEntityManager pm;
         pm = getPM();
         startTx(pm);
@@ -106,7 +100,7 @@ public class TestSecondClassValues extends BaseKernelTest {
         map = test.getStrIntMap();
         assertEquals(11, map.size());
         assertEquals(1, map.get("foo"));
-        assertTrue(map.get("bar") == null);
+        assertNull(map.get("bar"));
 
         map.clear();
 
@@ -120,7 +114,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         endTx(pm);
     }
 
-    public void testStringCollection()
+    @Test
+    void stringCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -129,7 +124,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testLongCollection()
+    @Test
+    void longCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -142,7 +138,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testShortCollection()
+    @Test
+    void shortCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -150,7 +147,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testBigIntegerCollection()
+    @Test
+    void bigIntegerCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -158,7 +156,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testBigDecimalCollection()
+    @Test
+    void bigDecimalCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -170,7 +169,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testIntegerCollection()
+    @Test
+    void integerCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -178,7 +178,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testByteCollection()
+    @Test
+    void byteCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -186,7 +187,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testBooleanCollection()
+    @Test
+    void booleanCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -194,7 +196,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list, true);
     }
 
-    public void testFloatCollection()
+    @Test
+    void floatCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -206,7 +209,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testDoubleCollection()
+    @Test
+    void doubleCollection()
         throws Exception {
         try {
             ArrayList list = new ArrayList();
@@ -218,7 +222,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testDateCollection()
+    @Test
+    void dateCollection()
         throws Exception {
         ArrayList list = new ArrayList();
         for (int i = 0; i < rnd(); i++)
@@ -229,7 +234,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassCollection(list);
     }
 
-    public void testBigDecimalBigIntegerMap()
+    @Test
+    void bigDecimalBigIntegerMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -241,7 +247,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testStrIntMap()
+    @Test
+    void strIntMap()
         throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
@@ -249,7 +256,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassMap(map);
     }
 
-    public void testIntLongMap() throws Exception {
+    @Test
+    void intLongMap() throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
             map.put(randomInt(), randomLong());
@@ -262,7 +270,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testFloatByteMap()
+    @Test
+    void floatByteMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -274,7 +283,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testByteDoubleMap()
+    @Test
+    void byteDoubleMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -286,7 +296,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testDoubleCharMap()
+    @Test
+    void doubleCharMap()
         throws Exception {
         try {
             HashMap map = new HashMap();
@@ -298,7 +309,8 @@ public class TestSecondClassValues extends BaseKernelTest {
         }
     }
 
-    public void testCharBooleanMap()
+    @Test
+    void charBooleanMap()
         throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
@@ -306,14 +318,15 @@ public class TestSecondClassValues extends BaseKernelTest {
         saveSecondClassMap(map);
     }
 
-    public void testDateStrMap() throws Exception {
+    @Test
+    void dateStrMap() throws Exception {
         HashMap map = new HashMap();
         for (int i = 0; i < rnd(); i++)
             map.put(randomDate(), randomString());
 
         map.put(new Date(472246800000L),
             "PostgreSQL ain't gonna like this date");
-        assertNotNull("map is null testDateStrMap", map);
+        assertNotNull(map, "map is null testDateStrMap");
         saveSecondClassMap(map);
     }
 
@@ -360,9 +373,9 @@ public class TestSecondClassValues extends BaseKernelTest {
         SCOTest test = new SCOTest();
         pm.persist(test);
         int testID = test.getId();
-        assertNotNull("Passed Map is null", map);
+        assertNotNull(map, "Passed Map is null");
         Map smap = setGetMap(test, map, true);
-        assertNotNull("Map is null in setGetMap", smap);
+        assertNotNull(smap, "Map is null in setGetMap");
         commit();
 
         for (Object keyToDelete : ((HashMap) map.clone()).keySet()) {
@@ -371,21 +384,21 @@ public class TestSecondClassValues extends BaseKernelTest {
                     (SCOTest) pm.find(SCOTest.class, testID);
 
             assertNotNull(
-                    "retrievedObject Obj is null - saveSecondClassMapInternal",
-                    retrievedObject);
+                    retrievedObject,
+                    "retrievedObject Obj is null - saveSecondClassMapInternal");
 
             Map retrievedMap = setGetMap(retrievedObject, map, false);
 
             assertNotNull(
-                    "retrievedMap Obj is null - saveSecondClassMapInternal",
-                    retrievedMap);
+                    retrievedMap,
+                    "retrievedMap Obj is null - saveSecondClassMapInternal");
 
             assertTrue(map.size() != 0);
             assertEquals(map.size(), retrievedMap.size());
 
-            assertTrue("Incompatible types", map.keySet().iterator().next().
+            assertTrue(map.keySet().iterator().next().
                     getClass().isAssignableFrom(retrievedMap.keySet().
-                    iterator().next().getClass()));
+                    iterator().next().getClass()), "Incompatible types");
 
             // check to make sure all the keys match up to the appropriate
             // values.
@@ -415,12 +428,12 @@ public class TestSecondClassValues extends BaseKernelTest {
                      */
                 }
 
-                assertTrue("The original map contained the object (class="
+                assertTrue(retrievedMap.get(key) != null,
+                        "The original map contained the object (class="
                                 + key.getClass().getName() + ", value="
                                 + key.toString() + "), but that object was null "
                                 + "in the map that was retrieved "
-                                + dump(retrievedMap.keySet()) + ".",
-                        retrievedMap.get(key) != null);
+                                + dump(retrievedMap.keySet()) + ".");
                 assertClassAndValueEquals(
                         map.get(key), retrievedMap.get(key));
             }
@@ -468,13 +481,13 @@ public class TestSecondClassValues extends BaseKernelTest {
         Collection storedCollection = setGetCollection(test,
             (Collection) ((ArrayList) collection).clone(), true);
 
-        assertNotNull("retrieved storedCollection is null", storedCollection);
+        assertNotNull(storedCollection, "retrieved storedCollection is null");
 
         // make sure the pre-commit collections are identical!
-        assertEquals("Pre-commit collections were not equal: " + newline
+        assertEquals(collection.size(),
+            storedCollection.size(), "Pre-commit collections were not equal: " + newline
             + dump(collection) + newline + "!=" + newline
-            + dump(storedCollection),
-            collection.size(), storedCollection.size());
+            + dump(storedCollection));
 
         endTx(pm1);
 
@@ -490,32 +503,32 @@ public class TestSecondClassValues extends BaseKernelTest {
                 (SCOTest) pm2.find(SCOTest.class, testID);
 
             assertNotNull(
-                "retrieved obj is null saveSecondClassCollectionInternal",
-                retrievedObject);
+                retrievedObject,
+                "retrieved obj is null saveSecondClassCollectionInternal");
 
             Collection identityCollection = new LinkedList(collection);
             assertNotNull(
-                "identityCollection is null saveSecondClassCollectionInternal",
-                identityCollection);
+                identityCollection,
+                "identityCollection is null saveSecondClassCollectionInternal");
             Collection retrievedCollection = setGetCollection(
                 retrievedObject, identityCollection, false);
 
             assertNotNull(
-                "retrievedCollection is null saveSecondClassCollectionInternal",
-                retrievedCollection);
+                retrievedCollection,
+                "retrievedCollection is null saveSecondClassCollectionInternal");
 
             validateCollection(retrievedCollection);
 
             assertNotNull(retrievedCollection);
             assertTrue(collection.size() != 0);
 
-            assertEquals("Retreived collection does not match original "
+            assertEquals(collection.size(),
+                retrievedCollection.size(), "Retreived collection does not match original "
                 + "after the " + deletionIndex + "th deletion ("
                 + elementToDelete + "): "
                 + newline
                 + dump(collection) + newline + "!=" + newline
-                + dump(retrievedCollection) + newline,
-                collection.size(), retrievedCollection.size());
+                + dump(retrievedCollection) + newline);
 
             /*
             try
@@ -571,13 +584,13 @@ public class TestSecondClassValues extends BaseKernelTest {
     }
 
     private void assertClassAndValueEquals(Object o1, Object o2) {
-        assertTrue("First object was null", o1 != null);
-        assertTrue("Second object was null", o2 != null);
+        assertTrue(o1 != null, "First object was null");
+        assertTrue(o2 != null, "Second object was null");
 
-        assertTrue("Types did not match (class1="
+        assertTrue(o1.getClass().isAssignableFrom(o2.getClass()),
+            "Types did not match (class1="
             + o1.getClass().getName() + ", class2="
-            + o2.getClass().getName() + ")",
-            o1.getClass().isAssignableFrom(o2.getClass()));
+            + o2.getClass().getName() + ")");
 
         // floats and doubles are a little special: we only
         // compare them to a certain precision, after which
@@ -598,10 +611,10 @@ public class TestSecondClassValues extends BaseKernelTest {
                   (BigDecimal)o1, (BigDecimal)o2);
           else
          */
-        assertEquals("Object did not match (class1="
+        assertEquals(o1,
+            o2, "Object did not match (class1="
             + o1.getClass().getName() + ", class2="
-            + o2.getClass().getName() + ")",
-            o1, o2);
+            + o2.getClass().getName() + ")");
     }
 
     private String dump(Collection coll) {

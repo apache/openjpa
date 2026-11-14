@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.querycache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,14 +30,17 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity1;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity2;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @NamedQuery(name = "setParam1",
     query = "SELECT o FROM Entity1 o WHERE o.pk = :pk")
-public class TestQueryCache extends SQLListenerTestCase {
+class TestQueryCache extends SQLListenerTestCase {
 
     EntityManager em;
     private static final String CACHE_NAME = "QueryCacheName";
-    @Override
+
+    @BeforeEach
     public void setUp() {
         super.setUp(
             DROP_TABLES,
@@ -56,7 +62,8 @@ public class TestQueryCache extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
 
-    public void testCachedQuery(){
+    @Test
+    void cachedQuery(){
         em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
         resetSQL();
         em.createQuery("Select object(o) from Entity1 o").getResultList().get(0);
@@ -65,7 +72,9 @@ public class TestQueryCache extends SQLListenerTestCase {
         assertEquals(0, getSQLCount());
 
     }
-    public void testResultList() {
+
+    @Test
+    void resultList() {
         List list = em.createQuery("Select object(o) from Entity1 o")
             .getResultList();
 
@@ -73,7 +82,8 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
-    public void testGetSingleList() {
+    @Test
+    void getSingleList() {
 
         String curr = 2 + "";
 
@@ -89,7 +99,8 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
-    public void testExecuteUpdate() {
+    @Test
+    void executeUpdate() {
         String curr = 2 + "";
         String curr2 = 22 + "";
 
@@ -104,7 +115,7 @@ public class TestQueryCache extends SQLListenerTestCase {
         int ret = em.createQuery("Delete FROM Entity1 o WHERE o.pk = :pk")
             .setParameter("pk", Long.valueOf(curr))
             .executeUpdate();
-        assertEquals(ret, 1);
+        assertEquals(1, ret);
 
         // cascade remove doesn't remove the entity2
         int retTmp = em.createQuery("Delete FROM Entity2 o WHERE o.pk = :pk")
@@ -115,13 +126,14 @@ public class TestQueryCache extends SQLListenerTestCase {
             .setParameter("pk", Long.valueOf(curr2))
             .executeUpdate();
 
-        assertEquals(ret2, 0);
+        assertEquals(0, ret2);
 
         endTx(em);
 
     }
 
-    public void testSetMaxResults() {
+    @Test
+    void setMaxResults() {
 
 
         List l = em.createQuery("Select object(o) from Entity1 o")
@@ -134,7 +146,8 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
-    public void testSetFirstResults() {
+    @Test
+    void setFirstResults() {
 
 
         List l = em.createQuery("Select object(o) from Entity1 o")
@@ -150,7 +163,8 @@ public class TestQueryCache extends SQLListenerTestCase {
 
     }
 
-    public void testName() {
+    @Test
+    void name() {
         ConcurrentQueryCache qCache =
             (ConcurrentQueryCache) emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
         assertNotNull(qCache);

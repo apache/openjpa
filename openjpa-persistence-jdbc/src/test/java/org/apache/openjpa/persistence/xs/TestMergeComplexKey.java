@@ -24,16 +24,19 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMergeComplexKey extends SingleEMFTestCase {
+class TestMergeComplexKey extends SingleEMFTestCase {
     Object[] props = new Object[] { AccountingHierarchy.class, AccountingHierarchyRate.class, CLEAR_TABLES };
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(props);
     }
 
-    public void test() throws Exception {
+    @Test
+    void test() throws Exception {
         createDate();
         EntityManager em = emf.createEntityManager();
         AccountingHierarchy accountingHierarchy = (AccountingHierarchy) em.find(AccountingHierarchy.class, "TESTING");

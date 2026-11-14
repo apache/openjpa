@@ -19,6 +19,11 @@
 package org.apache.openjpa.persistence.jdbc.kernel;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +37,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.ComplexEmbeddedPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.EmbeddedOwnerPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.EmbeddedPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.RecursivelyEmbeddedPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -41,20 +48,14 @@ import org.apache.openjpa.persistence.jdbc.common.apps.RecursivelyEmbeddedPC;
  * ##### that the state managers of values in embedded collections, maps do not
  * ##### have owners. Not relevant in 3.x; will be important in 4.0.
  */
-public class TestEmbeddedPessimisticLocking
-    extends TestSQLListenerTestCase {
+public class TestEmbeddedPessimisticLocking extends TestSQLListenerTestCase {
 
 
     private boolean supportsLocking;
     private Object oid;
     private OpenJPAEntityManagerFactory emf;
 
-    public TestEmbeddedPessimisticLocking(String name)
-    {
-    	super(name);
-    }
-
-	@Override
+    @BeforeEach
     public void setUp() throws Exception{
 		super.setUp();
 		emf = (OpenJPAEntityManagerFactory)getEmf(getProps());
@@ -115,7 +116,8 @@ public class TestEmbeddedPessimisticLocking
         }
     }
 
-    public void testEmbeddedFieldsWithLockedParent() {
+    @Test
+    void embeddedFieldsWithLockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
         prepareEMF(em.getEntityManagerFactory());
         ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
@@ -139,7 +141,8 @@ public class TestEmbeddedPessimisticLocking
         }
     }
 
-    public void testEmbeddedFieldsWithUnlockedParent() {
+    @Test
+    void embeddedFieldsWithUnlockedParent() {
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
         ((FetchPlan) em.getFetchPlan()).addField(EmbeddedOwnerPC.class,
@@ -187,7 +190,8 @@ public class TestEmbeddedPessimisticLocking
         }
     }
 
-    public void testComplexEmbeddedFieldsWithLockedParent() {
+    @Test
+    void complexEmbeddedFieldsWithLockedParent() {
 
         OpenJPAEntityManager em =(OpenJPAEntityManager)currentEntityManager();
 		prepareEMF(em.getEntityManagerFactory());
@@ -216,7 +220,8 @@ public class TestEmbeddedPessimisticLocking
         }
     }
 
-    public void testComplexEmbeddedFieldsWithUnlockedParent() {
+    @Test
+    void complexEmbeddedFieldsWithUnlockedParent() {
         // doing this because setting the read lock level
         // does not seem to be disabling FOR UPDATE.
 

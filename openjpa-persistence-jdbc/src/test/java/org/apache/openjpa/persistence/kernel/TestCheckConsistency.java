@@ -29,23 +29,23 @@ package org.apache.openjpa.persistence.kernel;
 
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestCheckConsistency extends BaseKernelTest {
+class TestCheckConsistency extends BaseKernelTest {
 
     private Object _oid = null;
 
-    /**
-     * Creates a new instance of TestCheckConsistency
-     */
-    public TestCheckConsistency(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class);
 
         RuntimeTest1 pc = new RuntimeTest1();
@@ -54,7 +54,8 @@ public class TestCheckConsistency extends BaseKernelTest {
         _oid = persist(pc);
     }
 
-    public void testConsistentDatastoreTransaction() {
+    @Test
+    void consistentDatastoreTransaction() {
 
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(false);
@@ -83,7 +84,8 @@ public class TestCheckConsistency extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testConsistentDatastoreTransactionWithRollback() {
+    @Test
+    void consistentDatastoreTransactionWithRollback() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(false);
         pm.validateChanges();        // no-op outside trans
@@ -122,14 +124,14 @@ public class TestCheckConsistency extends BaseKernelTest {
 
     //FIXME jthomas
 /*
-    public void testInconsistentDatastoreTransaction() {
-        OpenJPAEntityManager pm = getPM();
-        FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
-        pm.setOptimistic(false);
-        pm.setRetainState(false);
-        pm.validateChanges();        // no-op outside trans
-        pm.begin();
-  */
+            @Test void inconsistentDatastoreTransaction() {
+                OpenJPAEntityManager pm = getPM();
+                FetchPlan fetch = (FetchPlan) pm.getFetchPlan();
+                pm.setOptimistic(false);
+                pm.setRetainState(false);
+                pm.validateChanges();        // no-op outside trans
+                pm.begin();
+          */
     //FIXME jthomas
     /*
    fetch.setReadLockLevel(pm.LOCK_NONE);
@@ -159,7 +161,7 @@ try {
    assertEquals(1, t.length);
    assertEquals(pc, (((JDOException) t[0]).getFailedObject()));
     */
-//        }
+    //        }
 
     /*        assertTrue(pm.getRollbackOnly());
            pm.rollback();
@@ -169,7 +171,8 @@ try {
            endEm(pm,());
        }
     */
-    public void testConsistentOptimisticTransaction() {
+    @Test
+    void consistentOptimisticTransaction() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
@@ -205,7 +208,8 @@ try {
         return JPAFacadeHelper.toBroker(pm).hasConnection();
     }
 
-    public void testConsistentOptimisticTransactionWithRollback() {
+    @Test
+    void consistentOptimisticTransactionWithRollback() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
@@ -247,7 +251,7 @@ try {
     }
 //FIXME
     /*
-public void testInconsistentOptimisticTransactionWithoutRefresh() {
+@Test void inconsistentOptimisticTransactionWithoutRefresh() {
 OpenJPAEntityManager pm = getPM();
 pm.setRetainState(false);
 pm.setOptimistic(true);
@@ -303,7 +307,7 @@ try {
 
 //FIXME
 /*
-    public void testInconsistentOptimisticTransactionWithRefresh() {
+    @Test void inconsistentOptimisticTransactionWithRefresh() {
         OpenJPAEntityManager pm = getPM();
         pm.setOptimistic(true);
         pm.validateChanges();        // no-op outside trans
@@ -352,7 +356,7 @@ try {
 //FIXME
 
 /*
-public void testInconsistentOptimisticTransactionWithRollback() {
+@Test void inconsistentOptimisticTransactionWithRollback() {
 OpenJPAEntityManager pm = getPM();
 pm.setRetainState(false);
 pm.setOptimistic(true);

@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.sql.Date;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
- * See OPENJPA-2603 for details.
- */
-public class TestMultipleMerge extends SingleEMFTestCase {
+* See OPENJPA-2603 for details.
+*/
+class TestMultipleMerge extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         //Since a JPA 1.0 p.xml file is used the property "NonDefaultMappingAllowed=true" is
         //needed for this test.  This is needed since Order uses an @JoinColumn; something
@@ -38,7 +43,8 @@ public class TestMultipleMerge extends SingleEMFTestCase {
             CLEAR_TABLES, Order.class, LineItemPK.class, LineItem.class);
     }
 
-    public void testMultiMerge() {
+    @Test
+    void multiMerge() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Order order = new Order(1L);

@@ -33,7 +33,6 @@ import jakarta.persistence.OneToMany;
 import org.apache.openjpa.persistence.FetchAttribute;
 import org.apache.openjpa.persistence.FetchGroup;
 import org.apache.openjpa.persistence.FetchGroups;
-import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
 
 /**
  * Represents a graph node.

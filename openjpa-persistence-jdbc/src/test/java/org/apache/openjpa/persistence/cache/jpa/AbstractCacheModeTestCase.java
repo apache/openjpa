@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.Cache;
@@ -36,6 +40,7 @@ import org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     @Override
@@ -168,7 +173,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * Ensure that each call the em.find generates an SQL statement when
      * CacheRetrieveMode.BYPASS is used.
      */
-    public void testReadModeByass() {
+    @Test
+    void readModeByass() {
         assertSqlInc(new Action() {
             @Override
             public void run() {
@@ -204,7 +210,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * </p>
      *
      */
-    public void testRetrieveModeUse() {
+    @Test
+    void retrieveModeUse() {
         if (getCacheEnabled()) {
             assertNoSql(new Action() {
                 @Override
@@ -325,19 +332,22 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     /**
      * Execute the defaultStoreModeTest with
      */
-    public void testStoreModeUseBypass() throws Exception {
+    @Test
+    void storeModeUseBypass() throws Exception {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.BYPASS, true, false, 1);
         }
     }
 
-    public void testStoreModeUseUse() {
+    @Test
+    void storeModeUseUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.USE, true, true, 1);
         }
     }
 
-    public void testRefresh() {
+    @Test
+    void refresh() {
         if (getCacheEnabled()) {
             OpenJPAEntityManagerSPI em = getEntityManagerFactory().createEntityManager();
             CacheableEntity e1 = em.find(CacheableEntity.class, 1);
@@ -363,25 +373,29 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
         }
     }
 
-    public void testStoreModeUseRefresh() {
+    @Test
+    void storeModeUseRefresh() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.REFRESH, true, true, 1);
         }
     }
 
-    public void entityManagerStoreModeTest() {
+    @Test
+    void entityManagerStoreMode() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.BYPASS, CacheStoreMode.BYPASS, false, false, 1);
         }
     }
 
-    public void testStoreModeBypassUse() {
+    @Test
+    void storeModeBypassUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.BYPASS, CacheStoreMode.USE, false, true, 1);
         }
     }
 
-    public void testStoreModeBypassRefresh() {
+    @Test
+    void storeModeBypassRefresh() {
         if (getCacheEnabled()) {
             // REFRESH picks up the changes from the database, even though the
             // first update was done with BYPASS
@@ -389,25 +403,29 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
         }
     }
 
-    public void testStoreModeRefreshUse() {
+    @Test
+    void storeModeRefreshUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.USE, true, true, 1);
         }
     }
 
-    public void testStoreModeRefreshBypass() {
+    @Test
+    void storeModeRefreshBypass() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.BYPASS, true, false, 1);
         }
     }
 
-    public void testStoreModeRefreshRefresh() {
+    @Test
+    void storeModeRefreshRefresh() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.REFRESH, CacheStoreMode.REFRESH, true, true, 1);
         }
     }
 
-    public void testResultsFromQueryAreInCache() {
+    @Test
+    void resultsFromQueryAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();
@@ -418,8 +436,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
             for(Class<?> cls : persistentTypes) {
                 query = "Select e from " + getAlias(cls) + " e";
                 List<?> res = em.createQuery(query).getResultList();
-                assertNotNull(String.format("Expected to find some results when running query %s",query), res);
-                assertTrue(String.format("Expected more than 0 results running query %s",query),res.size() != 0 ) ;
+                assertNotNull(res, String.format("Expected to find some results when running query %s",query));
+                assertTrue(res.size() != 0,String.format("Expected more than 0 results running query %s",query) ) ;
             }
             for(Class<?> cls : getExpectedInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
@@ -432,7 +450,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
         }
     }
 
-    public void testResultsFromFindAreInCache() {
+    @Test
+    void resultsFromFindAreInCache() {
         if (getCacheEnabled()) {
             // clear cache
             getEntityManagerFactory().getStoreCache().evictAll();
@@ -440,8 +459,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
 
             EntityManager em = getEntityManagerFactory().createEntityManager();
             for(Class<?> cls : persistentTypes) {
-                assertNotNull(String.format("Expected to find %s::%d from database or from cache", cls, 1),
-                		em.find(cls, 1));
+                assertNotNull(em.find(cls, 1),
+                		String.format("Expected to find %s::%d from database or from cache", cls, 1));
             }
             for(Class<?> cls : getExpectedInCache()) {
                 assertCached(getEntityManagerFactory().getCache(), cls, 1, true);

@@ -18,13 +18,20 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestSimpleXmlEntity
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestSimpleXmlEntity extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
@@ -36,7 +43,8 @@ public class TestSimpleXmlEntity
         return "xml-persistence-unit";
     }
 
-    public void testId() {
+    @Test
+    void id() {
         em.getTransaction().begin();
         SimpleXmlEntity e = new SimpleXmlEntity();
         em.persist(e);
@@ -51,11 +59,13 @@ public class TestSimpleXmlEntity
         em.getTransaction().rollback();
     }
 
-    public void testNamedQueryInXmlNamedEntity() {
+    @Test
+    void namedQueryInXmlNamedEntity() {
         em.createNamedQuery("SimpleXml.findAll").getResultList();
     }
 
-    public void testNamedQueryInXmlUsingShortClassName() {
+    @Test
+    void namedQueryInXmlUsingShortClassName() {
         try {
             em.createNamedQuery("SimpleXmlEntity.findAll").getResultList();
             fail("should not be able to execute query using short class name " +
@@ -65,11 +75,13 @@ public class TestSimpleXmlEntity
         }
     }
 
-    public void testNamedEntityInDynamicQuery() {
+    @Test
+    void namedEntityInDynamicQuery() {
         em.createQuery("select o from SimpleXml o").getResultList();
     }
 
-    public void testShortClassNameInDynamicQuery() {
+    @Test
+    void shortClassNameInDynamicQuery() {
         try {
             em.createQuery("select o from SimpleXmlEntity o").getResultList();
             fail("should not be able to execute query using short class name " +
@@ -85,6 +97,6 @@ public class TestSimpleXmlEntity
      */
     void assertMarkerInErrorMessage(Exception ex, String marker) {
         String message = ex.getMessage();
-        assertTrue("Can not find [" + marker + "] in the message [" + message + "]", message.indexOf(marker) != -1);
+        assertTrue(message.indexOf(marker) != -1, "Can not find [" + marker + "] in the message [" + message + "]");
     }
 }

@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -31,10 +36,11 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestIndices extends SingleEMFTestCase {
-    @Override
+class TestIndices extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(EntityWithIndices.class, CLEAR_TABLES
 //            ,"openjpa.Log","SQL=trace"
@@ -42,16 +48,16 @@ public class TestIndices extends SingleEMFTestCase {
     }
 
     @Test
-    public void testIndicesCreated() {
+    void indicesCreated() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().getMapping(EntityWithIndices.class, null, true);
         Table table = cls.getTable();
         Index idx1 = table.getIndex(DBIdentifier.newIndex("idx_index1"));
-        assertNotNull("Defined index should exist", idx1);
+        assertNotNull(idx1, "Defined index should exist");
         assertFalse(idx1.isUnique());
 
         Index idx2 = table.getIndex(DBIdentifier.newIndex("idx_long"));
-        assertNotNull("Defined index should exist", idx2);
+        assertNotNull(idx2, "Defined index should exist");
         assertTrue(idx2.isUnique());
 
         Set<String> indexedCols = new HashSet<>();
@@ -74,12 +80,12 @@ public class TestIndices extends SingleEMFTestCase {
 
     private void assertIndexColumns(Table table, String indexName, String... assertedColumnNames) {
         Index idx = table.getIndex(DBIdentifier.newIndex(indexName));
-        assertNotNull("Defined index should exist", idx);
+        assertNotNull(idx, "Defined index should exist");
         final List<String> indexColumnNames = Arrays.stream(idx.getColumns())
                 .map(c -> c.getIdentifier().getName())
                 .collect(Collectors.toList());
         for (String assertedColumnName : assertedColumnNames) {
-            assertTrue("Column " + assertedColumnName + " does not exist in index " + indexName, indexColumnNames.contains(assertedColumnName));
+            assertTrue(indexColumnNames.contains(assertedColumnName), "Column " + assertedColumnName + " does not exist in index " + indexName);
         }
     }
 

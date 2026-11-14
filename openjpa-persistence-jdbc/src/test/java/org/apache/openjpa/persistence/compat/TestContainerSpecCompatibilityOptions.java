@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,12 +43,12 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.ContainerEMFTest;
+import org.junit.jupiter.api.Test;
 
 // Tests same functionality as TestSpecCompatibilityOptions, except that
 // this variation runs through the path a JEE container uses to create
 // an EMF.
-public class TestContainerSpecCompatibilityOptions
-    extends ContainerEMFTest {
+public class TestContainerSpecCompatibilityOptions extends ContainerEMFTest {
 
     protected List<String> sql = new ArrayList<>();
     protected int sqlCount;
@@ -61,7 +67,8 @@ public class TestContainerSpecCompatibilityOptions
      * Verifies compatibility options and spec level are appropriate
      * for a version 2 persistence.xml
      */
-    public void testJPA1CompatibilityOptions() {
+    @Test
+    void jpa1CompatibilityOptions() {
         OpenJPAEntityManagerFactorySPI emf1 =
         (OpenJPAEntityManagerFactorySPI)
             createContainerEMF("persistence_1_0",
@@ -79,7 +86,7 @@ public class TestContainerSpecCompatibilityOptions
         assertEquals("NONE", vMode);
         Specification spec = emf1.getConfiguration().getSpecificationInstance();
         assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-        assertEquals(spec.getVersion(), 1);
+        assertEquals(1, spec.getVersion());
 
         closeEMF(emf1);
 
@@ -89,7 +96,8 @@ public class TestContainerSpecCompatibilityOptions
      * Verifies compatibility options and spec level are appropriate
      * for a version 2 persistence.xml
      */
-    public void testJPA2CompatibilityOptions() {
+    @Test
+    void jpa2CompatibilityOptions() {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertFalse(compat.getFlushBeforeDetach());
         assertFalse(compat.getCopyOnDetach());
@@ -101,7 +109,7 @@ public class TestContainerSpecCompatibilityOptions
         assertEquals("AUTO", vMode);
         Specification spec = emf.getConfiguration().getSpecificationInstance();
         assertEquals("JPA", spec.getName().toUpperCase(Locale.ROOT));
-        assertEquals(spec.getVersion(), 2);
+        assertEquals(2, spec.getVersion());
     }
 
     /*
@@ -109,7 +117,8 @@ public class TestContainerSpecCompatibilityOptions
      * An exceptioin will be thrown when a bi-directional relation is detected in
      * a mapped superclass.
      */
-    public void testMappedSuperClass() {
+    @Test
+    void mappedSuperClass() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityA.class);
         types.add(EntityB.class);
@@ -174,7 +183,8 @@ public class TestContainerSpecCompatibilityOptions
      *  without @JoinTable will result in an exception thrown by openjpa.
      *
      */
-    public void testOneToManyRelation() {
+    @Test
+    void oneToManyRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(EntityC_B1MFK.class);
@@ -403,7 +413,8 @@ public class TestContainerSpecCompatibilityOptions
         em.clear();
     }
 
-    public void testOneToManyMapRelation() {
+    @Test
+    void oneToManyMapRelation() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_U1M_Map_FK.class);
         types.add(Uni_1ToM_Map_FK.class);
@@ -449,7 +460,8 @@ public class TestContainerSpecCompatibilityOptions
      * reserved word) must be used again, so that schemas created by earlier
      * releases keep working.
      */
-    public void testLegacyDefaultMapKeyColumnName() {
+    @Test
+    void legacyDefaultMapKeyColumnName() {
         List<Class<?>> types = new ArrayList<>();
         types.add(Uni_Map_KeyCol.class);
         Map<String,Object> props = new HashMap<>();
@@ -474,14 +486,14 @@ public class TestContainerSpecCompatibilityOptions
                     break;
                 }
             }
-            assertNotNull("No CREATE TABLE for the collection table in " + sql, ddl);
-            assertTrue(ddl, ddl.contains("UNIMAPKEYCOL_ID"));
-            assertTrue("The legacy map key column name was not used: " + ddl,
-                ddl.matches(".*\\bKEY0?\\b.*"));
+            assertNotNull(ddl, "No CREATE TABLE for the collection table in " + sql);
+            assertTrue(ddl.contains("UNIMAPKEYCOL_ID"), ddl);
+            assertTrue(ddl.matches(".*\\bKEY0?\\b.*"),
+                "The legacy map key column name was not used: " + ddl);
             // the spec default must not appear
-            assertFalse("The spec default map key column name was used: " + ddl,
-                ddl.contains("ATTRIBUTES_KEY"));
-        } 
+            assertFalse(ddl.contains("ATTRIBUTES_KEY"),
+                "The spec default map key column name was used: " + ddl);
+        }
     }
 
     public void crudUni1MMapFK(EntityManager em) {
@@ -716,7 +728,8 @@ public class TestContainerSpecCompatibilityOptions
         em.getTransaction().commit();
     }
 
-    public void testUniManyToOneUsingJoinTable() {
+    @Test
+    void uniManyToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC.class);
         types.add(Uni_MTo1_JT.class);
@@ -788,7 +801,8 @@ public class TestContainerSpecCompatibilityOptions
         em.getTransaction().commit();
     }
 
-    public void testOneToOneUsingJoinTable() {
+    @Test
+    void oneToOneUsingJoinTable() {
         List<Class<?>> types = new ArrayList<>();
         types.add(EntityC_B11JT.class);
         types.add(EntityC_U11JT.class);

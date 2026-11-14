@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -30,12 +34,14 @@ import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
+class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 	
 	private static final Logger logger = Logger.getLogger(TestXMLPersistenceMetaDataParser.class.getCanonicalName());
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Security1.class, Country1.class,
             Security.class, Country.class);
@@ -46,7 +52,8 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         return "test-persistence-xml-orm";
     }
 
-    public void testManyToOneLazyFetch() {
+    @Test
+    void manyToOneLazyFetch() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -133,7 +140,8 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 
     }
 
-    public void testManyToOneEagerFetch() {
+    @Test
+    void manyToOneEagerFetch() {
         // initialize objects
         EntityManager em = emf.createEntityManager();
 
@@ -171,7 +179,8 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
 
     }
 
-    public void testQueryHintOrmXml() {
+    @Test
+    void queryHintOrmXml() {
         QueryMetaData[] meta = ((MetamodelImpl) emf.getMetamodel()).getRepository().getQueryMetaDatas();
         assertEquals(1, meta.length);
         assertEquals("Country1.literal", meta[0].getName());

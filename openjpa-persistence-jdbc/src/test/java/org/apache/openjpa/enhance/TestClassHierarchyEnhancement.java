@@ -26,18 +26,20 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.Test;
 
 
 /**
  * This unit test checks the enhancement of a superclass/subclass
  * constellation.
  */
-public class TestClassHierarchyEnhancement extends SingleEMFTestCase {
+class TestClassHierarchyEnhancement extends SingleEMFTestCase {
 
     /**
      * This tests OPENJPA-1912.
      */
-    public void testSerialize() throws Exception {
+    @Test
+    void serialize() throws Exception {
         // we don't even need an EntityManager for that ;)
 
         EnhancedSubClass entity = new EnhancedSubClass();

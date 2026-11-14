@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.mapkey;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that ORDINAL and STRING @MapKeyEnumerated mappings can share
@@ -36,9 +42,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * and the ORDINAL handler must correctly read/write ordinal values
  * as strings in the VARCHAR column.
  */
-public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
+class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SharedColDeptOrdinal.class,
               SharedColEmpOrdinal.class,
@@ -48,7 +54,8 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
               DROP_TABLES);
     }
 
-    public void testOrdinalMapKeyPersistAndLoad() {
+    @Test
+    void ordinalMapKeyPersistAndLoad() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -82,11 +89,11 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
             "SELECT OFFICE_ID FROM SC_EMP WHERE ID = ?1");
         nq.setParameter(1, emp0Id);
         List<?> results = nq.getResultList();
-        assertFalse("Expected result from native query",
-            results.isEmpty());
+        assertFalse(results.isEmpty(),
+            "Expected result from native query");
         String storedVal = results.get(0).toString().trim();
-        assertEquals("Ordinal value should be stored as '0'",
-            "0", storedVal);
+        assertEquals("0",
+            storedVal, "Ordinal value should be stored as '0'");
 
         // Verify loading back through JPA
         SharedColDeptOrdinal loaded = em.find(
@@ -95,17 +102,18 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
         Map<SharedColOffices, SharedColEmpOrdinal> emps =
             loaded.getEmployees();
         assertEquals(2, emps.size());
-        assertNotNull("OFF000 key should be present",
-            emps.get(SharedColOffices.OFF000));
-        assertNotNull("OFF001 key should be present",
-            emps.get(SharedColOffices.OFF001));
+        assertNotNull(emps.get(SharedColOffices.OFF000),
+            "OFF000 key should be present");
+        assertNotNull(emps.get(SharedColOffices.OFF001),
+            "OFF001 key should be present");
         assertEquals("EmpOrd0",
             emps.get(SharedColOffices.OFF000).getName());
 
         em.close();
     }
 
-    public void testStringMapKeyPersistAndLoad() {
+    @Test
+    void stringMapKeyPersistAndLoad() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -139,11 +147,11 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
             "SELECT OFFICE_ID FROM SC_EMP WHERE ID = ?1");
         nq.setParameter(1, emp0Id);
         List<?> results = nq.getResultList();
-        assertFalse("Expected result from native query",
-            results.isEmpty());
+        assertFalse(results.isEmpty(),
+            "Expected result from native query");
         String storedVal = results.get(0).toString().trim();
-        assertEquals("String value should be stored as enum name",
-            "OFF002", storedVal);
+        assertEquals("OFF002",
+            storedVal, "String value should be stored as enum name");
 
         // Verify loading back through JPA
         SharedColDeptString loaded = em.find(
@@ -152,17 +160,18 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
         Map<SharedColOffices, SharedColEmpString> emps =
             loaded.getEmployees();
         assertEquals(2, emps.size());
-        assertNotNull("OFF002 key should be present",
-            emps.get(SharedColOffices.OFF002));
-        assertNotNull("OFF003 key should be present",
-            emps.get(SharedColOffices.OFF003));
+        assertNotNull(emps.get(SharedColOffices.OFF002),
+            "OFF002 key should be present");
+        assertNotNull(emps.get(SharedColOffices.OFF003),
+            "OFF003 key should be present");
         assertEquals("EmpStr0",
             emps.get(SharedColOffices.OFF002).getName());
 
         em.close();
     }
 
-    public void testBothTypesCoexist() {
+    @Test
+    void bothTypesCoexist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -202,15 +211,15 @@ public class TestSharedColumnEnumMapKey extends SingleEMFTestCase {
             SharedColDeptOrdinal.class, ordDeptId);
         assertNotNull(loadedOrd);
         assertEquals(1, loadedOrd.getEmployees().size());
-        assertNotNull("Ordinal OFF000 key should be present",
-            loadedOrd.getEmployees().get(SharedColOffices.OFF000));
+        assertNotNull(loadedOrd.getEmployees().get(SharedColOffices.OFF000),
+            "Ordinal OFF000 key should be present");
 
         SharedColDeptString loadedStr = em.find(
             SharedColDeptString.class, strDeptId);
         assertNotNull(loadedStr);
         assertEquals(1, loadedStr.getEmployees().size());
-        assertNotNull("String OFF004 key should be present",
-            loadedStr.getEmployees().get(SharedColOffices.OFF004));
+        assertNotNull(loadedStr.getEmployees().get(SharedColOffices.OFF004),
+            "String OFF004 key should be present");
 
         em.close();
     }

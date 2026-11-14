@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,15 +30,10 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.util.ClassResolver;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class TestSchemaTool {
-    @Parameters(name = "{index}: {0} -> {1}")
     public static Collection<Object[]> data() {
       return Arrays.asList(new Object[][] {
           {"", List.of()},
@@ -52,13 +47,10 @@ public class TestSchemaTool {
           {"org/apache/openjpa/jdbc/meta/testScriptCommented", List.of("SELECT * FROM Customer c  WHERE c.id = 1")}
       });
     }
-    @Parameter(0)
-    public String sqlScript;
-    @Parameter(1)
-    public List<String> expected;
 
-    @Test
-    public void testExecuteScript() throws Exception {
+    @MethodSource("data")
+    @ParameterizedTest(name = "{index}: {0} -> {1}")
+    void executeScript(String sqlScript, List<String> expected) throws Exception {
         final ArrayList<String> sqlToRun = new ArrayList<>();
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setClassResolver(new ClassResolver() {

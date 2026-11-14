@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -28,6 +34,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity1;
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.Entity2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestNativeQueries extends SingleEMFTestCase {
     private static final String TABLE_NAME = "entity_1";
@@ -38,7 +46,7 @@ public class TestNativeQueries extends SingleEMFTestCase {
 
     private EntityManager em;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Entity1.class, Entity2.class);
 
@@ -51,18 +59,21 @@ public class TestNativeQueries extends SingleEMFTestCase {
         em.getTransaction().begin();
     }
 
-    public void testNoParameter() {
+    @Test
+    void noParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME;
         assertSize(3, em.createNativeQuery(sql, Entity1.class).getResultList());
     }
 
-    public void testLiteral() {
+    @Test
+    void literal() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = " + CONST_INT;
         assertSize(1, em.createNativeQuery(sql, Entity1.class).getResultList());
     }
 
-    public void testParameter() {
+    @Test
+    void parameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1";
         assertSize(1, em.createNativeQuery(sql, Entity1.class)
@@ -70,7 +81,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testOutOfOrderParameter() {
+    @Test
+    void outOfOrderParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?2 AND STRINGFIELD = ?1";
         assertSize(1, em.createNativeQuery(sql, Entity1.class)
@@ -79,7 +91,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testDuplicateParameter() {
+    @Test
+    void duplicateParameter() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 AND INTFIELD = ?1";
         assertSize(1, em.createNativeQuery(sql, Entity1.class)
@@ -87,7 +100,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testDifferentParameterToSameField() {
+    @Test
+    void differentParameterToSameField() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 OR INTFIELD = ?2";
         assertSize(2, em.createNativeQuery(sql, Entity1.class)
@@ -96,7 +110,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testQuoteParameterIgnored() {
+    @Test
+    void quoteParameterIgnored() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD = ?1 OR STRINGFIELD = '?2'";
         assertSize(1, em.createNativeQuery(sql, Entity1.class)
@@ -104,7 +119,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testParameterMarkerWithoutSpaces() {
+    @Test
+    void parameterMarkerWithoutSpaces() {
         String sql = "SELECT * FROM " + TABLE_NAME
                    + " WHERE INTFIELD=?1";
         assertSize(1, em.createNativeQuery(sql, Entity1.class)
@@ -112,7 +128,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
             .getResultList());
     }
 
-    public void testZeroBasedParameterSettingFails() {
+    @Test
+    void zeroBasedParameterSettingFails() {
         try {
             String sql = "SELECT * FROM " + TABLE_NAME
                        + " WHERE INTFIELD = ?1";
@@ -124,7 +141,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
         }
     }
 
-    public void testNamedParameterFails() {
+    @Test
+    void namedParameterFails() {
         /*
          * Named parameters are not supported according to Section 3.6.8 of
          * JPA 2.0 (pp 100) public draft Oct 31, 2008:
@@ -142,7 +160,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
         }
     }
 
-    public void testHintsAreProcessed() {
+    @Test
+    void hintsAreProcessed() {
         Query q = em.createNamedQuery("SQLWithHints");
         assertEquals(QueryLanguages.LANG_SQL,
             OpenJPAPersistence.cast(q).getLanguage());
@@ -152,7 +171,8 @@ public class TestNativeQueries extends SingleEMFTestCase {
 
     }
 
-    public void testNullResult(){
+    @Test
+    void nullResult(){
         String sql = "SELECT max(pk) FROM " + TABLE_NAME_2+ "";
         assertNull(em.createNativeQuery(sql, Long.class).getSingleResult());
     }

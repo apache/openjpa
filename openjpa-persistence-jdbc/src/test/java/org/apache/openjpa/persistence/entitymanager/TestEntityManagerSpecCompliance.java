@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.entitymanager;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +36,8 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests EntityManager spec compliance for JPA 3.2 TCK failures:
@@ -39,9 +46,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - find with invalid PK type throws IllegalArgumentException
  * - merge of new entity
  */
-public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
+class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedOrder.class, UnenhancedCoffee.class,
             UnenhancedDoesNotExist.class,
@@ -68,7 +75,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * createQuery(CriteriaDelete) on non-existent table, executeUpdate
      * should throw RuntimeException and mark tx for rollback.
      */
-    public void testCriteriaDeleteRollback() {
+    @Test
+    void criteriaDeleteRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -82,8 +90,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
                 fail("RuntimeException not thrown for CriteriaDelete on non-existent table");
             } catch (RuntimeException e) {
                 // expected
-                assertTrue("Transaction should be marked for rollback",
-                    em.getTransaction().getRollbackOnly());
+                assertTrue(em.getTransaction().getRollbackOnly(),
+                    "Transaction should be marked for rollback");
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -98,7 +106,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * createQuery(CriteriaUpdate) on non-existent table, executeUpdate
      * should throw RuntimeException and mark tx for rollback.
      */
-    public void testCriteriaUpdateRollback() {
+    @Test
+    void criteriaUpdateRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -114,8 +123,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
                 fail("RuntimeException not thrown for CriteriaUpdate on non-existent table");
             } catch (RuntimeException e) {
                 // expected
-                assertTrue("Transaction should be marked for rollback",
-                    em.getTransaction().getRollbackOnly());
+                assertTrue(em.getTransaction().getRollbackOnly(),
+                    "Transaction should be marked for rollback");
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -130,7 +139,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * getReference with non-entity class should throw RuntimeException
      * and mark tx for rollback.
      */
-    public void testGetReferenceNonEntityRollback() {
+    @Test
+    void getReferenceNonEntityRollback() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -139,8 +149,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
             fail("RuntimeException not thrown for getReference with non-entity");
         } catch (RuntimeException e) {
             // expected
-            assertTrue("Transaction should be marked for rollback",
-                em.getTransaction().getRollbackOnly());
+            assertTrue(em.getTransaction().getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -154,7 +164,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * find(Coffee.class, longId) where Coffee PK is Integer should throw
      * IllegalArgumentException for wrong PK type.
      */
-    public void testFindInvalidPKType() {
+    @Test
+    void findInvalidPKType() {
         EntityManager em = emf.createEntityManager();
         try {
             long longId = 55L;
@@ -172,7 +183,8 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
      * TCK: findExceptionsTest - tests various find() overloads for proper
      * exception handling with invalid args.
      */
-    public void testFindExceptions() {
+    @Test
+    void findExceptions() {
         EntityManager em = emf.createEntityManager();
         int pass = 0;
         Map<String, Object> myMap = new HashMap<>();
@@ -346,14 +358,15 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
 
         em.close();
 
-        assertEquals("Expected all 14 checks to pass", 14, pass);
+        assertEquals(14, pass, "Expected all 14 checks to pass");
     }
 
     /**
      * TCK: mergeTest
      * merge(new Order) should persist the new entity.
      */
-    public void testMergeNewEntity() {
+    @Test
+    void mergeNewEntity() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -364,7 +377,7 @@ public class TestEntityManagerSpecCompliance extends SingleEMFTestCase {
             emf.getCache().evictAll();
 
             UnenhancedOrder o2 = em.find(UnenhancedOrder.class, 9);
-            assertNotNull("Merged entity should be findable", o2);
+            assertNotNull(o2, "Merged entity should be findable");
             assertEquals(o1, o2);
         } finally {
             if (em.getTransaction().isActive()) em.getTransaction().rollback();

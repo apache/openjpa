@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
@@ -64,11 +67,13 @@ import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.UserException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestJPAFacadeHelper extends SingleEMFTestCase {
+class TestJPAFacadeHelper extends SingleEMFTestCase {
     MetaDataRepository repo = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, EmbeddedIdEntity.class, EmbeddedIdClass.class, EBigDecimalID.class, EDBigDecimalID.class,
             EBigIntegerID.class, EDBigIntegerID.class, EDateID.class, EDDateID.class, ESQLDateID.class,
@@ -80,7 +85,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         repo = emf.getConfiguration().getMetaDataRepositoryInstance();
     }
 
-    public void testEmbeddedId() throws Exception {
+    @Test
+    void embeddedId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(EmbeddedIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EmbeddedIdEntity());
@@ -110,7 +116,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testCompositeId() throws Exception {
+    @Test
+    void compositeId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(EntityWithCompositeId.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EntityWithCompositeId());
@@ -138,7 +145,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testBasic() throws Exception {
+    @Test
+    void basic() throws Exception {
         ClassMetaData cmd = repo.getMetaData(BasicEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new BasicEntity());
@@ -171,7 +179,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(o, JPAFacadeHelper.toOpenJPAObjectId(cmd, o));
     }
 
-    public void testIntegerId() {
+    @Test
+    void integerId() {
         ClassMetaData cmd = repo.getMetaData(Person.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new Person());
@@ -197,7 +206,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testDoubleId() {
+    @Test
+    void doubleId() {
         ClassMetaData cmd = repo.getMetaData(DoubleObjIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new DoubleObjIdEntity());
@@ -223,7 +233,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testFloatId() {
+    @Test
+    void floatId() {
         ClassMetaData cmd = repo.getMetaData(FloatIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new FloatIdEntity());
@@ -249,7 +260,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testBooleanId() {
+    @Test
+    void booleanId() {
         ClassMetaData cmd = repo.getMetaData(BooleanIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new BooleanIdEntity());
@@ -275,7 +287,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testStringId() {
+    @Test
+    void stringId() {
         ClassMetaData cmd = repo.getMetaData(StringIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new StringIdEntity());
@@ -301,7 +314,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testBigIntegerId() {
+    @Test
+    void bigIntegerId() {
         ClassMetaData cmd = repo.getMetaData(SQLBigIntegerIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new SQLBigIntegerIdEntity());
@@ -327,7 +341,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testBigDecimalId() {
+    @Test
+    void bigDecimalId() {
         ClassMetaData cmd = repo.getMetaData(SQLBigDecimalIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new SQLBigDecimalIdEntity());
@@ -353,7 +368,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testDateId() {
+    @Test
+    void dateId() {
         ClassMetaData cmd = repo.getMetaData(SQLDateIdEntity.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new SQLDateIdEntity());
@@ -380,7 +396,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testDerivedId() throws Exception {
+    @Test
+    void derivedId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(EDSQLDateID.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EDSQLDateID());
@@ -407,7 +424,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, d));
     }
 
-    public void testCompositeDerivedId() throws Exception {
+    @Test
+    void compositeDerivedId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(Book.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new Book());
@@ -441,7 +459,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testCompositeDerivedEmbeddedId() {
+    @Test
+    void compositeDerivedEmbeddedId() {
         ClassMetaData cmd = repo.getMetaData(MedicalHistory4.class, null, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new MedicalHistory4());
@@ -471,7 +490,8 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
         assertEquals(oid, JPAFacadeHelper.toOpenJPAObjectId(cmd, id));
     }
 
-    public void testNoId() throws Exception {
+    @Test
+    void noId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(AllFieldTypes.class, null, true);
         try {
             // Don't parameterize this collection to force the JVM to use the

@@ -27,26 +27,20 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import java.math.BigDecimal;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 public class TestBigDecimals extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestBigDecimals
-     */
-    public TestBigDecimals() {
-    }
-
-    public TestBigDecimals(String name) {
-        super(name);
-    }
-
-    public void testBigDecimalDataIntegrity()
+    @Test
+    void bigDecimalDataIntegrity()
         throws Exception {
         try {
             BigDecimal bd = new BigDecimal(Math.random() * 10000000 + "");
@@ -61,7 +55,7 @@ public class TestBigDecimals extends BaseKernelTest {
         }
     }
 //    FixMe aokeke: Passes but takes a long time --commenting for resource sake
-//    public void testBigBigDecimals()
+//    @Test void bigBigDecimals()
 //        throws Exception {
 //        try {
 //            BigDecimal bd = new BigDecimal("1234567890."
@@ -92,8 +86,8 @@ public class TestBigDecimals extends BaseKernelTest {
             AllFieldTypesTest aftt2 = (AllFieldTypesTest) pm2.getObjectId(id);
 
             // why wouldn't they be two different objects?
-            assertTrue("identitcal field values",
-                bd != aftt2.getTestBigDecimal());
+            assertNotSame(bd, aftt2.getTestBigDecimal(),
+                "identitcal field values");
 
             // this should always succeed
             assertEquals(bd,

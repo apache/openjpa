@@ -18,18 +18,22 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.TransactionalClassPC;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBTransactionalClass extends AbstractTestCase {
 
-    public TestEJBTransactionalClass(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBTransactionalClass() {
+        super("kernelcactusapp");
     }
 
-    public void testTransactional() {
+    @Test
+    void transactional() {
         TransactionalClassPC pc = new TransactionalClassPC();
         pc.setIntField(1);
 

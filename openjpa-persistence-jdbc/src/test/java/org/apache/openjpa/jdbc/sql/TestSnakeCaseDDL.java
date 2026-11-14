@@ -21,8 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -30,7 +29,6 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,17 +40,17 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import static java.util.Collections.singleton;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestSnakeCaseDDL {
+class TestSnakeCaseDDL {
 
 	private static final Logger logger = Logger.getLogger(TestSnakeCaseDDL.class.getCanonicalName());
 
     @Test
-    public void ddlInSnakeCase() throws SQLException {
+    void ddlInSnakeCase() throws Exception {
 
         Driver derbyDriver;
         try {

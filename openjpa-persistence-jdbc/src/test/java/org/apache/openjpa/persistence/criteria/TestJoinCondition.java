@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import jakarta.persistence.criteria.CollectionJoin;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
@@ -27,6 +30,7 @@ import jakarta.persistence.criteria.MapJoin;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.SetJoin;
 import jakarta.persistence.metamodel.Bindable;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Criteria Queries that use Join.
@@ -34,37 +38,42 @@ import jakarta.persistence.metamodel.Bindable;
  * @author Pinaki Poddar
  *
  */
-public class TestJoinCondition extends JoinDomainTestCase {
-    public void testSingleAttributeJoinModel() {
+class TestJoinCondition extends JoinDomainTestCase {
+    @Test
+    void singleAttributeJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<A> a = cq.from(A.class);
         Join<A,B> b = a.join(A_.b);
-        assertTrue(b.getModel() instanceof Bindable);
+        assertInstanceOf(Bindable.class, b.getModel());
         assertSame(B.class, b.getJavaType());
     }
 
-    public void testCollectionJoinModel() {
+    @Test
+    void collectionJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         CollectionJoin<C,D> d = c.join(C_.coll);
         assertSame(D.class, d.getJavaType());
     }
 
-    public void testSetJoinModel() {
+    @Test
+    void setJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         SetJoin<C,D> d = c.join(C_.set);
         assertSame(D.class, d.getJavaType());
     }
 
-    public void testListJoinModel() {
+    @Test
+    void listJoinModel() {
         CriteriaQuery<?> cq = cb.createQuery();
         Root<C> c = cq.from(C.class);
         ListJoin<C,D> d = c.join(C_.list);
         assertSame(D.class, d.getJavaType());
     }
 
-    public void testInnerJoinSingleAttributeWithoutCondition() {
+    @Test
+    void innerJoinSingleAttributeWithoutCondition() {
         String jpql = "select a from A a INNER JOIN a.b b";
         CriteriaQuery<A> c = cb.createQuery(A.class);
         c.from(A.class).join(A_.b, JoinType.INNER);
@@ -72,7 +81,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(c, jpql);
     }
 
-    public void testCrossJoinWithoutCondition() {
+    @Test
+    void crossJoinWithoutCondition() {
         String jpql = "select a from A a, C c";
         CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
@@ -81,7 +91,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testCrossJoinWithoutCondition1() {
+    @Test
+    void crossJoinWithoutCondition1() {
         String jpql = "select a, c from A a, C c";
         CriteriaQuery<?> cq = cb.createQuery();
         Root<A> a = cq.from(A.class);
@@ -91,7 +102,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testCrossJoin() {
+    @Test
+    void crossJoin() {
         String jpql = "select a from A a, C c where a.name=c.name";
         CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
@@ -101,7 +113,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testInnerJoinSingleAttribute() {
+    @Test
+    void innerJoinSingleAttribute() {
         String jpql = "select a from A a INNER JOIN a.b b WHERE a.id=b.age";
         CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
@@ -111,7 +124,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testOuterJoinSingleAttributeWithoutCondition() {
+    @Test
+    void outerJoinSingleAttributeWithoutCondition() {
         String jpql = "select a from A a LEFT JOIN a.b b";
         CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
@@ -120,7 +134,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testOuterJoinSingleAttribute() {
+    @Test
+    void outerJoinSingleAttribute() {
         String jpql = "select a from A a LEFT JOIN a.b b where a.id=b.age";
         CriteriaQuery<A> cq = cb.createQuery(A.class);
         Root<A> a = cq.from(A.class);
@@ -130,7 +145,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testSetJoinWithoutCondition() {
+    @Test
+    void setJoinWithoutCondition() {
         String jpql = "select c from C c JOIN c.set d";
         CriteriaQuery<C> c = cb.createQuery(C.class);
         c.from(C.class).join(C_.set);
@@ -138,7 +154,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(c, jpql);
     }
 
-    public void testListJoinWithoutCondition() {
+    @Test
+    void listJoinWithoutCondition() {
         String jpql = "select c from C c JOIN c.list d";
         CriteriaQuery<C> c = cb.createQuery(C.class);
         c.from(C.class).join(C_.list);
@@ -146,7 +163,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(c, jpql);
     }
 
-    public void testCollectionJoinWithoutCondition() {
+    @Test
+    void collectionJoinWithoutCondition() {
         String jpql = "select c from C c JOIN c.coll d";
         CriteriaQuery<C> c = cb.createQuery(C.class);
         c.from(C.class).join(C_.coll);
@@ -154,7 +172,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(c, jpql);
     }
 
-    public void testMapJoinWithoutCondition() {
+    @Test
+    void mapJoinWithoutCondition() {
         String jpql = "select c from C c JOIN c.map d";
         CriteriaQuery<C> c = cb.createQuery(C.class);
         c.from(C.class).join(C_.map);
@@ -162,7 +181,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(c, jpql);
     }
 
-    public void testKeyExpression() {
+    @Test
+    void keyExpression() {
         String jpql = "select c from C c JOIN c.map d where KEY(d)=33";
         CriteriaQuery<C> cq = cb.createQuery(C.class);
         Root<C> c = cq.from(C.class);
@@ -172,7 +192,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testValueExpression() {
+    @Test
+    void valueExpression() {
         String jpql = "select c from C c JOIN c.map d where VALUE(d).name='xy'";
         CriteriaQuery<C> cq = cb.createQuery(C.class);
         Root<C> c = cq.from(C.class);
@@ -182,7 +203,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testFetchJoin() {
+    @Test
+    void fetchJoin() {
         String jpql = "select a from A a JOIN FETCH a.b";
 
         CriteriaQuery<A> cq = cb.createQuery(A.class);
@@ -192,7 +214,8 @@ public class TestJoinCondition extends JoinDomainTestCase {
         assertEquivalence(cq, jpql);
     }
 
-    public void testOuterFetchJoin() {
+    @Test
+    void outerFetchJoin() {
         String jpql = "select a from A a LEFT JOIN FETCH a.b";
 
         CriteriaQuery<A> cq = cb.createQuery(A.class);

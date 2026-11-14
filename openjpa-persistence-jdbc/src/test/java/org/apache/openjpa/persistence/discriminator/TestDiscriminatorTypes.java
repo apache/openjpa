@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.discriminator;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +28,12 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDiscriminatorTypes extends SingleEMFTestCase {
+class TestDiscriminatorTypes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CharAbstractEntity.class, CharLeafEntity.class,
                 CharRootEntity.class, IntegerAbstractEntity.class,
@@ -38,7 +42,8 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
                 StringRootEntity.class, CLEAR_TABLES);
     }
 
-    public void testCharDiscriminators() {
+    @Test
+    void charDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load types
 
         Discriminator discrim = getMapping("CharAbstractEntity")
@@ -74,7 +79,8 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testIntDiscriminators() {
+    @Test
+    void intDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
 
         Discriminator discrim = getMapping("IntegerAbstractEntity")
@@ -113,7 +119,8 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testStringDiscriminators() {
+    @Test
+    void stringDiscriminators() {
         EntityManager em = emf.createEntityManager(); // load the types
         Discriminator discrim = getMapping("StringAbstractEntity")
                 .getDiscriminator();
@@ -148,7 +155,8 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testExistsQuery() {
+    @Test
+    void existsQuery() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -173,7 +181,7 @@ public class TestDiscriminatorTypes extends SingleEMFTestCase {
         List<StringAbstractEntity> list = q.getResultList();
         assertEquals(0, list.size());
         for (StringAbstractEntity entity : list)
-            assertTrue(entity instanceof StringLeafEntity);
+            assertInstanceOf(StringLeafEntity.class, entity);
         em.close();
     }
 }

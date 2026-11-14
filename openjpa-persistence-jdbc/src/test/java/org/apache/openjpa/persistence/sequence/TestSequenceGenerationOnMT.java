@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,16 +32,19 @@ import java.util.concurrent.Future;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSequenceGenerationOnMT extends SingleEMFTestCase {
-    @Override
+class TestSequenceGenerationOnMT extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, GeneratedIdObject.class,
           "openjpa.Multithreaded", "true");
     }
 
-    public void testIdGenerationInMultithreadedEnvironment() {
+    @Test
+    void idGenerationInMultithreadedEnvironment() {
         int nThreads = 5;
         ExecutorService threads = Executors.newFixedThreadPool(nThreads);
         List<Callable<Boolean>> tasks = new ArrayList<>();

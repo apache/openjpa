@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,6 +34,9 @@ import jakarta.persistence.LockModeType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A replication connection, whose driver sends the statements of a read-only
@@ -38,8 +46,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * connections. Derby stands in for the replica: it rejects the writes of a
  * read-only connection.
  */
-public class TestReplicationConnection extends SingleEMFTestCase {
+class TestReplicationConnection extends SingleEMFTestCase {
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         if (!isDerby()) {
@@ -55,6 +64,7 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         return url.startsWith("jdbc:derby:");
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         if (emf != null) {
@@ -62,7 +72,8 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testReadOnlyOutsideOfTransaction() throws Exception {
+    @Test
+    void readOnlyOutsideOfTransaction() throws Exception {
         if (emf == null) {
             return;
         }
@@ -78,7 +89,8 @@ public class TestReplicationConnection extends SingleEMFTestCase {
         }
     }
 
-    public void testWritesInTransaction() {
+    @Test
+    void writesInTransaction() {
         if (emf == null) {
             return;
         }
@@ -97,7 +109,8 @@ public class TestReplicationConnection extends SingleEMFTestCase {
      * A connection retained from outside of a transaction is read-only until
      * the transaction begins.
      */
-    public void testWritesInTransactionOnRetainedConnection() throws Exception {
+    @Test
+    void writesInTransactionOnRetainedConnection() throws Exception {
         if (emf == null) {
             return;
         }

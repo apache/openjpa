@@ -21,21 +21,24 @@ package org.apache.openjpa.persistence;
 import org.apache.openjpa.persistence.entity.MixedMappingLocation;
 import org.apache.openjpa.persistence.entity.MixedMappingLocationEmbeddedId;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // org.apache.openjpa.persistence.TestMixedMappingLocation
-public class TestMixedMappingLocation extends SingleEMFTestCase {
+class TestMixedMappingLocation extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
         return "xml-persistence-unit";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
                 MixedMappingLocationEmbeddedId.class, MixedMappingLocation.class);
     }
+
     /**
      * Testcase for added OPENJPA859.
      *
@@ -45,7 +48,8 @@ public class TestMixedMappingLocation extends SingleEMFTestCase {
      *
      * @throws Exception
      */
-    public void testMixedOrmAnno() throws Exception {
+    @Test
+    void mixedOrmAnno() throws Exception {
         OpenJPAEntityManagerSPI  em = emf.createEntityManager();
         em.close();
     }

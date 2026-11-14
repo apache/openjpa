@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -25,15 +27,17 @@ import org.apache.openjpa.persistence.kernel.common.apps.AImplB;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBGetObjectByIdValue extends AbstractTestCase {
 
-    public TestEJBGetObjectByIdValue(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBGetObjectByIdValue() {
+        super("kernelcactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class, AImplB.class);
 
         EntityManager em = currentEntityManager();
@@ -43,7 +47,8 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testDatastore() {
+    @Test
+    void datastore() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -65,7 +70,8 @@ public class TestEJBGetObjectByIdValue extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testAppId() {
+    @Test
+    void appId() {
         EntityManager em = currentEntityManager();
         startTx(em);
         AImplB pc = new AImplB("foo", 1, "pk");

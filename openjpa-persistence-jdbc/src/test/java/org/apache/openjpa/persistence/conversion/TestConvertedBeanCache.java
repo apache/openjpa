@@ -20,18 +20,23 @@ package org.apache.openjpa.persistence.conversion;
 
 import static org.apache.openjpa.persistence.conversion.TestConvertedBean.assertSettings;
 import static org.apache.openjpa.persistence.conversion.TestConvertedBean.newSettings;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The data cache keeps the value of a converted attribute apart from the
  * values held by the instances it loads.
  */
-public class TestConvertedBeanCache extends SingleEMFTestCase {
+class TestConvertedBeanCache extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedBeanEntity.class, SettingsHolder.class, CLEAR_TABLES,
             "openjpa.DataCache", "true",
@@ -47,7 +52,8 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
         }
     }
 
-    public void testGetterOnlyStateSurvivesLoadFromCache() {
+    @Test
+    void getterOnlyStateSurvivesLoadFromCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
         }
@@ -61,7 +67,8 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
      * A change made in place and rolled back is not seen through the cache,
      * and each persistence context gets its own value.
      */
-    public void testValueChangedInPlaceIsNotShared() {
+    @Test
+    void valueChangedInPlaceIsNotShared() {
         try (EntityManager em = emf.createEntityManager()) {
             em.find(ConvertedBeanEntity.class, 1L);
         }
@@ -84,7 +91,8 @@ public class TestConvertedBeanCache extends SingleEMFTestCase {
         }
     }
 
-    public void testValueChangedInPlaceIsCached() {
+    @Test
+    void valueChangedInPlaceIsCached() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedBeanEntity e = em.find(ConvertedBeanEntity.class, 1L);

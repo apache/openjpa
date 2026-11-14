@@ -18,30 +18,39 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests a cascading one-many backed by a foreign key.
  *
  * @author Abe White
  */
-public class TestCascadingOneManyWithForeignKey
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestCascadingOneManyWithForeignKey extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CascadingOneManyParent.class, CascadingOneManyChild.class);
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
         for (int i = 0; i < 2; i++) {
@@ -70,7 +79,8 @@ public class TestCascadingOneManyWithForeignKey
         em.close();
     }
 
-    public void testDelete() {
+    @Test
+    void delete() {
         CascadingOneManyParent parent = new CascadingOneManyParent();
         parent.setName("parent");
         for (int i = 0; i < 2; i++) {
@@ -108,7 +118,8 @@ public class TestCascadingOneManyWithForeignKey
         assertEquals(0, res.size());
     }
 
-    public void testForeignKey() {
+    @Test
+    void foreignKey() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         if (!conf.getDBDictionaryInstance().supportsForeignKeys)
             return;
@@ -149,9 +160,4 @@ public class TestCascadingOneManyWithForeignKey
         }
         oem.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestCascadingOneManyWithForeignKey.class);
-    }
 }
-

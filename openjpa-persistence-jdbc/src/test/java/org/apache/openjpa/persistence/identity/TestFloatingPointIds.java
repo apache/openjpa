@@ -18,26 +18,30 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities can use floating point ids.
  *
  * @author Abe White
  */
-public class TestFloatingPointIds
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestFloatingPointIds extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(FloatIdEntity.class, DoubleObjIdEntity.class);
     }
 
-    public void testPersistFloat() {
+    @Test
+    void persistFloat() {
         FloatIdEntity e = new FloatIdEntity();
         e.setId(3F);
         e.setData(33);
@@ -55,7 +59,8 @@ public class TestFloatingPointIds
         em.close();
     }
 
-    public void testPersistDoubleObj() {
+    @Test
+    void persistDoubleObj() {
         DoubleObjIdEntity e = new DoubleObjIdEntity();
         e.setId(4D);
         e.setData(44);
@@ -72,9 +77,4 @@ public class TestFloatingPointIds
         assertEquals(44, e.getData());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestFloatingPointIds.class);
-    }
 }
-

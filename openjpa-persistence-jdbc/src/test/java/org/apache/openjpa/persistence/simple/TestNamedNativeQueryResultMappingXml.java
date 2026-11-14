@@ -18,18 +18,24 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 inline result set mapping on named-native-query in ORM XML.
  */
-public class TestNamedNativeQueryResultMappingXml extends SQLListenerTestCase {
+class TestNamedNativeQueryResultMappingXml extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES, NativeQueryResultEntity.class);
 
@@ -52,7 +58,8 @@ public class TestNamedNativeQueryResultMappingXml extends SQLListenerTestCase {
         return "native-query-inline-result";
     }
 
-    public void testEntityResultMappingXml() {
+    @Test
+    void entityResultMappingXml() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")
         List<NativeQueryResultEntity> results = em.createNamedQuery(
@@ -66,7 +73,8 @@ public class TestNamedNativeQueryResultMappingXml extends SQLListenerTestCase {
         em.close();
     }
 
-    public void testColumnResultMappingXml() {
+    @Test
+    void columnResultMappingXml() {
         EntityManager em = emf.createEntityManager();
         @SuppressWarnings("unchecked")
         List<Object> results = em.createNamedQuery(

@@ -18,6 +18,14 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -31,17 +39,20 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The data cache must not hand the same converted attribute value to more
  * than one persistence context, so a change made in place in one context
  * does not reach the others.
  */
-public class TestConvertedDataCache extends SingleEMFTestCase {
+class TestConvertedDataCache extends SingleEMFTestCase {
 
     private static final long TIME = 1000000000000L;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedListEntity.class, ConvertedCacheEntity.class,
             DROP_TABLES,
@@ -72,14 +83,15 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         assertTrue(emf.getCache().contains(ConvertedCacheEntity.class, 1L));
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         LabelConverter.failToDatabase = false;
         LabelConverter.failToEntity = false;
         super.tearDown();
     }
 
-    public void testAnElementChangedInPlaceDoesNotReachOtherContexts() {
+    @Test
+    void anElementChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).getItems().get(0)
@@ -94,7 +106,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testAnElementConvertedOnItsOwnDoesNotReachOtherContexts() {
+    @Test
+    void anElementConvertedOnItsOwnDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getElements().get(0)
@@ -110,7 +123,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testASingleValueChangedInPlaceDoesNotReachOtherContexts() {
+    @Test
+    void aSingleValueChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getLabel()
@@ -123,7 +137,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testADatabaseArrayChangedInPlaceDoesNotReachOtherContexts() {
+    @Test
+    void aDatabaseArrayChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getBytes().getBytes()[0] =
@@ -137,7 +152,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testADatabaseDateChangedInPlaceDoesNotReachOtherContexts() {
+    @Test
+    void aDatabaseDateChangedInPlaceDoesNotReachOtherContexts() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedCacheEntity.class, 1L).getDate().getDate()
@@ -150,7 +166,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testEachContextGetsItsOwnValues() {
+    @Test
+    void eachContextGetsItsOwnValues() {
         try (EntityManager em1 = emf.createEntityManager();
              EntityManager em2 = emf.createEntityManager()) {
             ConvertedListEntity e1 = em1.find(ConvertedListEntity.class, 1L);
@@ -170,7 +187,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testACommittedChangeIsLoadedFromTheCache() {
+    @Test
+    void aCommittedChangeIsLoadedFromTheCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).setItem(new Item("new"));
@@ -183,7 +201,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testANullValueIsLoadedFromTheCache() {
+    @Test
+    void aNullValueIsLoadedFromTheCache() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.find(ConvertedListEntity.class, 1L).setItem(null);
@@ -196,7 +215,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testAFieldIsLeftOutOfTheCacheWhenTheConverterFails() {
+    @Test
+    void aFieldIsLeftOutOfTheCacheWhenTheConverterFails() {
         emf.getCache().evictAll();
         LabelConverter.failToDatabase = true;
         try (EntityManager em = emf.createEntityManager()) {
@@ -215,7 +235,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
         }
     }
 
-    public void testAConverterThatFailsOnACacheHitFailsTheFind() {
+    @Test
+    void aConverterThatFailsOnACacheHitFailsTheFind() {
         assertTrue(getCachedData(ConvertedCacheEntity.class, 1L)
             .isLoaded(getFieldIndex("label")));
         LabelConverter.failToEntity = true;
@@ -223,8 +244,8 @@ public class TestConvertedDataCache extends SingleEMFTestCase {
             em.find(ConvertedCacheEntity.class, 1L).getLabel();
             fail("expected the converter failure");
         } catch (PersistenceException pe) {
-            assertTrue(pe.getMessage(),
-                pe.getMessage().contains("convertToEntityAttribute"));
+            assertTrue(pe.getMessage().contains("convertToEntityAttribute"),
+                pe.getMessage());
         }
     }
 

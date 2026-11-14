@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.enhance.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +36,8 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ObjectId;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMappedById extends SingleEMFTestCase {
     public int numEmployees = 4;
@@ -77,7 +83,7 @@ public class TestMappedById extends SingleEMFTestCase {
     public int pId4 = 1;
     public int mId4 = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Dependent1.class, Employee.class, Employee1.class,
             DependentId1.class, Dependent2.class, Employee2.class,
@@ -94,7 +100,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 1, case(b)
      */
-    public void testMapsId1() {
+    @Test
+    void mapsId1() {
         createObj1();
         findObj1();
         queryObj1();
@@ -103,7 +110,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 3, case(b)
      */
-    public void testMapsId2() {
+    @Test
+    void mapsId2() {
         createObj2();
         findObj2();
         queryObj2();
@@ -112,7 +120,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(b)
      */
-    public void testMapsId3() {
+    @Test
+    void mapsId3() {
         createObj3();
         findObj3();
         queryObj3();
@@ -121,7 +130,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is a variation of spec 2.4.1.2 Example 4, case(b) with generated key
      */
-    public void testMapsId4() {
+    @Test
+    void mapsId4() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -136,7 +146,8 @@ public class TestMappedById extends SingleEMFTestCase {
      * two MapsId annotations in Dependent3 and both parent
      * classes use generated key
      */
-    public void testMapsId5() {
+    @Test
+    void mapsId5() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -150,7 +161,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 5, case(a)
      */
-    public void testMapsId6() {
+    @Test
+    void mapsId6() {
         createObj6();
         findObj6();
         queryObj6();
@@ -159,13 +171,15 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * This is spec 2.4.1.2 Example 6, case(a)
      */
-    public void testMapsId7() {
+    @Test
+    void mapsId7() {
         createObj7();
         findObj7();
         queryObj7();
     }
 
-    public void testEnumIdClass() {
+    @Test
+    void enumIdClass() {
         EntityManager em = emf.createEntityManager();
         Employee e = new Employee();
         e.setEmpId(1);
@@ -187,7 +201,8 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testEmbeddedIdNestedInIdClass() {
+    @Test
+    void embeddedIdNestedInIdClass() {
         EntityManager em = emf.createEntityManager();
         EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
         Employee5 employee1 = new Employee5(eId1);
@@ -212,7 +227,8 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testCountDistinctMultiCols() {
+    @Test
+    void countDistinctMultiCols() {
         EntityManager em = emf.createEntityManager();
 
         Employee2 emp1 = new Employee2();
@@ -789,7 +805,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * Derived Identity with IdClass and generatedKey
      */
-    public void testPersistDerivedIdentityUsingIdClassAndGeneratedKey() {
+    @Test
+    void persistDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -808,7 +825,8 @@ public class TestMappedById extends SingleEMFTestCase {
     /**
      * Derived Identity with IdClass and generatedKey
      */
-    public void testMergeDerivedIdentityUsingIdClassAndGeneratedKey() {
+    @Test
+    void mergeDerivedIdentityUsingIdClassAndGeneratedKey() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -858,7 +876,8 @@ public class TestMappedById extends SingleEMFTestCase {
         return e;
     }
 
-    public void testEnumInEmbeddedId() {
+    @Test
+    void enumInEmbeddedId() {
         EntityManager em = emf.createEntityManager();
         Beneficiary b = new Beneficiary();
         b.setId("b8");

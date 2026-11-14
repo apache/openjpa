@@ -38,13 +38,9 @@ import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest2;
 
 public abstract class JDBCTestCase extends AbstractTestCase {
 
-    /** Creates a new instance of JDBCTestCase */
+
     public JDBCTestCase() {
-    }
-
-
-    public JDBCTestCase(String name) {
-        super(name);
+        super();
     }
 
     public Class getDefaultInheritanceStrategy() {

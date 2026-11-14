@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria.results;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -40,6 +42,9 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestTypedResults extends SingleEMFTestCase {
 
@@ -52,7 +57,7 @@ public class TestTypedResults extends SingleEMFTestCase {
 
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
              "openjpa.DynamicEnhancementAgent", "false");
@@ -94,7 +99,7 @@ public class TestTypedResults extends SingleEMFTestCase {
         em.close();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -105,7 +110,8 @@ public class TestTypedResults extends SingleEMFTestCase {
      *
      * @throws Exception
      */
-    public void testTypedJPQLQuery() {
+    @Test
+    void typedJPQLQuery() {
         EntityManager em = emf.createEntityManager();
 
         Query jpqlQuery = em.createQuery("Select o from Order o where o.filled = true");
@@ -152,7 +158,8 @@ public class TestTypedResults extends SingleEMFTestCase {
      *
      * @throws Exception
      */
-    public void testDateQuery() throws Exception {
+    @Test
+    void dateQuery() throws Exception {
         EntityManager em = emf.createEntityManager();
         Date maxDate = df.parse(ORDER_DATES[2]);
 
@@ -194,7 +201,8 @@ public class TestTypedResults extends SingleEMFTestCase {
      *
      * @throws Exception
      */
-    public void testMultiSelect() throws Exception {
+    @Test
+    void multiSelect() throws Exception {
         // get results from traditional JPQL
         EntityManager em = emf.createEntityManager();
         Query jpqlQuery =
@@ -227,8 +235,8 @@ public class TestTypedResults extends SingleEMFTestCase {
 
         for (Object[] os : jpqlResults) {
             assertEquals(2, os.length);
-            assertTrue(os[0] instanceof Order);
-            assertTrue(os[1] instanceof Producer);
+            assertInstanceOf(Order.class, os[0]);
+            assertInstanceOf(Producer.class, os[1]);
         }
 
         // cheap way to ensure that we have the same contents.

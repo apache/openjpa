@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.metamodel.Attribute;
 
@@ -26,6 +28,9 @@ import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests different styles for query by example.
@@ -33,10 +38,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
  * @author Pinaki Poddar
  *
  */
-public class TestQueryByExample extends CriteriaTest {
+class TestQueryByExample extends CriteriaTest {
     DBDictionary dict = null;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -51,13 +56,14 @@ public class TestQueryByExample extends CriteriaTest {
         }
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         dict = null;
         super.tearDown();
     }
 
-    public void testBasicFieldsWithNonDefaultValue() {
+    @Test
+    void basicFieldsWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -73,7 +79,8 @@ public class TestQueryByExample extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testExcludeBasicFieldWithNonDefaultValue() {
+    @Test
+    void excludeBasicFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -89,7 +96,8 @@ public class TestQueryByExample extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testBasicFieldWithDefaultValueExcludedByDefaultStyle() {
+    @Test
+    void basicFieldWithDefaultValueExcludedByDefaultStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -105,7 +113,8 @@ public class TestQueryByExample extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testBasicFieldWithDefaultValueCanBeIncludedByStyle() {
+    @Test
+    void basicFieldWithDefaultValueCanBeIncludedByStyle() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -121,7 +130,8 @@ public class TestQueryByExample extends CriteriaTest {
         assertEquivalence(q, jpql);
     }
 
-    public void testRelationFieldWithNonDefaultValue() {
+    @Test
+    void relationFieldWithNonDefaultValue() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department.name='ExampleDept'";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -141,7 +151,8 @@ public class TestQueryByExample extends CriteriaTest {
         executeAndCompareSQL(q, "WHERE (t1.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
 
-    public void testRelationFieldWithNullValueIncluded() {
+    @Test
+    void relationFieldWithNullValueIncluded() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);
@@ -161,7 +172,8 @@ public class TestQueryByExample extends CriteriaTest {
                 + "AND t0.name = ? AND t0.rating = ? AND t0.salary = ?)");
     }
 
-    public void testEmbeddedField() {
+    @Test
+    void embeddedField() {
         String jpql = "SELECT e FROM Employee e WHERE e.rating=1 AND e.salary=1100 AND e.department IS NULL";
 
         CriteriaQuery<Employee> q = cb.createQuery(Employee.class);

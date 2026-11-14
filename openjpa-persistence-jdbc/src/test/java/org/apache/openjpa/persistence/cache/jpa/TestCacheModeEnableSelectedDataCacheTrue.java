@@ -19,10 +19,14 @@
 
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+
 /*
  * When ENABLE_SELECTIVE is set for the shared-cache-mode element and an entity is marked as cacheable(true),
  * the entity will be cached even though DataCache ExcludedTypes indicate it should be excluded

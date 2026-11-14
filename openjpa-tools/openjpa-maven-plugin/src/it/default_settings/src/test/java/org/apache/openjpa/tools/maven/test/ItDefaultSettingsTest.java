@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.tools.maven.test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -31,9 +34,9 @@ import jakarta.persistence.Persistence;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.tools.maven.testentity.TestEntity;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ItDefaultSettingsTest extends TestCase {
+class ItDefaultSettingsTest {
 
     /** contains the directory where all generated results are placed */
     private final static String TARGET_DIR = "target";
@@ -58,7 +61,8 @@ public class ItDefaultSettingsTest extends TestCase {
      * check if the generated classes have been enhanced.
      * @throws Exception
      */
-    public void testEnhancement() throws Exception
+    @Test
+    void enhancement() throws Exception
     {
         Class tec = Thread.currentThread().getContextClassLoader().loadClass( TEST_ENTITY_CLASS );
 
@@ -73,14 +77,15 @@ public class ItDefaultSettingsTest extends TestCase {
             }
         }
 
-        assertTrue( "the class " + TEST_ENTITY_CLASS + " does not implement PersistenceCapable!", isPersistenceCapable );
+        assertTrue(isPersistenceCapable, "the class " + TEST_ENTITY_CLASS + " does not implement PersistenceCapable!");
     }
 
     /**
      * check if the generated SQL script is correct.
      * @throws Exception
      */
-    public void testSqlGeneration() throws Exception
+    @Test
+    void sqlGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SQL_FILE );
         BufferedReader in = new BufferedReader( new FileReader( sqlFile ) );
@@ -92,7 +97,8 @@ public class ItDefaultSettingsTest extends TestCase {
      * check if the generated schema.xml is correct.
      * @throws Exception
      */
-    public void testSchemaGeneration() throws Exception
+    @Test
+    void schemaGeneration() throws Exception
     {
         File sqlFile = new File( TARGET_DIR, SCHEMA_FILE );
         BufferedReader schemaGen = new BufferedReader( new FileReader( sqlFile ) );
@@ -105,7 +111,7 @@ public class ItDefaultSettingsTest extends TestCase {
         while ( (refLine = schemaRef.readLine()) != null)
         {
             String genLine = schemaGen.readLine();
-            assertEquals("generated schema.xml differs from expected one!", refLine, genLine );
+            assertEquals(refLine, genLine, "generated schema.xml differs from expected one!");
         }
     }
 
@@ -113,7 +119,8 @@ public class ItDefaultSettingsTest extends TestCase {
      * This test will execute a few statements to the database
      * @throws Exception
      */
-    public void testPersistence() throws Exception
+    @Test
+    void persistence() throws Exception
 
     {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestUnit");

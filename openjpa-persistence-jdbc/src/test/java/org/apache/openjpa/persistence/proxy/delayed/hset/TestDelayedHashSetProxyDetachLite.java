@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed.hset;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
@@ -26,10 +28,12 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
 import org.apache.openjpa.util.proxy.DelayedHashSetProxy;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
+class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 "openjpa.DetachState", "loaded(LiteAutoDetach=true,detachProxyFields=false)");
@@ -38,8 +42,10 @@ public class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
     /*
      * Verify that a collection can be loaded post detachment
      */
+
+    @Test
     @Override
-    public void testPostDetach() {
+    public void postDetach() {
         EntityManager em = emf.createEntityManager();
 
         // Create a new department and an employee
@@ -63,7 +69,7 @@ public class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
 
         // assert there was no select on the employee table
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
-        assertTrue(emps instanceof DelayedHashSetProxy);
+        assertInstanceOf(DelayedHashSetProxy.class, emps);
         DelayedHashSetProxy dep = (DelayedHashSetProxy)emps;
         dep.setDirectAccess(true);
         assertEquals(0, dep.size());
@@ -78,10 +84,10 @@ public class TestDelayedHashSetProxyDetachLite extends TestDelayedHashSetProxy {
         resetSQL();
         assertEquals(1, emps.size());
         // Verify the delay load entity is detached
-        assertTrue(e instanceof PersistenceCapable);
+        assertInstanceOf(PersistenceCapable.class, e);
         PersistenceCapable pc = (PersistenceCapable)e;
         // LiteAutoDetach
-        assertTrue(pc.pcGetStateManager() == null);
+        assertNull(pc.pcGetStateManager());
         // verify a second SQL was not issued to get the size
         assertNoneSQLAnyOrder("SELECT .* DC_EMPLOYEE .*");
     }

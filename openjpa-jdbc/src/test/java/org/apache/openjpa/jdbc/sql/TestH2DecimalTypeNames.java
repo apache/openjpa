@@ -19,23 +19,23 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.column;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies the DDL type names of decimal columns on H2. H2 2.x reads an
  * unsized <code>NUMERIC</code> as <code>NUMERIC(100000, 0)</code>, which
  * rounds every stored value to an integer (OPENJPA-3051).
  */
-public class TestH2DecimalTypeNames {
+class TestH2DecimalTypeNames {
 
     @Test
-    public void testPrecisionAndScaleAreKept() {
+    void precisionAndScaleAreKept() {
         H2Dictionary dict = h2(2);
         assertEquals("NUMERIC(10, 2)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 2)));
         assertEquals("NUMERIC(10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 0)));
@@ -48,7 +48,7 @@ public class TestH2DecimalTypeNames {
     }
 
     @Test
-    public void testUnsizedDecimalKeepsFraction() {
+    void unsizedDecimalKeepsFraction() {
         H2Dictionary dict = h2(2);
         assertEquals("DECFLOAT(38)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
         assertEquals("DECFLOAT(38)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 2)));
@@ -57,14 +57,14 @@ public class TestH2DecimalTypeNames {
     }
 
     @Test
-    public void testUnsizedIntegralNumericIsUnchanged() {
+    void unsizedIntegralNumericIsUnchanged() {
         H2Dictionary dict = h2(2);
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGINTEGER, 0, 0)));
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.LONG, 0, 0)));
     }
 
     @Test
-    public void testColumnDefinitionIsUnchanged() {
+    void columnDefinitionIsUnchanged() {
         H2Dictionary dict = h2(2);
         Column col = decimal(JavaTypes.BIGDECIMAL, 0, 0);
         col.setTypeName("NUMERIC");
@@ -74,7 +74,7 @@ public class TestH2DecimalTypeNames {
     }
 
     @Test
-    public void testConfiguredTypeNameIsKept() {
+    void configuredTypeNameIsKept() {
         H2Dictionary dict = h2(2);
         dict.numericTypeName = "NUMERIC(19,4)";
         assertEquals("NUMERIC(19,4)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
@@ -90,7 +90,7 @@ public class TestH2DecimalTypeNames {
     }
 
     @Test
-    public void testH2Version1KeepsUnsizedNumeric() {
+    void h2Version1KeepsUnsizedNumeric() {
         // H2 1.x has no DECFLOAT, its unsized NUMERIC keeps the scale of the value
         H2Dictionary dict = h2(1);
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));

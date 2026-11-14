@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,23 +38,26 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectAChild1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that we marshall and unmarshall result types appropriately.
  */
 @AllowFailure(message="surefire excluded")
 public class TestResultShapes extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestResultShapes.class.getCanonicalName());
 
-    public TestResultShapes(String test) {
-        super(test, "datacachecactusapp");
+    public TestResultShapes() {
+        super("datacachecactusapp");
     }
 
     private Broker _broker;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CacheObjectAChild1.class);
 
         Map propsMap = new HashMap();
@@ -71,7 +76,7 @@ public class TestResultShapes extends AbstractTestCase {
         _broker = factory.newBroker();
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         _broker.close();
         _broker = null;
@@ -81,7 +86,7 @@ public class TestResultShapes extends AbstractTestCase {
     // FIXME Seetha Nov 3,2006
     // need to know about the 'this' parameter
 
-//	public void testCollectionOfCandidateClass()
+//	@Test void collectionOfCandidateClass()
 //	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");
@@ -94,7 +99,7 @@ public class TestResultShapes extends AbstractTestCase {
 //		rawHelper(false, CacheObjectAChild1.class, null, true);
 //	}
 //
-//	public void testUniqueCandidateClass()
+//	@Test void uniqueCandidateClass()
 //	{
 //		Collection<String> ac = new ArrayList<String>();
 //		ac.add("this");
@@ -107,7 +112,8 @@ public class TestResultShapes extends AbstractTestCase {
 //		rawHelper(true, CacheObjectAChild1.class, null, true);
 //	}
 
-    public void testCollectionOfSingleValuedProjection() {
+    @Test
+    void collectionOfSingleValuedProjection() {
 
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
@@ -120,7 +126,8 @@ public class TestResultShapes extends AbstractTestCase {
         rawHelper(false, Long.class, "age", true);
     }
 
-    public void testUniqueSingleValuedProjection() {
+    @Test
+    void uniqueSingleValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
 
@@ -132,7 +139,8 @@ public class TestResultShapes extends AbstractTestCase {
         rawHelper(true, Long.class, "age", true);
     }
 
-    public void testCollectionOfMultiValuedProjection() {
+    @Test
+    void collectionOfMultiValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
@@ -152,7 +160,8 @@ public class TestResultShapes extends AbstractTestCase {
         // an Object[]. rawHelper(false, Object[].class, "age, name", true);
     }
 
-    public void testUniqueMultiValuedProjection() {
+    @Test
+    void uniqueMultiValuedProjection() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
@@ -173,7 +182,8 @@ public class TestResultShapes extends AbstractTestCase {
         //     true);
     }
 
-    public void testUncachedQueryHasCorrectShape() {
+    @Test
+    void uncachedQueryHasCorrectShape() {
         Collection<String> ac = new ArrayList<>();
         ac.add("age");
         ac.add("name");
@@ -254,12 +264,12 @@ public class TestResultShapes extends AbstractTestCase {
         HashMap m = (HashMap) result;
         assertEquals(recordClasses.size(), m.size());
         for (int i = 0; i < recordClasses.size(); i++)
-            assertEquals("Map Contents " + m.toString() + " result: " + result
+            assertEquals(((ArrayList) recordClasses).get(i),
+                m.get("jpqlalias" + (i + 1)).getClass(),
+                "Map Contents " + m.toString() + " result: " + result
                 + " loop size: " + recordClasses.size()
                 + "Value of m.get(results[i]) "
-                + m.get(((ArrayList) results).get(i).getClass()),
-                ((ArrayList) recordClasses).get(i),
-                m.get("jpqlalias" + (i + 1)).getClass());
+                + m.get(((ArrayList) results).get(i).getClass()));
     }
 
     private void rawHelper(boolean unique, Class recordClass, String result,

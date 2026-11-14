@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.audit;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 
 import jakarta.persistence.EntityManager;
@@ -29,10 +31,12 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
+class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(X.class, AuditedEntry.class, CLEAR_TABLES);
     }
@@ -43,7 +47,8 @@ public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {
     }
 
 
-    public void test() throws Exception {
+    @Test
+    void test() throws Exception {
         doTest(emf);
         assertTrue(MockAuditor.called);
     }

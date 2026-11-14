@@ -23,18 +23,21 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestAutoIncrementAndDataCaching
+class TestAutoIncrementAndDataCaching
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(IdentityIdClass.class, CLEAR_TABLES,
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm");
     }
 
-    public void testSimpleDataCacheOperation() {
+    @Test
+    void simpleDataCacheOperation() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
@@ -47,7 +50,8 @@ public class TestAutoIncrementAndDataCaching
         em.close();
     }
 
-    public void testAccessIdBeforeCommit() {
+    @Test
+    void accessIdBeforeCommit() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {

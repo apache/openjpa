@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Defined ordering is only applied when the collection is loaded from the
@@ -29,9 +33,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * result cache in wrong order. This test suite tests various cases for the
  * above problem.
  */
-public class TestOrderbyInDataCache extends SingleEMFTestCase {
+class TestOrderbyInDataCache extends SingleEMFTestCase {
 	private long pid;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -61,7 +66,8 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
      * Test if child list is in order after new child list is added in setup().
      *
      */
-    public void testGetChildList(){
+    @Test
+    void getChildList(){
     	EntityManager em = emf.createEntityManager();
     	OrderedOneManyParent prt = em.find(OrderedOneManyParent.class, pid);
         assertEquals(3, prt.getChildren().size());
@@ -73,7 +79,8 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testInsertChild() {
+    @Test
+    void insertChild() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OrderedOneManyParent prt = em.find(OrderedOneManyParent.class, pid);
@@ -98,7 +105,8 @@ public class TestOrderbyInDataCache extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testUpdateChildName() {
+    @Test
+    void updateChildName() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         OrderedOneManyChild child = em.find(OrderedOneManyChild.class, 4);

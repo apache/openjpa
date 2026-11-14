@@ -18,19 +18,20 @@
  */
 package org.apache.openjpa.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.Persistence;
 
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.event.BrokerFactoryListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
+class TestBrokerFactoryEventManager {
 
-public class TestBrokerFactoryEventManager
-    extends TestCase {
-
-    public void testCreateEvent() {
+    @Test
+    void createEvent() {
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.cast(
                 Persistence.createEntityManagerFactory("test"));

@@ -18,29 +18,29 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static junit.framework.TestCase.assertEquals;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.PersistenceUnitInfoImpl;
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.sql.Driver;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+
 import java.sql.Connection;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Map;
 
-public class TestDelimitIdentifiers {
+class TestDelimitIdentifiers {
 
     public static class LowercaseSchemaDerbyDBDictionary extends DerbyDictionary {
 
@@ -56,7 +56,7 @@ public class TestDelimitIdentifiers {
     private static final Logger logger = Logger.getLogger(TestDelimitIdentifiers.class.getCanonicalName());
 
     @Test
-    public void testDelimitIdentifiers() throws SQLException {
+    void delimitIdentifiers() throws Exception {
 
         Driver derbyDriver;
         try {

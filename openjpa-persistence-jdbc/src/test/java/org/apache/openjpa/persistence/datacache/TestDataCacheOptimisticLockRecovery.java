@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
@@ -31,15 +33,17 @@ import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDataCacheOptimisticLockRecovery
+class TestDataCacheOptimisticLockRecovery
     extends SingleEMFTestCase {
 
     private int pk;
     private int remoteCommitEventStaleCount = 0;
     private Object staleOid;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
@@ -71,8 +75,9 @@ public class TestDataCacheOptimisticLockRecovery
         em.close();
     }
 
-    public void testOptimisticLockRecovery()
-        throws SQLException {
+    @Test
+    void optimisticLockRecovery()
+        throws Exception {
 
         EntityManager em;
 
@@ -126,8 +131,8 @@ public class TestDataCacheOptimisticLockRecovery
 
         // If this fails, then the data cache has the wrong value.
         // This is what this test case is designed to exercise.
-        assertEquals("data cache is not being cleared when oplock "
-            + "violations occur", secondOpLockValue, oli.getOpLock());
+        assertEquals(secondOpLockValue, oli.getOpLock(), "data cache is not being cleared when oplock "
+            + "violations occur");
 
         // 6. get a read lock on the instance and commit the tx; this
         // time it should go through
@@ -144,7 +149,8 @@ public class TestDataCacheOptimisticLockRecovery
         em.close();
     }
 
-    public void testExpectedOptimisticLockException() {
+    @Test
+    void expectedOptimisticLockException() {
         EntityManager em;
 
         // 1. start a new tx

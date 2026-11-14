@@ -18,13 +18,15 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.function.Supplier;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -34,47 +36,48 @@ import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.jmock.Expectations;
-import org.jmock.integration.junit4.JUnitRuleMockery;
-import org.junit.Rule;
+import org.jmock.Mockery;
+import org.jmock.junit5.JUnit5Mockery;
 
 /**
  * Unit tests for TableJDBCSeq and subclasses.
  */
-@Ignore // column delimitAll needs a complete overhault.
+@Disabled // column delimitAll needs a complete overhault.
 public class TableJDBCSeqTest {
 
-    @Rule
-    public JUnitRuleMockery context = new JUnitRuleMockery();
+    @RegisterExtension
+    public Mockery context = new JUnit5Mockery();
+
     final Connection mockConnection = context.mock(Connection.class);
     final DatabaseMetaData mockMetaData = context.mock(DatabaseMetaData.class);
 
     @Test
-    public void testTableJDBCSeq() throws Exception {
+    void tableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new TableJDBCSeq());
     }
 
     @Test
-    public void testTableJDBCSeqDelimitAll() throws Exception {
+    void tableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new TableJDBCSeq());
     }
 
     @Test
-    public void testClassTableJDBCSeq() throws Exception {
+    void classTableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new ClassTableJDBCSeq());
     }
 
     @Test
-    public void testClassTableJDBCSeqDelimitAll() throws Exception {
+    void classTableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new ClassTableJDBCSeq());
     }
 
     @Test
-    public void testValueTableJDBCSeq() throws Exception {
+    void valueTableJDBCSeq() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(false, () -> new ValueTableJDBCSeq());
     }
 
     @Test
-    public void testValueTableJDBCSeqDelimitAll() throws Exception {
+    void valueTableJDBCSeqDelimitAll() throws Exception {
         testAddPrimaryKeyColumnWithDelimitAll(true, () -> new ValueTableJDBCSeq());
     }
 

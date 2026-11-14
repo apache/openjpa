@@ -18,16 +18,21 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {
+class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ManyOneEntity.class, ManyOneEntitySub.class);
     }
 
-    public void testJPQLWithoutIdentificationVariable() {
+    @Test
+    void jpqlWithoutIdentificationVariable() {
         try {
             em.createQuery("select o from ManyOneEntity o " +
                 "where rel.name = :name").compile();

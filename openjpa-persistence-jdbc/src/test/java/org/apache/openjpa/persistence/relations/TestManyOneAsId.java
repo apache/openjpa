@@ -18,13 +18,16 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Perform basic operations on an entity with a many-one relation as its id
@@ -32,14 +35,14 @@ import junit.textui.TestRunner;
  *
  * @author Abe White
  */
-public class TestManyOneAsId
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestManyOneAsId extends SingleEMFTestCase {
 
     private long id;
     private long dsid;
     private long cid;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(BasicEntity.class, DataStoreBasicEntity.class,
             ManyOneIdOwner.class, DataStoreManyOneIdOwner.class,
@@ -109,16 +112,16 @@ public class TestManyOneAsId
         assertNotNull(id1);
         assertEquals(id, id1.getId());
         assertEquals("id1", id1.getName());
-        assertTrue(id1 == em.find(BasicEntity.class, id));
+        assertSame(id1, em.find(BasicEntity.class, id));
         ManyOneIdOwner child = parent.getSelfRel();
         assertNotNull(child);
         assertEquals("child", child.getName());
         BasicEntity id2 = child.getId();
         assertNotNull(id2);
         assertEquals("id2", id2.getName());
-        assertTrue(id2 == em.find(BasicEntity.class, id2.getId()));
-        assertTrue(id2 == id1.getRel());
-        assertTrue(id1 == id2.getRel());
+        assertSame(id2, em.find(BasicEntity.class, id2.getId()));
+        assertSame(id2, id1.getRel());
+        assertSame(id1, id2.getRel());
         assertNull(child.getSelfRel());
     }
 
@@ -129,14 +132,14 @@ public class TestManyOneAsId
         assertNotNull(dsid1);
         assertEquals(dsid, ((Long) em.getObjectId(dsid1)).longValue());
         assertEquals("dsid1", dsid1.getName());
-        assertTrue(dsid1 == em.find(DataStoreBasicEntity.class, dsid));
+        assertSame(dsid1, em.find(DataStoreBasicEntity.class, dsid));
         DataStoreManyOneIdOwner dschild = dsparent.getSelfRel();
         assertNotNull(dschild);
         assertEquals("dschild", dschild.getName());
         DataStoreBasicEntity dsid2 = dschild.getId();
         assertNotNull(dsid2);
         assertEquals("dsid2", dsid2.getName());
-        assertTrue(dsid2 == em.find(DataStoreBasicEntity.class,
+        assertSame(dsid2, em.find(DataStoreBasicEntity.class,
             em.getObjectId(dsid2)));
         assertNull(dschild.getSelfRel());
     }
@@ -148,21 +151,22 @@ public class TestManyOneAsId
         assertNotNull(id1);
         assertEquals(id, id1.getId());
         assertEquals("id1", id1.getName());
-        assertTrue(id1 == em.find(BasicEntity.class, id));
+        assertSame(id1, em.find(BasicEntity.class, id));
         ManyOneCompoundIdOwner cchild = cparent.getSelfRel();
         assertNotNull(cchild);
         assertEquals("cchild", cchild.getName());
         BasicEntity id2 = cchild.getEntityId();
         assertNotNull(id2);
         assertEquals("id2", id2.getName());
-        assertTrue(id2 == em.find(BasicEntity.class, id2.getId()));
+        assertSame(id2, em.find(BasicEntity.class, id2.getId()));
         assertNull(cchild.getSelfRel());
         ManyOneCompoundIdOwnerId oid = (ManyOneCompoundIdOwnerId)
             em.getObjectId(cparent);
         assertEquals(id, oid.entityId);
     }
 
-    public void testRetrieveWithManyOneId() {
+    @Test
+    void retrieveWithManyOneId() {
         EntityManager em = emf.createEntityManager();
         ManyOneIdOwner parent = em.find(ManyOneIdOwner.class, id);
         assertNotNull(parent);
@@ -170,7 +174,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testRetrieveWithDataStoreManyOneId() {
+    @Test
+    void retrieveWithDataStoreManyOneId() {
         EntityManager em = emf.createEntityManager();
         DataStoreManyOneIdOwner dsparent =
             em.find(DataStoreManyOneIdOwner.class, dsid);
@@ -179,7 +184,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testRetrieveWithCompoundManyOneId() {
+    @Test
+    void retrieveWithCompoundManyOneId() {
         EntityManager em = emf.createEntityManager();
         ManyOneCompoundIdOwnerId oid = new ManyOneCompoundIdOwnerId();
         oid.entityId = id;
@@ -191,7 +197,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testAttemptToChangeManyOne() {
+    @Test
+    void attemptToChangeManyOne() {
         EntityManager em = emf.createEntityManager();
         ManyOneIdOwner parent = em.find(ManyOneIdOwner.class, id);
         assertNotNull(parent);
@@ -209,7 +216,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testChangeRelationToManyOneOwner() {
+    @Test
+    void changeRelationToManyOneOwner() {
         BasicEntity id3 = new BasicEntity();
         id3.setName("id3");
         ManyOneIdOwner child2 = new ManyOneIdOwner();
@@ -238,7 +246,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testChangeRelationToDataStoreManyOneOwner() {
+    @Test
+    void changeRelationToDataStoreManyOneOwner() {
         DataStoreBasicEntity dsid3 = new DataStoreBasicEntity();
         dsid3.setName("dsid3");
         DataStoreManyOneIdOwner dschild2 = new DataStoreManyOneIdOwner();
@@ -269,7 +278,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testChangeRelationToCompoundManyOneOwner() {
+    @Test
+    void changeRelationToCompoundManyOneOwner() {
         BasicEntity id3 = new BasicEntity();
         id3.setName("id3");
         ManyOneCompoundIdOwner cchild2 = new ManyOneCompoundIdOwner();
@@ -302,7 +312,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testQuery() {
+    @Test
+    void query() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneIdOwner e "
             + "where e.id.id = :id");
@@ -324,7 +335,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testDataStoreQuery() {
+    @Test
+    void dataStoreQuery() {
         EntityManager em = emf.createEntityManager();
         DataStoreBasicEntity dsid1 = em.find(DataStoreBasicEntity.class, dsid);
         assertNotNull(dsid1);
@@ -339,7 +351,8 @@ public class TestManyOneAsId
         em.close();
     }
 
-    public void testCompoundQuery() {
+    @Test
+    void compoundQuery() {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("select e from ManyOneCompoundIdOwner e "
             + "where e.longId = :cid and e.entityId.id = :id");
@@ -364,9 +377,4 @@ public class TestManyOneAsId
         assertEquals("cparent", pc.getName());
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestManyOneAsId.class);
-    }
 }
-

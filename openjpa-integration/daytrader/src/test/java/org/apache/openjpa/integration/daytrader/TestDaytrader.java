@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.integration.daytrader;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +31,16 @@ import jakarta.persistence.Persistence;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Uses a modified version of Apache Geronimo Daytrader to stress test JPA.
  *
  * @version $Rev$ $Date$
  */
-public class TestDaytrader extends AbstractPersistenceTestCase {
+class TestDaytrader extends AbstractPersistenceTestCase {
 
     private static final int TEST_USERS = 500;
     EntityManagerFactory emf = null;
@@ -42,8 +48,8 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
     Log log = null;
     private TradeAction trade = null;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         // Mimic EM pooling
         boolean poolEm = true;
 
@@ -67,6 +73,7 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
         trade = new TradeAction(log, emf, poolEm);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         trade = null;
@@ -85,7 +92,8 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
      * @throws Exception
      *
      */
-    public void testTrade() throws Exception {
+    @Test
+    void trade() throws Exception {
         log.info("TestDaytrader.testTrade() started");
         // setup quotes, accounts and holdings in DB
         TradeBuildDB tradeDB = new TradeBuildDB(log, trade);

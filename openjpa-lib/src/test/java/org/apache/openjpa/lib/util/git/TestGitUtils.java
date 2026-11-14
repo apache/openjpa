@@ -14,53 +14,42 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.lib.util.git;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestGitUtils extends TestCase {
-    public TestGitUtils(String s) {
-        super(s);
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+class TestGitUtils {
+
+    @ParameterizedTest(name = "#{index} convertGitInfoToPCEnhancerVersion('{0}') = -1")
+    @NullAndEmptySource
+    @ValueSource(strings = {"ZC614EM", "ZC614E", "1BC614Ems"})
+    void testNullAndBad(String input) {
+        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(input));
     }
-    
-    public void testNull() {
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(null));
+
+    @ParameterizedTest(name = "#{index} convertGitInfoToPCEnhancerVersion('{0}') = {1}")
+    @MethodSource("validGitInfo")
+    void validGitInfo(String input, long expected) {
+        assertEquals(expected, GitUtils.convertGitInfoToPCEnhancerVersion(input));
     }
-    
-    public void testBasic() {
-        long i = 0xBC614E;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614E"));
-    }
-    
-    public void testBasic2() {
-        int i = 0xfef543b;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("fef543b"));
-    }
-    
-    public void testGoodTrailingString() {
-        long i = 0xBC614E;
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614Em"));
-        assertEquals(i, GitUtils.convertGitInfoToPCEnhancerVersion("BC614EM"));
-    }
-    
-    public void testBad() {
-        long i = 0xBC614E;
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion(i + "BC614Ems"));
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion("ZC614EM"));
-        assertEquals(-1, GitUtils.convertGitInfoToPCEnhancerVersion("ZC614E"));
-    }
-    
-    public static Test suite() {
-        return new TestSuite(TestGitUtils.class);
-    }
-    
-    public static void main(String[] args) {
-        TestRunner.run(suite());
+
+    private static Stream<Arguments> validGitInfo() {
+        return Stream.of(
+            Arguments.of("BC614E", 0xBC614EL),
+            Arguments.of("BC614Em", 0xBC614EL),
+            Arguments.of("BC614EM", 0xBC614EL),
+            Arguments.of("fef543b", 0xfef543bL)
+        );
     }
 }

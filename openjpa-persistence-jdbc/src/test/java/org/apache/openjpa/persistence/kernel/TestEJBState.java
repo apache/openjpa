@@ -18,25 +18,30 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldsTypeTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBState extends AbstractTestCase {
 
-    public TestEJBState(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBState() {
+        super("kernelcactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(AllFieldsTypeTest.class);
     }
 
-    public void testBigDecimalsLoseTrailingZeros() {
+    @Test
+    void bigDecimalsLoseTrailingZeros() {
         EntityManager pm1 = currentEntityManager();
         startTx(pm1);
         AllFieldsTypeTest aftt = new AllFieldsTypeTest();

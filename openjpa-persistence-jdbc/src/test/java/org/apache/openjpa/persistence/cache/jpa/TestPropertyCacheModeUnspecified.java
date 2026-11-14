@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ import jakarta.persistence.Cache;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.Test;
 
 /*
  * When sharedCache.mode is UNSPECIFIED and dataCache is not set, caching will be off.
@@ -67,15 +70,18 @@ public class TestPropertyCacheModeUnspecified extends AbstractCacheModeTestCase 
         return sql;
     }
 
-    public void testCacheables() {
+    @Test
+    void cacheables() {
         assertCacheables(cache, false);
     }
 
-    public void testUncacheables() {
+    @Test
+    void uncacheables() {
         assertUncacheables(cache, false);
     }
 
-    public void testUnspecified() {
+    @Test
+    void unspecified() {
         assertUnspecified(cache, false);
     }
 

@@ -16,10 +16,14 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The remove callbacks of a candidate are one of the reasons a bulk delete is
@@ -31,9 +35,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2951">OPENJPA-2951</A>
  */
-public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
+class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkCallbackEntity.class);
     }
@@ -56,16 +60,17 @@ public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
      * <code>executeUpdate()</code>, so both callbacks have fired by the time
      * it returns.
      */
-    public void testPostRemoveFiresDuringExecuteUpdate() {
+    @Test
+    void postRemoveFiresDuringExecuteUpdate() {
         createData(emf);
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             assertEquals(1, em.createQuery(
                 "delete from BulkCallbackEntity e where e.name='name'")
                 .executeUpdate());
-            assertEquals("the callbacks that fired during executeUpdate()",
-                "[preRemove, postRemove]",
-                BulkCallbackEntity.CALLBACKS.toString());
+            assertEquals("[preRemove, postRemove]",
+                BulkCallbackEntity.CALLBACKS.toString(),
+                "the callbacks that fired during executeUpdate()");
             em.getTransaction().commit();
         }
         assertEquals("[preRemove, postRemove]",
@@ -78,7 +83,8 @@ public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
      * for the commit, which is the reordering the compatibility option brings
      * back.
      */
-    public void testPostRemoveFiresAtCommitWithoutTheFlush() {
+    @Test
+    void postRemoveFiresAtCommitWithoutTheFlush() {
         OpenJPAEntityManagerFactorySPI factory = createEMF(CLEAR_TABLES,
             BulkCallbackEntity.class, "openjpa.Compatibility",
             "FlushAfterInMemoryBulkOperation=false");
@@ -89,9 +95,9 @@ public class TestInMemoryBulkFlushCallbacks extends SQLListenerTestCase {
                 assertEquals(1, em.createQuery(
                     "delete from BulkCallbackEntity e where e.name='name'")
                     .executeUpdate());
-                assertEquals("the callbacks that fired during executeUpdate()",
-                    "[preRemove]",
-                    BulkCallbackEntity.CALLBACKS.toString());
+                assertEquals("[preRemove]",
+                    BulkCallbackEntity.CALLBACKS.toString(),
+                    "the callbacks that fired during executeUpdate()");
                 em.getTransaction().commit();
             }
             assertEquals("[preRemove, postRemove]",

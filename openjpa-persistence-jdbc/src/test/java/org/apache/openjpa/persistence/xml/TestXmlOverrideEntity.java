@@ -18,8 +18,13 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -30,10 +35,13 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestXmlOverrideEntity extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestXmlOverrideEntity extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws ClassNotFoundException {
         setUp(CLEAR_TABLES,
                 "openjpa.jdbc.DBDictionary", "(dateFractionDigits=6)",
@@ -49,8 +57,9 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
         return "xml-persistence-unit";
     }
 
-    public void testOverrideHappenedDuringEnhancement()
-        throws ClassNotFoundException {
+    @Test
+    void overrideHappenedDuringEnhancement()
+        throws Exception {
         // this mostly tests our test harness. Since XmlOverrideEntity
         // has annotation-based metadata, it is important that the first
         // PU in which it gets scanned-and-enhanced knows about overriding.
@@ -60,7 +69,8 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
             PCRegistry.getTypeAlias(XmlOverrideEntity.class));
     }
 
-    public void testOverriddenEntityName() {
+    @Test
+    void overriddenEntityName() {
         emf.createEntityManager().close();
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             XmlOverrideEntity.class);
@@ -80,7 +90,8 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
      *
      * The optional attributes are reversed in orm.xml.
      */
-    public void testOptionalAttributeOverride() {
+    @Test
+    void optionalAttributeOverride() {
         EntityManager em = emf.createEntityManager();
 
         XmlOverrideEntity optional = new XmlOverrideEntity();
@@ -109,7 +120,8 @@ public class TestXmlOverrideEntity extends SingleEMFTestCase {
     }
 
 
-    public void testColumnOverride() {
+    @Test
+    void columnOverride() {
         EntityManager em = emf.createEntityManager();
 
         ClassMapping mapping = getMapping("XmlOverride");

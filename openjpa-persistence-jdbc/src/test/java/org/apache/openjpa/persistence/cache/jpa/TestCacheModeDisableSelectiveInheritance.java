@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.cache.jpa.model.ChildUncacheable;
 import org.apache.openjpa.persistence.cache.jpa.model.ParentUnspecifiedEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test was added for https://issues.apache.org/jira/browse/OPENJPA-1892.
@@ -32,22 +37,23 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * the child Entity we shouldn't be caching this result.
  *
  */
-public class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase {
+class TestCacheModeDisableSelectiveInheritance extends SingleEMFTestCase {
     Object[] params =
         new Object[] { ChildUncacheable.class, ParentUnspecifiedEntity.class, CLEAR_TABLES,
             "jakarta.persistence.sharedCache.mode", "DISABLE_SELECTIVE", "openjpa.DataCache", "true" };
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(params);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
 
     }
 
-    public void testSimpleFind() throws Exception {
+    @Test
+    void simpleFind() throws Exception {
         EntityManager em = emf.createEntityManager();
         try {
             ChildUncacheable c = new ChildUncacheable();

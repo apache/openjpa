@@ -23,17 +23,19 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.AbstractDB2Dictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase that verifies that null checking is omitted for "read only" fields.
  * An example use case is a Date field that is set by the database (although in
  * that case the field would be updateable=false and insertable=false).
  */
-public class TestReadOnlyNullity extends AbstractNullityTestCase {
+class TestReadOnlyNullity extends AbstractNullityTestCase {
 
     private boolean skip = false;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         OpenJPAEntityManagerFactorySPI emf = createEMF(new Object[] {});
         if (((JDBCConfiguration) emf.getConfiguration())
@@ -50,7 +52,8 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * Test that a non-insertable field may be set to null. This test is skipped
      * for non-db2 databases.
      */
-    public void testNonInsertableBlobDoesNotFail() {
+    @Test
+    void nonInsertableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();
             pc.setNonInsertableNonNullableDate(null);
@@ -63,7 +66,8 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
      * Test that a non-updatable field may be set to null. This test is skipped
      * for non-db2 databases.
      */
-    public void testNonUpdatableBlobDoesNotFail() {
+    @Test
+    void nonUpdatableBlobDoesNotFail() {
         if (!skip) {
             TimestampedEntity pc = new TimestampedEntity();
             EntityManager em = emf.createEntityManager();

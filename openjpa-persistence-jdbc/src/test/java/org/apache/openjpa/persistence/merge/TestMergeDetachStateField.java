@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.merge;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +33,11 @@ import org.apache.openjpa.persistence.merge.model.Model;
 import org.apache.openjpa.persistence.merge.model.ShipPackage;
 import org.apache.openjpa.persistence.merge.model.ShipPackage2;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMergeDetachStateField extends SingleEMFTestCase {
-    @Override
+class TestMergeDetachStateField extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(Label.class, ShipPackage.class,
         	  Label2.class, ShipPackage2.class,
@@ -52,7 +56,8 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * Merge: Label
      * Verify after merge:  Label' <--> ShipPackage'
      */
-    public void testCascadeMergeDetachState() {
+    @Test
+    void cascadeMergeDetachState() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -76,12 +81,12 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             em.getTransaction().begin();
             Label mergedLabel = em.merge(l);
 
-            assertFalse(mergedLabel == l);
-            assertFalse(p == mergedLabel.getPackage());
+            assertNotSame(mergedLabel, l);
+            assertNotSame(p, mergedLabel.getPackage());
             // Assert that the bi-directional relationship points to the
             // newly merged entity
-            assertTrue(mergedLabel == mergedLabel.getPackage().getLabel());
-            assertFalse(l == mergedLabel.getPackage().getLabel());
+            assertSame(mergedLabel, mergedLabel.getPackage().getLabel());
+            assertNotSame(l, mergedLabel.getPackage().getLabel());
             em.remove(mergedLabel);
             em.getTransaction().commit();
         } finally {
@@ -105,7 +110,8 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * Merge: ShipPackage2
      * Verify after merge: ShipPackage2' <-->  Label2'
      */
-    public void testCascadeMergeDetachState2() {
+    @Test
+    void cascadeMergeDetachState2() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -129,12 +135,12 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             em.getTransaction().begin();
             ShipPackage2 mergedPackage = em.merge(p);
 
-            assertFalse(mergedPackage == p);
-            assertFalse(l == mergedPackage.getLabel2());
+            assertNotSame(mergedPackage, p);
+            assertNotSame(l, mergedPackage.getLabel2());
             // Assert that the bi-directional relationship points to the
             // newly merged entity
-            assertTrue(mergedPackage == mergedPackage.getLabel2().getPackage2());
-            assertFalse(p == mergedPackage.getLabel2().getPackage2());
+            assertSame(mergedPackage, mergedPackage.getLabel2().getPackage2());
+            assertNotSame(p, mergedPackage.getLabel2().getPackage2());
             em.remove(mergedPackage);
             em.getTransaction().commit();
         } finally {
@@ -152,7 +158,8 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
      * the entity does not get populated with a DetachedStateManager upon
      * detachment, but merge should still succeed.
      */
-    public void testCascadeMergeDetachStateComplex() {
+    @Test
+    void cascadeMergeDetachStateComplex() {
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -189,12 +196,12 @@ public class TestMergeDetachStateField extends SingleEMFTestCase {
             em.getTransaction().begin();
             // Merge model back in and verify all entities are newly merged entities
             Model mergedModel = em.merge(md1);
-            assertFalse(mergedModel == md1);
-            assertFalse(mergedModel.getMake() == mk1);
+            assertNotSame(mergedModel, md1);
+            assertNotSame(mergedModel.getMake(), mk1);
             List<Model> mds = mergedModel.getMake().getModels();
             assertTrue(mds.contains(mergedModel));
-            assertFalse(c1 == mergedModel.getCar());
-            assertTrue(mergedModel.getCar().getModel() == mergedModel);
+            assertNotSame(c1, mergedModel.getCar());
+            assertSame(mergedModel.getCar().getModel(), mergedModel);
             em.remove(mergedModel);
             em.getTransaction().commit();
         } finally {

@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
+class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Issue428Entity.class);
     }
@@ -31,7 +33,8 @@ public class TestOpenjpaIdNotRecognizedMessage extends SingleEMFTestCase {
      * Test to illustrate the existing '"openjpa.Id" was not recognized' message in the trace,
      *  using Issue428Entity which does not have an annotated @Id field.
      */
-    public void test428() {
+    @Test
+    void test428() {
         emf.createEntityManager().close();
     }
 }

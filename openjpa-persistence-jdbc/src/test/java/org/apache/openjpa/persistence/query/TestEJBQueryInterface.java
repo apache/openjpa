@@ -18,21 +18,22 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.query.common.apps.Entity1;
 import org.apache.openjpa.persistence.query.common.apps.Entity2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBQueryInterface extends BaseQueryTest {
-
-    public TestEJBQueryInterface(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+class TestEJBQueryInterface extends BaseQueryTest {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
 
         int instNum = 10;
@@ -58,7 +59,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testResultList() {
+    @Test
+    void resultList() {
         EntityManager em = currentEntityManager();
         List list = em.createQuery("Select object(o) from Entity1 o")
             .getResultList();
@@ -68,7 +70,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testGetSingleList() {
+    @Test
+    void getSingleList() {
         EntityManager em = currentEntityManager();
 
         Entity1 ret =
@@ -82,24 +85,26 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testExecuteUpdate() {
+    @Test
+    void executeUpdate() {
         EntityManager em = currentEntityManager();
         startTx(em);
         int ret = em.createQuery("DELETE FROM Entity1 o WHERE o.pk = 2")
             .executeUpdate();
 
-        assertEquals(ret, 1);
+        assertEquals(1, ret);
 
         int ret2 = em.createQuery("DELETE FROM Entity1 o WHERE o.pk = 22")
             .executeUpdate();
 
-        assertEquals(ret2, 0);
+        assertEquals(0, ret2);
 
         endTx(em);
         endEm(em);
     }
 
-    public void testSetMaxResults() {
+    @Test
+    void setMaxResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o")
@@ -112,7 +117,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testSetFirstResults() {
+    @Test
+    void setFirstResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o order by o.pk")
@@ -130,7 +136,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
 
     // Tests Binding an argument to a named parameter.
     // pk, the named parameter --Not working yet--
-    public void testSetParameter1() {
+    @Test
+    void setParameter1() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -153,7 +160,8 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
-    public void testOrderBy() {
+    @Test
+    void orderBy() {
         EntityManager em = currentEntityManager();
         startTx(em);
         String jpql = "SELECT o.oid FROM OrderItem l LEFT JOIN l.order o GROUP BY o.oid ORDER BY o.oid ";

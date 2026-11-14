@@ -18,6 +18,14 @@
  */
 package org.apache.openjpa.lib.conf.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -31,12 +39,9 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.test.AbstractTestCase;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -52,16 +57,16 @@ import static org.junit.Assert.*;
  * @author Abe White
  * @author Pinaki Poddar
  */
-public class TestConfigurationImpl extends AbstractTestCase {
+class TestConfigurationImpl extends AbstractTestCase {
 
     private ConfigurationTest _conf = new ConfigurationTest();
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         System.setProperty("openjpatest.properties", "test.properties");
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         System.setProperty("openjpatest.properties", "");
     }
@@ -70,7 +75,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test that global properties are found and loaded.
      */
     @Test
-    public void testGlobals() {
+    void globals() {
         System.setProperty("openjpa.sysKey", "sysvalue");
         assertNull(_conf.getTestKey());
         assertNull(_conf.getSysKey());
@@ -87,7 +92,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         _conf.setSysKey(null);
         System.setProperty("openjpatest.properties", "foo.properties");
         try {
-            assertTrue(!_conf.loadGlobals());
+            assertFalse(_conf.loadGlobals());
             fail("Should have thrown exception for missing resource.");
         } catch (MissingResourceException mre) {
         }
@@ -107,7 +112,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test that the configuration is serialized to properties correctly.
      */
     @Test
-    public void testToProperties() {
+    void toProperties() {
         assertTrue(_conf.loadGlobals());
         assertEquals("testvalue", _conf.getTestKey());
         Map props = _conf.toProperties(false);
@@ -126,7 +131,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Tests properties caching.
      */
     @Test
-    public void testPropertiesCaching() {
+    void propertiesCaching() {
         _conf.setTestKey("val");
         _conf.setPluginKey("java.lang.Object");
         Map props1 = _conf.toProperties(false);
@@ -148,7 +153,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test the equals method.
      */
     @Test
-    public void testEquals() {
+    void equals() {
         ConfigurationTest conf = new ConfigurationTest();
         conf.setTestKey(_conf.getTestKey());
         conf.setSysKey(_conf.getSysKey());
@@ -157,7 +162,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertEquals(_conf, conf);
 
         conf.setTestKey("newval");
-        assertTrue(!_conf.equals(conf));
+        assertNotEquals(_conf, conf);
         conf.setTestKey(_conf.getTestKey());
         assertEquals(_conf, conf);
 
@@ -165,14 +170,14 @@ public class TestConfigurationImpl extends AbstractTestCase {
         assertEquals(_conf, conf);
 
         conf.setPluginKey(new StringBuffer());
-        assertTrue(!_conf.equals(conf));
+        assertNotEquals(_conf, conf);
     }
 
     /**
      * Test using bean introspection.
      */
     @Test
-    public void testBeanAccessors() throws Exception {
+    void beanAccessors() throws Exception {
         PropertyDescriptor[] pds = _conf.getPropertyDescriptors();
         for (PropertyDescriptor pd : pds) {
             assertNotNull(pd.getShortDescription());
@@ -209,8 +214,8 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test freezing.
      */
     @Test
-    public void testFreezing() {
-        assertTrue(!_conf.isReadOnly());
+    void freezing() {
+        assertFalse(_conf.isReadOnly());
         _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
         assertTrue(_conf.isReadOnly());
         try {
@@ -231,7 +236,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
      * Test serialization.
      */
     @Test
-    public void testSerialization() throws Exception {
+    void serialization() throws Exception {
         assertTrue(_conf.loadGlobals());
         _conf.setTestKey("testvalue");
         _conf.setSysKey("sysvalue");
@@ -258,7 +263,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
     }
 
     @Test
-    public void testProductDerivationCloseCallback() {
+    void productDerivationCloseCallback() {
         // toggle the static. This will be reset by the close invocation.
         ConfigurationTestProductDerivation.closed = false;
         _conf.close();

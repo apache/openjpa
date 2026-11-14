@@ -22,21 +22,18 @@ package org.apache.openjpa.persistence.event;
 import org.apache.openjpa.event.SingleJVMRemoteCommitProvider;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="surefire excluded")
-public class TestLocalRemoteEvents
-    extends RemoteEventBase {
-
-    public TestLocalRemoteEvents(String s) {
-        super(s);
-    }
-
-    @Override
+@AllowFailure(message = "surefire excluded")
+class TestLocalRemoteEvents extends RemoteEventBase {
+    @BeforeEach
     public void setUp() {
         deleteAll(RuntimeTest1.class);
     }
 
-    public void testLocalEvents() {
+    @Test
+    void localEvents() {
         doTest(SingleJVMRemoteCommitProvider.class, "", "");
     }
 }

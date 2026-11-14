@@ -18,15 +18,16 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 
-public class DBDictionaryFactoryTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
+import org.junit.jupiter.api.Test;
+
+class DBDictionaryFactoryTest {
 
     @Test
-    public void testDictionaryClassForString() {
+    void dictionaryClassForString() {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
 
         String[] aliases = new String[]{

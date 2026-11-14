@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,8 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message=
 	"Multi-level embedding" +
@@ -62,7 +66,7 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 2;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
     }
@@ -72,7 +76,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         return "embed-pu";
     }
 
-    public void testJoinColumns() {
+    @Test
+    void joinColumns() {
         createFeatureXml();
         EntityManager em = emf.createEntityManager();
         String jpql = "Select f from Feature f Join fetch f.attributes";
@@ -119,13 +124,15 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testEntityA_Coll_StringXml() {
+    @Test
+    void entityACollStringXml() {
         createEntityA_Coll_StringXml();
         queryEntityA_Coll_StringXml();
         findEntityA_Coll_StringXml();
     }
 
-    public void testEntityA_Coll_Embed_Embed() {
+    @Test
+    void entityACollEmbedEmbed() {
         createEntityA_Coll_Embed_EmbedXml();
         queryEntityA_Coll_Embed_EmbedXml();
         findEntityA_Coll_Embed_EmbedXml();
@@ -311,7 +318,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     }
 
 
-    public void testMapKeyAnnotations(){
+    @Test
+    void mapKeyAnnotations(){
         createObj();
         queryObj();
         findObj();
@@ -730,7 +738,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         return o;
     }
 
-    public void testOrphanRemovalTarget() {
+    @Test
+    void orphanRemovalTarget() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
         int count = count(OrderXml.class);
@@ -759,7 +768,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testOrphanRemovalTargetSetNull() {
+    @Test
+    void orphanRemovalTargetSetNull() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
         CustomerXml c = em.find(CustomerXml.class, 1);
@@ -780,7 +790,8 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testOrphanRemovalSource() {
+    @Test
+    void orphanRemovalSource() {
         createOrphanRemoval();
         EntityManager em = emf.createEntityManager();
 

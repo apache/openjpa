@@ -18,16 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that EntityManager.close() does not throw when a resource-local
@@ -37,10 +38,10 @@ import static org.junit.Assert.*;
  * transaction should not throw. The active transaction is rolled back
  * and the entity manager is closed.
  */
-public class TestEntityManagerCloseWithActiveTransaction {
+class TestEntityManagerCloseWithActiveTransaction {
 
     @Test
-    public void testCloseWithActiveTransactionDoesNotThrow() {
+    void closeWithActiveTransactionDoesNotThrow() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",
@@ -58,8 +59,8 @@ public class TestEntityManagerCloseWithActiveTransaction {
             em.close();
 
             // Transaction is still active (close is deferred)
-            assertTrue("Transaction should still be active after deferred close",
-                em.getTransaction().isActive());
+            assertTrue(em.getTransaction().isActive(),
+                "Transaction should still be active after deferred close");
 
             // Roll back to complete the transaction and allow deferred close
             em.getTransaction().rollback();
@@ -69,7 +70,7 @@ public class TestEntityManagerCloseWithActiveTransaction {
     }
 
     @Test
-    public void testMethodsThrowAfterCloseWithActiveTransaction() {
+    void methodsThrowAfterCloseWithActiveTransaction() {
         Map<String, Object> props = new HashMap<>();
         props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         props.put("openjpa.MetaDataFactory",
@@ -99,8 +100,8 @@ public class TestEntityManagerCloseWithActiveTransaction {
             }
 
             // getTransaction() should still work after close (per spec)
-            assertNotNull("getTransaction() should work after close",
-                em.getTransaction());
+            assertNotNull(em.getTransaction(),
+                "getTransaction() should work after close");
 
             // Roll back to complete the transaction and allow deferred close
             em.getTransaction().rollback();

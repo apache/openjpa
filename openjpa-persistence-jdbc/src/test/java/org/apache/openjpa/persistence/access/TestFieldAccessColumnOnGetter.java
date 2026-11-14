@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Date;
 
 import jakarta.persistence.EntityManager;
@@ -35,6 +40,8 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.asm.EnhancementProject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that a MappedSuperclass with field access (determined by @Id on field)
@@ -50,9 +57,9 @@ import org.apache.openjpa.util.asm.EnhancementProject;
  * MappedSuperclass, it must not flag those inherited field-access fields
  * as violations.
  */
-public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
+class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp(FieldAccessColumnOnGetterEntity.class,
               FieldAccessColumnOnGetter.class,
@@ -63,7 +70,8 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * Test that the entity can be persisted and loaded — verifying that
      * the metadata setup doesn't throw an access type conflict error.
      */
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -94,7 +102,8 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * Test that the metamodel is accessible for the entity — the TCK
      * tests query the metamodel and fail during EMF setup.
      */
-    public void testMetamodelAccess() {
+    @Test
+    void metamodelAccess() {
         Metamodel metamodel = emf.getMetamodel();
         assertNotNull(metamodel);
 
@@ -117,8 +126,8 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
                 break;
             }
         }
-        assertTrue("MappedSuperclass should be in managed types",
-                   foundMappedSuper);
+        assertTrue(foundMappedSuper,
+                   "MappedSuperclass should be in managed types");
     }
 
     /**
@@ -127,7 +136,8 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
      * access. This directly reproduces the TCK runtime enhancement
      * scenario without needing truly unenhanced classes.
      */
-    public void testEnhancerValidatesPropertyAccessSubclass() {
+    @Test
+    void enhancerValidatesPropertyAccessSubclass() {
         OpenJPAConfiguration conf = emf.getConfiguration();
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         repos.setSourceMode(MetaDataModes.MODE_META);
@@ -135,18 +145,18 @@ public class TestFieldAccessColumnOnGetter extends SingleEMFTestCase {
         // Load the metadata for the entity subclass
         ClassMetaData meta = repos.getMetaData(
             FieldAccessColumnOnGetterEntity.class, null, true);
-        assertNotNull("Metadata should exist for entity", meta);
+        assertNotNull(meta, "Metadata should exist for entity");
 
         // Verify the entity has property access (from @Access(PROPERTY))
-        assertTrue("Entity should use property access",
-            AccessCode.isProperty(meta.getAccessType()));
+        assertTrue(AccessCode.isProperty(meta.getAccessType()),
+            "Entity should use property access");
 
         // Verify the MappedSuperclass has field access
         ClassMetaData superMeta = repos.getMetaData(
             FieldAccessColumnOnGetter.class, null, true);
         if (superMeta != null) {
-            assertTrue("MappedSuperclass should use field access",
-                AccessCode.isField(superMeta.getAccessType()));
+            assertTrue(AccessCode.isField(superMeta.getAccessType()),
+                "MappedSuperclass should use field access");
         }
 
         // Create a PCEnhancer and run it — this should NOT throw

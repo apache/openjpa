@@ -21,30 +21,26 @@ package org.apache.openjpa.persistence.simple;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test persisting a class which has an abstract superclass.
  */
-public class TestSubclassOfAbstractSuperclass
+class TestSubclassOfAbstractSuperclass
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SubclassPerson.class);
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(new SubclassPerson());
         em.getTransaction().commit();
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestPersistence.class);
-    }
 }
-

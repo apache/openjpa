@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.inheritance.entity.Admin;
 import org.apache.openjpa.persistence.inheritance.entity.ComputerUser;
 import org.apache.openjpa.persistence.inheritance.entity.RegularUser;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests entities obtained via find(), getReference() or navigated to via
@@ -38,11 +42,11 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
+class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 	private Admin admin;
 	private RegularUser user;
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Admin.class, RegularUser.class,
 				ComputerUser.class);
@@ -59,24 +63,26 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 		em.close();
 	}
 
-	public void testFindAndNaviagtedEntityIdential() {
+    @Test
+    void findAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
 		Admin adminFromFind = em1.find(Admin.class, admin.getOid());
 		Admin adminFromMethodBean = regularUserFromFind.getAdmin();
-		assertTrue(adminFromFind == adminFromMethodBean);
+		assertSame(adminFromFind, adminFromMethodBean);
 		em1.close();
 	}
 
-	public void testReferenceAndNaviagtedEntityIdential() {
+    @Test
+    void referenceAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
 				RegularUser.class, user.getOid());
         Admin adminFromGetReference = em1.getReference(Admin.class, admin
 				.getOid());
 		Admin adminFromMethodBean = regularUserFromFind.getAdmin();
-		assertTrue(adminFromGetReference == adminFromMethodBean);
+		assertSame(adminFromGetReference, adminFromMethodBean);
 		em1.close();
 	}
 }

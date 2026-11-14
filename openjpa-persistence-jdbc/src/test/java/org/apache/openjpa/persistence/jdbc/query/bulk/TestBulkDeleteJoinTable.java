@@ -16,6 +16,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.bulk;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 /**
  * A bulk <code>DELETE</code> does not cascade to related entities, but it must
  * still remove the rows of the join tables and element collection tables owned
@@ -28,9 +33,9 @@ package org.apache.openjpa.persistence.jdbc.query.bulk;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
+class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BulkDeleteOwner.class, BulkDeleteDetails.class,
             BulkDeleteAddress.class, BulkDeleteItem.class);
@@ -43,7 +48,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * of every owned table belongs to a deleted candidate: the keys are not
      * materialized at all and the owned tables are emptied outright.
      */
-    public void testBulkDeleteWithoutCriteriaEmptiesOwnedTables() {
+    @Test
+    void bulkDeleteWithoutCriteriaEmptiesOwnedTables() {
         assertEquals(2, delete("delete from BulkDeleteOwner o"));
 
         assertEquals(0, count(BulkDeleteOwner.class));
@@ -62,7 +68,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * Nothing matches: the keys are still materialized, but no delete follows
      * and the rows of the owned tables are untouched.
      */
-    public void testBulkDeleteWithoutMatches() {
+    @Test
+    void bulkDeleteWithoutMatches() {
         assertEquals(0, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "nobody"));
 
@@ -72,7 +79,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertNotSQL("DELETE FROM .*");
     }
 
-    public void testSingleDeleteRemovesRowsOfOwnedTables() {
+    @Test
+    void singleDeleteRemovesRowsOfOwnedTables() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.id=:id",
             "id", 1L));
 
@@ -85,7 +93,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * An element collection declared inside an embeddable is only reachable
      * through the embedded mapping.
      */
-    public void testEmbeddedElementCollectionIsCleaned() {
+    @Test
+    void embeddedElementCollectionIsCleaned() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "owner"));
 
@@ -98,7 +107,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * collection table of an element collection of embeddables must not be
      * mistaken for the table of a related entity.
      */
-    public void testElementCollectionOfEmbeddableIsCleaned() {
+    @Test
+    void elementCollectionOfEmbeddableIsCleaned() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.name=:n",
             "n", "owner"));
 
@@ -112,7 +122,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * <code>SIZE</code> renders as an inline scalar subquery over the element
      * collection table, so it has to be evaluated before that table is emptied.
      */
-    public void testSize() {
+    @Test
+    void size() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where size(o.nicknames)=3"));
 
@@ -121,7 +132,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertOwnedTableDeletes();
     }
 
-    public void testIsNotEmpty() {
+    @Test
+    void isNotEmpty() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where o.nicknames is not empty"));
 
@@ -134,7 +146,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
      * Only the owner without nicknames matches, so the rows of the other owner
      * must survive.
      */
-    public void testIsEmpty() {
+    @Test
+    void isEmpty() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where o.nicknames is empty"));
 
@@ -142,7 +155,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertOwnedTablesAreUntouched();
     }
 
-    public void testMemberOf() {
+    @Test
+    void memberOf() {
         assertEquals(1, delete(
             "delete from BulkDeleteOwner o where 'nick1' member of o.nicknames"));
 
@@ -151,7 +165,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertOwnedTableDeletes();
     }
 
-    public void testCorrelatedExistsSubquery() {
+    @Test
+    void correlatedExistsSubquery() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where exists "
             + "(select o2 from BulkDeleteOwner o2 where o2.id=o.id "
             + "and o2.name=:n)", "n", "owner"));
@@ -161,7 +176,8 @@ public class TestBulkDeleteJoinTable extends AbstractBulkDeleteTestCase {
         assertOwnedTableDeletes();
     }
 
-    public void testUncorrelatedInSubquery() {
+    @Test
+    void uncorrelatedInSubquery() {
         assertEquals(1, delete("delete from BulkDeleteOwner o where o.id in "
             + "(select o2.id from BulkDeleteOwner o2 where o2.name=:n)",
             "n", "owner"));

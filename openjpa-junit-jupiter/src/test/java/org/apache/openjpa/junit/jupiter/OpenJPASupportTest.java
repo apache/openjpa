@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.junit5;
+package org.apache.openjpa.junit.jupiter;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.junit.jupiter.api.Test;

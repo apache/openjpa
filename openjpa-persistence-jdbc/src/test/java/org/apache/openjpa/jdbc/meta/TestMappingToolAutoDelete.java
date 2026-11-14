@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta;
 
-import java.io.IOException;
-import java.sql.SQLException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,18 +31,18 @@ import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
 
-
-public class TestMappingToolAutoDelete
-    extends TestCase {
+class TestMappingToolAutoDelete {
 
     private JDBCConfiguration _conf;
     private OpenJPAEntityManagerFactorySPI emf;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Map props = new HashMap(System.getProperties());
         props.put("openjpa.MetaDataFactory",
             "jpa(Types=" + AllFieldTypes.class.getName() + ")");
@@ -57,13 +57,14 @@ public class TestMappingToolAutoDelete
         em.close();
     }
 
-    @Override
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         emf.close();
     }
 
-    public void testMappingToolAutoDelete()
-        throws IOException, SQLException {
+    @Test
+    void mappingToolAutoDelete()
+        throws Exception {
         MappingTool.Flags flags = new MappingTool.Flags();
 
         // indirect validation that comma-separated schema actions work

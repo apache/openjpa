@@ -18,26 +18,30 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case to ensure that the proper JPA merge semantics are processed.
  *
  * @author Kevin Sutter
  */
-public class TestEntityManagerMerge
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestEntityManagerMerge extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, Person.class, DROP_TABLES);
     }
 
-    public void testMerge() {
+    @Test
+    void merge() {
         // Create EntityManager and Start a transaction (1)
         begin();
 
@@ -45,29 +49,27 @@ public class TestEntityManagerMerge
         AllFieldTypes testObject = new AllFieldTypes();
         testObject.setStringField("new test object");
         persist(testObject);
-        assertTrue("testObject not found in pc", em.contains(testObject));
+        assertTrue(em.contains(testObject), "testObject not found in pc");
 
         // Modify this object...
         testObject.setStringField("updated test object");
 
         // Attempt to merge this updated object into the PC.  Should be ignored.
         AllFieldTypes mergedObject = em.merge(testObject);
-        assertTrue("mergedObject and testObject are not equal",
-                mergedObject.equals(testObject));
-        assertTrue("mergedObject and testObject are not ==",
-                mergedObject == testObject);
-        assertTrue("testObject not found in pc", em.contains(testObject));
-        assertTrue("mergedObject not found in pc", em.contains(mergedObject));
+        assertEquals(mergedObject, testObject, "mergedObject and testObject are not equal");
+        assertSame(mergedObject, testObject,
+                "mergedObject and testObject are not ==");
+        assertTrue(em.contains(testObject), "testObject not found in pc");
+        assertTrue(em.contains(mergedObject), "mergedObject not found in pc");
 
         // And, once again...
         testObject.setStringField("yet another update");
         AllFieldTypes mergedObject2 = em.merge(testObject);
-        assertTrue("mergedObject2 and testObject are not equal",
-                mergedObject2.equals(testObject));
-        assertTrue("mergedObject2 and testObject are not ==",
-                mergedObject2 == testObject);
-        assertTrue("testObject not found in pc", em.contains(testObject));
-        assertTrue("mergedObject2 not found in pc", em.contains(mergedObject2));
+        assertEquals(mergedObject2, testObject, "mergedObject2 and testObject are not equal");
+        assertSame(mergedObject2, testObject,
+                "mergedObject2 and testObject are not ==");
+        assertTrue(em.contains(testObject), "testObject not found in pc");
+        assertTrue(em.contains(mergedObject2), "mergedObject2 not found in pc");
 
         // Rollback
         rollback();
@@ -78,7 +80,8 @@ public class TestEntityManagerMerge
      * This test verifies that persisting a new entity which matches an existing
      * row in the database succeeds.
      */
-    public void testMergeExistingEntity() {
+    @Test
+    void mergeExistingEntity() {
         Person p = new Person();
         p.setId(102);
 
@@ -109,9 +112,4 @@ public class TestEntityManagerMerge
 
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestEntityManagerMerge.class);
-    }
 }
-

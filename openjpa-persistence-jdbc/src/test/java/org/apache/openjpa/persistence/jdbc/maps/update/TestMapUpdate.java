@@ -18,24 +18,29 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.update;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Harald Wellmann
  *
  */
-public class TestMapUpdate extends SQLListenerTestCase {
+class TestMapUpdate extends SQLListenerTestCase {
 
     private MultilingualString entity1;
 	private OpenJPAEntityManagerSPI em;
 
-	@Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES,
             MultilingualString.class,
@@ -44,7 +49,8 @@ public class TestMapUpdate extends SQLListenerTestCase {
         em = emf.createEntityManager();
     }
 
-    public void testUpdateMapKey() throws Exception {
+    @Test
+    void updateMapKey() throws Exception {
     	em.getTransaction().begin();
 
     	MultilingualString ms = em.find(MultilingualString.class, entity1.getId());
@@ -63,7 +69,8 @@ public class TestMapUpdate extends SQLListenerTestCase {
     	em.close();
     }
 
-    public void testUpdateMapValue() throws Exception {
+    @Test
+    void updateMapValue() throws Exception {
     	em.getTransaction().begin();
 
     	MultilingualString ms = em.find(MultilingualString.class, entity1.getId());

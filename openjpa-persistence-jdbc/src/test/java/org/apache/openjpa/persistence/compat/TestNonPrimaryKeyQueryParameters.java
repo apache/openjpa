@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.compat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -25,6 +28,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that find() queries that use non-primary keys can be cached
@@ -42,13 +47,13 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * <li>The proper openjpa.Compatibility value(s) must be provided in order for the testcase(s) to succeed
  * </ul>
  */
-public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
+class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
     private static final int FULLTIME_EMPLOYEE_COUNT = 3;
     private static final int PARTTIME_EMPLOYEE_COUNT = 2;
     private static final int LINEITEM_PER_INVOICE = 1;
     private static final String DEPT_NAME = "ENGINEERING";
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Department.class, Employee.class,
                 FullTimeEmployee.class, PartTimeEmployee.class,
@@ -59,7 +64,8 @@ public class TestNonPrimaryKeyQueryParameters extends SQLListenerTestCase {
         sql.clear();
     }
 
-    public void testSelectQueryWithNoParameter() {
+    @Test
+    void selectQueryWithNoParameter() {
         EntityManager em = emf.createEntityManager();
 
         try {

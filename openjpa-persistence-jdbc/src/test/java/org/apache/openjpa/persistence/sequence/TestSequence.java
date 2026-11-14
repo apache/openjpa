@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.sequence;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,23 +34,26 @@ import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Tim McConnell
  * @since 2.0.0
  */
-public class TestSequence extends SingleEMFTestCase {
+class TestSequence extends SingleEMFTestCase {
 
     private String multiThreadExecuting = null;
     private static final int NUMBER_ENTITIES = 5000;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(EntityPerson.class, EntityEmployee.class, CLEAR_TABLES,
             "openjpa.Multithreaded", "true");
     }
 
-    public void testMultiThreadedNativeSequences() throws Exception {
+    @Test
+    void multiThreadedNativeSequences() throws Exception {
         boolean supportsNativeSequence = false;
 
         try {
@@ -113,16 +119,16 @@ public class TestSequence extends SingleEMFTestCase {
 
         person = em.find(EntityPerson.class, person_id);
         assertTrue(person != null);
-        assertTrue(person.getId() == person_id);
-        assertTrue(person.getFirstName().equals("Person_First_Name"));
-        assertTrue(person.getLastName().equals("Person_Last_Name"));
+        assertEquals(person.getId(), person_id);
+        assertEquals("Person_First_Name", person.getFirstName());
+        assertEquals("Person_Last_Name", person.getLastName());
 
         employee = em.find(EntityEmployee.class, employee_id);
         assertTrue(employee != null);
-        assertTrue(employee.getId() == employee_id);
-        assertTrue(employee.getFirstName().equals("Employee_First_Name"));
-        assertTrue(employee.getLastName().equals("Employee_Last_Name"));
-        assertTrue(employee.getSalary() == NUMBER_ENTITIES);
+        assertEquals(employee.getId(), employee_id);
+        assertEquals("Employee_First_Name", employee.getFirstName());
+        assertEquals("Employee_Last_Name", employee.getLastName());
+        assertEquals(NUMBER_ENTITIES, employee.getSalary());
 
         em.getTransaction().begin();
         em.remove(person);
@@ -320,7 +326,7 @@ public class TestSequence extends SingleEMFTestCase {
             final Method meth;
 
             try {
-                meth = getClass().getMethod(method, paramClasses);
+                meth = getClass().getDeclaredMethod(method, paramClasses);
             } catch (NoSuchMethodException nsme) {
                 throw new ThreadingException(nsme.toString(), nsme);
             }
@@ -538,7 +544,6 @@ public class TestSequence extends SingleEMFTestCase {
             return shortMethodName;
         }
 
-        throw new IllegalStateException("Could not identify calling "
-            + "method in stack trace");
+        throw new IllegalStateException("Could not identify calling method in stack trace");
     }
 }

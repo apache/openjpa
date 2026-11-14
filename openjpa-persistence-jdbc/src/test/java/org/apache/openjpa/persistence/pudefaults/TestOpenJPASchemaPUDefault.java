@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.pudefaults;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  * OPENJPA-2704: These tests expand on TestSchemaPUDefault to verify
@@ -29,16 +34,19 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * overriden by the "openjpa.jdbc.Schema" property .
  */
 public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
-
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict instanceof DB2Dictionary;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PUDefaultSchemaEntity.class, PUSchemaInSequenceAnnotationEntity.class,
             PUSchemaInTableAnnotationEntity.class, PUSchemaInTableMappingEntity.class,
             PUSchemaInSequenceMappingEntity.class);
-        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -48,7 +56,8 @@ public class TestOpenJPASchemaPUDefault extends SQLListenerTestCase {
         return "overrideMappingSchema";
     }
 
-    public void testOpenJPASchemaOverridesORM() {
+    @Test
+    void openJPASchemaOverridesORM() {
         persist(new PUDefaultSchemaEntity());
 
         // The Sequence and Table SQL should use the PU default schema

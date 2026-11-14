@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Types;
 
 import jakarta.persistence.EntityManager;
@@ -26,15 +28,17 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Converted attributes declared as LOBs in a mapping file, with the
  * converters on the fields. The mapping file is read before the annotations,
  * so the kind of LOB can only follow the converter once the field is mapped.
  */
-public class TestLobConvertedXml extends SingleEMFTestCase {
+class TestLobConvertedXml extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(XmlLobConvertedEntity.class, DROP_TABLES);
     }
@@ -53,19 +57,23 @@ public class TestLobConvertedXml extends SingleEMFTestCase {
         return fm.getColumns()[0].getType();
     }
 
-    public void testListConvertedToStringIsClob() {
+    @Test
+    void listConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("items"));
     }
 
-    public void testItemConvertedToStringIsClob() {
+    @Test
+    void itemConvertedToStringIsClob() {
         assertEquals(Types.CLOB, columnType("item"));
     }
 
-    public void testStringConvertedToBytesIsBlob() {
+    @Test
+    void stringConvertedToBytesIsBlob() {
         assertEquals(Types.BLOB, columnType("bytes"));
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlLobConvertedEntity e = new XmlLobConvertedEntity();

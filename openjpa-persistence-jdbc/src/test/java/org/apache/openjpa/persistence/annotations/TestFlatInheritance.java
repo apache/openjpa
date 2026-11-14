@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat1;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.Flat2;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -28,21 +33,23 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.
  *
  * @author Steve Kim
  */
+@DynamicEnhancementTest
 public class TestFlatInheritance extends AnnotationTestCase
 {
 
-	public TestFlatInheritance(String name)
+	public TestFlatInheritance()
 	{
-		super(name, "annotationcactusapp");
+		super("annotationcactusapp");
 	}
 
-    @Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
     {
         deleteAll(Flat1.class);
     }
 
-    public void testInheritance() {
+    @Test
+    void inheritance() {
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
         startTx(em);
         Flat1 pc = new Flat1(1);

@@ -19,6 +19,9 @@
 
 package org.apache.openjpa.persistence.inheritance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -29,9 +32,11 @@ import org.apache.openjpa.persistence.inheritance.entities.EntityMapping.
 import org.apache.openjpa.persistence.inheritance.entities.testinterfaces.
     RootEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestInheritanceWithMSCID extends SingleEMFTestCase {
-    @Override
+class TestInheritanceWithMSCID extends SingleEMFTestCase {
+    @BeforeEach
     @SuppressWarnings("unchecked")
     public void setUp() {
         /*
@@ -67,7 +72,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * (the L1 cache) when they are created.
      */
     @SuppressWarnings("unchecked")
-    public void testPersistableWithEntitiesInL1Cache() {
+    @Test
+    void persistableWithEntitiesInL1Cache() {
         EntityManager em = emf.createEntityManager();
 
         for (InheritanceEntityMapping[] tEntities : allEntityGroups ) {
@@ -101,8 +107,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                     tEntities[idx].getEntityClass();
 
                 assertEquals(
-                        "Assert Entity " + (idx + 1) + "is entity of type " +
-                        expectedType, expectedType, actualType);
+                        expectedType, actualType, "Assert Entity " + (idx + 1) + "is entity of type " +
+                        expectedType);
 
                 idx++;
             }
@@ -117,7 +123,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * (the L1 cache) after they are created.
      */
     @SuppressWarnings("unchecked")
-    public void testPersistableWithEntitiesClearedFromL1Cache() {
+    @Test
+    void persistableWithEntitiesClearedFromL1Cache() {
         EntityManager em = emf.createEntityManager();
 
         for (InheritanceEntityMapping[] tEntities : allEntityGroups ) {
@@ -152,8 +159,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                     tEntities[idx].getEntityClass();
 
                 assertEquals(
-                        "Assert Entity " + (idx + 1) + "is entity of type " +
-                        expectedType, expectedType, actualType);
+                        expectedType, actualType, "Assert Entity " + (idx + 1) + "is entity of type " +
+                        expectedType);
 
                 idx++;
             }
@@ -247,11 +254,11 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
                     em.createQuery(queryStr).getResultList();
 
                 assertEquals(
+                        expectedQueryResultListSize,
+                        resultList.size(),
                         "Assert the following query creates a result list " +
                         "with " + expectedQueryResultListSize + " entities: " +
-                        "\"" + queryStr + "\".  ",
-                        expectedQueryResultListSize,
-                        resultList.size());
+                        "\"" + queryStr + "\".  ");
                 idx++;
 
                 if (clearL1Cache)
@@ -268,7 +275,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * results as well.  Test will not clear the L1 cache after populating DB
      * and will not clear the L1 cache in between Query executions.
      */
-    public void testQuery001WithL1() {
+    @Test
+    void query001WithL1() {
         query001TestLogic(false);
     }
 
@@ -278,7 +286,8 @@ public class TestInheritanceWithMSCID extends SingleEMFTestCase {
      * results as well.  Test will clear the L1 cache after populating DB
      * and will  clear the L1 cache in between Query executions.
      */
-    public void testQuery001NoL1() {
+    @Test
+    void query001NoL1() {
         query001TestLogic(true);
     }
 }

@@ -73,6 +73,15 @@ Without the system property OpenJPA logs an informational message once and behav
 Applications that enhance their classes at build time can set `openjpa.DynamicEnhancementAgent` to `false` to avoid this message.
 See <<ref_guide_pc_enhance_dynamic>>.
 
+[[jpa_4.2_JUnitJupiter]]
+==== openjpa-junit5 is now openjpa-junit-jupiter
+
+The JUnit extension for in-place enhancement in tests (`@OpenJPASupport`) is now published as `org.apache.openjpa:openjpa-junit-jupiter`, and its package is now `org.apache.openjpa.junit.jupiter`.
+It works with JUnit 5 and JUnit 6, which share the Jupiter API; the old name suggested JUnit 5 only.
+The JUnit dependencies are now `provided`, so the JUnit version of the application is used.
+Replace the `openjpa-junit5` dependency with `openjpa-junit-jupiter` and change the imports from `org.apache.openjpa.junit5` to `org.apache.openjpa.junit.jupiter`.
+`openjpa-junit5` is still available for OpenJPA 4.1.x and earlier.
+
 [[jpa_4.2_JPQLReservedIdentifiers]]
 ==== New JPQL Reserved Identifiers
 

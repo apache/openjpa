@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,17 +29,19 @@ import jakarta.persistence.NamedQuery;
 import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @NamedQuery(name = "setParam1",
     query = "SELECT o FROM Entity1 o WHERE o.pk LIKE :pk")
 public class TestEJBQueryInterface extends AbstractTestCase {
 
-    public TestEJBQueryInterface(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBQueryInterface() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
 
         int instNum = 10;
 
@@ -61,7 +66,8 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testResultList() {
+    @Test
+    void resultList() {
         EntityManager em = currentEntityManager();
         List list = em.createQuery("Select object(o) from Entity1 o")
             .getResultList();
@@ -71,7 +77,8 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testGetSingleList() {
+    @Test
+    void getSingleList() {
         EntityManager em = currentEntityManager();
         String curr = 2 + "";
 
@@ -86,25 +93,27 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testExecuteUpdate() {
+    @Test
+    void executeUpdate() {
 
         EntityManager em = currentEntityManager();
         startTx(em);
         int ret = em.createQuery("Delete FROM Entity1 o WHERE o.pk = 2")
             .executeUpdate();
 
-        assertEquals(ret, 1);
+        assertEquals(1, ret);
 
         int ret2 = em.createQuery("Delete FROM Entity1 o WHERE o.pk = 22")
             .executeUpdate();
 
-        assertEquals(ret2, 0);
+        assertEquals(0, ret2);
 
         endTx(em);
         endEm(em);
     }
 
-    public void testSetMaxResults() {
+    @Test
+    void setMaxResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o")
@@ -117,7 +126,8 @@ public class TestEJBQueryInterface extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testSetFirstResults() {
+    @Test
+    void setFirstResults() {
         EntityManager em = currentEntityManager();
 
         List l = em.createQuery("Select object(o) from Entity1 o order by o.pk")

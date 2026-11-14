@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case and domain classes were originally part of the reported issue
@@ -37,9 +41,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Fay Wang
  * @author Pinaki Poddar
  */
-public class TestMappedSuperClass extends SingleEMFTestCase {
+class TestMappedSuperClass extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CashBaseEntity.class,
               SituationDA.class, ValuableItemDA.class,
@@ -47,7 +51,8 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
               CLEAR_TABLES);
     }
 
-    public void testMappedSuperClass() {
+    @Test
+    void mappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < 3; i++) {
@@ -68,7 +73,7 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
         // test polymorphic queries
         String query = "select s from CashBaseEntity s where TYPE(s) = SituationDA";
         List rs = em.createQuery(query).getResultList();
-        for (Object r : rs) assertTrue(r instanceof SituationDA);
+        for (Object r : rs) assertInstanceOf(SituationDA.class, r);
 
         query = "select s from CashBaseEntity s where TYPE(s) <> ValuableItemDA";
         try {
@@ -84,7 +89,8 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
      * Tests that new entity can be merged when the entity is derived from a mapped
      * super class that does not declare an identity field.
      */
-    public void testMergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
+    @Test
+    void mergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final long id = System.currentTimeMillis();

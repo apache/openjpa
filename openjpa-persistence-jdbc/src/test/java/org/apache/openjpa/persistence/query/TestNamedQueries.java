@@ -26,29 +26,26 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 
 import jakarta.persistence.TypedQuery;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.query.common.apps.EntityInterface;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestNamedQueries extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestNamedQueries
-     */
-
-    public TestNamedQueries(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+@DynamicEnhancementTest
+class TestNamedQueries extends BaseQueryTest {
+    @BeforeEach
+    void setUp() {
         deleteAll(QueryTest1.class);
 
         OpenJPAEntityManager pm = getEM();
@@ -66,7 +63,8 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
-    public void testNamedClassQuery() {
+    @Test
+    void namedClassQuery() {
         OpenJPAEntityManager pm = getEM();
 
         OpenJPAQuery query = pm.createQuery("SELECT o FROM QueryTest1 o");
@@ -88,12 +86,13 @@ public class TestNamedQueries extends BaseQueryTest {
             "named", pm.getClassLoader(), true);
         assertNotNull(meta);
         assertEquals("SELECT o FROM QueryTest1 o", meta.getQueryString());
-        assertEquals(null, meta.getResultType());
+        assertNull(meta.getResultType());
 
         endEm(pm);
     }
 
-    public void testNamespace() {
+    @Test
+    void namespace() {
         OpenJPAEntityManager pm = getEM();
         OpenJPAQuery query = (OpenJPAQuery) pm.createNamedQuery("named");
         assertEquals("SELECT o FROM QueryTest1 o", query.getQueryString());
@@ -101,7 +100,8 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
-    public void testSystemJDOQL() {
+    @Test
+    void systemJDOQL() {
         // make sure local query metadata is parsed
         OpenJPAEntityManager pm = getEM();
 
@@ -113,7 +113,8 @@ public class TestNamedQueries extends BaseQueryTest {
         endEm(pm);
     }
 
-    public void testInterfaceResultClass() {
+    @Test
+    void interfaceResultClass() {
         OpenJPAEntityManager pm = getEM();
 
         TypedQuery<EntityInterface> query = pm.createNamedQuery("named", EntityInterface.class);

@@ -18,10 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A relation with no cascade that points at a transient instance must be
@@ -30,9 +37,9 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * an assigned identity must not cause a datastore lookup, because an
  * instance without identity can never have been persisted.
  */
-public class TestTransientRefNoCascade extends SQLListenerTestCase {
+class TestTransientRefNoCascade extends SQLListenerTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(UnenhancedNCDepartment.class,
               UnenhancedNCAssignedDepartment.class,
@@ -45,7 +52,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * An instance without an assigned identity was never persisted, so the
      * flush must fail and must not probe the datastore for it.
      */
-    public void testTransientWithoutIdentityIsRejectedWithoutLookup() {
+    @Test
+    void transientWithoutIdentityIsRejectedWithoutLookup() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedNCEmployee emp = new UnenhancedNCEmployee(1L, "Smith");
@@ -59,9 +67,9 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
             } catch (InvalidStateException ise) {
                 assertNotNull(ise.getFailedObject());
             }
-            assertEquals("No datastore lookup must be done for an instance "
-                + "without an assigned identity: " + sql,
-                0, countSelects("TRNSREF_DEPT"));
+            assertEquals(0,
+                countSelects("TRNSREF_DEPT"), "No datastore lookup must be done for an instance "
+                + "without an assigned identity: " + sql);
         }
     }
 
@@ -69,7 +77,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * An instance with an identity that has no store record was never
      * persisted either, so the flush must still fail after the lookup.
      */
-    public void testTransientWithIdentityIsRejected() {
+    @Test
+    void transientWithIdentityIsRejected() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             UnenhancedNCEmployee emp = new UnenhancedNCEmployee(2L, "Jones");
@@ -83,11 +92,11 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
             } catch (InvalidStateException ise) {
                 assertNotNull(ise.getFailedObject());
             }
-            assertEquals("The identity must be looked up exactly once: " + sql,
-                1, countSelects("TRNSREF_DEPT"));
+            assertEquals(1,
+                countSelects("TRNSREF_DEPT"), "The identity must be looked up exactly once: " + sql);
         }
-        assertNull("The employee must not have been written",
-            find(UnenhancedNCEmployee.class, 2L));
+        assertNull(find(UnenhancedNCEmployee.class, 2L),
+            "The employee must not have been written");
     }
 
     /**
@@ -95,7 +104,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * holds no identity at all must be rejected without a lookup, even if a
      * store record exists for the default value of the identity type.
      */
-    public void testTransientWithoutAssignedIdentityIsRejectedWithoutLookup() {
+    @Test
+    void transientWithoutAssignedIdentityIsRejectedWithoutLookup() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             em.persist(new UnenhancedNCAssignedDepartment(0L, "Zero"));
@@ -116,12 +126,12 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
             } catch (InvalidStateException ise) {
                 assertNotNull(ise.getFailedObject());
             }
-            assertEquals("No datastore lookup must be done for an instance "
-                + "without an assigned identity: " + sql,
-                0, countSelects("TRNSREF_ADEPT"));
+            assertEquals(0,
+                countSelects("TRNSREF_ADEPT"), "No datastore lookup must be done for an instance "
+                + "without an assigned identity: " + sql);
         }
-        assertNull("The employee must not have been written",
-            find(UnenhancedNCEmployee.class, 5L));
+        assertNull(find(UnenhancedNCEmployee.class, 5L),
+            "The employee must not have been written");
     }
 
     /**
@@ -129,7 +139,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
      * value of its type stays allowed: the identity is assigned, only the
      * store record settles the question.
      */
-    public void testDetachedReferenceWithDefaultIdentityIsTolerated() {
+    @Test
+    void detachedReferenceWithDefaultIdentityIsTolerated() {
         UnenhancedNCAssignedDepartment dept =
             new UnenhancedNCAssignedDepartment(0L, "Zero");
         try (EntityManager em = emf.createEntityManager()) {
@@ -150,8 +161,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedNCEmployee emp = em.find(UnenhancedNCEmployee.class, 6L);
             assertNotNull(emp);
-            assertNotNull("The detached reference must have been written",
-                emp.getAssignedDepartment());
+            assertNotNull(emp.getAssignedDepartment(),
+                "The detached reference must have been written");
             assertEquals(Long.valueOf(0L),
                 emp.getAssignedDepartment().getId());
         }
@@ -160,7 +171,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
     /**
      * A detached instance stays allowed on a relation without cascade.
      */
-    public void testDetachedReferenceIsTolerated() {
+    @Test
+    void detachedReferenceIsTolerated() {
         UnenhancedNCDepartment dept = new UnenhancedNCDepartment(null, "Marketing");
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
@@ -182,8 +194,8 @@ public class TestTransientRefNoCascade extends SQLListenerTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             UnenhancedNCEmployee emp = em.find(UnenhancedNCEmployee.class, 3L);
             assertNotNull(emp);
-            assertNotNull("The detached reference must have been written",
-                emp.getDepartment());
+            assertNotNull(emp.getDepartment(),
+                "The detached reference must have been written");
             assertEquals(deptId, emp.getDepartment().getId());
         }
     }

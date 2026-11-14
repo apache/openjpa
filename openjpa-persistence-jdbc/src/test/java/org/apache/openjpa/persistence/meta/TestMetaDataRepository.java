@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collection;
 
 import org.apache.openjpa.enhance.PCRegistry;
@@ -30,20 +35,22 @@ import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
 import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
 import org.apache.openjpa.persistence.xmlmapping.entities.Order;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMetaDataRepository extends AbstractPersistenceTestCase {
+class TestMetaDataRepository extends AbstractPersistenceTestCase {
 	private final String PU_NAME = "mdr-pu";
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
 	}
 
-	/**
-	 * This method ensures that some of the basic MetaData is properly
-	 * registered after creating an EMF.
-	 */
-	public void testPreloadBasic() {
+    /**
+     * This method ensures that some of the basic MetaData is properly
+     * registered after creating an EMF.
+     */
+    @Test
+    void preloadBasic() {
 		OpenJPAEntityManagerFactorySPI emf = null;
 		try {
 			emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository",
@@ -71,17 +78,19 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 		}
 	}
 
-	public void testPreloadCleanUp() {
+    @Test
+    void preloadCleanUp() {
         OpenJPAEntityManagerFactorySPI emf = null;
         emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
         MetaDataRepository repo = emf.getConfiguration().getMetaDataRepositoryInstance();
         emf.createEntityManager();
         closeEMF(emf);
-        assertFalse("The PCRegistry should no longer reference the MetaDataRepository.", PCRegistry
-            .removeRegisterClassListener(repo));
+        assertFalse(PCRegistry
+            .removeRegisterClassListener(repo), "The PCRegistry should no longer reference the MetaDataRepository.");
     }
 
-	public void testXmlMappingPreload() {
+    @Test
+    void xmlMappingPreload() {
         OpenJPAEntityManagerFactorySPI emf = null;
         try {
             emf =
@@ -98,7 +107,8 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
         }
     }
 
-    public void testPreloadConfiguration() {
+    @Test
+    void preloadConfiguration() {
         OpenJPAEntityManagerFactorySPI emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "preload=true");
         assertTrue(MetaDataRepository.needsPreload(emf.getConfiguration()));
         emf.close();

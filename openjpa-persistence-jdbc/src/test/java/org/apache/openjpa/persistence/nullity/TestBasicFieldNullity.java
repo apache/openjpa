@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -30,6 +34,8 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test @Basic(optional=true|false) and @Column(nullable=true|false)
@@ -39,84 +45,98 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  *
  * @author Pinaki Poddar
  */
-public class TestBasicFieldNullity extends AbstractNullityTestCase {
+class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     private DBDictionary dict = null;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, RETAIN_DATA, NullValues.class);
         dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
-    public void testNullOnOptionalFieldIsAllowed() {
+    @Test
+    void nullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	pc.setOptional(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnNonOptionalFieldIsDisallowed() {
+    @Test
+    void nullOnNonOptionalFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptional(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
 
-    public void testNotNullOnOptionalFieldIsAllowed() {
+    @Test
+    void notNullOnOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNotNullOnNonOptionalFieldIsAllowed() {
+    @Test
+    void notNullOnNonOptionalFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnNullableColumnAllowed() {
+    @Test
+    void nullOnNullableColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullable(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnNonNullableColumnIsDisallowed() {
+    @Test
+    void nullOnNonNullableColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullable(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
 
-    public void testNotNullOnNullableColumnIsAllowed() {
+    @Test
+    void notNullOnNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNotNullOnNonNullableColumnIsAllowed() {
+    @Test
+    void notNullOnNonNullableColumnIsAllowed() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnOptionalBlobFieldIsAllowed() {
+    @Test
+    void nullOnOptionalBlobFieldIsAllowed() {
     	NullValues pc = new NullValues();
     	pc.setOptionalBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnNonOptionalBlobFieldIsDisallowed() {
+    @Test
+    void nullOnNonOptionalBlobFieldIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotOptionalBlob(null);
     	assertCommitFails(pc, NEW, InvalidStateException.class);
     }
 
-    public void testNullOnNullableBlobColumnAllowed() {
+    @Test
+    void nullOnNullableBlobColumnAllowed() {
     	NullValues pc = new NullValues();
     	pc.setNullableBlob(null);
     	assertCommitSucceeds(pc, NEW);
     }
 
-    public void testNullOnNonNullableBlobColumnIsDisallowed() {
+    @Test
+    void nullOnNonNullableBlobColumnIsDisallowed() {
     	NullValues pc = new NullValues();
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, NEW, RollbackException.class);
     }
 
-    public void testX() {
+    @Test
+    void x() {
     	NullValues pc = new NullValues();
     	assertCommitSucceeds(pc, NEW);
     	OpenJPAPersistence.getEntityManager(pc).close();
@@ -126,7 +146,8 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
     }
 
 
-    public void testUniqueStringColumnCanBeNull() {
+    @Test
+    void uniqueStringColumnCanBeNull() {
         if (!isUniqueColumnNullable()) {
             return;
         }
@@ -135,7 +156,8 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         assertCommitSucceeds(pc, NEW);
     }
 
-    public void testUniqueStringColumnAsNull() {
+    @Test
+    void uniqueStringColumnAsNull() {
         if (!isUniqueColumnNullable()) {
             return;
         }
@@ -153,7 +175,8 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
             assertNull(n.getUniqueNullable());
     }
 
-    public void testUniqueStringColumnAsEmpty() {
+    @Test
+    void uniqueStringColumnAsEmpty() {
         String EMPTY_STRING = "";
         NullValues pc = new NullValues();
         pc.setUniqueNullable(EMPTY_STRING);

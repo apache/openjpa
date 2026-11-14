@@ -18,27 +18,31 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author <a href="mailto:mnachev@gmail.com">Miroslav Nachev</a>
  */
-public class TestSQLBigDecimalId
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestSQLBigDecimalId extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SQLBigDecimalIdEntity.class, DROP_TABLES);
     }
 
-    public void testPersist() {
+    @Test
+    void persist() {
         long time = ((long) (System.currentTimeMillis() / 1000)) * 1000;
         BigDecimal decimal = new BigDecimal(time);
 
@@ -60,9 +64,10 @@ public class TestSQLBigDecimalId
 
     }
 
-    @AllowFailure
     // This test currently allows failure because DB2 and Derby don't handle BigDecimals properly quite yet.
-    public void testQuery() {
+    @AllowFailure
+    @Test
+    void query() {
         int data = 156;
         BigDecimal decimal = new BigDecimal(1234);
         SQLBigDecimalIdEntity e = new SQLBigDecimalIdEntity();
@@ -81,9 +86,5 @@ public class TestSQLBigDecimalId
         assertEquals(e, e2);
         em.close();
 
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestSQLBigDecimalId.class);
     }
 }

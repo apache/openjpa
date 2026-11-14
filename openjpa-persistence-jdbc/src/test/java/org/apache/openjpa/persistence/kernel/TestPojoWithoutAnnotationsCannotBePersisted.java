@@ -18,26 +18,29 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.UnAnnotPojo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Ensures that pojo that is not persistent capable cannot be persisted.
  * @author Afam Okeke
  */
-public class TestPojoWithoutAnnotationsCannotBePersisted
-    extends AbstractTestCase {
+public class TestPojoWithoutAnnotationsCannotBePersisted extends AbstractTestCase {
 
     UnAnnotPojo pojo = null;
 
-    public TestPojoWithoutAnnotationsCannotBePersisted(String name) {
-        super(name, "kernelcactusapp");
+    public TestPojoWithoutAnnotationsCannotBePersisted() {
+        super("kernelcactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(new Object[] {});
         pojo = new UnAnnotPojo();
         pojo.setName("failure");
@@ -47,7 +50,8 @@ public class TestPojoWithoutAnnotationsCannotBePersisted
     /*
       * Try to persist pojo with no metadata
       */
-    public void testPersistingUnAnnotatedObject() {
+    @Test
+    void persistingUnAnnotatedObject() {
         EntityManager em = currentEntityManager();
         startTx(em);
 

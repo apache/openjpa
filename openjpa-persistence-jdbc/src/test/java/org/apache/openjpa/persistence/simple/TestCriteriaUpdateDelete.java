@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -26,13 +28,15 @@ import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for CriteriaUpdate and CriteriaDelete (JPA 2.1).
  */
-public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
+class TestCriteriaUpdateDelete extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
@@ -59,7 +63,8 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
     /**
      * CriteriaDelete should delete all rows when no WHERE clause.
      */
-    public void testCriteriaDeleteAll() {
+    @Test
+    void criteriaDeleteAll() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -83,7 +88,8 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
     /**
      * CriteriaDelete with WHERE clause.
      */
-    public void testCriteriaDeleteWithWhere() {
+    @Test
+    void criteriaDeleteWithWhere() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -107,7 +113,8 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
     /**
      * CriteriaUpdate should update matching rows.
      */
-    public void testCriteriaUpdateWithWhere() {
+    @Test
+    void criteriaUpdateWithWhere() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -134,7 +141,8 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
     /**
      * CriteriaUpdate should update all rows when no WHERE.
      */
-    public void testCriteriaUpdateAll() {
+    @Test
+    void criteriaUpdateAll() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 
@@ -160,7 +168,8 @@ public class TestCriteriaUpdateDelete extends SingleEMFTestCase {
     /**
      * CriteriaUpdate with set(String attributeName, Object value).
      */
-    public void testCriteriaUpdateSetByAttributeName() {
+    @Test
+    void criteriaUpdateSetByAttributeName() {
         EntityManager em = emf.createEntityManager();
         insertTestData(em);
 

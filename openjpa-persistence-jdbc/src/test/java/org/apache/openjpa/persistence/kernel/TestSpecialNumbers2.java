@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -26,23 +28,18 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.kernel.common.apps.AllFieldTypesTest;
-
-import org.junit.Assert;
-import junit.framework.AssertionFailedError;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 /**
  * Test various special numbers, such as Double.NaN.
  *
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
-public class TestSpecialNumbers2 extends BaseKernelTest {
-
-    public TestSpecialNumbers2(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+class TestSpecialNumbers2 extends BaseKernelTest {
+    @BeforeEach
+    void setUp() {
         try {
             deleteAll(AllFieldTypesTest.class);
         }
@@ -53,13 +50,15 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testShortMax() {
+    @Test
+    void shortMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MAX_VALUE);
         saveAndQuery(aftt, "testshort =", Short.MAX_VALUE);
     }
 
-    public void testShortMin() {
+    @Test
+    void shortMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestshort(Short.MIN_VALUE);
         try {
@@ -71,13 +70,15 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testLongMax() {
+    @Test
+    void longMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestlong(Long.MAX_VALUE);
         saveAndQuery(aftt, "testlong =", Long.MAX_VALUE);
     }
 
-    public void testLongMin() {
+    @Test
+    void longMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestlong(Long.MIN_VALUE);
@@ -88,14 +89,16 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testIntegerMax() {
+    @Test
+    void integerMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MAX_VALUE);
         saveAndQuery(aftt, "testint =",
                 Integer.MAX_VALUE);
     }
 
-    public void testIntegerMin() {
+    @Test
+    void integerMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestint(Integer.MIN_VALUE);
         try {
@@ -107,7 +110,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testFloatMax() {
+    @Test
+    void floatMax() {
         try {
         	AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MAX_VALUE);
@@ -119,7 +123,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testFloatMin() {
+    @Test
+    void floatMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.MIN_VALUE);
@@ -131,7 +136,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testFloatNaN() {
+    @Test
+    void floatNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NaN);
@@ -141,7 +147,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testFloatNegativeInfinity() {
+    @Test
+    void floatNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.NEGATIVE_INFINITY);
@@ -153,7 +160,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testFloatPostivieInfinity() {
+    @Test
+    void floatPostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestfloat(Float.POSITIVE_INFINITY);
@@ -165,7 +173,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testDoubleMax() {
+    @Test
+    void doubleMax() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MAX_VALUE);
@@ -177,7 +186,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testDoubleMin() {
+    @Test
+    void doubleMin() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.MIN_VALUE);
@@ -198,7 +208,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testDoubleNaN() {
+    @Test
+    void doubleNaN() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NaN);
@@ -208,7 +219,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testDoubleNegativeInfinity() {
+    @Test
+    void doubleNegativeInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.NEGATIVE_INFINITY);
@@ -219,7 +231,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testDoublePostivieInfinity() {
+    @Test
+    void doublePostivieInfinity() {
         try {
             AllFieldTypesTest aftt = new AllFieldTypesTest();
             aftt.setTestdouble(Double.POSITIVE_INFINITY);
@@ -230,7 +243,8 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         }
     }
 
-    public void testByteMin() {
+    @Test
+    void byteMin() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MIN_VALUE);
         try {
@@ -238,25 +252,28 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
         } catch (Throwable t) {
             //bug(AbstractTestCase.Platform.EMPRESS, 889, t,
             //    "Empress cannot store min values");
-            Assert.fail(
+            fail(
                 "Exception was thrown while storing Byte.MIN_VALUE : \n" +
                     getStackTrace(t));
         }
     }
 
-    public void testByteMax() {
+    @Test
+    void byteMax() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestbyte(Byte.MAX_VALUE);
         saveAndQuery(aftt, "testbyte =", Byte.MAX_VALUE);
     }
 
-    public void testZeroBigInteger() {
+    @Test
+    void zeroBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ZERO);
         saveAndQuery(aftt, "testBigInteger =", BigInteger.ZERO);
     }
 
-    public void testOneBigInteger() {
+    @Test
+    void oneBigInteger() {
         AllFieldTypesTest aftt = new AllFieldTypesTest();
         aftt.setTestBigInteger(BigInteger.ONE);
         saveAndQuery(aftt, "testBigInteger =", BigInteger.ONE);

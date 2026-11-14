@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.identity.entityasidentity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 import java.util.Set;
 
@@ -25,9 +28,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEntityAsIdentityFields extends SingleEMFTestCase {
-    @Override
+class TestEntityAsIdentityFields extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp( CLEAR_TABLES,
                 Account.class, AccountGroup.class, Person.class);
@@ -37,7 +42,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * Tests for the NullPointerException in MappingInfo.mergeJoinColumn reported in OpenJPA-1141.
      *
      */
-    public void testEntityAsIdentityField001() {
+    @Test
+    void entityAsIdentityField001() {
         EntityManager em = null;
         em = emf.createEntityManager();
 
@@ -52,7 +58,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * part of their identity.  Clears persistence context between entity create and find.
      *
      */
-    public void testEntityAsIdentityField002A() {
+    @Test
+    void entityAsIdentityField002A() {
         EntityManager em = null;
 
         try {
@@ -85,7 +92,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * part of their identity.  Does not clear persistence context between entity create and find.
      *
      */
-    public void testEntityAsIdentityField002B() {
+    @Test
+    void entityAsIdentityField002B() {
         EntityManager em = null;
 
         try {
@@ -117,7 +125,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * part of their identity.  Uses different EntityManagers for create and find.
      *
      */
-    public void testEntityAsIdentityField002C() {
+    @Test
+    void entityAsIdentityField002C() {
         EntityManager em = null;
         EntityManager emPop = null;
 
@@ -158,7 +167,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * Clear persistence context before performing the query.
      *
      */
-    public void testEntityAsIdentityField003A() {
+    @Test
+    void entityAsIdentityField003A() {
         EntityManager em = null;
 
         try {
@@ -188,7 +198,8 @@ public class TestEntityAsIdentityFields extends SingleEMFTestCase {
      * to perform the query
      *
      */
-    public void testEntityAsIdentityField004A() {
+    @Test
+    void entityAsIdentityField004A() {
         EntityManager em = null;
         EntityManager emPop = null;
 

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,21 +31,24 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.datacache.common.apps.
         FlushDataCacheObject;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="surefire excluded")
 public class TestFlushDataCache
     extends AbstractTestCase {
 
-    public TestFlushDataCache(String str) {
-        super(str, "datacachecactusapp");
+    public TestFlushDataCache() {
+        super("datacachecactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(FlushDataCacheObject.class);
     }
 
-    public void testQueryFlushPlusDataCache() {
+    @Test
+    void queryFlushPlusDataCache() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -96,7 +101,8 @@ public class TestFlushDataCache
         endEm(em);
     }
 
-    public void testEmptyCommit() {
+    @Test
+    void emptyCommit() {
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");

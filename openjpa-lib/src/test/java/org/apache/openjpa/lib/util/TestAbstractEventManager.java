@@ -18,22 +18,24 @@
  */
 package org.apache.openjpa.lib.util;
 
-import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link AbstractConcurrentEventManager}.
  *
  * @author Abe White
  */
-public class TestAbstractEventManager {
+class TestAbstractEventManager {
 
     private EventManager _em = new EventManager();
 
     @Test
-    public void testReentrantAdd() {
+    void reentrantAdd() {
         Listener l1 = new Listener(Listener.ADD);
         Listener l2 = new Listener(Listener.NONE);
         _em.addListener(l1);
@@ -45,7 +47,7 @@ public class TestAbstractEventManager {
     }
 
     @Test
-    public void testReentrantRemove() {
+    void reentrantRemove() {
         Listener l1 = new Listener(Listener.REMOVE);
         Listener l2 = new Listener(Listener.NONE);
         _em.addListener(l1);

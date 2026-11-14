@@ -32,19 +32,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestMathQueries extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestMathQueries
-     */
-
-    public TestMathQueries(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
+class TestMathQueries extends BaseQueryTest {
+    @BeforeEach
+    void setUp() {
         deleteAll(QueryTest1.class);
         OpenJPAEntityManager pm = getEM();
         startTx(pm);
@@ -65,7 +58,8 @@ public class TestMathQueries extends BaseQueryTest {
         }
     }
 
-    public void testMultipleQuery() {
+    @Test
+    void multipleQuery() {
         try {
 
             OpenJPAQuery q1, q2;

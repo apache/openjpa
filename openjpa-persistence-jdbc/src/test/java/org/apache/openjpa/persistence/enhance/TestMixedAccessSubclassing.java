@@ -16,18 +16,22 @@
  */
 package org.apache.openjpa.persistence.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.enhance.common.apps.MixedAccessPerson;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test subclass enhancement on the fly with mixed access strategy
  *
  * @author <a href="mailto:struberg@apache.org">Mark Struberg</a>
  */
-public class TestMixedAccessSubclassing extends SingleEMTestCase {
+class TestMixedAccessSubclassing extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 "openjpa.RuntimeUnenhancedClasses", "supported",
@@ -36,7 +40,7 @@ public class TestMixedAccessSubclassing extends SingleEMTestCase {
     }
 
     @Test
-    public void testDynamicEnhancement() {
+    void dynamicEnhancement() {
         int pk = -1;
         {
             em.getTransaction().begin();

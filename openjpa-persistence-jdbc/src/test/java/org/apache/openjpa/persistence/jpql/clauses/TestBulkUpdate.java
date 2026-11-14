@@ -18,31 +18,37 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestBulkUpdate extends AbstractTestCase {
 
-    public TestBulkUpdate(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestBulkUpdate() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(Entity1.class);
         deleteAll(Entity2.class);
     }
 
-    public void testSimpleBulkUpdate() {
+    @Test
+    void simpleBulkUpdate() {
         for (int i = 1; i < 5; i++)
-            testSimpleBulkUpdate(i);
+            simpleBulkUpdate(i);
     }
 
-    public void testSimpleBulkUpdate(int num) {
+    @Test
+    void simpleBulkUpdate(int num) {
         deleteAll(Entity1.class);
 
         EntityManager em = currentEntityManager();

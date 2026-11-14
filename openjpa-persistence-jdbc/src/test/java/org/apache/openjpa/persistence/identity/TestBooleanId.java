@@ -18,9 +18,16 @@
  */
 package org.apache.openjpa.persistence.identity;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that entities can use boolean ids
@@ -28,12 +35,12 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * @author Dianne Richards
  * @since 2.1.0
  */
-public class TestBooleanId extends SQLListenerTestCase {
+class TestBooleanId extends SQLListenerTestCase {
     private EntityManager em;
     private BooleanIdEntity se;
     private CompoundBooleanIdEntity ce;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(BooleanIdEntity.class,
             CompoundBooleanIdEntity.class,
@@ -41,20 +48,21 @@ public class TestBooleanId extends SQLListenerTestCase {
         assertTrue(emf != null);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         closeEM(em);
         super.tearDown();
     }
 
-    public void testSimpleBooleanIdEntity() {
+    @Test
+    void simpleBooleanIdEntity() {
         se = new BooleanIdEntity(true,"name");
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(se);
         em.getTransaction().commit();
-        assertEquals(true, se.getId());
+        assertTrue(se.getId());
         em.close();
 
         em = emf.createEntityManager();
@@ -62,18 +70,20 @@ public class TestBooleanId extends SQLListenerTestCase {
         assertNotNull(se);
     }
 
-    public void testCompoundIdEntity() {
+    @Test
+    void compoundIdEntity() {
         em = emf.createEntityManager();
-        testCompoundIdEntity("string1", true, true);
-        testCompoundIdEntity("string1", true, false); // Expect duplicate key exception
-        testCompoundIdEntity("string1", false, true);
-        testCompoundIdEntity("string2", true, true);
-        testCompoundIdEntity("string2", false, true);
+        compoundIdEntity("string1", true, true);
+        compoundIdEntity("string1", true, false); // Expect duplicate key exception
+        compoundIdEntity("string1", false, true);
+        compoundIdEntity("string2", true, true);
+        compoundIdEntity("string2", false, true);
         createCompoundIdEntityWithoutBoolean("string3");
         em.close();
     }
 
-    private void testCompoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
+    @Test
+    private void compoundIdEntity(String stringId, boolean booleanId, boolean expectSuccess) {
         // create and persist the entity
         try {
             em.getTransaction().begin();

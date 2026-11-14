@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.unique;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.Test;
 
 public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestCase {
     DBDictionary dict;
@@ -42,7 +45,8 @@ public class TestNamedUniqueConstraintWithXMLDescriptor extends SQLListenerTestC
         return "NamedUniqueConstraintTest";
     }
 
-    public void testMapping() {
+    @Test
+    void mapping() {
 
         // If the database does not support unique constraints, exit
         if (!supportsUniqueConstraints())

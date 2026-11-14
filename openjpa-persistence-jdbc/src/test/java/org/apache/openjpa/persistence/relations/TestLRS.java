@@ -18,29 +18,34 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Iterator;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityA;
 import org.apache.openjpa.persistence.relations.entity.LrsEntityB;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test LRS relations.
  *
  * @author Abe White
  */
-public class TestLRS
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestLRS extends SingleEMFTestCase {
 
     private long id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(LrsEntityA.class, LrsEntityB.class, LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "default(copyOnDetach=true," +
@@ -63,7 +68,8 @@ public class TestLRS
         em.close();
     }
 
-    public void testEMClear() {
+    @Test
+    void eMClear() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -73,7 +79,8 @@ public class TestLRS
         em.close();
     }
 
-    public void testEMClose() {
+    @Test
+    void eMClose() {
         EntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -82,7 +89,8 @@ public class TestLRS
         assertMerge(lrs);
     }
 
-    public void testDetachCopy() {
+    @Test
+    void detachCopy() {
         OpenJPAEntityManager em = emf.createEntityManager();
         LRSEntity lrs = em.find(LRSEntity.class, id);
         assertLRS(lrs, "lrs");
@@ -93,7 +101,8 @@ public class TestLRS
         assertMerge(lrs);
     }
 
-    public void testRelationships(){
+    @Test
+    void relationships(){
         OpenJPAEntityManager em = emf.createEntityManager();
         LrsEntityA a = new LrsEntityA("name");
         LrsEntityB b = new LrsEntityB("name-b", a);
@@ -131,10 +140,4 @@ public class TestLRS
         assertLRS(em.find(LRSEntity.class, id), "changed");
         em.close();
     }
-
-
-    public static void main(String[] args) {
-        TestRunner.run(TestLRS.class);
-    }
 }
-

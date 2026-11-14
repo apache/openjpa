@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -34,32 +36,25 @@ import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestIncrementalJDBCFlushes
-        extends BaseJDBCTest {
+class TestIncrementalJDBCFlushes extends BaseJDBCTest {
 
     private EntityManagerFactory emf;
 
 
-//    private boolean  = true;
-//
-
-    public TestIncrementalJDBCFlushes(String str) {
-        super(str);
-    }
-
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         emf = getEmf(getProps());
 
         EntityManager em =emf.createEntityManager();
-       deleteAll(RuntimeTest1.class,em);
-
+        deleteAll(RuntimeTest1.class,em);
     }
 
 
-    public void testFlushHappened() throws java.sql.SQLException{
+    @Test
+    void flushHappened() throws Exception{
 
 
 

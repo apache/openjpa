@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jpql.expressions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -32,6 +37,8 @@ import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
 import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestJPQLScalarExpressions extends AbstractTestCase {
 
@@ -43,12 +50,12 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
      */
     private String expectedShannonName = "Shannon ";
 
-    public TestJPQLScalarExpressions(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestJPQLScalarExpressions() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(CompUser.class);
         OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
@@ -90,7 +97,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testAggregateResultVariable() {
+    @Test
+    void aggregateResultVariable() {
         EntityManager em = currentEntityManager();
         String querys[] = {
             "SELECT c.name, AVG(c.age) as age, a.city FROM CompUser c left join c.address a " +
@@ -112,7 +120,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testMathAndAggregate() {
+    @Test
+    void mathAndAggregate() {
         EntityManager em = currentEntityManager();
         String query[] = {
             "SELECT SUM(c.age) as age FROM CompUser c",
@@ -137,7 +146,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testCoalesceExpressions() {
+    @Test
+    void coalesceExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -146,7 +156,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY e.name DESC";
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(rs.size()-1);
-        assertEquals("the name is not famzy", "Famzy", result[0]);
+        assertEquals("Famzy", result[0], "the name is not famzy");
         assertEquals("Unknown", result[1]);
 
         endTx(em);
@@ -154,7 +164,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testNullIfExpressions() {
+    @Test
+    void nullIfExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
@@ -164,20 +175,21 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(1);
-        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
-        assertNull("is not null", result[1]);
+        assertEquals(expectedShannonName, result[0], "the name is not shannon ");
+        assertNull(result[1], "is not null");
 
         endTx(em);
         endEm(em);
     }
 
     @SuppressWarnings("unchecked")
-    public void testSimpleCaseExpressions() {
+    @Test
+    void simpleCaseExpressions() {
         EntityManager em = currentEntityManager();
 
         CompUser user = em.find(CompUser.class, userid1);
-        assertNotNull("user is null", user);
-        assertEquals("the name is not seetha", "Seetha", user.getName());
+        assertNotNull(user, "user is null");
+        assertEquals("Seetha", user.getName(), "the name is not seetha");
         String query = "SELECT e.name, e.age+1 as cage, " +
             "CASE e.address.country WHEN 'USA'" +
             " THEN 'us' " +
@@ -186,7 +198,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY cage, d2 DESC";
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(rs.size()-1);
-        assertEquals("the name is not seetha", "Seetha", result[0]);
+        assertEquals("Seetha", result[0], "the name is not seetha");
 
         String query2 = "SELECT e.name, e.age+1 as cage, " +
             "CASE e.address.country WHEN 'USA'" +
@@ -196,7 +208,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY cage, d2 DESC";
         List rs2 = em.createQuery(query2).getResultList();
         Object[] result2 = (Object[]) rs2.get(rs2.size()-1);
-        assertEquals("the name is not seetha", "Seetha", result2[0]);
+        assertEquals("Seetha", result2[0], "the name is not seetha");
 
         String query3 = "SELECT e.name, " +
             " CASE TYPE(e) WHEN FemaleUser THEN 'Female' " +
@@ -206,11 +218,11 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " ORDER BY e.name DESC";
         List rs3 = em.createQuery(query3).getResultList();
         Object[] result3 = (Object[]) rs3.get(0);
-        assertEquals("the result is not female", "Female", result3[1]);
-        assertEquals("the name is not shannon", expectedShannonName, result3[0]);
+        assertEquals("Female", result3[1], "the result is not female");
+        assertEquals(expectedShannonName, result3[0], "the name is not shannon");
         result3 = (Object[]) rs3.get(2);
-        assertEquals("the result is not male", "Male", ("" + result3[1]).trim()); // Male can be padded with spaces
-        assertEquals("the name is not seetha", "Seetha", result3[0]);
+        assertEquals("Male", ("" + result3[1]).trim(), "the result is not male"); // Male can be padded with spaces
+        assertEquals("Seetha", result3[0], "the name is not seetha");
 
         // boolean literal in case expression
         query = "SELECT e.name, " +
@@ -224,13 +236,13 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         result = (Object[]) rs.get(rs.size()-1);
 
         if (result[1] instanceof String) {
-            assertEquals(result[1], "true");
+            assertEquals("true", result[1]);
         }
         else if (result[1] instanceof Boolean) {
             assertEquals(true, result[1]);
         }
         else {
-            assertEquals(result[1], 1);
+            assertEquals(1, result[1]);
         }
 
         startTx(em);
@@ -246,7 +258,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "CompUser$CreditRating.EXCELLENT" +
             " END ";
         int updateCount = em.createQuery(update).executeUpdate();
-        assertEquals("the result is not 6", 6, updateCount);
+        assertEquals(6, updateCount, "the result is not 6");
 
         /*
         //Derby fails but DB2 works
@@ -272,13 +284,14 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testGeneralCaseExpressions() {
+    @Test
+    void generalCaseExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
 
         CompUser user = em.find(CompUser.class, userid1);
-        assertNotNull("user is null", user);
-        assertEquals("the name is not seetha", "Seetha", user.getName());
+        assertNotNull(user, "user is null");
+        assertEquals("Seetha", user.getName(), "the name is not seetha");
 
         String query = "SELECT e.name, e.age, " +
             " CASE WHEN e.age > 30 THEN e.age - 1 " +
@@ -295,7 +308,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "END";
 
         int result = em.createQuery(update).executeUpdate();
-        assertEquals("the result is not 6", 6, result);
+        assertEquals(6, result, "the result is not 6");
 
         String query2 = "SELECT e.name, e.age+1 as cage, " +
             "CASE WHEN e.address.country = 'USA' " +
@@ -305,9 +318,9 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " FROM CompUser e ORDER BY cage, d2 DESC";
         List rs2 = em.createQuery(query2).getResultList();
         Object[] result2 = (Object[]) rs2.get(rs2.size()-1);
-        assertEquals("the name is not seetha", "Seetha", result2[0]);
-        assertEquals("the country is not 'Non United-States'",
-            "Non United-States", result2[2]);
+        assertEquals("Seetha", result2[0], "the name is not seetha");
+        assertEquals("Non United-States",
+            result2[2], "the country is not 'Non United-States'");
 
         String query3 = " select e.name, " +
             "CASE WHEN e.age = 11 THEN " +
@@ -322,8 +335,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " END FROM CompUser e ORDER BY e.age";
         List rs3 = em.createQuery(query3).getResultList();
         Object[] result3 = (Object[]) rs3.get(0);
-        assertEquals("the name is not Jacob", "Jacob", result3[0]);
-        assertEquals("the credit rating is not 'POOR'", CompUser.CreditRating.POOR, result3[1]);
+        assertEquals("Jacob", result3[0], "the name is not Jacob");
+        assertEquals(CompUser.CreditRating.POOR, result3[1], "the credit rating is not 'POOR'");
 
         String update2 = "update CompUser c set c.creditRating = " +
             " CASE WHEN c.name ='Jacob' THEN " +
@@ -334,7 +347,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "org.apache.openjpa.persistence.common.apps.CompUser$CreditRating.EXCELLENT " +
             " END ";
         int updateCount = em.createQuery(update2).executeUpdate();
-        assertEquals("the result is not 6", 6, updateCount);
+        assertEquals(6, updateCount, "the result is not 6");
 
 
         String update3 = "update CompUser c set c.creditRating = " +
@@ -349,7 +362,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "CompUser$CreditRating.EXCELLENT " +
             " END ";
         updateCount = em.createQuery(update3).executeUpdate();
-        assertEquals("the result is not 6", 6, updateCount);
+        assertEquals(6, updateCount, "the result is not 6");
 
         String query4 = "select e.name, e.creditRating from CompUser e " +
             "where e.creditRating = " +
@@ -368,10 +381,10 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             " where e.userid = e1.userid) ORDER BY e.age";
         List rs4 = em.createQuery(query4).getResultList();
         Object[] result4 = (Object[]) rs4.get(0);
-        assertEquals("the name is not Ugo", "Ugo", result4[0]);
-        assertEquals("the credit rating is not 'EXCELLENT'", "EXCELLENT",
-            ((org.apache.openjpa.persistence.common.apps.CompUser.CreditRating)
-            result4[1]).name());
+        assertEquals("Ugo", result4[0], "the name is not Ugo");
+        assertEquals("EXCELLENT", ((org.apache.openjpa.persistence.common.apps.CompUser.CreditRating)
+            result4[1]).name(),
+            "the credit rating is not 'EXCELLENT'");
 
         String update4 = "update CompUser c set c.creditRating = " +
             " CASE c.age WHEN 35 THEN " +
@@ -385,7 +398,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             "CompUser$CreditRating.EXCELLENT " +
             " END ";
         result = em.createQuery(update4).executeUpdate();
-        assertEquals("the result is not 6", 6, result);
+        assertEquals(6, result, "the result is not 6");
 
         // Derby fails but DB2 works
         /*
@@ -410,7 +423,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testChainedArithmeticIsLeftAssociative() {
+    @Test
+    void chainedArithmeticIsLeftAssociative() {
         EntityManager em = currentEntityManager();
 
         // a - b - c and a / b / c must be evaluated left to right; a right
@@ -443,7 +457,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testMathFuncOrderByAlias() {
+    @Test
+    void mathFuncOrderByAlias() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT e.age * 2 as cAge FROM CompUser e ORDER BY cAge";

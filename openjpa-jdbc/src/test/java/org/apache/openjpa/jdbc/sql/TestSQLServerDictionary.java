@@ -19,9 +19,9 @@
 package org.apache.openjpa.jdbc.sql;
 
 import static org.apache.openjpa.jdbc.sql.Columns.decimal;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -29,7 +29,6 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -42,9 +41,9 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.kernel.exps.DateTimeExtractField;
 import org.apache.openjpa.meta.JavaTypes;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TestSQLServerDictionary {
+class TestSQLServerDictionary {
 
     /**
      * SQL Server reads an unsized <code>DECIMAL</code> as <code>DECIMAL(18,0)</code>,
@@ -52,7 +51,7 @@ public class TestSQLServerDictionary {
      * of a decimal column are written into the DDL (OPENJPA-3064).
      */
     @Test
-    public void testDecimalPrecisionAndScaleAreKept() {
+    void decimalPrecisionAndScaleAreKept() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("NUMERIC(10, 2)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 2)));
         assertEquals("NUMERIC(10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 10, 0)));
@@ -65,7 +64,7 @@ public class TestSQLServerDictionary {
     }
 
     @Test
-    public void testUnsizedDecimalKeepsFraction() {
+    void unsizedDecimalKeepsFraction() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("NUMERIC(38, 10)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
         assertEquals("NUMERIC(38, 10)", dict.getTypeName(decimal(JavaTypes.NUMBER, 0, 0)));
@@ -79,14 +78,14 @@ public class TestSQLServerDictionary {
     }
 
     @Test
-    public void testUnsizedIntegralDecimalIsUnchanged() {
+    void unsizedIntegralDecimalIsUnchanged() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.BIGINTEGER, 0, 0)));
         assertEquals("NUMERIC", dict.getTypeName(decimal(JavaTypes.LONG, 0, 0)));
     }
 
     @Test
-    public void testDecimalColumnDefinitionIsUnchanged() {
+    void decimalColumnDefinitionIsUnchanged() {
         DBDictionary dict = new SQLServerDictionary();
         Column col = decimal(JavaTypes.BIGDECIMAL, 0, 0);
         col.setTypeName("NUMERIC");
@@ -96,7 +95,7 @@ public class TestSQLServerDictionary {
     }
 
     @Test
-    public void testConfiguredDecimalTypeNameIsKept() {
+    void configuredDecimalTypeNameIsKept() {
         DBDictionary dict = new SQLServerDictionary();
         dict.numericTypeName = "DECIMAL(19,4)";
         assertEquals("DECIMAL(19,4)", dict.getTypeName(decimal(JavaTypes.BIGDECIMAL, 0, 0)));
@@ -111,7 +110,7 @@ public class TestSQLServerDictionary {
      * includes is added from DATEPART(NANOSECOND) (OPENJPA-3064).
      */
     @Test
-    public void testExtractSecondKeepsFraction() {
+    void extractSecondKeepsFraction() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("(DATEPART(SECOND, {1}) + DATEPART(NANOSECOND, {1}) / 1000000000.0)",
             dict.getExtractDateTimeFieldFunction(DateTimeExtractField.SECOND));
@@ -122,7 +121,7 @@ public class TestSQLServerDictionary {
      * week (OPENJPA-3064).
      */
     @Test
-    public void testExtractWeekIsIsoWeek() {
+    void extractWeekIsIsoWeek() {
         DBDictionary dict = new SQLServerDictionary();
         assertEquals("DATEPART(ISO_WEEK, {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.WEEK));
         assertEquals("DATEPART(DAY, {1})", dict.getExtractDateTimeFieldFunction(DateTimeExtractField.DAY));
@@ -134,20 +133,20 @@ public class TestSQLServerDictionary {
      * column (OPENJPA-3064).
      */
     @Test
-    public void testDropColumnDropsDependentObjectsFirst() {
+    void dropColumnDropsDependentObjectsFirst() {
         DBDictionary dict = new SQLServerDictionary();
         Table table = new Table(DBIdentifier.newTable("TPRODUCT"), null);
         Column col = table.addColumn(DBIdentifier.newColumn("id"));
         String[] sql = dict.getDropColumnSQL(col);
         assertEquals(1, sql.length);
-        assertTrue(sql[0], sql[0].contains("FROM sys.foreign_keys f"));
-        assertTrue(sql[0], sql[0].contains("FROM sys.indexes i"));
-        assertTrue(sql[0], sql[0].contains("FROM sys.default_constraints d"));
-        assertTrue(sql[0], sql[0].contains("COLUMNPROPERTY(OBJECT_ID(N'TPRODUCT'), N'id', 'ColumnId')"));
-        assertTrue(sql[0], sql[0].contains("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; "
-            + "ALTER TABLE TPRODUCT DROP COLUMN id; COMMIT TRANSACTION; END TRY"));
-        assertTrue(sql[0], sql[0].endsWith(
-            "BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH"));
+        assertTrue(sql[0].contains("FROM sys.foreign_keys f"), sql[0]);
+        assertTrue(sql[0].contains("FROM sys.indexes i"), sql[0]);
+        assertTrue(sql[0].contains("FROM sys.default_constraints d"), sql[0]);
+        assertTrue(sql[0].contains("COLUMNPROPERTY(OBJECT_ID(N'TPRODUCT'), N'id', 'ColumnId')"), sql[0]);
+        assertTrue(sql[0].contains("BEGIN TRY BEGIN TRANSACTION; EXEC sp_executesql @sql; "
+            + "ALTER TABLE TPRODUCT DROP COLUMN id; COMMIT TRANSACTION; END TRY"), sql[0]);
+        assertTrue(sql[0].endsWith(
+            "BEGIN CATCH IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION; THROW; END CATCH"), sql[0]);
 
         dict.supportsAlterTableWithDropColumn = false;
         assertEquals(0, dict.getDropColumnSQL(col).length);
@@ -159,10 +158,10 @@ public class TestSQLServerDictionary {
      * rather than by the OpenJPA sequence table (OPENJPA-3034).
      */
     @Test
-    public void testSequenceSupportFrom2012() throws Exception {
+    void sequenceSupportFrom2012() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection(10));
-        assertNull("SQL Server 2008 has no sequence objects", dict.nextSequenceQuery);
+        assertNull(dict.nextSequenceQuery, "SQL Server 2008 has no sequence objects");
         assertNull(dict.getCreateSequenceSQL(sequence(10)));
 
         dict = newConfiguredDictionary(null);
@@ -180,7 +179,7 @@ public class TestSQLServerDictionary {
      * type, so an initial value of 0 has to be spelled out.
      */
     @Test
-    public void testInitialValueZeroIsExplicit() throws Exception {
+    void initialValueZeroIsExplicit() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary(null);
         dict.connectedConfiguration(connection(16));
         assertEquals("CREATE SEQUENCE OJPA3034_SEQ START WITH 0 INCREMENT BY 5",
@@ -188,7 +187,7 @@ public class TestSQLServerDictionary {
     }
 
     @Test
-    public void testExplicitNextSequenceQuerySurvives() throws Exception {
+    void explicitNextSequenceQuerySurvives() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary("NextSequenceQuery='SELECT NEXT VALUE FOR {0} AS X'");
         dict.connectedConfiguration(connection(16));
         assertEquals("SELECT NEXT VALUE FOR {0} AS X", dict.nextSequenceQuery);
@@ -199,16 +198,16 @@ public class TestSQLServerDictionary {
      * binds them; without a schema the lookup is scoped to the default schema.
      */
     @Test
-    public void testSequencesSQL() throws Exception {
+    void sequencesSQL() throws Exception {
         SQLServerDictionary dict = newConfiguredDictionary(null);
-        assertNull("no sequence support, nothing to reflect",
-            dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL));
+        assertNull(dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL),
+            "no sequence support, nothing to reflect");
         dict.connectedConfiguration(connection(16));
         String sql = dict.getSequencesSQL(DBIdentifier.NULL, DBIdentifier.NULL);
-        assertTrue(sql, sql.contains("FROM sys.sequences WHERE schema_id = SCHEMA_ID()"));
-        assertEquals(sql, -1, sql.indexOf('?'));
+        assertTrue(sql.contains("FROM sys.sequences WHERE schema_id = SCHEMA_ID()"), sql);
+        assertEquals(-1, sql.indexOf('?'), sql);
         sql = dict.getSequencesSQL(DBIdentifier.newSchema("dbo"), DBIdentifier.newSequence("S"));
-        assertTrue(sql, sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"));
+        assertTrue(sql.endsWith("WHERE SCHEMA_NAME(schema_id) = ? AND name = ?"), sql);
     }
 
     /**
@@ -218,15 +217,15 @@ public class TestSQLServerDictionary {
      * Other three digit columns, DATETIME2(3), keep whole milliseconds.
      */
     @Test
-    public void testTimestampPrecisionOfDatetimeColumn() {
+    void timestampPrecisionOfDatetimeColumn() {
         SQLServerDictionary dict = new SQLServerDictionary();
         Column col = new Column();
-        assertEquals("unknown precision: the dictionary default", dict.datePrecision,
-            dict.getTimestampPrecision(col));
+        assertEquals(dict.datePrecision, dict.getTimestampPrecision(col),
+            "unknown precision: the dictionary default");
         col.setPrecision(3);
-        assertEquals("type unknown: three digits are milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        assertEquals(1_000_000, dict.getTimestampPrecision(col), "type unknown: three digits are milliseconds");
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime2"));
-        assertEquals("DATETIME2(3) keeps whole milliseconds", 1_000_000, dict.getTimestampPrecision(col));
+        assertEquals(1_000_000, dict.getTimestampPrecision(col), "DATETIME2(3) keeps whole milliseconds");
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("datetime"));
         assertEquals(10_000_000, dict.getTimestampPrecision(col));
         col.setTypeIdentifier(DBIdentifier.newColumnDefinition("DATETIME"));
@@ -243,7 +242,7 @@ public class TestSQLServerDictionary {
      * string gives the empty string and not a negative length, and trailing blanks are kept.
      */
     @Test
-    public void testSubstringWithoutLength() {
+    void substringWithoutLength() {
         DBDictionary dict = new SQLServerDictionary();
         SQLBuffer buf = new SQLBuffer(dict);
         dict.substring(buf, value(null, "t0.NAME"), value(10, "?"), null);
@@ -323,7 +322,7 @@ public class TestSQLServerDictionary {
      * be called with the JDBC escape syntax, as SQL Server does not know a bare <code>CALL</code>.
      */
     @Test
-    public void testStoredProcedureIsCalledWithEscapeSyntax() throws SQLException {
+    void storedProcedureIsCalledWithEscapeSyntax() throws Exception {
         DBDictionary dict = new SQLServerDictionary();
         dict.setConfiguration(new JDBCConfigurationImpl());
         DatabaseMetaData meta = procedureMetaData("GetEmpFirstNameFromOut;1",

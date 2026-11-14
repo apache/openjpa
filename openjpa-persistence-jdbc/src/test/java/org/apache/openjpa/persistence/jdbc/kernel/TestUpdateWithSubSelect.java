@@ -22,11 +22,16 @@ import jakarta.persistence.EntityManager;
 
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.jdbc.sqlcache.Address;
 import org.apache.openjpa.persistence.jdbc.sqlcache.Person;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests bulk update with join instead of subselect.
@@ -40,21 +45,23 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestUpdateWithSubSelect extends SQLListenerTestCase {
+class TestUpdateWithSubSelect extends SQLListenerTestCase {
 
     @Override
+    protected boolean isSupported(DBDictionary dict) {
+        return dict.supportsSubselect && dict.allowsAliasInBulkClause;
+    }
+
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(CLEAR_TABLES, Person.class, Address.class);
-        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
-        setTestsDisabled(!dict.supportsSubselect || !dict.allowsAliasInBulkClause);
-        getLog().trace(this + " is disabled because " + dict.getClass().getSimpleName() +
-          " either both or one of supportsSubselect and allowsAliasInBulkClause is false");
     }
 
     /**
      * Tests that a bulk update issues a single SQL and that uses a join.
      */
-    public void testUpdateBySubSelect() {
+    @Test
+    void updateBySubSelect() {
         String jpql = "UPDATE Person p SET p.age = :age WHERE p.address.city = :city";
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

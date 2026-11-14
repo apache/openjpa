@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that default listeners (from persistence-unit-defaults in orm.xml)
@@ -35,20 +39,21 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - @EntityListeners annotation on entity should be overridden by XML
  * - Expected: [ListenerA, ListenerB, ListenerC] — each fires exactly once
  */
-public class TestListenerOverride extends SingleEMFTestCase {
+class TestListenerOverride extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
         return "listener-override-pu";
     }
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerA.calls.clear();
     }
 
-    public void testDefaultListenerNotDuplicated() {
+    @Test
+    void defaultListenerNotDuplicated() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -62,14 +67,15 @@ public class TestListenerOverride extends SingleEMFTestCase {
 
         List<String> expected = Arrays.asList("ListenerA", "ListenerB", "ListenerC");
         System.err.println("Listener calls: " + ListenerA.calls);
-        assertEquals("Each listener should fire exactly once: " + ListenerA.calls,
-            expected, ListenerA.calls);
+        assertEquals(expected,
+            ListenerA.calls, "Each listener should fire exactly once: " + ListenerA.calls);
     }
 
     /**
      * Same test but creating a second EM to verify no accumulation across EMs.
      */
-    public void testDefaultListenerNotDuplicatedSecondEM() {
+    @Test
+    void defaultListenerNotDuplicatedSecondEM() {
         // First persist
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -93,7 +99,7 @@ public class TestListenerOverride extends SingleEMFTestCase {
 
         List<String> expected = Arrays.asList("ListenerA", "ListenerB", "ListenerC");
         System.err.println("Listener calls (2nd EM): " + ListenerA.calls);
-        assertEquals("Each listener should fire exactly once on 2nd EM: " + ListenerA.calls,
-            expected, ListenerA.calls);
+        assertEquals(expected,
+            ListenerA.calls, "Each listener should fire exactly once on 2nd EM: " + ListenerA.calls);
     }
 }

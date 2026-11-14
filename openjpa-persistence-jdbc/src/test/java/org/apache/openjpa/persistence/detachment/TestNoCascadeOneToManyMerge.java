@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.detachment.model.SimpleA;
@@ -25,18 +28,18 @@ import org.apache.openjpa.persistence.detachment.model.SimpleB;
 import org.apache.openjpa.persistence.detachment.model.SimpleC;
 import org.apache.openjpa.persistence.detachment.model.SimpleRef;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test merge case for 3 level one to many relation entities.
  * SimpleA -> *SimpleB -> *SimpleC. SimpleC has no CascadeType.MERGE annotation.
  *
  */
-public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
+class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
     private int a_id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(SimpleA.class, SimpleRef.class, SimpleB.class, SimpleC.class,
                 CLEAR_TABLES);
@@ -67,7 +70,8 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
         a_id = a.getId();
     }
 
-    public void testMergeAttached () {
+    @Test
+    void mergeAttached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         assertNotNull(a);
@@ -97,7 +101,8 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
      * When "B" and "C" are both newly added to a detached "A" and then merge
      * "A", it couldn't find "B" because previous code assume B was detached.
      */
-    public void testMergeDetached () {
+    @Test
+    void mergeDetached() {
         EntityManager em = emf.createEntityManager();
         SimpleA a = em.find(SimpleA.class, a_id);
         assertNotNull(a);
@@ -123,9 +128,5 @@ public class TestNoCascadeOneToManyMerge extends SingleEMFTestCase {
         em.close();
 
         assertEquals(2, a.getBs().size());
-    }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestNoCascadeOneToManyMerge.class);
     }
 }

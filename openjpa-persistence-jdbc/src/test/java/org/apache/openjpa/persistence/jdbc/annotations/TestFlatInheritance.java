@@ -18,23 +18,28 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for InheritanceType.SINGLE_TABLE
  *
  * @author Steve Kim
  */
-public class TestFlatInheritance extends SingleEMFTestCase {
+class TestFlatInheritance extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Flat1.class, Flat2.class, CLEAR_TABLES);
     }
 
-    public void testInheritance() {
+    @Test
+    void inheritance() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Flat1 pc = new Flat1(1);

@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.integration.slf4j;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.SLF4JLogFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Simple test case to verify SLF4JLogFactory is being loaded
@@ -30,6 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestLogFactory extends SingleEMFTestCase {
     String systemPropLog = null;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         // Maven users may disable logging via a global system prop - which breaks this testcase.
@@ -38,6 +44,7 @@ public class TestLogFactory extends SingleEMFTestCase {
         super.setUp();
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -46,7 +53,8 @@ public class TestLogFactory extends SingleEMFTestCase {
         }
     }
 
-    public void testSLF4J() {
+    @Test
+    void slf4j() {
         try {
             EntityManager em = emf.createEntityManager();
             // do some logging

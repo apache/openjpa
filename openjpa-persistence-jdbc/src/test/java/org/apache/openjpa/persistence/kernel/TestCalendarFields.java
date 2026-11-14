@@ -27,6 +27,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -35,22 +39,18 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.CalendarFields;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestCalendarFields extends BaseKernelTest {
+class TestCalendarFields extends BaseKernelTest {
 
-    /**
-     * Creates a new instance of TestCalendarFields
-     */
-    public TestCalendarFields(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(CalendarFields.class);
     }
 
-    public void testFieldDefaultTimeZone() {
+    @Test
+    void fieldDefaultTimeZone() {
         CalendarFields cal = new CalendarFields();
 
         OpenJPAEntityManager pm;
@@ -71,7 +71,8 @@ public class TestCalendarFields extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testTimeZoneEquals() {
+    @Test
+    void timeZoneEquals() {
         CalendarFields c1 = new CalendarFields();
         CalendarFields c2 = new CalendarFields();
         assertTimeZonesEquals(c1, c2);
@@ -94,7 +95,8 @@ public class TestCalendarFields extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testCalendarQuery() {
+    @Test
+    void calendarQuery() {
         long time = 1136660560572L;
 
         CalendarFields cal = new CalendarFields();
@@ -155,7 +157,8 @@ public class TestCalendarFields extends BaseKernelTest {
         return cal;
     }
 
-    public void testMutateCalendarDirties() {
+    @Test
+    void mutateCalendarDirties() {
         CalendarFields c1 = new CalendarFields();
 
         OpenJPAEntityManager pm;

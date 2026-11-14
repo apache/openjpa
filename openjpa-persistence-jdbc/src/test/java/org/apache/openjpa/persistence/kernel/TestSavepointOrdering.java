@@ -26,6 +26,10 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +42,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSavepointOrdering extends BaseKernelTest {
 
@@ -47,24 +54,19 @@ public class TestSavepointOrdering extends BaseKernelTest {
 
     static Map<String, TrackingSavepoint> _assigned = new HashMap<>();
 
-    /**
-     * Creates a new instance of TestSavepointOrdering
-     */
-    public TestSavepointOrdering(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
         _assigned.clear();
     }
 
-    public void testCleanUpCommit() {
+    @Test
+    void cleanUpCommit() {
         doCleanUpTest(true);
     }
 
-    public void testCleanUpRollback() {
+    @Test
+    void cleanUpRollback() {
         doCleanUpTest(false);
     }
 
@@ -86,11 +88,13 @@ public class TestSavepointOrdering extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testOrderingWithRollback() {
+    @Test
+    void orderingWithRollback() {
         doOrderingTest(true);
     }
 
-    public void testOrderingWithRelease() {
+    @Test
+    void orderingWithRelease() {
         doOrderingTest(false);
     }
 
@@ -140,7 +144,8 @@ public class TestSavepointOrdering extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDisallowFlush() {
+    @Test
+    void disallowFlush() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
@@ -158,7 +163,8 @@ public class TestSavepointOrdering extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testDisallowFlush2() {
+    @Test
+    void disallowFlush2() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=false)");
@@ -177,7 +183,8 @@ public class TestSavepointOrdering extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testAllowFlush() {
+    @Test
+    void allowFlush() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
@@ -187,16 +194,15 @@ public class TestSavepointOrdering extends BaseKernelTest {
         startTx(pm);
         pm.persist(new RuntimeTest1());
         pm.setSavepoint("a");
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             pm.flush();
-        } catch (Exception e) {
-            fail("allows flush.");
-        }
+        }, "allows flush.");
         rollbackTx(pm);
         endEm(pm);
     }
 
-    public void testAllowFlush2() {
+    @Test
+    void allowFlush2() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.SavepointManager",
             TrackingSavepointManager.class.getName() + "(AllowFlush=true)");
@@ -206,11 +212,9 @@ public class TestSavepointOrdering extends BaseKernelTest {
         startTx(pm);
         pm.persist(new RuntimeTest1());
         pm.flush();
-        try {
+        Assertions.assertDoesNotThrow(() -> {
             pm.setSavepoint("a");
-        } catch (Exception e) {
-            fail("allows flush.");
-        }
+        }, "allows flush.");
         rollbackTx(pm);
         endEm(pm);
     }
@@ -219,7 +223,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
         TrackingSavepoint sp = _assigned.get(name);
         assertNotNull(sp);
         assertEquals(sp.flags & flag, flag);
-        assertTrue((sp.flags & noflag) == 0);
+        assertEquals(0, (sp.flags & noflag));
     }
 
     public static class TrackingSavepointManager implements SavepointManager {
@@ -241,7 +245,7 @@ public class TestSavepointOrdering extends BaseKernelTest {
 
     private static class TrackingSavepoint extends OpenJPASavepoint {
 
-        
+
         private static final long serialVersionUID = 1L;
         int flags = 0;
 

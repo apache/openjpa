@@ -27,6 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,20 +54,11 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachA;
 import org.apache.openjpa.persistence.jdbc.common.apps.AttachD;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestSQLQueries
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-
-    /** Creates a new instance of TestSQLQueries */
-    public TestSQLQueries(String name)
-    {
-    	super(name);
-    }
-
-    public TestSQLQueries()
-    {}
+public class TestSQLQueries extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
     private String _tableName = null;
     private String _fullTableName = null;
@@ -70,8 +67,8 @@ public class TestSQLQueries
     private String _stringColName = null;
     private String _relColName = null;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(RuntimeTest1.class);
 
         RuntimeTest1 pc1 = new RuntimeTest1("1", 1);
@@ -105,7 +102,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testStarQuery() {
+    @Test
+    void starQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -120,8 +118,9 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testCompiledQuery()
-    throws Exception {
+    @Test
+    void compiledQuery()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -139,8 +138,9 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testCompiledLanguageQuery()
-    throws Exception {
+    @Test
+    void compiledLanguageQuery()
+        throws Exception {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -158,7 +158,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testTableStarQuery() {
+    @Test
+    void tableStarQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _tableName + ".* from " + _fullTableName
@@ -174,7 +175,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testColumnQuery() {
+    @Test
+    void columnQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _pkColName + ", " + _intColName + ", "
@@ -191,7 +193,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testJoinQuery() {
+    @Test
+    void joinQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select t0.* from " + _fullTableName + " t0, "
@@ -206,7 +209,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testParameters() {
+    @Test
+    void parameters() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " where 'foo' = ? and "
@@ -234,7 +238,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testOnlySelectedFieldsLoaded() {
+    @Test
+    void onlySelectedFieldsLoaded() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _pkColName + ", " + _intColName + ", "
@@ -258,7 +263,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testSingleColumnClasslessQuery() {
+    @Test
+    void singleColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _stringColName + " from " + _fullTableName
@@ -287,7 +293,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testMultiColumnClasslessQuery() {
+    @Test
+    void multiColumnClasslessQuery() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _intColName + ", " + _stringColName + " from "
@@ -308,7 +315,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testResultClass() {
+    @Test
+    void resultClass() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select * from " + _fullTableName + " order by " + _intColName);
@@ -332,7 +340,8 @@ public class TestSQLQueries
         pm.close();
     }
 
-    public void testClasslessProjection() {
+    @Test
+    void classlessProjection() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         OpenJPAQuery q = pm.createQuery("javax.jdo.query.SQL",
                 "select " + _intColName + " as I, " + _stringColName

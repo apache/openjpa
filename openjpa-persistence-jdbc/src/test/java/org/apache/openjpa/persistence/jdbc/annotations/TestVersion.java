@@ -18,21 +18,25 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for opt-lock
  *
  * @author Steve Kim
  */
-public class TestVersion extends SingleEMFTestCase {
+class TestVersion extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
             EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
@@ -62,7 +66,8 @@ public class TestVersion extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testVersionNumeric() {
+    @Test
+    void versionNumeric() {
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -91,7 +96,8 @@ public class TestVersion extends SingleEMFTestCase {
         }
     }
 
-    public void testVersionTimestamp() {
+    @Test
+    void versionTimestamp() {
         // ensure that some time has passed
         // since the records were created
         try {
@@ -133,7 +139,8 @@ public class TestVersion extends SingleEMFTestCase {
         }
     }
 
-    public void testVersionSubclass() {
+    @Test
+    void versionSubclass() {
         EntityManager em1 = emf.createEntityManager();
         em1.getTransaction().begin();
         EntityManager em2 = emf.createEntityManager();
@@ -161,7 +168,8 @@ public class TestVersion extends SingleEMFTestCase {
         }
     }
 
-    public void testVersionNoChange() {
+    @Test
+    void versionNoChange() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -179,7 +187,8 @@ public class TestVersion extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNoDefaultVersionWithoutFieldOrColumn() {
+    @Test
+    void noDefaultVersionWithoutFieldOrColumn() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(EmbedOwner.class,
             null, true);
@@ -188,16 +197,18 @@ public class TestVersion extends SingleEMFTestCase {
         assertEquals(0, cls.getVersion().getColumns().length);
     }
 
-    public void testVersionWithField() {
+    @Test
+    void versionWithField() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
             getMappingRepositoryInstance().getMapping(AnnoTest1.class,
             null, true);
-        assertTrue(NoneVersionStrategy.getInstance() !=
+        assertNotSame(NoneVersionStrategy.getInstance(),
             cls.getVersion().getStrategy());
         assertEquals(1, cls.getVersion().getColumns().length);
     }
 
-    public void testNullInitialVersion() {
+    @Test
+    void nullInitialVersion() {
         EntityManager em = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
         try {

@@ -18,9 +18,17 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA spec compliance for entity lifecycle operations:
@@ -30,9 +38,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * <li>persist() on a removed entity makes it managed again</li>
  * </ul>
  */
-public class TestEntityLifecycleSpec extends SingleEMFTestCase {
+class TestEntityLifecycleSpec extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MxOneParent.class, MxOneChild.class, CoffeeBean.class,
             DROP_TABLES);
@@ -43,7 +51,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * if the second argument is not a valid type for the entity's PK.
      * Coffee has Integer PK; passing Long should throw IAE.
      */
-    public void testFindWithWrongPKTypeThrowsIAE() {
+    @Test
+    void findWithWrongPKTypeThrowsIAE() {
         EntityManager em = emf.createEntityManager();
         try {
             em.find(CoffeeBean.class, 55L);
@@ -61,7 +70,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * or the transaction commit must fail.
      * Create entity, persist in one tx, then in a new tx try remove.
      */
-    public void testRemoveDetachedEntityThrowsIAE() {
+    @Test
+    void removeDetachedEntityThrowsIAE() {
         MxOneParent a = new MxOneParent("1", "parent1", 1);
 
         // persist in first transaction
@@ -77,8 +87,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
         // new EM - entity should be detached
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        assertFalse("Entity should be detached (not in new EM context)",
-            em.contains(a));
+        assertFalse(em.contains(a),
+            "Entity should be detached (not in new EM context)");
 
         boolean pass = false;
         try {
@@ -101,8 +111,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
             }
         }
 
-        assertTrue("remove() on detached entity should throw IAE "
-            + "or cause transaction failure", pass);
+        assertTrue(pass, "remove() on detached entity should throw IAE "
+            + "or cause transaction failure");
         em.close();
     }
 
@@ -111,7 +121,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * persist B (cascade to A), flush, remove A+B, flush,
      * re-persist B, flush - should succeed with B managed.
      */
-    public void testPersistAfterRemoveWithCascade() {
+    @Test
+    void persistAfterRemoveWithCascade() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -121,7 +132,7 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
         em.flush();
 
         MxOneParent parentRef = b.getParent();
-        assertNotNull("Parent should be set on child", parentRef);
+        assertNotNull(parentRef, "Parent should be set on child");
 
         // remove both, flush
         em.remove(parentRef);
@@ -130,16 +141,16 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
 
         // verify B is removed
         MxOneChild found = em.find(MxOneChild.class, "2");
-        assertNull("Child should be removed from DB", found);
+        assertNull(found, "Child should be removed from DB");
 
         // re-persist
         em.persist(b);
         em.flush();
 
-        assertTrue("B should be managed after re-persist",
-            em.contains(b));
-        assertNotNull("B should still reference parent",
-            b.getParent());
+        assertTrue(em.contains(b),
+            "B should be managed after re-persist");
+        assertNotNull(b.getParent(),
+            "B should still reference parent");
 
         em.getTransaction().commit();
         em.close();
@@ -149,7 +160,8 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
      * Same as testPersistAfterRemoveWithCascade but without the parent
      * reference - tests simpler persist-remove-persist cycle.
      */
-    public void testPersistAfterRemoveSimple() {
+    @Test
+    void persistAfterRemoveSimple() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -163,14 +175,14 @@ public class TestEntityLifecycleSpec extends SingleEMFTestCase {
 
         // verify removed
         MxOneParent found = em.find(MxOneParent.class, "3");
-        assertNull("Entity should be removed", found);
+        assertNull(found, "Entity should be removed");
 
         // re-persist
         em.persist(a);
         em.flush();
 
-        assertTrue("Entity should be managed after re-persist",
-            em.contains(a));
+        assertTrue(em.contains(a),
+            "Entity should be managed after re-persist");
 
         em.getTransaction().commit();
         em.close();

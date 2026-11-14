@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -31,15 +33,17 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests JPA 3.2 @EnumeratedValue for code types other than String, and for the
  * error cases: a database value that maps to no constant, and an enum whose
  * constants share a code.
  */
-public class TestEnumeratedValueTypes extends SingleEMFTestCase {
+class TestEnumeratedValueTypes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
             EnumeratedValueIntEntity.class,
@@ -52,7 +56,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * An int code round-trips, and the column really holds the code, not the
      * ordinal and not the constant name.
      */
-    public void testIntCodeRoundTrip() {
+    @Test
+    void intCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueIntStatus.values().length; i++) {
@@ -78,15 +83,15 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * The stored column value is the declared int code (20), not the ordinal
      * (1) and not the name.
      */
-    public void testIntCodeStoredAsCode() {
+    @Test
+    void intCodeStoredAsCode() {
         persistInt(100, EnumeratedValueIntStatus.INACTIVE);
 
         EntityManager em = emf.createEntityManager();
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueIntEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue("expected a numeric column value but got " + result,
-            result instanceof Number);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueIntStatus.INACTIVE.getCode(),
             ((Number) result).intValue());
         em.close();
@@ -98,7 +103,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * back is an Integer.  Without the normalization of the lookup keys the
      * reverse lookup misses and the load fails.
      */
-    public void testShortCodeRoundTrip() {
+    @Test
+    void shortCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueShortStatus.values().length; i++) {
@@ -124,7 +130,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * The stored column value is the declared short code (22), not the ordinal
      * (1) and not the name.
      */
-    public void testShortCodeStoredAsCode() {
+    @Test
+    void shortCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueShortEntity e = new EnumeratedValueShortEntity();
@@ -138,8 +145,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueShortEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue("expected a numeric column value but got " + result,
-            result instanceof Number);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueShortStatus.INACTIVE.getCode(),
             ((Number) result).shortValue());
         em.close();
@@ -149,7 +155,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * A long code round-trips and keeps its full range, i.e. it is neither
      * narrowed to an int nor stored as a string.
      */
-    public void testLongCodeRoundTrip() {
+    @Test
+    void longCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueLongStatus.values().length; i++) {
@@ -174,7 +181,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
     /**
      * The stored column value is the declared long code, in a numeric column.
      */
-    public void testLongCodeStoredAsCode() {
+    @Test
+    void longCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueLongEntity e = new EnumeratedValueLongEntity();
@@ -188,8 +196,7 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
         Query q = em.createNativeQuery(
             "SELECT STATUS FROM EnumeratedValueLongEntity WHERE ID = 100");
         Object result = q.getSingleResult();
-        assertTrue("expected a numeric column value but got " + result,
-            result instanceof Number);
+        assertInstanceOf(Number.class, result, "expected a numeric column value but got " + result);
         assertEquals(EnumeratedValueLongStatus.INACTIVE.getCode(),
             ((Number) result).longValue());
         em.close();
@@ -201,7 +208,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * back is a String.  Without the normalization of the lookup keys the
      * reverse lookup misses and the load fails.
      */
-    public void testCharCodeRoundTrip() {
+    @Test
+    void charCodeRoundTrip() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         for (int i = 0; i < EnumeratedValueCharStatus.values().length; i++) {
@@ -227,7 +235,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * The stored column value is the declared char code ("I"), not the ordinal
      * and not the name.
      */
-    public void testCharCodeStoredAsCode() {
+    @Test
+    void charCodeStoredAsCode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueCharEntity e = new EnumeratedValueCharEntity();
@@ -250,7 +259,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * A JPQL predicate on an int coded enum must use the code, i.e. the write
      * side and the read side of the handler have to agree.
      */
-    public void testIntCodeInJPQLPredicate() {
+    @Test
+    void intCodeInJPQLPredicate() {
         persistInt(200, EnumeratedValueIntStatus.ACTIVE);
         persistInt(201, EnumeratedValueIntStatus.PENDING);
 
@@ -269,7 +279,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
     /**
      * A JPQL predicate on a char coded enum must use the code.
      */
-    public void testCharCodeInJPQLPredicate() {
+    @Test
+    void charCodeInJPQLPredicate() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EnumeratedValueCharEntity a = new EnumeratedValueCharEntity();
@@ -299,7 +310,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * A database value that maps to no constant must fail loudly instead of
      * silently producing an entity with a null enum field.
      */
-    public void testUnknownDatabaseValueFails() {
+    @Test
+    void unknownDatabaseValueFails() {
         persistInt(300, EnumeratedValueIntStatus.ACTIVE);
 
         EntityManager em = emf.createEntityManager();
@@ -324,9 +336,9 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
             // a jakarta.persistence.PersistenceException, not into an
             // IllegalArgumentException
             assertNested(PersistenceException.class, re);
-            assertFalse("a corrupt column value must not be reported as an "
-                + "IllegalArgumentException, but got " + re,
-                re instanceof IllegalArgumentException);
+            assertFalse(re instanceof IllegalArgumentException,
+                "a corrupt column value must not be reported as an "
+                + "IllegalArgumentException, but got " + re);
             // and it has to name the offending value and the enum type, so
             // that this cannot pass on some unrelated failure
             assertMessageContains(re, "999");
@@ -340,7 +352,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * Two constants sharing one code is a mapping error and must be reported
      * when the mapping is built.
      */
-    public void testDuplicateCodesRejected() {
+    @Test
+    void duplicateCodesRejected() {
         EntityManagerFactory dupEMF = null;
         try {
             dupEMF = createEMF(CLEAR_TABLES, EnumeratedValueDupEntity.class);
@@ -370,7 +383,8 @@ public class TestEnumeratedValueTypes extends SingleEMFTestCase {
      * type is a mapping error and must be reported when the mapping is built,
      * instead of being silently stored as the result of toString().
      */
-    public void testUnsupportedCodeTypeRejected() {
+    @Test
+    void unsupportedCodeTypeRejected() {
         EntityManagerFactory badEMF = null;
         try {
             badEMF = createEMF(CLEAR_TABLES, EnumeratedValueBadTypeEntity.class);

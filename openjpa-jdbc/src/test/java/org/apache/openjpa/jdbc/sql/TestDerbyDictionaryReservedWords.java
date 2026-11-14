@@ -18,9 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,15 +33,15 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that the words Derby rejects as unquoted identifiers are not used as
  * unquoted table or column names by the {@link DerbyDictionary}, and that only
  * default table and sequence names Derby rejects are changed.
  */
-public class TestDerbyDictionaryReservedWords {
+class TestDerbyDictionaryReservedWords {
 
     /**
      * Words Derby rejects as unquoted table, sequence, index, constraint and
@@ -54,7 +54,7 @@ public class TestDerbyDictionaryReservedWords {
     private DerbyDictionary dict;
     private Schema schema;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dict = new DerbyDictionary();
         Configurations.configureInstance(dict, new JDBCConfigurationImpl(), (String) null, "DBDictionary");
@@ -62,7 +62,7 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testTableNamesAreNotReservedWords() {
+    void tableNamesAreNotReservedWords() {
         for (String word : TABLE_WORDS) {
             assertEquals(word + "0", dict.getValidTableName(word, schema));
             assertEquals(word + "0", dict.getValidTableName(word.toLowerCase(Locale.ENGLISH), schema));
@@ -71,10 +71,10 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testColumnNamesAreNotReservedWords() {
+    void columnNamesAreNotReservedWords() {
         Table table = schema.addTable(DBIdentifier.newTable("T"));
         for (String word : TABLE_WORDS) {
-            assertTrue(word, dict.getInvalidColumnWordSet().contains(word));
+            assertTrue(dict.getInvalidColumnWordSet().contains(word), word);
             assertEquals(word + "0", dict.getValidColumnName(word, table));
         }
         assertEquals("CURSOR0", dict.getValidColumnName("CURSOR", table));
@@ -82,7 +82,7 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testInvalidTableWordsAreReservedWords() {
+    void invalidTableWordsAreReservedWords() {
         assertTrue(dict.getInvalidTableWordSet().containsAll(TABLE_WORDS));
         for (String word : dict.getInvalidTableWordSet()) {
             if (word.indexOf('-') < 0) {
@@ -92,14 +92,14 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testInvalidColumnWordsAreInvalidTableWordsAndCompatWords() {
+    void invalidColumnWordsAreInvalidTableWordsAndCompatWords() {
         Set<String> expected = new HashSet<>(dict.getInvalidTableWordSet());
         expected.addAll(List.of("COALESCE", "OVER", "ROW_NUMBER"));
         assertEquals(expected, dict.getInvalidColumnWordSet());
     }
 
     @Test
-    public void testRejectedDefaultTableNames() {
+    void rejectedDefaultTableNames() {
         for (String name : List.of("Window", "window", "WINDOW", "Order", "User", "Current_date", "Session_user")) {
             assertEquals(name.toUpperCase(Locale.ENGLISH) + "0",
                 dict.getValidDefaultTableName(DBIdentifier.newTable(name)).getName());
@@ -107,18 +107,18 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testAcceptedDefaultTableNamesAreNotChanged() {
+    void acceptedDefaultTableNamesAreNotChanged() {
         // reserved words Derby accepts as table names are kept, unlike in
         // getValidTableName
         for (String name : List.of("Action", "Count", "Session", "Windows", "Window_panes", "Person")) {
             DBIdentifier sName = DBIdentifier.newTable(name);
-            assertSame(name, sName, dict.getValidDefaultTableName(sName));
+            assertSame(sName, dict.getValidDefaultTableName(sName), name);
         }
         assertEquals("COUNT0", dict.getValidTableName("Count", schema));
     }
 
     @Test
-    public void testDefaultTableNameIsNotMadeUnique() {
+    void defaultTableNameIsNotMadeUnique() {
         // an existing table must not lead to another name for the same entity
         schema.addTable(DBIdentifier.newTable("WINDOW0"));
         assertEquals("WINDOW0", dict.getValidDefaultTableName(DBIdentifier.newTable("Window")).getName());
@@ -126,7 +126,7 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testRejectedDefaultSequenceNames() {
+    void rejectedDefaultSequenceNames() {
         for (String name : List.of("Window", "window", "Order", "User", "Cursors")) {
             assertEquals(name.toUpperCase(Locale.ENGLISH) + "0",
                 dict.getValidDefaultSequenceName(DBIdentifier.newSequence(name)).getName());
@@ -134,21 +134,21 @@ public class TestDerbyDictionaryReservedWords {
     }
 
     @Test
-    public void testAcceptedDefaultSequenceNamesAreNotChanged() {
+    void acceptedDefaultSequenceNamesAreNotChanged() {
         for (String name : List.of("Action", "Count", "Windows", "Person_seq", "OPENJPA_SEQUENCE")) {
             DBIdentifier sName = DBIdentifier.newSequence(name);
-            assertSame(name, sName, dict.getValidDefaultSequenceName(sName));
+            assertSame(sName, dict.getValidDefaultSequenceName(sName), name);
         }
     }
 
     @Test
-    public void testDelimitedDefaultSequenceNamesAreNotChanged() {
+    void delimitedDefaultSequenceNamesAreNotChanged() {
         DBIdentifier delimited = DBIdentifier.newSequence("Window", true);
         assertSame(delimited, dict.getValidDefaultSequenceName(delimited));
     }
 
     @Test
-    public void testDelimitedDefaultTableNamesAreNotChanged() {
+    void delimitedDefaultTableNamesAreNotChanged() {
         DBIdentifier delimited = DBIdentifier.newTable("Window", true);
         assertSame(delimited, dict.getValidDefaultTableName(delimited));
 

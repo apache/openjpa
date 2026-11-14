@@ -28,6 +28,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,22 +47,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject3;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqD;
 import org.apache.openjpa.persistence.jdbc.common.apps.SeqE;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestClassDBSequenceFactory
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+public class TestClassDBSequenceFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-
-    /** Creates a new instance of TestClassDBSequenceFactory */
-    public TestClassDBSequenceFactory() {
-    }
-
-    public TestClassDBSequenceFactory(String test) {
-        super(test);
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
        deleteAll(SeqE.class);
     }
 
@@ -70,7 +65,8 @@ public class TestClassDBSequenceFactory
                 supportsSelectForUpdate;
     }
 
-    public void testVirtualSuperclass() {
+    @Test
+    void virtualSuperclass() {
 
         OpenJPAEntityManagerFactory pmf =(OpenJPAEntityManagerFactory)
                 getEmf(getProps());
@@ -87,7 +83,8 @@ public class TestClassDBSequenceFactory
         pmf.close();
     }
 
-    public void testIgnoreVirtualSuperclass() {
+    @Test
+    void ignoreVirtualSuperclass() {
 
         Map props=new HashMap();
         props.put("TableName", "JDO_CLASS_SEQUENCE");
@@ -114,7 +111,8 @@ public class TestClassDBSequenceFactory
     /**
      * Based on reported bug case.
      */
-    public void testNoSequenceHolesOnAttach() {
+    @Test
+    void noSequenceHolesOnAttach() {
         PerClassTestObject3 pc = new PerClassTestObject3();
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
         startTx(pm);
@@ -145,8 +143,9 @@ public class TestClassDBSequenceFactory
      * Tests that all sequence numbers are unique and in order.
      * Will fail for dbs without pessimistic locking.
      */
-    public void testSequence()
-    throws Exception {
+    @Test
+    void sequence()
+        throws Exception {
         if (!(supportsPessimisticLocking()))
             return;
 
@@ -171,7 +170,8 @@ public class TestClassDBSequenceFactory
         assertEquals(102, set.size());
     }
 
-    public void testSequenceGenerator() {
+    @Test
+    void sequenceGenerator() {
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
 
         // make sure the sequence generator creates separate

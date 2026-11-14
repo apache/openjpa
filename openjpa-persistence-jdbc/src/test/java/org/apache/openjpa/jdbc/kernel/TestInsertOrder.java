@@ -24,17 +24,19 @@ import java.util.Collection;
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that insert order is preserved when using the ConstraintUpdateManager
  * for entities which are not annotated with ForeignKey constraints.
  */
-public class TestInsertOrder extends SQLListenerTestCase {
+class TestInsertOrder extends SQLListenerTestCase {
     private String empTableName;
     private String taskTableName;
     private String storyTableName;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Employee.class, Task.class, Story.class);
         empTableName = getMapping(Employee.class).getTable().getFullName();
@@ -53,7 +55,8 @@ public class TestInsertOrder extends SQLListenerTestCase {
      * relied on the hashcode of the underlying entities.
      * </P>
      */
-    public void testCascadePersist() {
+    @Test
+    void cascadePersist() {
         Employee e = newTree(10);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -69,7 +72,8 @@ public class TestInsertOrder extends SQLListenerTestCase {
      * Merge an Employee entity and allow the cascade to insert the children.
      * The inserts should be executed in this order, Employee, Task, Story.
      */
-    public void testCascadeMerge() {
+    @Test
+    void cascadeMerge() {
         Employee e = newTree(11);
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

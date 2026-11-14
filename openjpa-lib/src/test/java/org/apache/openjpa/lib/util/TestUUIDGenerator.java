@@ -22,68 +22,61 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test UUID generation.
  *
  * @author Abe White
  */
-public class TestUUIDGenerator {
+class TestUUIDGenerator {
 
-    @Test
-    public void testUniqueString() {
+    private static final int ITERATIONS = 10_000;
+
+    @ParameterizedTest(name = "#{index} unique string for type {0}")
+    @ValueSource(ints = { UUIDGenerator.TYPE1, UUIDGenerator.TYPE4 })
+    void uniqueString(int type) {
         Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE1)));
+        for (int i = 0; i < ITERATIONS; i++) {
+            assertTrue(seen.add(UUIDGenerator.nextString(type)));
+        }
     }
 
-    @Test
-    public void testUniqueHex() {
+    @ParameterizedTest(name = "#{index} unique hex for type {0}")
+    @ValueSource(ints = { UUIDGenerator.TYPE1, UUIDGenerator.TYPE4 })
+    void uniqueHex(int type) {
         Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE1)));
-    }
-
-    @Test
-    public void testUniqueType4String() {
-        Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextString(UUIDGenerator.TYPE4)));
-    }
-
-    @Test
-    public void testUniqueType4Hex() {
-        Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++)
-            assertTrue(seen.add(UUIDGenerator.nextHex(UUIDGenerator.TYPE4)));
-    }
-
-    @Test
-    public void testUniqueMixedTypesHex() {
-        Set<String> seen = new HashSet<>();
-        for (int i = 0; i < 10000; i++) {
-            int type = (i % 2 == 0) ?
-                UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
+        for (int i = 0; i < ITERATIONS; i++) {
             assertTrue(seen.add(UUIDGenerator.nextHex(type)));
         }
     }
 
     @Test
-    public void testGetTime() {
+    void uniqueMixedTypesHex() {
+        Set<String> seen = new HashSet<>();
+        for (int i = 0; i < 10000; i++) {
+            int type = (i % 2 == 0) ? UUIDGenerator.TYPE4 : UUIDGenerator.TYPE1;
+            assertTrue(seen.add(UUIDGenerator.nextHex(type)));
+        }
+    }
+
+    @Test
+    void getTime() {
         long time = 0;
         for (int i = 0; i < 10000; i++) {
             long newTime = UUIDGenerator.getTime();
-            assertNotEquals("[" + i + "] time should change", time, newTime);
+            assertNotEquals(time, newTime, "[" + i + "] time should change");
             time = newTime;
         }
     }
 
     @Test
-    public void testInitType1MultiThreaded() throws Exception {
+    void initType1MultiThreaded() throws Exception {
         // This test method depends IP and RANDOM in UUIDGenerator to be null
         // and type1Initialized to be false. Using reflection to ensure that
         // those fields are null.

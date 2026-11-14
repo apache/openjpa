@@ -18,12 +18,18 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that query statistics are collected in a thread-safe manner.
@@ -32,16 +38,17 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestDefaultQueryStatistics extends SingleEMFTestCase {
+class TestDefaultQueryStatistics extends SingleEMFTestCase {
     QueryStatistics<String> statistics;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         statistics = new QueryStatistics.Default<>();
     }
 
-    public void testThreadSafety() throws Exception{
+    @Test
+    void threadSafety() throws Exception{
         final QueryStatistics<String> finalStats = statistics;
 
         Runnable runner = new Runnable() {
@@ -66,14 +73,16 @@ public class TestDefaultQueryStatistics extends SingleEMFTestCase {
         assertEquals(1000, finalStats.keys().size());
     }
 
-    public void testStatsSize() throws Exception{
+    @Test
+    void statsSize() throws Exception{
         for (int i = 0; i < 10000; i++) {
             statistics.recordExecution("query " + Thread.currentThread().getId() + " " + i);
         }
         assertEquals(1000, statistics.keys().size());
     }
 
-    public void testQueryStatisticsIsDisabledByDefault() {
+    @Test
+    void queryStatisticsIsDisabledByDefault() {
         PreparedQueryCache cache = emf.getConfiguration().getQuerySQLCacheInstance();
         assertNotNull(cache);
         QueryStatistics<String> stats = cache.getStatistics();

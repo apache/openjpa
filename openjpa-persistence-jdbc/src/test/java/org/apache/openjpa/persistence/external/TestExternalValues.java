@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.external;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,17 +30,18 @@ import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
+class TestExternalValues extends SingleEMFTestCase {
 
-public class TestExternalValues extends SingleEMFTestCase {
-
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES, EntityA.class);
     }
 
-    public void testExternalValues() {
+    @Test
+    void externalValues() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -55,9 +60,9 @@ public class TestExternalValues extends SingleEMFTestCase {
 
         Query q = em.createQuery("SELECT a from EntityA a");
         EntityA aPrime = (EntityA) q.getSingleResult();
-        Assert.assertEquals("SMALL", aPrime.getS1());
-        Assert.assertEquals("MEDIUM", aPrime.getS2());
-        Assert.assertEquals(true, aPrime.getUseStreaming());
+        assertEquals("SMALL", aPrime.getS1());
+        assertEquals("MEDIUM", aPrime.getS2());
+        assertTrue(aPrime.getUseStreaming());
 
         em.getTransaction().begin();
 
@@ -74,19 +79,20 @@ public class TestExternalValues extends SingleEMFTestCase {
 
         Iterator<Object[]> itr = res.iterator();
         Object[] values = itr.next();
-        Assert.assertEquals("SMALL", values[1]);
-        Assert.assertEquals(Boolean.TRUE, values[2]);
-        Assert.assertEquals("MEDIUM", values[3]);
+        assertEquals("SMALL", values[1]);
+        assertEquals(Boolean.TRUE, values[2]);
+        assertEquals("MEDIUM", values[3]);
 
         values = itr.next();
-        Assert.assertEquals("LARGE", values[1]);
-        Assert.assertEquals(Boolean.FALSE, values[2]);
-        Assert.assertEquals("LARGE", values[3]);
+        assertEquals("LARGE", values[1]);
+        assertEquals(Boolean.FALSE, values[2]);
+        assertEquals("LARGE", values[3]);
 
         em.close();
     }
 
-    public void testUnrecognizedExternalValue() {
+    @Test
+    void unrecognizedExternalValue() {
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();

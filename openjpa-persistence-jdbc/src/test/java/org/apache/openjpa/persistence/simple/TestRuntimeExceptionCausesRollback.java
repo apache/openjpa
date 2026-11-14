@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
@@ -27,6 +31,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that RuntimeExceptions thrown from EntityManager methods
@@ -36,10 +42,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * Also tests that methods on a closed EntityManager throw
  * IllegalStateException per JPA spec section 3.3.2.
  */
-public class TestRuntimeExceptionCausesRollback
+class TestRuntimeExceptionCausesRollback
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
     }
@@ -50,7 +56,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.createQuery(CriteriaDelete) that causes
      * RuntimeException and verify Transaction is set for rollback.
      */
-    public void testCreateQueryCriteriaDeleteExecutes() {
+    @Test
+    void createQueryCriteriaDeleteExecutes() {
         // CriteriaDelete is fully implemented — verify it doesn't throw
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
@@ -78,7 +85,8 @@ public class TestRuntimeExceptionCausesRollback
      * that causes RuntimeException and verify Transaction is set for
      * rollback.
      */
-    public void testExecuteUpdateOnSelectQueryMarksRollback() {
+    @Test
+    void executeUpdateOnSelectQueryMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -93,8 +101,8 @@ public class TestRuntimeExceptionCausesRollback
             q.executeUpdate();
             fail("RuntimeException not thrown");
         } catch (RuntimeException e) {
-            assertTrue("Transaction should be marked for rollback",
-                tx.getRollbackOnly());
+            assertTrue(tx.getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -109,7 +117,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.createQuery(CriteriaUpdate) that causes
      * RuntimeException and verify Transaction is set for rollback.
      */
-    public void testCreateQueryCriteriaUpdateMarksRollback() {
+    @Test
+    void createQueryCriteriaUpdateMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
@@ -122,13 +131,13 @@ public class TestRuntimeExceptionCausesRollback
                 q.executeUpdate();
                 fail("RuntimeException not thrown");
             } catch (RuntimeException e) {
-                assertTrue("Transaction should be marked for rollback",
-                    tx.getRollbackOnly());
+                assertTrue(tx.getRollbackOnly(),
+                    "Transaction should be marked for rollback");
             }
         } catch (RuntimeException e) {
             if (tx.isActive()) {
-                assertTrue("Transaction should be marked for rollback",
-                    tx.getRollbackOnly());
+                assertTrue(tx.getRollbackOnly(),
+                    "Transaction should be marked for rollback");
             }
         } finally {
             if (tx.isActive()) {
@@ -154,7 +163,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.getCriteriaBuilder() on a closed EM and verify
      * the transaction is set for rollback.
      */
-    public void testGetCriteriaBuilderAfterCloseMarksRollback() {
+    @Test
+    void getCriteriaBuilderAfterCloseMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -163,8 +173,8 @@ public class TestRuntimeExceptionCausesRollback
             em.getCriteriaBuilder();
             fail("RuntimeException not thrown");
         } catch (RuntimeException e) {
-            assertTrue("Transaction should be marked for rollback",
-                tx.getRollbackOnly());
+            assertTrue(tx.getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -178,7 +188,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.getDelegate() on a closed EM and verify
      * the transaction is set for rollback.
      */
-    public void testGetDelegateAfterCloseMarksRollback() {
+    @Test
+    void getDelegateAfterCloseMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -187,8 +198,8 @@ public class TestRuntimeExceptionCausesRollback
             em.getDelegate();
             fail("RuntimeException not thrown");
         } catch (RuntimeException e) {
-            assertTrue("Transaction should be marked for rollback",
-                tx.getRollbackOnly());
+            assertTrue(tx.getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -202,7 +213,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.getEntityManagerFactory() on a closed EM and
      * verify the transaction is set for rollback.
      */
-    public void testGetEntityManagerFactoryAfterCloseMarksRollback() {
+    @Test
+    void getEntityManagerFactoryAfterCloseMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -211,8 +223,8 @@ public class TestRuntimeExceptionCausesRollback
             em.getEntityManagerFactory();
             fail("RuntimeException not thrown");
         } catch (RuntimeException e) {
-            assertTrue("Transaction should be marked for rollback",
-                tx.getRollbackOnly());
+            assertTrue(tx.getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -226,7 +238,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.getMetamodel() on a closed EM and verify
      * the transaction is set for rollback.
      */
-    public void testGetMetamodelAfterCloseMarksRollback() {
+    @Test
+    void getMetamodelAfterCloseMarksRollback() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
@@ -235,8 +248,8 @@ public class TestRuntimeExceptionCausesRollback
             em.getMetamodel();
             fail("RuntimeException not thrown");
         } catch (RuntimeException e) {
-            assertTrue("Transaction should be marked for rollback",
-                tx.getRollbackOnly());
+            assertTrue(tx.getRollbackOnly(),
+                "Transaction should be marked for rollback");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -250,7 +263,8 @@ public class TestRuntimeExceptionCausesRollback
      * Call EntityManager.createQuery(CriteriaQuery) on a closed EM
      * and verify IllegalStateException is thrown.
      */
-    public void testCreateQueryCriteriaQueryAfterCloseThrowsISE() {
+    @Test
+    void createQueryCriteriaQueryAfterCloseThrowsISE() {
         EntityManager em = emf.createEntityManager();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<AllFieldTypes> cq = cb.createQuery(AllFieldTypes.class);
@@ -268,18 +282,19 @@ public class TestRuntimeExceptionCausesRollback
      * does not throw (JPA spec allows it - defers actual close until
      * transaction completes).
      */
-    public void testCloseWithActiveTransactionDoesNotThrow() {
+    @Test
+    void closeWithActiveTransactionDoesNotThrow() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         // Per JPA spec, close() during active tx should not throw;
         // the persistence context remains managed until tx completes
         em.close();
-        assertFalse("EM should report not open after close()",
-            em.isOpen());
+        assertFalse(em.isOpen(),
+            "EM should report not open after close()");
         // Transaction should still be active
-        assertTrue("Transaction should still be active",
-            tx.isActive());
+        assertTrue(tx.isActive(),
+            "Transaction should still be active");
         // Clean up
         tx.rollback();
     }

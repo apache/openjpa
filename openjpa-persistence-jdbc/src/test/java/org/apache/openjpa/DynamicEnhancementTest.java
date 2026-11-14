@@ -16,13 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.junit5;
+package org.apache.openjpa;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Entity
-public class MyEntity {
-    @Id
-    private long id;
+import org.junit.jupiter.api.Tag;
+
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Tag(DynamicEnhancementTest.TAG_NAME)
+public @interface DynamicEnhancementTest {
+    String TAG_NAME = "dynamic-enhancement";
 }

@@ -19,21 +19,21 @@
 package org.apache.openjpa.lib.util;
 
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link ParameterTemplate} utility class.
  *
  * @author Abe White
  */
-public class TestParameterTemplate {
+class TestParameterTemplate {
 
     private ParameterTemplate templ = new ParameterTemplate();
 
     @Test
-    public void testParameters() {
+    void parameters() {
         templ.append("{foo$${foo}bar{${bar}}biz baz$");
         templ.append("{booz}booz${java.io.tmpdir}{ack}");
 

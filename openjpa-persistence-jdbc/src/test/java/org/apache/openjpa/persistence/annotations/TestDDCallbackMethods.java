@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -25,25 +29,28 @@ import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.Ca
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.LifeCycleDDEntity;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.LifeCycleDDEntity2;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @AllowFailure(message="excluded")
 public class TestDDCallbackMethods extends AnnotationTestCase
 {
 
-	public TestDDCallbackMethods(String name)
+	public TestDDCallbackMethods()
 	{
-		super(name, "ddcactusapp");
+		super("ddcactusapp");
 	}
 
-	@Override
-    public void setUp()
+    @BeforeEach
+    void setUp()
 	{
 		deleteAll(LifeCycleDDEntity.class);
 		deleteAll(LifeCycleDDEntity2.class);
 		CallbackStorage.clearStore();
 	}
 
-	public void testDDPrpPop()
+    @Test
+    void dDPrpPop()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -62,7 +69,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testDDPrrPor()
+    @Test
+    void dDPrrPor()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -89,7 +97,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testDDPouPru()
+    @Test
+    void dDPouPru()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -121,7 +130,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testDDPol()
+    @Test
+    void dDPol()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -156,9 +166,10 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 
 	}
 
-	/**  DEFAULT LISTENER DD TESTING **/
+    /**  DEFAULT LISTENER DD TESTING **/
 
-	public void testDefaultPrePostPersistListener()
+    @Test
+    void defaultPrePostPersistListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -181,7 +192,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 	}
 
     //FIX-ME Default-Entity-listener Impl. is over firing
-	public void testDefaultPrePostUpdateListener()
+    @Test
+    void defaultPrePostUpdateListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -216,8 +228,9 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 
-	//FIX-ME Default-Entity-listener Impl. is over firing
-	public void testDefaultPostLoadListener()
+    //FIX-ME Default-Entity-listener Impl. is over firing
+    @Test
+    void defaultPostLoadListener()
 	{
         OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);
@@ -233,7 +246,7 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		startTx(em);
 		CallbackStorage.clearStore();
 
-		assertTrue("not empty...", CallbackStorage.isEmpty());
+		assertTrue(CallbackStorage.isEmpty(), "not empty...");
 
 		emp = em.find(LifeCycleDDEntity2.class, id);
 		em.refresh(emp);
@@ -250,7 +263,8 @@ public class TestDDCallbackMethods extends AnnotationTestCase
 		endEm(em);
 	}
 
-	public void testSubClassOverrideSuperCallbacksInh()
+    @Test
+    void subClassOverrideSuperCallbacksInh()
 	{
        OpenJPAEntityManager em =(OpenJPAEntityManager) currentEntityManager();
 		startTx(em);

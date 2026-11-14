@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +31,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests basic persistence operations on bi-directional mapping that uses a
@@ -45,21 +52,22 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
+class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 	private static long SSN          = 123456789;
     private static String[] PHONES   = {"+1-23-456", "+2-34-567", "+3-45-678"};
 	private static int ADDRESS_COUNT = PHONES.length;
 	private static String[] CITIS    = {"Berlin", "Paris", "Rome"};
 	private static int[] ZIPS        = {123456, 234567, 345678};
 
-	@Override
+    @BeforeEach
     public void setUp() {
 		super.setUp(CLEAR_TABLES, Person.class, Address.class);
 		createData(SSN);
 		sql.clear();
 	}
 
-	public void testPersist() {
+    @Test
+    void persist() {
 		EntityManager em = emf.createEntityManager();
 		Person person = em.find(Person.class, SSN);
 		assertNotNull(person);
@@ -67,7 +75,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(ADDRESS_COUNT, person.getAddresses().size());
 	}
 
-	public void testQuery() {
+    @Test
+    void query() {
 		EntityManager em = emf.createEntityManager();
         String jpql =
             "select distinct a.city from Person as p, in(p.addresses) a";
@@ -75,7 +84,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(ADDRESS_COUNT, query.getResultList().size());
 	}
 
-	public void testUpdate() {
+    @Test
+    void update() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Person person = em.find(Person.class, SSN);
@@ -93,7 +103,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(ADDRESS_COUNT+1, updated.getAddresses().size());
 	}
 
-	public void testRemove() {
+    @Test
+    void remove() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		Person person = em.find(Person.class, SSN);
@@ -105,7 +116,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertSQL("DELETE FROM .*J_PERSON_ADDRESSES .*");
 	}
 
-	public void testSingleDelete() {
+    @Test
+    void singleDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		String jpql = "delete from Person p where p.ssn=:ssn";
@@ -121,7 +133,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertSQL("DELETE FROM .*J_PERSON WHERE .*IN \\(.*");
 	}
 
-	public void testBulkDelete() {
+    @Test
+    void bulkDelete() {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 		String jpql = "delete from Person p";
@@ -138,7 +151,8 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertSQL("DELETE( t[0-9]+)? FROM .*J_PERSON( t[0-9]+)?");
 	}
 
-	public void testBreakingRelationCausesDeleteFromJoinTable() {
+    @Test
+    void breakingRelationCausesDeleteFromJoinTable() {
 		EntityManager em = emf.createEntityManager();
 		Person person = em.find(Person.class, SSN);
 		em.getTransaction().begin();
@@ -179,7 +193,7 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		if (dict instanceof OracleDictionary) {
 			// Oracle uses prepared statements with multiple inserts or deletes, so the number
 			// of SQL statements is either 3 or 4, depending on the order of execution
-			assertTrue("Should be 3 or 4", size == 3 || size == 4);
+			assertTrue(size == 3 || size == 4, "Should be 3 or 4");
 		} else {
 			int expected = 1 + 2 * ADDRESS_COUNT;
 			assertEquals(expected, size);

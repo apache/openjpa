@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
@@ -26,22 +30,26 @@ import org.apache.openjpa.enhance.ClassRedefiner;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for generators
  *
  * @author Steve Kim
  */
-public class TestGenerators extends SingleEMFTestCase {
+class TestGenerators extends SingleEMFTestCase {
     Log _log;
-    @Override
+
+    @BeforeEach
     public void setUp()
         throws Exception {
         setUp(Generator.class, CLEAR_TABLES);
         _log = emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
-    public void testGet() {
+    @Test
+    void get() {
         if (!PersistenceCapable.class.isAssignableFrom(Generator.class)
             && !ClassRedefiner.canRedefineClasses(_log))
             fail("This test requires a higher level of enhancement than"
@@ -58,7 +66,8 @@ public class TestGenerators extends SingleEMFTestCase {
         assertNew();
     }
 
-    public void testFlush() {
+    @Test
+    void flush() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Generator g = new Generator();
@@ -71,7 +80,8 @@ public class TestGenerators extends SingleEMFTestCase {
         assertNew();
     }
 
-    public void testCommit() {
+    @Test
+    void commit() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Generator g = new Generator();

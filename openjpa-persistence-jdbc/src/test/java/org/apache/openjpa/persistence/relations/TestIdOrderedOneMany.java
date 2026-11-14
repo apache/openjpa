@@ -18,23 +18,27 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test ordering a one-many field on the primary key of the related entity.
  *
  * @author Abe White
  */
-public class TestIdOrderedOneMany
-    extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestIdOrderedOneMany extends SingleEMFTestCase {
 
     private long id;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(IdOrderedOneManyParent.class, IdOrderedOneManyChild.class);
 
@@ -66,7 +70,8 @@ public class TestIdOrderedOneMany
         em.close();
     }
 
-    public void testExplicitOrdering() {
+    @Test
+    void explicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);
@@ -81,7 +86,8 @@ public class TestIdOrderedOneMany
         em.close();
     }
 
-    public void testImplicitOrdering() {
+    @Test
+    void implicitOrdering() {
         EntityManager em = emf.createEntityManager();
         IdOrderedOneManyParent parent = em.find(IdOrderedOneManyParent.class,
             id);
@@ -95,9 +101,4 @@ public class TestIdOrderedOneMany
         }
         em.close();
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestIdOrderedOneMany.class);
-    }
 }
-

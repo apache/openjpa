@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
+import org.junit.jupiter.api.Test;
 
 public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestCase {
 
@@ -86,15 +89,18 @@ public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestC
     // Tests
     // =======================================================================
 
-    public void testCacheables() {
+    @Test
+    void cacheables() {
         assertCacheables(cache, true);
     }
 
-    public void testUncacheables() {
+    @Test
+    void uncacheables() {
         assertUncacheables(cache, false);
     }
 
-    public void testUnspecified() {
+    @Test
+    void unspecified() {
         assertUnspecified(cache, false);
     }
 

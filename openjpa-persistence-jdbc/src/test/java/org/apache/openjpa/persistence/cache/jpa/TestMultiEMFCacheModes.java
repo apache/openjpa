@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Random;
 
 import jakarta.persistence.Cache;
@@ -29,15 +31,17 @@ import jakarta.persistence.LockModeType;
 
 import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies L2 operations using multiple entity manager factories. The EMF which
  * does updates does not have the data cache enabled thus, it does not send
  * sjvm updates upon commit.
  */
-public class TestMultiEMFCacheModes extends SingleEMFTestCase {
+class TestMultiEMFCacheModes extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp( CLEAR_TABLES, CacheableEntity.class,
                "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
@@ -49,7 +53,8 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * entity is updated in the database.
      */
-    public void testCacheRefreshModeRefresh() {
+    @Test
+    void cacheRefreshModeRefresh() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -70,9 +75,9 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));
         assertTrue(cache.contains(CacheableEntity.class, ceid));
-        assertTrue(em.getLockMode(ce) == LockModeType.NONE);
-        assertEquals(ce.getName(), "Cached Entity");
-        assertEquals(ce.getVersion(), 1);
+        assertSame(em.getLockMode(ce), LockModeType.NONE);
+        assertEquals("Cached Entity", ce.getName());
+        assertEquals(1, ce.getVersion());
         em.getTransaction().commit();
 
         // Create a new EMF -WITHOUT- the L2 enabled.  If the L2 was enabled, the
@@ -126,7 +131,8 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
      * jakarta.persistence.cache.storeMode = CacheStoreMode.REFRESH and the
      * record is removed from the database.
      */
-    public void testCacheRefreshModeRefreshDelete() {
+    @Test
+    void cacheRefreshModeRefreshDelete() {
 
         EntityManager em = emf.createEntityManager();
 
@@ -144,9 +150,9 @@ public class TestMultiEMFCacheModes extends SingleEMFTestCase {
         ce = em.find(CacheableEntity.class, ceid);
         assertTrue(em.contains(ce));
         assertTrue(cache.contains(CacheableEntity.class, ceid));
-        assertTrue(em.getLockMode(ce) == LockModeType.NONE);
-        assertEquals(ce.getName(), "Cached Entity");
-        assertEquals(ce.getVersion(), 1);
+        assertSame(em.getLockMode(ce), LockModeType.NONE);
+        assertEquals("Cached Entity", ce.getName());
+        assertEquals(1, ce.getVersion());
         em.getTransaction().commit();
 
         // Create a new EMF -WITHOUT- the L2 enabled.  If the L2 was enabled, the

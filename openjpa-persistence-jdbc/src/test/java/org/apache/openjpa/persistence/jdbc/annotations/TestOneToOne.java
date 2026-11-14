@@ -18,24 +18,30 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for 1-1
  *
  * @author Steve Kim
  */
-public class TestOneToOne
+class TestOneToOne
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
-    public void testOneToOne() {
+    @Test
+    void oneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -55,7 +61,8 @@ public class TestOneToOne
         em.close();
     }
 
-    public void testSelfOneToOne() {
+    @Test
+    void selfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -74,7 +81,8 @@ public class TestOneToOne
         em.close();
     }
 
-    public void testPKJoinSelfOneToOne() {
+    @Test
+    void pKJoinSelfOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -93,7 +101,8 @@ public class TestOneToOne
         em.close();
     }
 
-    public void testOtherTableOneToOne() {
+    @Test
+    void otherTableOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);
@@ -113,7 +122,8 @@ public class TestOneToOne
         em.close();
     }
 
-    public void testInverseOneToOne() {
+    @Test
+    void inverseOneToOne() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc = new AnnoTest1(5);

@@ -24,10 +24,12 @@ import org.apache.openjpa.persistence.detachment.model.DMCustomer;
 import org.apache.openjpa.persistence.detachment.model.DMCustomerInventory;
 import org.apache.openjpa.persistence.detachment.model.DMItem;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
+class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(
             CLEAR_TABLES,
@@ -37,7 +39,8 @@ public class TestDetachedEntityCascadePersist extends SingleEMFTestCase {
         );
     }
 
-    public void testDetachedEntityCascadePersist() {
+    @Test
+    void detachedEntityCascadePersist() {
         // Persist an item for finding later
         EntityManager em = emf.createEntityManager();
         DMItem item = new DMItem();

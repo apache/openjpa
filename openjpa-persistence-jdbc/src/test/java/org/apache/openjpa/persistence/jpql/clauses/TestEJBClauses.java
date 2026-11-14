@@ -18,25 +18,34 @@
  */
 package org.apache.openjpa.persistence.jpql.clauses;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.common.apps.ArtCourse;
 import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.Student;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+@DynamicEnhancementTest
 public class TestEJBClauses extends AbstractTestCase {
 
-    public TestEJBClauses(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBClauses() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
         deleteAll(Department.class);
@@ -71,7 +80,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testFromClause1() {
+    @Test
+    void fromClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name FROM Student o";
 
@@ -84,7 +94,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testFromClause2() {
+    @Test
+    void fromClause2() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT NEW apps.ArtCourse(e.name)" +
@@ -98,7 +109,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testFromClause3() {
+    @Test
+    void fromClause3() {
         EntityManager em = currentEntityManager();
         String query = "SELECT o.name " +
             "FROM Student o, Course c " +
@@ -115,7 +127,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testWhereClause1() {
+    @Test
+    void whereClause1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
             "FROM Student s, Course d " +
@@ -129,7 +142,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testWhereClause2() {
+    @Test
+    void whereClause2() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name " +
             "FROM Student s " +
@@ -146,7 +160,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testClauseRangeVar() {
+    @Test
+    void clauseRangeVar() {
         EntityManager em = currentEntityManager();
         String query = "SELECT DISTINCT s FROM Student s, Student s2 " +
             "WHERE s.name = 'John' AND s2.name = 'Jonathan'";
@@ -162,7 +177,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testClausePathExpr() {
+    @Test
+    void clausePathExpr() {
         EntityManager em = currentEntityManager();
         String failure = "SELECT DISTINCT s " +
             "FROM Student s WHERE" +
@@ -177,7 +193,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testClausePathExpr2() {
+    @Test
+    void clausePathExpr2() {
         EntityManager em = currentEntityManager();
         String success =
             "SELECT DISTINCT d.name FROM Student AS s, IN(s.department) d ";
@@ -190,7 +207,8 @@ public class TestEJBClauses extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testCollMemberDecl() {
+    @Test
+    void collMemberDecl() {
         EntityManager em = currentEntityManager();
 
         String colldec = "SELECT DISTINCT s.name " +

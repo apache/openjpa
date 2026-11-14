@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,11 +40,13 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ImplHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public abstract class AbstractUnenhancedClassTest
-    extends SingleEMFTestCase {
+public abstract class AbstractUnenhancedClassTest extends SingleEMFTestCase {
 
     Log _log;
+
     // ##### To do:
     // - clearing in pnew property-access without redefinition
     // - figure out how to auto-test the redefinition code, either in Java 5
@@ -52,7 +56,7 @@ public abstract class AbstractUnenhancedClassTest
     //   * Java 5 with javaagent
     //   * Java 5 without javaagent
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
         // trigger class redefinition
@@ -74,14 +78,16 @@ public abstract class AbstractUnenhancedClassTest
             : newUnenhancedInstance();
     }
 
-    public void testMetaData() {
+    @Test
+    void metaData() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         assertEquals(ClassRedefiner.canRedefineClasses(_log), meta
             .isIntercepting());
     }
 
-    public void testImplHelperCalls() {
+    @Test
+    void implHelperCalls() {
         assertTrue(ImplHelper.isManagedType(null, getUnenhancedClass()));
 
         UnenhancedType un = newUnenhancedInstance();
@@ -92,7 +98,8 @@ public abstract class AbstractUnenhancedClassTest
         assertTrue(ImplHelper.isManageable(un));
     }
 
-    public void testBasicPersistenceCapableBehavior() {
+    @Test
+    void basicPersistenceCapableBehavior() {
         UnenhancedType un = newUnenhancedInstance();
         un.setStringField("bar");
         PersistenceCapable pc = ImplHelper.toPersistenceCapable(un,
@@ -104,7 +111,8 @@ public abstract class AbstractUnenhancedClassTest
         assertFalse(pc.pcIsTransactional());
     }
 
-    public void testPCRegistry() {
+    @Test
+    void pCRegistry() {
         assertTrue(PCRegistry.isRegistered(getUnenhancedClass()));
         PersistenceCapable pc = PCRegistry.newInstance(
             getUnenhancedClass(), null, false);
@@ -112,26 +120,31 @@ public abstract class AbstractUnenhancedClassTest
         assertEquals(pc.getClass(), PCRegistry.getPCType(getUnenhancedClass()));
     }
 
-    public void testClearingOnSubtypeInstance() {
+    @Test
+    void clearingOnSubtypeInstance() {
         // the boolean at the end of newInstance will cause clear to be invoked
         UnenhancedType un = (UnenhancedType)
             PCRegistry.newInstance(getUnenhancedClass(), null, true);
-        assertEquals(null, un.getStringField());
+        assertNull(un.getStringField());
     }
 
-    public void testGetObjectIdOnOpenJPAType() {
+    @Test
+    void getObjectIdOnOpenJPAType() {
         getObjectIdHelper(true, false);
     }
 
-    public void testGetObjectIdOnOpenJPATypeSubclass() {
+    @Test
+    void getObjectIdOnOpenJPATypeSubclass() {
         getObjectIdHelper(false, false);
     }
 
-    public void testGetObjectIdOnUserDefined() {
+    @Test
+    void getObjectIdOnUserDefined() {
         getObjectIdHelper(true, true);
     }
 
-    public void testGetObjectIdOnUserDefinedSubclass() {
+    @Test
+    void getObjectIdOnUserDefinedSubclass() {
         getObjectIdHelper(false, true);
     }
 
@@ -151,19 +164,23 @@ public abstract class AbstractUnenhancedClassTest
         assertNotNull(em.getObjectId(un));
     }
 
-    public void testOperationsOnUserDefined() {
+    @Test
+    void operationsOnUserDefined() {
         opsHelper(false, true);
     }
 
-    public void testSubclassOperationsOnUserDefined() {
+    @Test
+    void subclassOperationsOnUserDefined() {
         opsHelper(true, true);
     }
 
-    public void testOperationsOnOpenJPADefined() {
+    @Test
+    void operationsOnOpenJPADefined() {
         opsHelper(false, false);
     }
 
-    public void testSubclassOperationsOnOpenJPADefined() {
+    @Test
+    void subclassOperationsOnOpenJPADefined() {
         opsHelper(true, false);
     }
 
@@ -196,7 +213,7 @@ public abstract class AbstractUnenhancedClassTest
             un = em.find(getUnenhancedClass(), un.getId());
             assertNotNull(un);
             if (!userDefined)
-                assertTrue(un instanceof PersistenceCapable);
+                assertInstanceOf(PersistenceCapable.class, un);
             assertEquals("bar", un.getStringField());
             em.getTransaction().begin();
             un.setStringField("baz");
@@ -219,7 +236,7 @@ public abstract class AbstractUnenhancedClassTest
             em = emf.createEntityManager();
             un = em.find(getUnenhancedClass(), un.getId());
             assertNotNull(un);
-            assertTrue(un instanceof PersistenceCapable);
+            assertInstanceOf(PersistenceCapable.class, un);
             assertEquals("baz", un.getStringField());
             if (sub)
                 assertEquals(17, ((UnenhancedSubtype) un).getIntField());
@@ -243,7 +260,8 @@ public abstract class AbstractUnenhancedClassTest
         }
     }
 
-    public void testRelations() {
+    @Test
+    void relations() {
         OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         UnenhancedSubtype un = newUnenhancedSubclassInstance();
@@ -263,7 +281,8 @@ public abstract class AbstractUnenhancedClassTest
         em.close();
     }
 
-    public void testEnhancer() throws IOException {
+    @Test
+    void enhancer() throws Exception {
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
             emf.getConfiguration(), Collections.singleton(getUnenhancedClass()), null);
         Class sub = subs.get(0);
@@ -275,19 +294,22 @@ public abstract class AbstractUnenhancedClassTest
         assertTrue(getUnenhancedClass().isAssignableFrom(sub));
     }
 
-    public void testPCSubclassName() {
+    @Test
+    void pCSubclassName() {
         assertEquals("org.apache.openjpa.enhance."
             + getUnenhancedClass().getName().replace('.', '$') + "$pcsubclass",
             PCEnhancer.toPCSubclassName(getUnenhancedClass()));
     }
 
-    public void testEvictionInUserCreatedInstance()
-        throws NoSuchFieldException, IllegalAccessException {
+    @Test
+    void evictionInUserCreatedInstance()
+        throws Exception {
         evictionHelper(true);
     }
 
-    public void testEvictionInOpenJPACreatedInstance()
-        throws NoSuchFieldException, IllegalAccessException {
+    @Test
+    void evictionInOpenJPACreatedInstance()
+        throws Exception {
         evictionHelper(false);
     }
 
@@ -303,7 +325,7 @@ public abstract class AbstractUnenhancedClassTest
             em.close();
             em = emf.createEntityManager();
             un = em.find(getUnenhancedClass(), un.getId());
-            assertTrue(getUnenhancedClass() != un.getClass());
+            assertNotSame(getUnenhancedClass(), un.getClass());
         }
 
         em.evict(un);
@@ -323,7 +345,7 @@ public abstract class AbstractUnenhancedClassTest
             Field field = getUnenhancedClass().getDeclaredField(
                 isFieldAccessTest() ? "stringField" : "sf");
             field.setAccessible(true);
-            assertEquals(null, field.get(un));
+            assertNull(field.get(un));
 
             // ... and that it gets reloaded properly
             assertEquals("foo", un.getStringField());
@@ -347,8 +369,9 @@ public abstract class AbstractUnenhancedClassTest
 
     protected abstract boolean isFieldAccessTest();
 
-    public void testLazyLoading()
-        throws NoSuchFieldException, IllegalAccessException {
+    @Test
+    void lazyLoading()
+        throws Exception {
         OpenJPAEntityManager em = emf.createEntityManager();
         UnenhancedType un = newUnenhancedInstance();
         em.getTransaction().begin();
@@ -358,7 +381,7 @@ public abstract class AbstractUnenhancedClassTest
 
         em = emf.createEntityManager();
         un = em.find(getUnenhancedClass(), un.getId());
-        assertTrue(getUnenhancedClass() != un.getClass());
+        assertNotSame(getUnenhancedClass(), un.getClass());
         OpenJPAStateManager sm = (OpenJPAStateManager)
             ImplHelper.toPersistenceCapable(un, null).pcGetStateManager();
 
@@ -372,7 +395,7 @@ public abstract class AbstractUnenhancedClassTest
             // make sure that the value was cleared
             Field field = getUnenhancedClass().getDeclaredField("lazyField");
             field.setAccessible(true);
-            assertEquals(null, field.get(un));
+            assertNull(field.get(un));
         } else {
             // unredefined field access
             assertTrue(sm.getLoaded()
@@ -392,23 +415,27 @@ public abstract class AbstractUnenhancedClassTest
         em.close();
     }
 
-    public void testSerializationOfUserDefinedInstance()
-        throws IOException, ClassNotFoundException {
+    @Test
+    void serializationOfUserDefinedInstance()
+        throws Exception {
         serializationHelper(true, false);
     }
 
-    public void testSerializationOfUserDefinedSubclassInstance()
-        throws IOException, ClassNotFoundException {
+    @Test
+    void serializationOfUserDefinedSubclassInstance()
+        throws Exception {
         serializationHelper(true, true);
     }
 
-    public void testSerializationOfOpenJPADefinedInstance()
-        throws IOException, ClassNotFoundException {
+    @Test
+    void serializationOfOpenJPADefinedInstance()
+        throws Exception {
         serializationHelper(false, false);
     }
 
-    public void testSerializationOfOpenJPADefinedSubclassInstance()
-        throws IOException, ClassNotFoundException {
+    @Test
+    void serializationOfOpenJPADefinedSubclassInstance()
+        throws Exception {
         serializationHelper(false, true);
     }
 
@@ -447,23 +474,27 @@ public abstract class AbstractUnenhancedClassTest
         em.close();
     }
 
-    public void testCloningOfUserDefinedInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void cloningOfUserDefinedInstance()
+        throws Exception {
         cloneHelper(true, false);
     }
 
-    public void testCloningOfUserDefinedSubclassInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void cloningOfUserDefinedSubclassInstance()
+        throws Exception {
         cloneHelper(true, true);
     }
 
-    public void testCloningOfOpenJPADefinedInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void cloningOfOpenJPADefinedInstance()
+        throws Exception {
         cloneHelper(false, false);
     }
 
-    public void testCloningOfOpenJPADefinedSubclassInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void cloningOfOpenJPADefinedSubclassInstance()
+        throws Exception {
         cloneHelper(false, true);
     }
 
@@ -538,23 +569,27 @@ public abstract class AbstractUnenhancedClassTest
         em.getTransaction().commit();
     }
 
-    public void testListenersOnUserDefinedInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void listenersOnUserDefinedInstance()
+        throws Exception {
         listenerHelper(true, false);
     }
 
-    public void testListenersOnUserDefinedSubclassInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void listenersOnUserDefinedSubclassInstance()
+        throws Exception {
         listenerHelper(true, true);
     }
 
-    public void testListenersOnOpenJPADefinedInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void listenersOnOpenJPADefinedInstance()
+        throws Exception {
         listenerHelper(false, false);
     }
 
-    public void testListenersOnOpenJPADefinedSubclassInstance()
-        throws IOException, ClassNotFoundException, CloneNotSupportedException {
+    @Test
+    void listenersOnOpenJPADefinedSubclassInstance()
+        throws Exception {
         listenerHelper(false, true);
     }
 
@@ -585,7 +620,8 @@ public abstract class AbstractUnenhancedClassTest
         assertEquals("updated", listener.stringField);
     }
 
-    public void testGetMetaDataOfSubtype() {
+    @Test
+    void getMetaDataOfSubtype() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(

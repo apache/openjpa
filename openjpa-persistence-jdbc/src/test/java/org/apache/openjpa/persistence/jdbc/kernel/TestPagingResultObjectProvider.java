@@ -18,6 +18,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +34,6 @@ import jakarta.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
-//import org.apache.openjpa.kernel.Extent;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
@@ -38,50 +43,49 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.common.apps.PagingAppIdPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.PagingHelperPC;
 import org.apache.openjpa.persistence.jdbc.common.apps.PagingPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * <p>Test large result, to-many eager paging.</p>
  *
  */
-public class TestPagingResultObjectProvider
-    extends TestSQLListenerTestCase {
+public class TestPagingResultObjectProvider extends TestSQLListenerTestCase {
 
 	private OpenJPAEntityManagerFactory emf;
 
-	public TestPagingResultObjectProvider(String name)
-	{
-		super(name);
-	}
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception{
 		super.setUp();
 		emf = getEmf(getProps());
-    	EntityManager em =currentEntityManager();
+    	EntityManager em = currentEntityManager();
     }
 
 
 
     public boolean skipTest() {
-        JDBCConfiguration conf =
-            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
-            OpenJPAPersistence.cast(emf)).getConfiguration();
+        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.cast(emf))
+                .getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
-        if (dict.joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL)
+        if (dict.joinSyntax == JoinSyntaxes.SYNTAX_TRADITIONAL) {
             return true;
+        }
 
         // skip test case that requires subselect for DBs that don't support it
-        if ("testPagingRangeQuery".equals(getName())
-            || "testNonPagingRangeQuery".equals(getName())) {
-            if (!conf.getDBDictionaryInstance().supportsSubselect)
+        if ("pagingRangeQuery".equals(getTestName())
+            || "nonPagingRangeQuery".equals(getTestName()))
+        {
+            if (!conf.getDBDictionaryInstance().supportsSubselect) {
                 return true;
+            }
         }
 
         return false;
     }
 
 
-    public void testNonPagingExtent() {
+    @Test
+    void nonPagingExtent() {
         initializePagingPCs();
 
         EntityManager em= currentEntityManager();
@@ -96,18 +100,19 @@ public class TestPagingResultObjectProvider
         List list = extent.list();
         assertEquals(4, list.size());
         assertRel(list, 4);
-        assertEquals(sql.toString(), 1, sql.size());
+        assertEquals(1, sql.size(), sql.toString());
         sql.clear();
 
         // now accessing the rels collection should add selects
         assertRels(list, 4);
-        assertEquals(sql.toString(), 4, sql.size());
+        assertEquals(4, sql.size(), sql.toString());
         sql.clear();
 
         em.close();
     }
 
-    public void testNonPagingQuery()
+    @Test
+    void nonPagingQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -129,16 +134,16 @@ public class TestPagingResultObjectProvider
         List list = (List) q.getResultList();
         assertEquals(4, list.size());
         assertRel(list, 4);
-        assertEquals(sql.toString(), 2, sql.size());
-        assertTrue((String) sql.get(0),
-            matches(" >= ", (String) sql.get(0)));
-        assertTrue((String) sql.get(1),
-            matches(" COUNT", (String) sql.get(1)));
+        assertEquals(2, sql.size(), sql.toString());
+        assertTrue(matches(" >= ", (String) sql.get(0)),
+            (String) sql.get(0));
+        assertTrue(matches(" COUNT", (String) sql.get(1)),
+            (String) sql.get(1));
         sql.clear();
 
         // now accessing the rels collection should add selects
         assertRels(list, 4);
-        assertEquals(sql.toString(), 4, sql.size());
+        assertEquals(4, sql.size(), sql.toString());
         sql.clear();
 
         em.close();
@@ -181,7 +186,8 @@ public class TestPagingResultObjectProvider
         }
     }
 
-    public void testPagingExtent()
+    @Test
+    void pagingExtent()
         throws Exception {
         initializePagingPCs();
 
@@ -198,15 +204,16 @@ public class TestPagingResultObjectProvider
         assertEquals(4, list.size());
         assertRel(list, 4);
         assertRels(list, 4);
-        assertEquals(sql.toString(), 2, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" IN ", (String) sql.get(1)));
+        assertEquals(2, sql.size(), sql.toString());
+        assertTrue(matches(" IN ", (String) sql.get(1)),
+            (String) sql.get(1));
         sql.clear();
 
         em.close();
     }
 
-    public void testPagingQuery()
+    @Test
+    void pagingQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -228,15 +235,15 @@ public class TestPagingResultObjectProvider
         assertEquals(4, list.size());
         assertRel(list, 4);
         assertRels(list, 4);
-        assertEquals(sql.toString(), 3, sql.size());
-        assertTrue((String) sql.get(0),
-            matches(" >= ", (String) sql.get(0)));
-        assertTrue((String) sql.get(1),
-            matches(" COUNT", (String) sql.get(1)));
-        assertTrue((String) sql.get(2),
-            matches(" IN ", (String) sql.get(2)));
-        assertFalse((String) sql.get(2),
-            matches(" >= ", (String) sql.get(2)));
+        assertEquals(3, sql.size(), sql.toString());
+        assertTrue(matches(" >= ", (String) sql.get(0)),
+            (String) sql.get(0));
+        assertTrue(matches(" COUNT", (String) sql.get(1)),
+            (String) sql.get(1));
+        assertTrue(matches(" IN ", (String) sql.get(2)),
+            (String) sql.get(2));
+        assertFalse(matches(" >= ", (String) sql.get(2)),
+            (String) sql.get(2));
         sql.clear();
 
         // if we execute and traverse a result before getting the size, we
@@ -247,15 +254,16 @@ public class TestPagingResultObjectProvider
         assertEquals(4, list.size());
         assertRel(list, 4);
         assertRels(list, 4);
-        assertEquals(sql.toString(), 2, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" IN ", (String) sql.get(1)));
+        assertEquals(2, sql.size(), sql.toString());
+        assertTrue(matches(" IN ", (String) sql.get(1)),
+            (String) sql.get(1));
         sql.clear();
 
         em.close();
     }
 
-    public void testPagingAppIdExtent()
+    @Test
+    void pagingAppIdExtent()
         throws Exception {
         initializePagingAppIdPCs();
 
@@ -272,15 +280,16 @@ public class TestPagingResultObjectProvider
         assertEquals(4, list.size());
         assertAppIdRel(list, 4);
         assertAppIdRels(list, 4);
-        assertEquals(sql.toString(), 2, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" OR ", (String) sql.get(1)));
+        assertEquals(2, sql.size(), sql.toString());
+        assertTrue(matches(" OR ", (String) sql.get(1)),
+            (String) sql.get(1));
         sql.clear();
 
         em.close();
     }
 
-    public void testPagingAppIdQuery()
+    @Test
+    void pagingAppIdQuery()
         throws Exception {
         initializePagingAppIdPCs();
 
@@ -302,15 +311,15 @@ public class TestPagingResultObjectProvider
         assertEquals(4, list.size());
         assertAppIdRel(list, 4);
         assertAppIdRels(list, 4);
-        assertEquals(sql.toString(), 3, sql.size());
-        assertTrue((String) sql.get(0),
-            matches(" >= ", (String) sql.get(0)));
-        assertTrue((String) sql.get(1),
-            matches(" COUNT", (String) sql.get(1)));
-        assertTrue((String) sql.get(2),
-            matches(" OR ", (String) sql.get(2)));
-        assertFalse((String) sql.get(2),
-            matches(" >= ", (String) sql.get(2)));
+        assertEquals(3, sql.size(), sql.toString());
+        assertTrue(matches(" >= ", (String) sql.get(0)),
+            (String) sql.get(0));
+        assertTrue(matches(" COUNT", (String) sql.get(1)),
+            (String) sql.get(1));
+        assertTrue(matches(" OR ", (String) sql.get(2)),
+            (String) sql.get(2));
+        assertFalse(matches(" >= ", (String) sql.get(2)),
+            (String) sql.get(2));
         sql.clear();
 
         em.close();
@@ -353,7 +362,8 @@ public class TestPagingResultObjectProvider
         }
     }
 
-    public void testMultiPageExtent()
+    @Test
+    void multiPageExtent()
         throws Exception {
         initializePagingPCs();
 
@@ -367,20 +377,21 @@ public class TestPagingResultObjectProvider
 
         // we should get two selects: the initial select and the IN eager stmnt
         List list = extent.list();
-        assertEquals(list.toString(), 4, list.size());
+        assertEquals(4, list.size(), list.toString());
         assertRel(list, 4);
         assertRels(list, 4);
-        assertEquals(sql.toString(), 3, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" IN ", (String) sql.get(1)));
-        assertTrue((String) sql.get(2),
-            matches(" IN ", (String) sql.get(2)));
+        assertEquals(3, sql.size(), sql.toString());
+        assertTrue(matches(" IN ", (String) sql.get(1)),
+            (String) sql.get(1));
+        assertTrue(matches(" IN ", (String) sql.get(2)),
+            (String) sql.get(2));
         sql.clear();
 
         em.close();
     }
 
-    public void testMultiPageQuery()
+    @Test
+    void multiPageQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -401,31 +412,31 @@ public class TestPagingResultObjectProvider
         // we should get four selects: the initial select, the count, and the
         // two IN eager stmnts
         List list = (List) q.getResultList();
-        assertEquals(list.toString(), 4, list.size());
+        assertEquals(4, list.size(), list.toString());
         // so we don't have to re-execute to move back to beginning
         list = new ArrayList(list);
         assertRel(list, 4);
         assertRels(list, 4);
 
-        assertEquals(sql.toString(), 4, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" COUNT", (String) sql.get(1)));
-        assertTrue((String) sql.get(2),
-            matches(" IN ", (String) sql.get(2)));
-        assertTrue((String) sql.get(3),
-            matches(" IN ", (String) sql.get(3)));
+        assertEquals(4, sql.size(), sql.toString());
+        assertTrue(matches(" COUNT", (String) sql.get(1)),
+            (String) sql.get(1));
+        assertTrue(matches(" IN ", (String) sql.get(2)),
+            (String) sql.get(2));
+        assertTrue(matches(" IN ", (String) sql.get(3)),
+            (String) sql.get(3));
         sql.clear();
 
         // if we access a result object on the second page, we should get only
         // three selects: the initial select, the count, and the IN eager stmnt
         // for page 2
         list = (List) q.getResultList();
-        assertEquals(list.toString(), 4, list.size());
+        assertEquals(4, list.size(), list.toString());
         PagingPC pc = (PagingPC) list.get(2);
         assertEquals(2, pc.getIntField());
-        assertEquals(sql.toString(), 3, sql.size());
-        assertTrue((String) sql.get(2),
-            matches(" IN", (String) sql.get(2)));
+        assertEquals(3, sql.size(), sql.toString());
+        assertTrue(matches(" IN", (String) sql.get(2)),
+            (String) sql.get(2));
 
         assertRel(list, 4);
         assertRels(list, 4);
@@ -434,7 +445,8 @@ public class TestPagingResultObjectProvider
         em.close();
     }
 
-    public void testLastPageQuery()
+    @Test
+    void lastPageQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -457,17 +469,18 @@ public class TestPagingResultObjectProvider
         List list = (List) q.getResultList();
         PagingPC pc = (PagingPC) list.get(3);
         assertEquals(3, pc.getIntField());
-        assertEquals(list.toString(), 4, list.size());
-        assertEquals(sql.toString(), 2, sql.size());
+        assertEquals(4, list.size(), list.toString());
+        assertEquals(2, sql.size(), sql.toString());
         // for single result, should use standard select, not IN
-        assertFalse((String) sql.get(1),
-            matches(" IN ", (String) sql.get(1)));
+        assertFalse(matches(" IN ", (String) sql.get(1)),
+            (String) sql.get(1));
         sql.clear();
 
         em.close();
     }
 
-    public void testSingleResultPage()
+    @Test
+    void singleResultPage()
         throws Exception {
         initializePagingPCs();
 
@@ -480,20 +493,20 @@ public class TestPagingResultObjectProvider
 
         // we should get two selects: the initial select and the IN eager stmnt
         List list = extent.list();
-        assertEquals(list.toString(), 4, list.size());
+        assertEquals(4, list.size(), list.toString());
         assertRel(list, 4);
         assertRels(list, 4);
-        assertEquals(sql.toString(), 3, sql.size());
-        assertTrue((String) sql.get(1),
-            matches(" IN ", (String) sql.get(1)));
-        assertFalse((String) sql.get(2),
-            matches(" IN ", (String) sql.get(2)));
+        assertEquals(3, sql.size(), sql.toString());
+        assertTrue(matches(" IN ", (String) sql.get(1)),
+            (String) sql.get(1));
+        assertFalse(matches(" IN ", (String) sql.get(2)),
+            (String) sql.get(2));
         sql.clear();
 
         em.close();
     }
 
-  /*  public void testNonPagingRangeQuery()
+  /*  @Test void nonPagingRangeQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -541,7 +554,7 @@ public class TestPagingResultObjectProvider
         em.close();
     }
 /*
-    public void testPagingRangeQuery()
+    @Test void pagingRangeQuery()
         throws Exception {
         initializePagingPCs();
 
@@ -626,8 +639,8 @@ public class TestPagingResultObjectProvider
     private void initializePagingAppIdPCs() {
         EntityManager em =currentEntityManager();
         startTx(em);
-       deleteAll(PagingAppIdPC.class,em);
-       deleteAll(PagingHelperPC.class,em);
+        deleteAll(PagingAppIdPC.class,em);
+        deleteAll(PagingHelperPC.class,em);
         startTx(em);
 
         startTx(em);

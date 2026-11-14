@@ -18,18 +18,23 @@
  */
 package org.apache.openjpa.meta;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestGetMetaData extends SingleEMFTestCase {
+class TestGetMetaData extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(Item.class, Person.class, Artist.class, Painter.class,
             CLEAR_TABLES);
     }
 
-    public void testGetMetaData() {
+    @Test
+    void getMetaData() {
         assertNotNull(JPAFacadeHelper.getMetaData(emf, Item.class));
         assertNotNull(JPAFacadeHelper.getMetaData(emf, Person.class));
     }

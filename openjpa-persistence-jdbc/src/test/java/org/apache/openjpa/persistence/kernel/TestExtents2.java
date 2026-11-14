@@ -27,6 +27,8 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Iterator;
 
 import org.apache.openjpa.persistence.Extent;
@@ -34,25 +36,17 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest3;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestExtents2 extends BaseKernelTest {
+class TestExtents2 extends BaseKernelTest {
 
     private Object _oid1 = null;
     private Object _oid2 = null;
     private Object _oid3 = null;
 
-    public TestExtents2(String name) {
-        super(name);
-    }
-
-    /**
-     * Creates a new instance of TestExtents2
-     */
-    public TestExtents2() {
-    }
-
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
         RuntimeTest1 test1 = new RuntimeTest1();
@@ -76,12 +70,13 @@ public class TestExtents2 extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void testProperties() {
+    @Test
+    void properties() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest2.class, false);
         assertEquals(pm, ext.getEntityManager());
         assertEquals(RuntimeTest2.class, ext.getElementClass());
-        assertTrue(!ext.hasSubclasses());
+        assertFalse(ext.hasSubclasses());
 
         ext = pm.createExtent(RuntimeTest1.class, true);
         assertEquals(pm, ext.getEntityManager());
@@ -89,17 +84,19 @@ public class TestExtents2 extends BaseKernelTest {
         assertTrue(ext.hasSubclasses());
     }
 
-    public void testNoSubclasses() {
+    @Test
+    void noSubclasses() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, false);
         Iterator itr = ext.iterator();
         assertTrue(itr.hasNext());
         assertEquals(_oid1, pm.getObjectId(itr.next()));
-        assertTrue(!itr.hasNext());
+        assertFalse(itr.hasNext());
         ext.closeAll();
     }
 
-    public void testSubclasses() {
+    @Test
+    void subclasses() {
         OpenJPAEntityManager pm = getPM();
         Extent ext = pm.createExtent(RuntimeTest1.class, true);
 
@@ -122,7 +119,8 @@ public class TestExtents2 extends BaseKernelTest {
         assertEquals(1, test3Count);
     }
 
-    public void testContainsNewlyPersisted() {
+    @Test
+    void containsNewlyPersisted() {
         RuntimeTest1 test1 = new RuntimeTest1();
         RuntimeTest1 test2 = new RuntimeTest2();
 
@@ -159,7 +157,8 @@ public class TestExtents2 extends BaseKernelTest {
         }
     }
 
-    public void testNotContainsNewlyDeleted() {
+    @Test
+    void notContainsNewlyDeleted() {
         OpenJPAEntityManager pm = getPM();
 
         // pcl: 14 Oct 2003: default in 3.0 is now true, but this test

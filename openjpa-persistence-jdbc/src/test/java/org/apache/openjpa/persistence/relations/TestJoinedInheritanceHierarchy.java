@@ -18,22 +18,27 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestJoinedInheritanceHierarchy
+class TestJoinedInheritanceHierarchy
     extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
     	super.setUp(CLEAR_TABLES, InheritanceHierarchyConcrete.class,
     			InheritanceHierarchyAbstract.class);
     }
 
-    public void testInverseRelationNotNull() {
+    @Test
+    void inverseRelationNotNull() {
 
     	InheritanceHierarchyConcrete parent = new InheritanceHierarchyConcrete();
     	InheritanceHierarchyConcrete child = new InheritanceHierarchyConcrete();
@@ -59,7 +64,7 @@ public class TestJoinedInheritanceHierarchy
     	em.close();
 
     	for(InheritanceHierarchyAbstract childNode : parent.getChildren()) {
-    		assertNotNull("Parent should not be null", childNode.getParent());
+    		assertNotNull(childNode.getParent(), "Parent should not be null");
     	}
     }
 }

@@ -18,14 +18,15 @@
  */
 package org.apache.openjpa.persistence.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -45,20 +46,20 @@ import jakarta.persistence.metamodel.Attribute;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestPersistenceUnitUtil {
+class TestPersistenceUnitUtil {
 
 	private static EntityManagerFactory emf;
 	
 	private EntityManager em;
-	
-	@BeforeClass
-	public static void beforeAll() {
+
+    @BeforeAll
+    static void beforeAll() {
 		PersistenceConfiguration conf = new PersistenceConfiguration("dynamicaly-created-pu");
 		conf.property(PersistenceConfiguration.SCHEMAGEN_DATABASE_ACTION, "drop-and-create");
 		Stream.of(EagerEntity.class, LazyEmbed.class,
@@ -69,22 +70,22 @@ public class TestPersistenceUnitUtil {
 		
 		emf = Persistence.createEntityManagerFactory(conf);
 	}
-	
-	/*
-	 * Verifies an entity and its persistent attributes are in the proper load
-	 * state.
-	 */
-	@Test
-	public void testIsLoadedEager() {
+
+    /*
+     * Verifies an entity and its persistent attributes are in the proper load
+     * state.
+     */
+    @Test
+    void isLoadedEager() {
 		verifyIsLoadedEagerState(true);
 	}
 
-	/*
-	 * Verifies an entity and its persistent attributes are in the proper not loaded
-	 * state.
-	 */
-	@Test
-	public void testNotLoadedLazy() {
+    /*
+     * Verifies an entity and its persistent attributes are in the proper not loaded
+     * state.
+     */
+    @Test
+    void notLoadedLazy() {
 		verifyIsLoadedLazyState(false);
 	}
 
@@ -92,8 +93,8 @@ public class TestPersistenceUnitUtil {
      * Verifies an entity and its persistent attributes are in the proper
      * loaded state.
      */
-	@Test
-    public void testIsLoadedLazy() {
+    @Test
+    void isLoadedLazy() {
         verifyIsLoadedLazyState(true);
     }
 
@@ -101,16 +102,16 @@ public class TestPersistenceUnitUtil {
      * Verifies an entity and its persistent attributes are in the proper
      * NOT_LOADED state.
      */
-	@Test
-    public void testNotLoadedEager() {
+    @Test
+    void notLoadedEager() {
         verifyIsLoadedEagerState(false);
     }
 
     /**
      * Verifies the use of PersistenceUnitUtil with multiple PU's.
      */
-	@Test
-    public void testMultiplePUs() {
+    @Test
+    void multiplePUs() {
         OpenJPAEntityManagerFactorySPI emf1 =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.
             createEntityManagerFactory("PUtil1","org/apache/openjpa/persistence/util/persistence.xml");
@@ -157,8 +158,8 @@ public class TestPersistenceUnitUtil {
      * Verifies that an entity and attributes are considered loaded if they
      * are assigned by the application.
      */
-	@Test
-    public void testIsApplicationLoaded() {
+    @Test
+    void isApplicationLoaded() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         assertSame(emf, puu);
 
@@ -184,8 +185,8 @@ public class TestPersistenceUnitUtil {
 
     }
 
-	@Test
-    public void testPCMapEager() {
+    @Test
+    void pCMapEager() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 
         MapValEntity mve = new MapValEntity();
@@ -227,8 +228,8 @@ public class TestPersistenceUnitUtil {
      * Verify load state is not loaded for null relationships or relationships
      * set to null.
      */
-	@Test
-    public void testSetNullLazyRelationship() {
+    @Test
+    void setNullLazyRelationship() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 
         try {
@@ -285,8 +286,8 @@ public class TestPersistenceUnitUtil {
         }
     }
 
-	@Test
-    public void testSetNullEagerRelationship() {
+    @Test
+    void setNullEagerRelationship() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 
         try {
@@ -344,8 +345,8 @@ public class TestPersistenceUnitUtil {
         }
     }
 
-	@Test
-    public void testBasicTypeNotLoaded() {
+    @Test
+    void basicTypeNotLoaded() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         EntityManager em = emf.createEntityManager();
         Eager ee = createEagerEntity();
@@ -362,9 +363,9 @@ public class TestPersistenceUnitUtil {
         ee = em.find(EagerEntity.class, id);
         assertTrue(puu.isLoaded(ee));
     }
-	
-	@Test
-	public void testLoadingLazyAttributeByName() {
+
+    @Test
+    void loadingLazyAttributeByName() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		
 		LazyEntity e = emf.callInTransaction(em -> {
@@ -392,9 +393,9 @@ public class TestPersistenceUnitUtil {
         assertEquals("My ent", e.getRelEntities().get(0).getName());
 	
 	}
-	
-	@Test
-	public void testLoadingLazyAttribute() {
+
+    @Test
+    void loadingLazyAttribute() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		
 		LazyEntity e = emf.callInTransaction(em -> {
@@ -417,9 +418,9 @@ public class TestPersistenceUnitUtil {
         
         assertTrue(puu.isLoaded(e, "name"));
 	}
-	
-	@Test
-	public void testLoadingUnmanagedEntity() {
+
+    @Test
+    void loadingUnmanagedEntity() {
 		try {
 			PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 			LazyEntity e = emf.callInTransaction(em -> {
@@ -436,9 +437,9 @@ public class TestPersistenceUnitUtil {
 			assertTrue(ex.getMessage().contains("not persistent"));
 		}
 	}
-	
-	@Test
-	public void testLoadingEntity() {
+
+    @Test
+    void loadingEntity() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		LazyEntity e = emf.callInTransaction(em -> {
 			LazyEntity le = createLazyEntity();
@@ -452,15 +453,16 @@ public class TestPersistenceUnitUtil {
 		puu.load(det);
 		assertTrue(puu.isLoaded(det));
 	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testUnmanagedEntity() {
-		Eager ee = createEagerEntity();
-		emf.getPersistenceUnitUtil().getVersion(ee);
-	}
 
-	@Test
-	public void testVersionedEntity() {
+    @Test
+    void unmanagedEntity() {
+        Eager ee = createEagerEntity();
+        assertThrows(IllegalArgumentException.class, () ->
+            emf.getPersistenceUnitUtil().getVersion(ee));
+    }
+
+    @Test
+    void versionedEntity() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity e = emf.callInTransaction(em -> {
 			EagerEntity ee = createEagerEntity();
@@ -478,9 +480,9 @@ public class TestPersistenceUnitUtil {
 		
 		assertEquals(2, (int) puu.getVersion(e));
 	}
-	
-	@Test
-	public void testUnversionedEntity() {
+
+    @Test
+    void unversionedEntity() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		LazyEntity e = emf.callInTransaction(em -> {
 			LazyEntity le = createLazyEntity();
@@ -491,9 +493,9 @@ public class TestPersistenceUnitUtil {
 		e = em.find(LazyEntity.class, e.getId());
 		assertNull(puu.getVersion(e));
 	}
-	
-	@Test
-	public void testGetNonManagedEntityClass() {
+
+    @Test
+    void getNonManagedEntityClass() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity ee = createEagerEntity();
 		try {
@@ -504,8 +506,8 @@ public class TestPersistenceUnitUtil {
         }
 	}
 
-	@Test
-	public void testGetManagedEntityClass() {
+    @Test
+    void getManagedEntityClass() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		Eager e = emf.callInTransaction(em -> {
 			Eager e_ = createEagerEntity();
@@ -519,8 +521,8 @@ public class TestPersistenceUnitUtil {
 		assertEquals(EagerEntity.class, clazz);
 	}
 
-	@Test
-	public void testGetIdentifierManaged() {
+    @Test
+    void getIdentifierManaged() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity ee = createEagerEntity();
 		int expectedId = ee.getId();
@@ -534,15 +536,16 @@ public class TestPersistenceUnitUtil {
 		assertEquals(expectedId, id);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetIdentifierNonEntity() {
-		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
-		// Pass a non-entity object - should throw IllegalArgumentException
-		puu.getIdentifier("not an entity");
-	}
+    @Test
+    void getIdentifierNonEntity() {
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        assertThrows(IllegalArgumentException.class, () ->
+            // Pass a non-entity object - should throw IllegalArgumentException
+            puu.getIdentifier("not an entity"));
+    }
 
-	@Test
-	public void testIsInstanceManaged() {
+    @Test
+    void isInstanceManaged() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity ee = createEagerEntity();
 
@@ -554,16 +557,16 @@ public class TestPersistenceUnitUtil {
 		assertTrue(puu.isInstance(found, EagerEntity.class));
 	}
 
-	@Test
-	public void testIsInstanceNonManaged() {
+    @Test
+    void isInstanceNonManaged() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity ee = createEagerEntity();
 		// Not managed, so isInstance should return false
 		assertFalse(puu.isInstance(ee, EagerEntity.class));
 	}
 
-	@Test
-	public void testLoadAndIsLoaded() {
+    @Test
+    void loadAndIsLoaded() {
 		PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
 		EagerEntity ee = createEagerEntity();
 
@@ -697,20 +700,20 @@ public class TestPersistenceUnitUtil {
         assertFalse(pu.isLoaded(ent, "transField"));
     }
 
-    @AfterClass
-	public static void afterAll() {
+    @AfterAll
+    static void afterAll() {
 		if (emf != null && emf.isOpen()) {
 			emf.close();
 		}
 	}
-	
-	@Before
-	public void beforeEach() {
+
+    @BeforeEach
+    void beforeEach() {
 		em = emf.createEntityManager();
 	}
-	
-	@After
-	public void afterEach() {
+
+    @AfterEach
+    void afterEach() {
 		if (em != null && em.isOpen()) {
 			em.close();
 		}

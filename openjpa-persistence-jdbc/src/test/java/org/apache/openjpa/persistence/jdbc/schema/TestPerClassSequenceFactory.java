@@ -40,20 +40,12 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject;
 import org.apache.openjpa.persistence.jdbc.common.apps.PerClassTestObject2;
 import org.apache.openjpa.persistence.jdbc.common.apps.RuntimeTest1;
+import org.junit.jupiter.api.Test;
 
 
-public class TestPerClassSequenceFactory
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-
-
-    /** Creates a new instance of TestPerClassSequenceFactory */
-    public TestPerClassSequenceFactory() {
-    }
-    public TestPerClassSequenceFactory(String test) {
-        super(test);
-    }
-
-    public void testPerClassSequenceFactory()
+class TestPerClassSequenceFactory extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+    @Test
+    void perClassSequenceFactory()
         throws Exception {
         Map props=new HashMap();
         props.put("openjpa.Sequence", "table");

@@ -17,30 +17,29 @@
  * under the License.
  */
 package org.apache.openjpa.lib.util;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the {@link ReferenceHashSet}.
  *
  * @author Abe White
  */
-public class TestReferenceSet {
+class TestReferenceSet {
 
     private ReferenceHashSet _coll = new ReferenceHashSet(ReferenceStrength.WEAK);
 
     private Object _heldValue = 2;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         _coll.add(_heldValue);
         _coll.add(1);
     }
@@ -49,17 +48,17 @@ public class TestReferenceSet {
      * Tests basic add/contains/remove functionality.
      */
     @Test
-    public void testBasics() {
+    void basics() {
         Collection coll = new ReferenceHashSet(ReferenceStrength.WEAK);
         assertEquals(0, coll.size());
-        assertTrue(!coll.contains("foo"));
+        assertFalse(coll.contains("foo"));
 
         assertTrue(coll.add("foo"));
         assertEquals(1, coll.size());
         assertTrue(coll.contains("foo"));
         assertEquals("foo", coll.iterator().next());
 
-        assertTrue(!coll.remove("bar"));
+        assertFalse(coll.remove("bar"));
         assertEquals(1, coll.size());
         assertTrue(coll.remove("foo"));
         assertEquals(0, coll.size());
@@ -70,7 +69,7 @@ public class TestReferenceSet {
      * Test that values with strong references are not gc'd.
      */
     @Test
-    public void testHeldReference() {
+    void heldReference() {
         if (JavaVersions.VERSION >= 5)
             return;
 
@@ -83,13 +82,13 @@ public class TestReferenceSet {
      * Test that weak references are gc'd.
      */
     @Test
-    public void testWeakReference() {
+    void weakReference() {
         if (JavaVersions.VERSION >= 5)
             return;
 
         System.gc();
         System.gc();
-        assertTrue(!_coll.contains(1));
+        assertFalse(_coll.contains(1));
         assertEquals(1, _coll.size());
 
         int size = 0;
@@ -102,14 +101,14 @@ public class TestReferenceSet {
         assertEquals(2, _coll.size());
         assertTrue(_coll.contains("foo"));
         assertTrue(_coll.contains(_heldValue));
-        assertTrue(!_coll.contains(1));
+        assertFalse(_coll.contains(1));
     }
 
     /**
      * Test that values that have been replaced aren't expired.
      */
     @Test
-    public void testChangeValue() {
+    void changeValue() {
         if (JavaVersions.VERSION >= 5)
             return;
 

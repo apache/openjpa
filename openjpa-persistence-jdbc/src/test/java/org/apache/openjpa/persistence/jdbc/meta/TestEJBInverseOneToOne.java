@@ -18,21 +18,21 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertB;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestEJBInverseOneToOne
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-	public TestEJBInverseOneToOne(String name)
-	{
-		super(name);
-	}
+class TestEJBInverseOneToOne extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-	@Override
-    public void setUp ()
+    @BeforeEach
+    void setUp()
 	{
 		deleteAll(InvertA.class);
 		deleteAll(InvertB.class);
@@ -58,7 +58,8 @@ public class TestEJBInverseOneToOne
 	}
 
 
-	public void testLoad ()
+    @Test
+    void load()
 	{
 		InvertA a;
 		InvertB b;
@@ -75,7 +76,7 @@ public class TestEJBInverseOneToOne
 		b = (InvertB) aId;
 
 		assertNotNull(b.getInvertA().getTest());
-		assertEquals (b.getInvertA().getTest (), "testA");
+        assertEquals("testA", b.getInvertA().getTest());
 	}
 
 }

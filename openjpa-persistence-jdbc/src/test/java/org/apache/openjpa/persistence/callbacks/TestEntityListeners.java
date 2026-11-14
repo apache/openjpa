@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEntityListeners extends SingleEMFTestCase {
 
@@ -27,7 +33,7 @@ public class TestEntityListeners extends SingleEMFTestCase {
     private static final int GLOBAL_LISTENER_ENTITY = 2;
     private static final int DUPLICATE_LISTENER_ENTITY = 3;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;
@@ -44,15 +50,18 @@ public class TestEntityListeners extends SingleEMFTestCase {
         return "listener-pu";
     }
 
-    public void testEntityListeners() {
+    @Test
+    void entityListeners() {
         helper(ENTITY_LISTENER_ENTITY);
     }
 
-    public void testGlobalListeners() {
+    @Test
+    void globalListeners() {
         helper(GLOBAL_LISTENER_ENTITY);
     }
 
-    public void testDuplicateListeners() {
+    @Test
+    void duplicateListeners() {
         super.setUp(CLEAR_TABLES, DuplicateListenerEntity.class,
             "openjpa.Callbacks", "AllowsDuplicateListener=false");
         assertFalse(emf.getConfiguration().getCallbackOptionsInstance().getAllowsDuplicateListener());

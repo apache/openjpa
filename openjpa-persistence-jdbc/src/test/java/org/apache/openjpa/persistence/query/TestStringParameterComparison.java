@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -26,14 +28,16 @@ import jakarta.persistence.criteria.ParameterExpression;
 import jakarta.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Compares string parameters with each other, which databases such as Derby
  * only accept when both sides are cast to a sized VARCHAR.
  */
-public class TestStringParameterComparison extends SingleEMTestCase {
+class TestStringParameterComparison extends SingleEMTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(SimpleEntity.class, CLEAR_TABLES);
 
@@ -44,7 +48,8 @@ public class TestStringParameterComparison extends SingleEMTestCase {
         }
     }
 
-    public void testEqualityOfTwoStringParameters() {
+    @Test
+    void equalityOfTwoStringParameters() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = q.from(SimpleEntity.class);
@@ -61,7 +66,8 @@ public class TestStringParameterComparison extends SingleEMTestCase {
         assertEquals(0, query.getResultList().size());
     }
 
-    public void testStringParameterInParameters() {
+    @Test
+    void stringParameterInParameters() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<SimpleEntity> q = cb.createQuery(SimpleEntity.class);
         Root<SimpleEntity> root = q.from(SimpleEntity.class);

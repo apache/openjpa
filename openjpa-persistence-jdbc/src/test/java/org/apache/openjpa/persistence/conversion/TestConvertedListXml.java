@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,6 +29,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.ConverterValueHandler;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A collection converted as a whole whose column comes from a mapping file.
@@ -34,9 +38,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * OPENJPA-3017 it was put on the element mapping, and mapping the field
  * failed with "this mapping cannot have columns in this context".
  */
-public class TestConvertedListXml extends SingleEMFTestCase {
+class TestConvertedListXml extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(XmlConvertedListEntity.class, DROP_TABLES);
     }
@@ -46,19 +50,21 @@ public class TestConvertedListXml extends SingleEMFTestCase {
         return "converted-list-xml";
     }
 
-    public void testTheMappingFileColumnIsTheAttributeColumn() {
+    @Test
+    void theMappingFileColumnIsTheAttributeColumn() {
         ClassMapping cm = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance()
             .getMapping(XmlConvertedListEntity.class, null, true);
         FieldMapping fm = (FieldMapping) cm.getField("items");
-        assertNotNull("the converted attribute must be mapped", fm);
+        assertNotNull(fm, "the converted attribute must be mapped");
         assertEquals(1, fm.getColumns().length);
         assertEquals("ITEMS_TEXT", fm.getColumns()[0].getIdentifier().getName());
-        assertTrue("the converter must map the value as a whole, got "
-            + fm.getHandler(), fm.getHandler() instanceof ConverterValueHandler);
+        assertInstanceOf(ConverterValueHandler.class, fm.getHandler(), "the converter must map the value as a whole, got "
+            + fm.getHandler());
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlConvertedListEntity e = new XmlConvertedListEntity();
@@ -76,7 +82,8 @@ public class TestConvertedListXml extends SingleEMFTestCase {
         }
     }
 
-    public void testTheListIsLoadedEagerly() {
+    @Test
+    void theListIsLoadedEagerly() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             XmlConvertedListEntity e = new XmlConvertedListEntity();
@@ -91,7 +98,7 @@ public class TestConvertedListXml extends SingleEMFTestCase {
             detached = em.find(XmlConvertedListEntity.class, 1L);
         }
         List<Item> items = detached.getItems();
-        assertNotNull("a basic attribute without a fetch type is eager", items);
+        assertNotNull(items, "a basic attribute without a fetch type is eager");
         assertEquals(2, items.size());
         assertEquals("one", items.get(0).getName());
         assertEquals("two", items.get(1).getName());

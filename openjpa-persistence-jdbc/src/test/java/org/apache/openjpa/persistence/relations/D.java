@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -36,7 +37,11 @@ public class D {
 	@ForeignKey
 	private C c;
 
+	// D4_REL's primary key spans four String columns (id plus the key of VC),
+	// so the key columns are kept short to fit MySQL's and MariaDB's 3072 byte
+	// index limit with 4 byte utf8mb4 characters.
 	@Id
+	@Column(length = 64)
 	private String id;
 
 	private String a;

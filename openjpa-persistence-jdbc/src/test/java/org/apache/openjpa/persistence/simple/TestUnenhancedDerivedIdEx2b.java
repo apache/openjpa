@@ -18,11 +18,18 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests derived identity ex2b: @EmbeddedId with non-@Embeddable IdClass field + @MapsId.
@@ -32,9 +39,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * This test uses RUNTIME ENHANCEMENT (unenhanced entities).
  * Mirrors TCK core/derivedid/ex2b/Client.DIDTest.
  */
-public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
+class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(DROP_TABLES,
             UnenhancedDID2bEmployee.class,
@@ -43,7 +50,8 @@ public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
             "openjpa.RuntimeUnenhancedClasses", "supported");
     }
 
-    public void testEx2b_EmbeddedIdWithNonEmbeddableIdClass() {
+    @Test
+    void ex2bEmbeddedIdWithNonEmbeddableIdClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -69,22 +77,22 @@ public class TestUnenhancedDerivedIdEx2b extends SingleEMFTestCase {
             // Find
             UnenhancedDID2bDependent newDependent = em.find(UnenhancedDID2bDependent.class,
                 new UnenhancedDID2bDependentId("Obama", new UnenhancedDID2bEmployeeId("Java", "Duke")));
-            assertNotNull("Should find dependent by EmbeddedId key", newDependent);
+            assertNotNull(newDependent, "Should find dependent by EmbeddedId key");
             em.refresh(newDependent);
 
             // Query 1
             List depList = em.createQuery(
                 "Select d from UnenhancedDID2bDependent d where d.id.name='Obama' and d.emp.firstName='Java'")
                 .getResultList();
-            assertTrue("Query 1 should return results", depList.size() > 0);
-            assertSame("Should be same managed instance", dep1, depList.get(0));
+            assertTrue(depList.size() > 0, "Query 1 should return results");
+            assertSame(dep1, depList.get(0), "Should be same managed instance");
 
             // Query 2 (navigating into embedded id)
             List depList2 = em.createQuery(
                 "Select d from UnenhancedDID2bDependent d where d.id.name='Obama' and d.id.empPK.firstName='Java'")
                 .getResultList();
-            assertTrue("Query 2 should return results", depList2.size() > 0);
-            assertSame("Should be same managed instance", dep1, depList2.get(0));
+            assertTrue(depList2.size() > 0, "Query 2 should return results");
+            assertSame(dep1, depList2.get(0), "Should be same managed instance");
 
             em.getTransaction().commit();
         } catch (Exception e) {

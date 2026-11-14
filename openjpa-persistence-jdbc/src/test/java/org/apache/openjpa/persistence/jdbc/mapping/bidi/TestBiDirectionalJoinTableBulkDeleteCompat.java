@@ -16,9 +16,13 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The rows of a bi-directional join table are maintained by the inverse side,
@@ -30,13 +34,13 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  *
  * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2990">OPENJPA-2990</A>
  */
-public class TestBiDirectionalJoinTableBulkDeleteCompat
+class TestBiDirectionalJoinTableBulkDeleteCompat
     extends SQLListenerTestCase {
 
     private static final long SSN = 123456789;
     private static final String[] PHONES = {"+1-23-456", "+2-34-567"};
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Person.class, Address.class,
             "openjpa.Compatibility", "CleanupOwnedTablesOnBulkDelete=false");
@@ -44,7 +48,8 @@ public class TestBiDirectionalJoinTableBulkDeleteCompat
         sql.clear();
     }
 
-    public void testBulkDeleteFallsBackToTheInMemoryPath() {
+    @Test
+    void bulkDeleteFallsBackToTheInMemoryPath() {
         try (EntityManager em = emf.createEntityManager()) {
 	        em.getTransaction().begin();
 	        assertEquals(1, em.createQuery("delete from Person p where p.ssn=:ssn")

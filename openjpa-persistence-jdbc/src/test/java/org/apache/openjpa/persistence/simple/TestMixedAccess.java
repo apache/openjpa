@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entities with @Id on field + @Column on getters (without
@@ -28,20 +33,22 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * a MappedSuperclass has @Id/@Version on fields and @Column on getters,
  * and a subclass entity has only @Column on getters.
  */
-public class TestMixedAccess extends SingleEMFTestCase {
+class TestMixedAccess extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(MixedAccessBase.class, MixedAccessChild.class, CLEAR_TABLES);
     }
 
-    public void testMetadataResolution() {
+    @Test
+    void metadataResolution() {
         EntityManager em = emf.createEntityManager();
         assertNotNull(em);
         em.close();
     }
 
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

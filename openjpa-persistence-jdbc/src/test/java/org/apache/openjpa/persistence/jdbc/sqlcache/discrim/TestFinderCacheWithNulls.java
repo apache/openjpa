@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache.discrim;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -25,6 +28,8 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 public class TestFinderCacheWithNulls extends SingleEMFTestCase {
@@ -33,12 +38,13 @@ public class TestFinderCacheWithNulls extends SingleEMFTestCase {
     private ClassMapping clsMapping_UserData;
     private ClassMapping clsMapping_AbstractExtValue;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(AbstractExtValue.class, ComposedPK.class, ExtValue1.class, UserData.class);
     }
 
-    public void test() {
+    @Test
+    void test() {
 
         init();
         initData();

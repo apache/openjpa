@@ -18,24 +18,26 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 // This test case extends TestCase directly instead of SingleEMTestCase with the
 // corresponding setup() method because that scheme goes down a different code
 // path and doesn't test the intended code change.
-public class TestMissingMetaData extends TestCase {
+class TestMissingMetaData {
     private OpenJPAEntityManagerFactory emf;
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Map<String, String> props = new HashMap<>();
         props.put("openjpa.RuntimeUnenhancedClasses", "supported");
         // This test case uses a different persistence xml file because
@@ -56,7 +58,8 @@ public class TestMissingMetaData extends TestCase {
      * The skip is logged, so a forgotten annotation stays diagnosable; see
      * MetamodelImpl and JDBCBrokerFactory.
      */
-    public void testMissingMetaData() {
+    @Test
+    void missingMetaData() {
         emf.createEntityManager().close();
     }
 
@@ -64,19 +67,14 @@ public class TestMissingMetaData extends TestCase {
      * The metamodel is built over the same class list, and must skip the
      * unmanaged class rather than fail.
      */
-    public void testMissingMetaDataInMetamodel() {
+    @Test
+    void missingMetaDataInMetamodel() {
         assertNotNull(emf.getMetamodel());
     }
 
-    @Override
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         emf.close();
         emf = null;
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestMissingMetaData.class);
-
-    }
-
 }

@@ -18,22 +18,28 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that JPA 3.2 allows primary key classes that are not public
  * and not Serializable.
  */
-public class TestNonPublicIdClass extends SingleEMFTestCase {
+class TestNonPublicIdClass extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES, NonPublicIdEntity.class);
     }
 
-    public void testPersistAndFind() {
+    @Test
+    void persistAndFind() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         NonPublicIdEntity e = new NonPublicIdEntity();
@@ -52,7 +58,8 @@ public class TestNonPublicIdClass extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testFindMultiple() {
+    @Test
+    void findMultiple() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         NonPublicIdEntity e1 = new NonPublicIdEntity();

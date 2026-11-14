@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -27,16 +29,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * The AttributeConverter instance of an element collection is cached on the
  * shared {@link ConverterElementHandler}; concurrent conversions must
  * construct and publish exactly one instance. See OPENJPA-2954.
  */
-public class TestConverterElementHandlerCaching {
+class TestConverterElementHandlerCaching {
 
     private static final int THREADS = 8;
 
@@ -63,7 +63,7 @@ public class TestConverterElementHandlerCaching {
     }
 
     @Test
-    public void testSingleConverterInstanceUnderConcurrency() throws Exception {
+    void singleConverterInstanceUnderConcurrency() throws Exception {
         CONSTRUCTED.set(0);
         SECOND_CONSTRUCTION = new CountDownLatch(2);
 

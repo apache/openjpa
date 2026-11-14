@@ -18,20 +18,24 @@
  */
 package org.apache.openjpa.event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestLifecycleListener
-    extends SingleEMFTestCase {
+class TestLifecycleListener extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
-    public void testMutationsInLifecycleListener() {
+    @Test
+    void mutationsInLifecycleListener() {
         emf.addLifecycleListener(new AbstractLifecycleListener() {
             @Override
             public void beforePersist(LifecycleEvent event) {

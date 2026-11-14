@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.ee;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,7 +38,8 @@ import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 
 import org.apache.openjpa.util.InternalException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -47,14 +52,10 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-import junit.framework.AssertionFailedError;
-
-import static org.junit.Assert.*;
-
 /**
  * Test jakarta.transaction.TransactionManager OSGi service discovery.
  */
-public class TestOSGiManagedRuntime {
+class TestOSGiManagedRuntime {
 
     private static final String TXN_MANAGER_CLASS_NAME = "jakarta.transaction.TransactionManager";
 
@@ -374,7 +375,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPreStartPostStop() throws Throwable {
+    void txnServiceDiscoveryPreStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
         context.setTransactionManager(TXN_MANAGER);
@@ -413,7 +414,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPreStartPreStop() throws Throwable {
+    void txnServiceDiscoveryPreStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
         context.setTransactionManager(TXN_MANAGER);
@@ -448,7 +449,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPostStartPostStop() throws Throwable {
+    void txnServiceDiscoveryPostStartPostStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
 
@@ -484,7 +485,7 @@ public class TestOSGiManagedRuntime {
      * @throws Throwable
      */
     @Test
-    public void testTxnServiceDiscoveryPostStartPreStop() throws Throwable {
+    void txnServiceDiscoveryPostStartPreStop() throws Throwable {
 
         TestBundleContext context = new TestBundleContext();
 

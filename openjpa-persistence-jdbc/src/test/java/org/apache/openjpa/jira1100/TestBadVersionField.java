@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.jira1100;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests that entity with unsupported version type can not be used.
@@ -33,13 +37,14 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestBadVersionField extends SingleEMFTestCase {
-    @Override
+class TestBadVersionField extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, BadVersionFieldEntity.class);
     }
 
-    public void testWrongVersionFieldNotSupported() {
+    @Test
+    void wrongVersionFieldNotSupported() {
         try {
             EntityManager em = emf.createEntityManager();
             fail("Expected to fail with unsupported Version field type");

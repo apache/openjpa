@@ -18,11 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestQueryDefaultEviction extends AbstractQueryCacheTest {
-    @Override
+class TestQueryDefaultEviction extends AbstractQueryCacheTest {
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
@@ -34,13 +39,15 @@ public class TestQueryDefaultEviction extends AbstractQueryCacheTest {
      * Verify that the persistent unit property configuration is enabling
      * the DEFAULT Eviction Policy.
      */
-    public void testTimestampEvictionEnablement() {
+    @Test
+    void timestampEvictionEnablement() {
         ConcurrentQueryCache qc = getQueryCache();
         EvictPolicy ep = qc.getEvictPolicy();
-        assertTrue(ep == EvictPolicy.DEFAULT);
+        assertSame(ep, EvictPolicy.DEFAULT);
     }
 
-    public void testLoadQueries() {
+    @Test
+    void loadQueries() {
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!checkSupportsIdentityGenerationType()) {
             return;

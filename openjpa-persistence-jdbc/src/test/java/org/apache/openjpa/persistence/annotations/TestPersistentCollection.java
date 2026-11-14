@@ -18,22 +18,29 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for PersistentCollection Annotation
  *
  * @author Albert Lee
  */
-public class TestPersistentCollection extends SingleEMFTestCase {
+@DynamicEnhancementTest
+class TestPersistentCollection extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(PColl_EntityA.class, PColl_EmbedB.class, PColl_EntityC.class,
                 PColl_EntityA1.class, PColl_EntityB.class, PColl_EntityStringEager.class,
@@ -41,7 +48,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testPersistentCollectionOfEmbeddables() {
+    @Test
+    void persistentCollectionOfEmbeddables() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -84,7 +92,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testPersistentCollectionOfEntities() {
+    @Test
+    void persistentCollectionOfEntities() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -127,7 +136,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
         }
     }
 
-    public void testPersistentCollectionStringsLazy() {
+    @Test
+    void persistentCollectionStringsLazy() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -157,7 +167,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
         }
     }
 
-    public void testPersistentCollectionStringsEager() {
+    @Test
+    void persistentCollectionStringsEager() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

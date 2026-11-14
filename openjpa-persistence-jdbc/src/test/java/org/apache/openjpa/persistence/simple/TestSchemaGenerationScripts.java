@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -29,46 +30,43 @@ import java.util.Locale;
 import java.util.Map;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.schema.SchemaTool;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests JPA schema generation script output via
  * {@code jakarta.persistence.schema-generation.scripts.action}.
  */
-public class TestSchemaGenerationScripts extends SingleEMFTestCase {
+class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
-    private File tempDir;
-
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
-        tempDir = Files.createTempDirectory("openjpa-schema-gen").toFile();
         // Use AllFieldTypes as a simple entity to generate DDL for
         setUp(AllFieldTypes.class);
     }
 
-    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-        if (tempDir != null) {
-            File[] files = tempDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    f.delete();
-                }
-            }
-            tempDir.delete();
-        }
+        JDBCConfiguration conf = (JDBCConfiguration) createEMF().getConfiguration();
+        SchemaTool.clearDroppedTables(conf);   // forget the intentional drops
+        createEMF(AllFieldTypes.class);
     }
 
     /**
      * Test that scripts.action=drop-and-create with database.action=none
      * generates DDL script files without touching the database.
      */
-    public void testScriptsActionDropAndCreate() throws IOException {
+    @Test
+    void scriptsActionDropAndCreate(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "create.sql");
         File dropFile = new File(tempDir, "drop.sql");
 
@@ -86,22 +84,23 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script file should exist", createFile.exists());
-        assertTrue("Drop script file should exist", dropFile.exists());
+        assertTrue(createFile.exists(), "Create script file should exist");
+        assertTrue(dropFile.exists(), "Drop script file should exist");
 
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
 
-        assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
-        assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE");
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP");
     }
 
     /**
      * Test that scripts.action=create generates only the create script.
      */
-    public void testScriptsActionCreateOnly() throws IOException {
+    @Test
+    void scriptsActionCreateOnly(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "create_only.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -116,23 +115,24 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script file should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script file should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE");
     }
 
     /**
      * Test that file: URIs are properly resolved to file paths.
      */
-    public void testFileUriScriptTarget() throws IOException {
+    @Test
+    void fileUriScriptTarget(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "uri_create.sql");
         File dropFile = new File(tempDir, "uri_drop.sql");
 
         // Use file: URI format (same as TCK)
         String createUri = createFile.toURI().toString();
         String dropUri = dropFile.toURI().toString();
-        assertTrue("URI should start with file:", createUri.startsWith("file:"));
+        assertTrue(createUri.startsWith("file:"), "URI should start with file:");
 
         EntityManagerFactory emf2 = createEMF(
             AllFieldTypes.class,
@@ -146,15 +146,16 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script should exist at URI path", createFile.exists());
-        assertTrue("Drop script should exist at URI path", dropFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist at URI path");
+        assertTrue(dropFile.exists(), "Drop script should exist at URI path");
     }
 
     /**
      * Test that PrintWriter objects can be used as script targets
      * (JPA spec allows Writer objects, not just string URLs).
      */
-    public void testPrintWriterScriptTargets() {
+    @Test
+    void printWriterScriptTargets() {
         StringWriter createWriter = new StringWriter();
         StringWriter dropWriter = new StringWriter();
         PrintWriter pw1 = new PrintWriter(createWriter);
@@ -177,16 +178,17 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String createSql = createWriter.toString();
         String dropSql = dropWriter.toString();
 
-        assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
-        assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE, got: " + createSql);
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP, got: " + dropSql);
     }
 
     /**
      * Test that Writer objects (not just PrintWriter) work as script targets.
      */
-    public void testWriterScriptTargets() {
+    @Test
+    void writerScriptTargets() {
         StringWriter createWriter = new StringWriter();
         StringWriter dropWriter = new StringWriter();
 
@@ -205,16 +207,17 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         String createSql = createWriter.toString();
         String dropSql = dropWriter.toString();
 
-        assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
-        assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE, got: " + createSql);
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP, got: " + dropSql);
     }
 
     /**
      * Test that PrintWriter wrapping a File works (mirrors TCK pattern).
      */
-    public void testPrintWriterToFile() throws IOException {
+    @Test
+    void printWriterToFile(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "pw_file_create.sql");
         File dropFile = new File(tempDir, "pw_file_drop.sql");
         PrintWriter pw1 = new PrintWriter(createFile);
@@ -235,22 +238,23 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         pw1.close();
         pw2.close();
 
-        assertTrue("Create script file should exist", createFile.exists());
-        assertTrue("Drop script file should exist", dropFile.exists());
+        assertTrue(createFile.exists(), "Create script file should exist");
+        assertTrue(dropFile.exists(), "Drop script file should exist");
 
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
 
-        assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
-        assertTrue("Drop script should contain DROP, got: " + dropSql,
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE, got: " + createSql);
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP, got: " + dropSql);
     }
 
     /**
      * Test PrintWriter with scripts.action=create (create-only).
      */
-    public void testPrintWriterCreateOnly() {
+    @Test
+    void printWriterCreateOnly() {
         StringWriter createWriter = new StringWriter();
         PrintWriter pw = new PrintWriter(createWriter);
 
@@ -267,8 +271,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
         pw.flush();
         String createSql = createWriter.toString();
-        assertTrue("Create script should contain CREATE TABLE, got: " + createSql,
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE, got: " + createSql);
     }
 
     /**
@@ -276,7 +280,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * (execute a previously generated DDL script to create the schema).
      * This mirrors the TCK annotation test pattern.
      */
-    public void testFileUriScriptSource() throws IOException {
+    @Test
+    void fileUriScriptSource(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         // Step 1: Generate create and drop scripts to files
         File createFile = new File(tempDir, "source_create.sql");
         File dropFile = new File(tempDir, "source_drop.sql");
@@ -294,11 +299,11 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
-        assertTrue("Drop script should exist", dropFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
+        assertTrue(dropFile.exists(), "Drop script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE");
 
         // Step 2: Execute drop then create scripts via script-source
         // with file: URIs (this is what the TCK annotation tests do).
@@ -336,7 +341,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * The "test" PU in persistence.xml has SynchronizeMappings=buildSchema,
      * which mirrors the TCK's global provider-specific property setting.
      */
-    public void testTckAnnotationPattern() throws Exception {
+    @Test
+    void tckAnnotationPattern(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "tck_create.sql");
         File dropFile = new File(tempDir, "tck_drop.sql");
 
@@ -355,14 +361,14 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf1);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
-        assertTrue("Drop script should exist", dropFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
+        assertTrue(dropFile.exists(), "Drop script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
-        assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE");
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP");
 
         // Step 2: Execute drop-and-create via scripts to ensure clean state
         EntityManagerFactory emf2 = createEMF(
@@ -452,7 +458,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Test database.action=drop with drop-script-source file: URI
      * actually drops the table. Mirrors the TCK annotation test pattern.
      */
-    public void testGenerateSchemaDropScriptExecution() throws Exception {
+    @Test
+    void generateSchemaDropScriptExecution(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         // Step 1: Generate drop script (table already exists from setUp)
         File dropFile = new File(tempDir, "tck_drop.sql");
         EntityManagerFactory emf2 = createEMF(
@@ -467,10 +474,10 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Drop script should exist", dropFile.exists());
+        assertTrue(dropFile.exists(), "Drop script should exist");
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
-        assertTrue("Drop script should contain DROP",
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP"));
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP"),
+            "Drop script should contain DROP");
 
         // Step 2: Execute drop script via database.action=drop
         // Create an EM to trigger synchronizeMappings via newBrokerImpl
@@ -513,7 +520,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Verify that ALTER TABLE ADD CONSTRAINT FOREIGN KEY is included for
      * @JoinTable with @ForeignKey annotations.
      */
-    public void testJoinTableForeignKeyInScripts() throws Exception {
+    @Test
+    void joinTableForeignKeyInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "jt_create.sql");
         File dropFile = new File(tempDir, "jt_drop.sql");
 
@@ -530,29 +538,29 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         System.out.println("=== JoinTable Create Script ===");
         System.out.println(createSql);
         System.out.println("=== End ===");
 
         String createUpper = createSql.toUpperCase(Locale.ROOT);
-        assertTrue("Should contain CREATE TABLE SCHEMAGENCOURSE",
-            createUpper.contains("CREATE TABLE SCHEMAGENCOURSE"));
-        assertTrue("Should contain CREATE TABLE SCHEMAGENSTUDENT",
-            createUpper.contains("CREATE TABLE SCHEMAGENSTUDENT"));
-        assertTrue("Should contain CREATE TABLE SCHEMAGEN_COURSE_STUDENT",
-            createUpper.contains("CREATE TABLE SCHEMAGEN_COURSE_STUDENT"));
-        assertTrue("Should contain ALTER TABLE with FK constraint",
-            createUpper.contains("ALTER TABLE"));
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENCOURSE"),
+            "Should contain CREATE TABLE SCHEMAGENCOURSE");
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENSTUDENT"),
+            "Should contain CREATE TABLE SCHEMAGENSTUDENT");
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGEN_COURSE_STUDENT"),
+            "Should contain CREATE TABLE SCHEMAGEN_COURSE_STUDENT");
+        assertTrue(createUpper.contains("ALTER TABLE"),
+            "Should contain ALTER TABLE with FK constraint");
         // "CONSTRAINT <name> FOREIGN KEY", the form the TCK checks. Dictionaries that
         // name constraints after their definition (Informix) only get the name checked.
         boolean nameFirst = !DBDictionary.CONS_NAME_AFTER.equals(getDBDictionary().constraintNameMode);
         String fkSuffix = nameFirst ? " FOREIGN KEY" : "";
-        assertTrue("Should contain CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix,
-            createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix));
-        assertTrue("Should contain CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix,
-            createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix));
+        assertTrue(createUpper.contains("CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix),
+            "Should contain CONSTRAINT COURSEIDCONSTRAINT" + fkSuffix);
+        assertTrue(createUpper.contains("CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix),
+            "Should contain CONSTRAINT STUDENTIDCONSTRAINT" + fkSuffix);
 
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         System.out.println("=== JoinTable Drop Script ===");
@@ -564,7 +572,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * Verify that CREATE INDEX statements are included in generated scripts
      * for entities with @Index annotations.
      */
-    public void testIndexAnnotationInScripts() throws Exception {
+    @Test
+    void indexAnnotationInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "index_create.sql");
         File dropFile = new File(tempDir, "index_drop.sql");
 
@@ -582,25 +591,25 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         System.out.println("=== Index Create Script ===");
         System.out.println(createSql);
         System.out.println("=== End ===");
 
-        assertTrue("Create script should contain CREATE TABLE",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"));
-        assertTrue("Create script should contain CREATE INDEX for IDX_VAL_DESC",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_VAL_DESC"));
-        assertTrue("Create script should contain CREATE INDEX for IDX_MULTI",
-            createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_MULTI"));
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE TABLE"),
+            "Create script should contain CREATE TABLE");
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_VAL_DESC"),
+            "Create script should contain CREATE INDEX for IDX_VAL_DESC");
+        assertTrue(createSql.toUpperCase(Locale.ROOT).contains("CREATE INDEX IDX_MULTI"),
+            "Create script should contain CREATE INDEX for IDX_MULTI");
 
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         System.out.println("=== Index Drop Script ===");
         System.out.println(dropSql);
         System.out.println("=== End ===");
-        assertTrue("Drop script should contain DROP TABLE",
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"));
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"),
+            "Drop script should contain DROP TABLE");
     }
 
     /**
@@ -608,7 +617,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * when used via Persistence.generateSchema() with a Writer target.
      * This mirrors the TCK executeDropScriptReaderTest pattern.
      */
-    public void testScriptsActionDropOnlyWithWriter() throws Exception {
+    @Test
+    void scriptsActionDropOnlyWithWriter() throws Exception {
         StringWriter dropWriter = new StringWriter();
         PrintWriter pw = new PrintWriter(dropWriter);
 
@@ -638,11 +648,11 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
 
         pw.flush();
         String dropSql = dropWriter.toString();
-        assertTrue("Drop script should not be empty when using "
-            + "scripts.action=drop, got empty string",
-            dropSql.length() > 0);
-        assertTrue("Drop script should contain DROP TABLE, got: " + dropSql,
-            dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"));
+        assertTrue(dropSql.length() > 0,
+            "Drop script should not be empty when using "
+            + "scripts.action=drop, got empty string");
+        assertTrue(dropSql.toUpperCase(Locale.ROOT).contains("DROP TABLE"),
+            "Drop script should contain DROP TABLE, got: " + dropSql);
     }
 
     /**
@@ -650,7 +660,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * includes ALTER TABLE DROP CONSTRAINT before DROP TABLE.
      * Mirrors the TCK orderColumnTest drop script expectations.
      */
-    public void testDropScriptContainsForeignKeyDrop() throws Exception {
+    @Test
+    void dropScriptContainsForeignKeyDrop(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "fk_create.sql");
         File dropFile = new File(tempDir, "fk_drop.sql");
 
@@ -668,7 +679,7 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Drop script should exist", dropFile.exists());
+        assertTrue(dropFile.exists(), "Drop script should exist");
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         String dropUpper = dropSql.toUpperCase(Locale.ROOT);
 
@@ -681,15 +692,15 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             && (dropUpper.contains("DROP CONSTRAINT")
                 || dropUpper.contains("DROP FOREIGN KEY"));
         boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
-        assertTrue("Drop script should contain ALTER TABLE DROP "
+        assertTrue(hasAlterDrop || hasCascade,
+            "Drop script should contain ALTER TABLE DROP "
             + "CONSTRAINT/FOREIGN KEY or CASCADE CONSTRAINTS for FK. Got: "
-            + dropSql,
-            hasAlterDrop || hasCascade);
+            + dropSql);
 
-        assertTrue("Drop script should contain DROP TABLE SCHEMAGENEMP",
-            dropUpper.contains("DROP TABLE SCHEMAGENEMP"));
-        assertTrue("Drop script should contain DROP TABLE SCHEMAGENDEPT",
-            dropUpper.contains("DROP TABLE SCHEMAGENDEPT"));
+        assertTrue(dropUpper.contains("DROP TABLE SCHEMAGENEMP"),
+            "Drop script should contain DROP TABLE SCHEMAGENEMP");
+        assertTrue(dropUpper.contains("DROP TABLE SCHEMAGENDEPT"),
+            "Drop script should contain DROP TABLE SCHEMAGENDEPT");
     }
 
     /**
@@ -697,7 +708,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * the order column in the DDL.
      * Mirrors the TCK orderColumnTest create script expectations.
      */
-    public void testOrderColumnInCreateScript() throws Exception {
+    @Test
+    void orderColumnInCreateScript(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "oc_create.sql");
 
         EntityManagerFactory emf2 = createEMF(
@@ -711,17 +723,17 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             closeEMF(emf2);
         }
 
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String createUpper = createSql.toUpperCase(Locale.ROOT);
 
-        assertTrue("Create script should contain THEORDERCOLUMN. Got: "
-            + createSql,
-            createUpper.contains("THEORDERCOLUMN"));
-        assertTrue("Create script should contain SCHEMAGENEMP",
-            createUpper.contains("CREATE TABLE SCHEMAGENEMP"));
-        assertTrue("Create script should contain FK_DEPT",
-            createUpper.contains("FK_DEPT"));
+        assertTrue(createUpper.contains("THEORDERCOLUMN"),
+            "Create script should contain THEORDERCOLUMN. Got: "
+            + createSql);
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENEMP"),
+            "Create script should contain SCHEMAGENEMP");
+        assertTrue(createUpper.contains("FK_DEPT"),
+            "Create script should contain FK_DEPT");
     }
 
     /**
@@ -729,7 +741,8 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
      * in create/drop scripts.
      * Mirrors the TCK secondaryTableTest expectations.
      */
-    public void testSecondaryTableInScripts() throws Exception {
+    @Test
+    void secondaryTableInScripts(@TempDir(cleanup = CleanupMode.ALWAYS) File tempDir) throws Exception {
         File createFile = new File(tempDir, "sec_create.sql");
         File dropFile = new File(tempDir, "sec_drop.sql");
 
@@ -748,27 +761,27 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
         }
 
         // Check create script
-        assertTrue("Create script should exist", createFile.exists());
+        assertTrue(createFile.exists(), "Create script should exist");
         String createSql = new String(Files.readAllBytes(createFile.toPath()));
         String createUpper = createSql.toUpperCase(Locale.ROOT);
 
-        assertTrue("Create script should contain primary table",
-            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"));
-        assertTrue("Create script should contain secondary table",
-            createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"));
-        assertTrue("Create script should contain SECONDARY_ID column",
-            createUpper.contains("SECONDARY_ID"));
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE"),
+            "Create script should contain primary table");
+        assertTrue(createUpper.contains("CREATE TABLE SCHEMAGENSIMPLE_SECOND"),
+            "Create script should contain secondary table");
+        assertTrue(createUpper.contains("SECONDARY_ID"),
+            "Create script should contain SECONDARY_ID column");
 
         // Check drop script
-        assertTrue("Drop script should exist", dropFile.exists());
+        assertTrue(dropFile.exists(), "Drop script should exist");
         String dropSql = new String(Files.readAllBytes(dropFile.toPath()));
         String dropUpper = dropSql.toUpperCase(Locale.ROOT);
 
-        assertTrue("Drop script should contain DROP TABLE SCHEMAGENSIMPLE",
-            dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE"));
-        assertTrue("Drop script should contain DROP TABLE "
-            + "SCHEMAGENSIMPLE_SECOND",
-            dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE_SECOND"));
+        assertTrue(dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE"),
+            "Drop script should contain DROP TABLE SCHEMAGENSIMPLE");
+        assertTrue(dropUpper.contains("DROP TABLE SCHEMAGENSIMPLE_SECOND"),
+            "Drop script should contain DROP TABLE "
+            + "SCHEMAGENSIMPLE_SECOND");
 
         // FK constraint drop. MariaDB/MySQL legitimately emit
         // "ALTER TABLE ... DROP FOREIGN KEY" (their dictionaries override
@@ -777,9 +790,9 @@ public class TestSchemaGenerationScripts extends SingleEMFTestCase {
             && (dropUpper.contains("DROP CONSTRAINT")
                 || dropUpper.contains("DROP FOREIGN KEY"));
         boolean hasCascade = dropUpper.contains("CASCADE CONSTRAINTS");
-        assertTrue("Drop script should contain ALTER TABLE DROP "
+        assertTrue(hasAlterDrop || hasCascade,
+            "Drop script should contain ALTER TABLE DROP "
             + "CONSTRAINT/FOREIGN KEY or CASCADE CONSTRAINTS for secondary "
-            + "table FK. Got: " + dropSql,
-            hasAlterDrop || hasCascade);
+            + "table FK. Got: " + dropSql);
     }
 }

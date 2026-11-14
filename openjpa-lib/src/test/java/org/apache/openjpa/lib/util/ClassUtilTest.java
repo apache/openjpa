@@ -16,81 +16,94 @@
  */
 package org.apache.openjpa.lib.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class ClassUtilTest {
-	
+class ClassUtilTest {
+
 	private static final Logger logger = Logger.getLogger(ClassUtilTest.class.getCanonicalName());
 
-    @Test
-    public void testToClass() {
-        Assert.assertEquals(this.getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest"));
-
-        Assert.assertEquals(new ClassUtilTest[0].getClass(), toClass("org.apache.openjpa.lib.util.ClassUtilTest[]"));
-
-        Assert.assertEquals(Integer.class, toClass("java.lang.Integer"));
-
-        Assert.assertEquals(byte.class, toClass("byte"));
-        Assert.assertEquals(char.class, toClass("char"));
-        Assert.assertEquals(double.class, toClass("double"));
-        Assert.assertEquals(float.class, toClass("float"));
-        Assert.assertEquals(int.class, toClass("int"));
-        Assert.assertEquals(long.class, toClass("long"));
-        Assert.assertEquals(short.class, toClass("short"));
-        Assert.assertEquals(boolean.class, toClass("boolean"));
-        Assert.assertEquals(void.class, toClass("void"));
-
-        Assert.assertEquals(new float[0].getClass(), toClass("float[]"));
-        Assert.assertEquals(new float[0][0].getClass(), toClass("float[][]"));
-        Assert.assertEquals(new long[0][0][0].getClass(), toClass("long[][][]"));
+    @ParameterizedTest(name = "#{index} toClass(\"{0}\") = {1}")
+    @MethodSource("toClassArguments")
+    void testToClass(String name, Class<?> expected) {
+        assertEquals(expected, toClass(name));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void nonExistingClass() {
-        toClass("does.not.Exist");
+    private static Stream<Arguments> toClassArguments() {
+        return Stream.of(
+            Arguments.of("org.apache.openjpa.lib.util.ClassUtilTest", ClassUtilTest.class),
+            Arguments.of("org.apache.openjpa.lib.util.ClassUtilTest[]", ClassUtilTest[].class),
+            Arguments.of("java.lang.Integer", Integer.class),
+            Arguments.of("byte", byte.class),
+            Arguments.of("char", char.class),
+            Arguments.of("double", double.class),
+            Arguments.of("float", float.class),
+            Arguments.of("int", int.class),
+            Arguments.of("long", long.class),
+            Arguments.of("short", short.class),
+            Arguments.of("boolean", boolean.class),
+            Arguments.of("void", void.class),
+            Arguments.of("float[]", float[].class),
+            Arguments.of("float[][]", float[][].class),
+            Arguments.of("long[][][]", long[][][].class)
+        );
+    }
+
+    @Test
+    void nonExistingClass() {
+        assertThrows(IllegalArgumentException.class, () -> toClass("does.not.Exist"));
     }
 
     private Class<?> toClass(String clazz) {
         return ClassUtil.toClass(clazz, false, this.getClass().getClassLoader());
     }
 
-    @Test
-    public void testGetClassName() {
-        Assert.assertEquals("ClassUtilTest", ClassUtil.getClassName(ClassUtilTest.class));
-        Assert.assertEquals("ClassUtilTest$MyInnerClass", ClassUtil.getClassName(MyInnerClass.class));
+    @ParameterizedTest(name = "#{index} getClassName({0}) = \"{1}\"")
+    @MethodSource("getClassNameArguments")
+    void getClassName(Class<?> clazz, String expected) {
+        assertEquals(expected, ClassUtil.getClassName(clazz));
+    }
 
-        // anonymous class
-        Assert.assertEquals("ClassUtilTest$1", ClassUtil.getClassName(INSTANCE.getClass()));
-
-        // primitives
-        Assert.assertEquals("byte", ClassUtil.getClassName(byte.class));
-        Assert.assertEquals("char", ClassUtil.getClassName(char.class));
-        Assert.assertEquals("double", ClassUtil.getClassName(double.class));
-        Assert.assertEquals("float", ClassUtil.getClassName(float.class));
-        Assert.assertEquals("int", ClassUtil.getClassName(int.class));
-        Assert.assertEquals("long", ClassUtil.getClassName(long.class));
-        Assert.assertEquals("short", ClassUtil.getClassName(short.class));
-        Assert.assertEquals("boolean", ClassUtil.getClassName(boolean.class));
-        Assert.assertEquals("void", ClassUtil.getClassName(void.class));
-
-        // arrays
-        Assert.assertEquals("long[]", ClassUtil.getClassName(long[].class));
-        Assert.assertEquals("long[][]", ClassUtil.getClassName(long[][].class));
-        Assert.assertEquals("float[][][]", ClassUtil.getClassName(float[][][].class));
-
-        Assert.assertEquals("ClassUtilTest[]", ClassUtil.getClassName(ClassUtilTest[].class));
-        Assert.assertEquals("ClassUtilTest$MyInnerClass[]", ClassUtil.getClassName(MyInnerClass[].class));
-        Assert.assertEquals("ClassUtilTest$MyInnerClass[][]", ClassUtil.getClassName(MyInnerClass[][].class));
+    private static Stream<Arguments> getClassNameArguments() {
+        return Stream.of(
+            // this test class and its inner classes
+            Arguments.of(ClassUtilTest.class, "ClassUtilTest"),
+            Arguments.of(MyInnerClass.class, "ClassUtilTest$MyInnerClass"),
+            // anonymous class
+            Arguments.of(INSTANCE.getClass(), "ClassUtilTest$1"),
+            // primitives
+            Arguments.of(byte.class, "byte"),
+            Arguments.of(char.class, "char"),
+            Arguments.of(double.class, "double"),
+            Arguments.of(float.class, "float"),
+            Arguments.of(int.class, "int"),
+            Arguments.of(long.class, "long"),
+            Arguments.of(short.class, "short"),
+            Arguments.of(boolean.class, "boolean"),
+            Arguments.of(void.class, "void"),
+            // arrays
+            Arguments.of(long[].class, "long[]"),
+            Arguments.of(long[][].class, "long[][]"),
+            Arguments.of(float[][][].class, "float[][][]"),
+            Arguments.of(ClassUtilTest[].class, "ClassUtilTest[]"),
+            Arguments.of(MyInnerClass[].class, "ClassUtilTest$MyInnerClass[]"),
+            Arguments.of(MyInnerClass[][].class, "ClassUtilTest$MyInnerClass[][]")
+        );
     }
 
     @Test
-    @Ignore("only needed for manual performance tests")
-    public void testGetClassNamePerformance() {
+    @Disabled("only needed for manual performance tests")
+    void getClassNamePerformance() {
 
         long start = System.nanoTime();
         for (int i = 1; i < 10000000; i++) {
@@ -102,14 +115,21 @@ public class ClassUtilTest {
         logger.fine("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 
-    @Test
-    public void testGetPackageName() {
-        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(ClassUtilTest.class));
-        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass.class));
-        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass[].class));
-        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(INSTANCE.getClass()));
-        Assert.assertEquals("", ClassUtil.getPackageName(long.class));
-        Assert.assertEquals("", ClassUtil.getPackageName(long[].class));
+    @ParameterizedTest(name = "#{index} getPackageName({0}) = \"{1}\"")
+    @MethodSource("getPackageNameArguments")
+    void getPackageName(Class<?> clazz, String expected) {
+        assertEquals(expected, ClassUtil.getPackageName(clazz));
+    }
+
+    private static Stream<Arguments> getPackageNameArguments() {
+        return Stream.of(
+            Arguments.of(ClassUtilTest.class, "org.apache.openjpa.lib.util"),
+            Arguments.of(MyInnerClass.class, "org.apache.openjpa.lib.util"),
+            Arguments.of(MyInnerClass[].class, "org.apache.openjpa.lib.util"),
+            Arguments.of(INSTANCE.getClass(), "org.apache.openjpa.lib.util"),
+            Arguments.of(long.class, ""),
+            Arguments.of(long[].class, "")
+        );
     }
 
     private static abstract class MyInnerClass {

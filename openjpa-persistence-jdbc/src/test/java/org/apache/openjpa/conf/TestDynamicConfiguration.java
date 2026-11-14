@@ -18,13 +18,23 @@
  */
 package org.apache.openjpa.conf;
 
-import jakarta.persistence.EntityManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import jakarta.persistence.EntityManager;
 
 /**
  * Tests dynamic modification of configuration property.
@@ -32,14 +42,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestDynamicConfiguration extends SingleEMFTestCase {
+class TestDynamicConfiguration extends SingleEMFTestCase {
 
-	@Override
+    @BeforeEach
     public void setUp() throws Exception {
 		super.setUp(PObject.class);
 	}
 
-    public void testConfigurationIsEqualByValueAndHashCode() {
+    @Test
+    void configurationIsEqualByValueAndHashCode() {
 		OpenJPAEntityManagerFactorySPI emf1 = createEMF(FRESH_EMF);
 		assertNotNull(emf1);
 		OpenJPAConfiguration conf1 = emf1.getConfiguration();
@@ -49,9 +60,9 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		OpenJPAConfiguration conf2 = emf2.getConfiguration();
 
 		try {
-	        assertFalse(emf1==emf2);
-	        assertFalse(emf1.equals(emf2));
-	        assertFalse(conf1==conf2);
+	        assertNotSame(emf1,emf2);
+            assertNotEquals(emf1, emf2);
+	        assertNotSame(conf1,conf2);
 	        assertEquals(conf1, conf2);
 	        assertEquals(conf1.hashCode(), conf2.hashCode());
 	        assertEquals(conf1.toProperties(false), conf2.toProperties(false));
@@ -63,14 +74,16 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		}
 	}
 
-	public void testConfigurationIsReadOnlyAfterFirstConstruction() {
+    @Test
+    void configurationIsReadOnlyAfterFirstConstruction() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 		assertFalse(conf.isReadOnly());
 		emf.createEntityManager();
 		assertTrue(conf.isReadOnly());
 	}
 
-	public void testNonDynamicValuesCanNotBeChanged() {
+    @Test
+    void nonDynamicValuesCanNotBeChanged() {
 		emf.createEntityManager();
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
@@ -84,7 +97,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		}
 	}
 
-	public void testDynamicValuesCanBeChanged() {
+    @Test
+    void dynamicValuesCanBeChanged() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		int oldValue = conf.getLockTimeout();
@@ -94,7 +108,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertEquals(newValue, conf.getLockTimeout());
 	}
 
-	public void testDynamicValuesAreCorrectlySet() {
+    @Test
+    void dynamicValuesAreCorrectlySet() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		Value lockTimeoutValue = conf.getValue("LockTimeout");
@@ -106,7 +121,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertFalse(connectionURLValue.isDynamic());
 	}
 
-	public void testDynamicChangeDoesNotChangeHashCode() {
+    @Test
+    void dynamicChangeDoesNotChangeHashCode() {
 		OpenJPAConfiguration conf1 = emf.getConfiguration();
 
 		int oldValue = conf1.getLockTimeout();
@@ -118,7 +134,8 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertEquals(oldHash, newHash);
 	}
 
-	public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
+    @Test
+    void classMetaDataRecognizesDataCacheTimeoutValueChange() {
 		OpenJPAConfiguration conf = emf.getConfiguration();
 
 		// ensure that PObject is in metadata repository

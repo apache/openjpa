@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_26_ex3;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -32,8 +35,8 @@ import jakarta.persistence.Query;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
 
@@ -45,7 +48,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
     public int empId = 1;
     public List rsAllDepartments = null;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(DROP_TABLES,
             Department.class,
@@ -56,11 +59,13 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
     }
 
     @AllowFailure
-    public void testQueryInMemoryQualifiedId() throws Exception {
+    @Test
+    void queryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
     }
 
-    public void testQueryQualifiedId() throws Exception {
+    @Test
+    void testQueryQualifiedId() throws Exception {
         queryQualifiedId(false);
     }
 
@@ -126,7 +131,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+            assertEquals("f1", ((EmployeeName) rs.get(0)).getFName());
 
         query = "select KEY(e) from Department d, " +
             " in (d.emps) e where VALUE(e).name.fName = 'f1'" +
@@ -136,7 +141,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+            assertEquals("f1", ((EmployeeName) rs.get(0)).getFName());
 
         query = "select KEY(e) from Department d, " +
             " in (d.emps) e where SUBSTRING(VALUE(e).name.fName, 1) = 'f1'" +
@@ -146,7 +151,7 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+            assertEquals("f1", ((EmployeeName) rs.get(0)).getFName());
 
         query = "select KEY(e) from Department d, " +
             " in (d.emps) e where LOCATE(VALUE(e).name.fName, 'f1') <> 0" +
@@ -156,12 +161,13 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
             setCandidate(q, Department.class);
         rs = q.getResultList();
         if (!inMemory)
-            assertEquals(((EmployeeName) rs.get(0)).getFName(), "f1");
+            assertEquals("f1", ((EmployeeName) rs.get(0)).getFName());
 
         em.close();
     }
 
-    public void testQueryObject() {
+    @Test
+    void queryObject() {
         queryObj(emf);
     }
 
@@ -241,12 +247,12 @@ public class TestSpec10_1_26_Ex3 extends SQLListenerTestCase {
     public void assertDepartment(Department d) {
         int id = d.getDeptId();
         Map<EmployeeName, Employee> es = d.getEmployees();
-        Assert.assertEquals(2,es.size());
+        assertEquals(2,es.size());
         Set keys = es.keySet();
         for (Object obj : keys) {
             EmployeeName empName = (EmployeeName) obj;
             Employee e = (Employee)es.get(empName);
-            Assert.assertEquals(empName, e.getName());
+            assertEquals(empName, e.getName());
         }
     }
 

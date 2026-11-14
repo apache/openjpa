@@ -18,22 +18,20 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.CustomMappingPC;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestEJBCustomMapping
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestEJBCustomMapping extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 	private int _oid;
 
-	public TestEJBCustomMapping(String name)
-	{
-		super(name);
-	}
-
-	@Override
-    public void setUp ()
+    @BeforeEach
+    void setUp()
 	{
 		deleteAll(CustomMappingPC.class);
 
@@ -49,18 +47,20 @@ public class TestEJBCustomMapping
 		endEm(pm);
 	}
 
-	public void testInsert ()
+    @Test
+    void insert()
 	{
 		EntityManager pm = currentEntityManager();
 		CustomMappingPC pc = pm.find(CustomMappingPC.class, _oid);
 		assertNotNull (pc);
 
 		assertEquals ("name", pc.getName ());
-		assertEquals (true, pc.isFemale ());
+        assertTrue(pc.isFemale());
 		endEm(pm);
 	}
 
-	public void testUpdate ()
+    @Test
+    void update()
 	{
 		EntityManager pm = currentEntityManager();
 		startTx(pm);
@@ -75,7 +75,7 @@ public class TestEJBCustomMapping
 		startTx(pm);
 		pc = pm.find(CustomMappingPC.class, _oid);
 		assertEquals ("name2", pc.getName ());
-		assertTrue (!pc.isFemale ());
+		assertFalse (pc.isFemale ());
 		endTx(pm);
 		endEm(pm);
 	}

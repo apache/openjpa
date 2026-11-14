@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.persistence.simple;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
 
+import org.apache.openjpa.DynamicEnhancementTest;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-
-import junit.textui.TestRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Negative test case to verify that EntityManager throws required exceptions
@@ -31,18 +34,19 @@ import junit.textui.TestRunner;
  *
  * @author Craig Russell
  */
-public class TestEntityManagerMethodsThrowAfterClose
-    extends SingleEMTestCase {
+@DynamicEnhancementTest
+class TestEntityManagerMethodsThrowAfterClose extends SingleEMTestCase {
 
     private AllFieldTypes aft = new AllFieldTypes();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AllFieldTypes.class);
         close();
     }
 
-    public void testPersistAfterClose() {
+    @Test
+    void persistAfterClose() {
         try {
             em.persist(aft);
             fail("Expected exception not thrown " +
@@ -53,7 +57,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testMergeAfterClose() {
+    @Test
+    void mergeAfterClose() {
         try {
             em.merge(aft);
             fail("Expected exception not thrown " +
@@ -64,7 +69,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testRemoveAfterClose() {
+    @Test
+    void removeAfterClose() {
         try {
             em.remove(aft);
             fail("Expected exception not thrown " +
@@ -75,7 +81,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testFindAfterClose() {
+    @Test
+    void findAfterClose() {
         try {
             em.find(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
@@ -86,7 +93,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testGetReferenceAfterClose() {
+    @Test
+    void getReferenceAfterClose() {
         try {
             em.getReference(AllFieldTypes.class, 1);
             fail("Expected exception not thrown " +
@@ -97,7 +105,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testFlushAfterClose() {
+    @Test
+    void flushAfterClose() {
         try {
             em.flush();
             fail("Expected exception not thrown " +
@@ -108,7 +117,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testSetFlushModeAfterClose() {
+    @Test
+    void setFlushModeAfterClose() {
         try {
             em.setFlushMode(FlushModeType.AUTO);
             fail("Expected exception not thrown " +
@@ -119,7 +129,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testGetFlushModeAfterClose() {
+    @Test
+    void getFlushModeAfterClose() {
         try {
             em.getFlushMode();
             fail("Expected exception not thrown " +
@@ -130,7 +141,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testLockAfterClose() {
+    @Test
+    void lockAfterClose() {
         try {
             em.lock(aft, LockModeType.WRITE);
             fail("Expected exception not thrown " +
@@ -141,7 +153,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testRefreshAfterClose() {
+    @Test
+    void refreshAfterClose() {
         try {
             em.refresh(aft);
             fail("Expected exception not thrown " +
@@ -152,7 +165,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testClearAfterClose() {
+    @Test
+    void clearAfterClose() {
         try {
             em.clear();
             fail("Expected exception not thrown " +
@@ -163,7 +177,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testContainsAfterClose() {
+    @Test
+    void containsAfterClose() {
         try {
             em.contains(aft);
             fail("Expected exception not thrown " +
@@ -174,7 +189,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testCreateQueryAfterClose() {
+    @Test
+    void createQueryAfterClose() {
         try {
             em.createQuery("SELECT Object(aft) FROM AllFieldTypes aft");
             fail("Expected exception not thrown " +
@@ -185,7 +201,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testCreateNamedQueryAfterClose() {
+    @Test
+    void createNamedQueryAfterClose() {
         try {
             em.createNamedQuery("NamedQuery");
             fail("Expected exception not thrown " +
@@ -196,7 +213,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testCreateNativeQueryAfterClose() {
+    @Test
+    void createNativeQueryAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ");
             fail("Expected exception not thrown " +
@@ -207,7 +225,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testCreateNativeQueryWithMappingAfterClose() {
+    @Test
+    void createNativeQueryWithMappingAfterClose() {
         try {
             em.createNativeQuery("SELECT NOTHINK FROM NOBODYZ",
                     AllFieldTypes.class);
@@ -219,7 +238,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testJoinTransactionAfterClose() {
+    @Test
+    void joinTransactionAfterClose() {
         try {
             em.joinTransaction();
             fail("Expected exception not thrown " +
@@ -230,7 +250,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testGetDelegateAfterClose() {
+    @Test
+    void getDelegateAfterClose() {
         try {
             em.getDelegate();
             fail("Expected exception not thrown " +
@@ -241,7 +262,8 @@ public class TestEntityManagerMethodsThrowAfterClose
         }
     }
 
-    public void testCloseAfterClose() {
+    @Test
+    void closeAfterClose() {
         try {
             em.close();
             fail("Expected exception not thrown when calling em.close " +
@@ -250,9 +272,4 @@ public class TestEntityManagerMethodsThrowAfterClose
             // expected
         }
     }
-
-    public static void main(String[] args) {
-        TestRunner.run(TestEntityManagerMethodsThrowAfterClose.class);
-    }
 }
-

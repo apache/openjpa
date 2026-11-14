@@ -22,21 +22,25 @@ import jakarta.persistence.EntityManager;
 
 import java.util.logging.Logger;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBLobs extends AbstractTestCase {
-	
+
 	private static final Logger logger = Logger.getLogger(TestEJBLobs.class.getCanonicalName());
 
     private EntityManager _pm = null;
     private EJBLobsInnerEntity _inner = null;
 
-    public TestEJBLobs(String name) {
-        super(name, "kernelcactusapp");
+    public TestEJBLobs() {
+        super("kernelcactusapp");
     }
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         super.setUp(EJBLobsInnerEntity.class, EJBLobsInner2Entity.class);
 
         EntityManager em = currentEntityManager();
@@ -69,34 +73,40 @@ public class TestEJBLobs extends AbstractTestCase {
         _inner = _pm.find(EJBLobsInnerEntity.class, "string");
     }
 
-    public void testOtherFields() {
+    @Test
+    void otherFields() {
         assertEquals("string", _inner.getString());
     }
 
-    public void testClob() {
+    @Test
+    void clob() {
         assertEquals("clobField", _inner.getClob());
     }
 
-    public void testBlob() {
+    @Test
+    void blob() {
         assertNotNull(_inner.getBlob());
         assertEquals("inner2", _inner.getBlob().string);
     }
 
-    public void testSetNull() {
+    @Test
+    void setNull() {
         startTx(_pm);
         _inner.setClob(null);
         _inner.setBlob(null);
         endTx(_pm);
 
-        assertEquals(null, _inner.getBlob());
-        assertEquals(null, _inner.getClob());
+        assertNull(_inner.getBlob());
+        assertNull(_inner.getClob());
     }
 
-    public void testDelete() {
+    @Test
+    void delete() {
         deleteAll(EJBLobsInnerEntity.class);
     }
 
-    public void testUpdate() {
+    @Test
+    void update() {
         startTx(_pm);
         _inner.setClob("newvalue");
         EJBLobsInner2Entity inner2 = new EJBLobsInner2Entity();

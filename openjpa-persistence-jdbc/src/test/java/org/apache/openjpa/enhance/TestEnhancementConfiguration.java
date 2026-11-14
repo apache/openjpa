@@ -18,21 +18,27 @@
  */
 package org.apache.openjpa.enhance;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ImplHelper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-@AllowFailure(message="excluded")
-public class TestEnhancementConfiguration
-    extends SingleEMFTestCase {
+@AllowFailure(message = "excluded")
+class TestEnhancementConfiguration extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
             UnenhancedFieldAccess.class, CLEAR_TABLES);
     }
 
-    public void testEnhancementConfiguration() {
+    @Test
+    void enhancementConfiguration() {
         try {
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
                 UnenhancedFieldAccess.class));

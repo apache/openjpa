@@ -55,6 +55,13 @@
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
+        <!-- Test order: fixed by default, so that a failure can be reproduced. The master build (ci.yml) runs
+             the tests in random order with the run id as seed, to find tests that depend on each other; to
+             replay such a run: -Dtest.method.order='org.junit.jupiter.api.MethodOrderer$Random'
+             -Djunit.jupiter.execution.order.random.seed=<seed> -Dsurefire.runOrder=random
+             -Dsurefire.runOrder.random.seed=<seed> -->
+        <surefire.runOrder>alphabetical</surefire.runOrder>
+        <test.method.order>org.junit.jupiter.api.MethodOrderer$MethodName</test.method.order>
         <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
         <openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
         <!-- Commons DBCP settings passed in as openjpa.ConnectionProperties -->
@@ -86,7 +93,7 @@
         <mssql.connector.version>13.4.0.jre11</mssql.connector.version>
 
         <!-- other common versions -->
-        <kubernetes-client.version>6.13.3</kubernetes-client.version>
+        <kubernetes-client.version>8.0.0</kubernetes-client.version>
         <slf4j.version>2.0.20</slf4j.version>
 
         <javadoc.additionalparam />
@@ -97,6 +104,7 @@
         <log4j2.version>2.26.1</log4j2.version>
         <ant.version>1.10.18</ant.version>
 
+        <junit.version>6.1.3</junit.version>
         <jmock.version>2.13.1</jmock.version>
         <dbcp2.version>2.14.0</dbcp2.version>
         <pool2.version>2.13.1</pool2.version>
@@ -186,7 +194,7 @@
         <module>openjpa-all</module>
         <module>openjpa-tools</module>
         <module>openjpa-features</module>
-        <module>openjpa-junit5</module>
+        <module>openjpa-junit-jupiter</module>
     </modules>
 
     <profiles>
@@ -1799,16 +1807,48 @@
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>
                 <version>${jmock.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jmock</groupId>
-                <artifactId>jmock-junit4</artifactId>
+                <artifactId>jmock-junit5</artifactId>
                 <version>${jmock.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.2</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-commons</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-suite</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -1878,6 +1918,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
+                        <runOrder>${surefire.runOrder}</runOrder>
+                        <properties>
+                            <configurationParameters>junit.jupiter.testmethod.order.default=${test.method.order}</configurationParameters>
+                        </properties>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>

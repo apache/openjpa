@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.order;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
@@ -38,12 +43,14 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestOrderColumn extends SingleEMFTestCase {
 
     private Student[] students = new Student[12];
 
-    @Override
+    @BeforeEach
     public void setUp() {
         super.setUp(
                 CLEAR_TABLES,
@@ -64,7 +71,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * indexes are reordered if an element is removed for a
      * OneToMany relationship
      */
-    public void testOneToManyElementRemoval() {
+    @Test
+    void oneToManyElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -128,7 +136,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * indexes are reordered if an element is removed for a
      * OneToMany relationship
      */
-    public void testOneToManyBiDirElementRemoval() {
+    @Test
+    void oneToManyBiDirElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -196,7 +205,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * indexes are reordered if an element is removed for an
      * ElementCollection
      */
-    public void testElementCollectionElementRemoval() {
+    @Test
+    void elementCollectionElementRemoval() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
 
@@ -258,11 +268,13 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         em.close();
     }
+
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is inserted into the collection.
      */
-    public void testOneToManyElementInsert() {
+    @Test
+    void oneToManyElementInsert() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -325,12 +337,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         em.close();
     }
+
     /*
      * Verifies that a collection remains contiguous and element
      * indexes are reordered if an element is inserted into an
      * ElementCollection
      */
-    public void testElementCollectionElementInsert() {
+    @Test
+    void elementCollectionElementInsert() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
 
@@ -396,7 +410,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates use of OrderColumn with OneToMany using the default
      * order column name
      */
-    public void testOneToManyDefault() {
+    @Test
+    void oneToManyDefault() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -460,7 +475,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates use of OrderColumn with OneToMany using a specified
      * order column name
      */
-    public void testOneToManyNamed() {
+    @Test
+    void oneToManyNamed() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -502,7 +518,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
     /*
      * Validates use of OrderColumn with ManyToMany relationship
      */
-    public void testManyToMany() {
+    @Test
+    void manyToMany() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
         // Verify field name is the default via fm
@@ -542,7 +559,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertNotNull(trainer);
             List<Player> trainedPlayers = trainer.getPlayersTrained();
             assertNotNull(trainedPlayers);
-            assertEquals(trainedPlayers.size(), 5);
+            assertEquals(5, trainedPlayers.size());
             for (int j = trainedPlayers.size() - 1; j >=0  ; j--) {
                 assertEquals(trainedPlayers.get(j),
                     (players[(i * 5) + (4 - j)]));
@@ -600,7 +617,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
             assertNotNull(game);
             List<Player> playedIn = game.getPlayedIn();
             assertNotNull(playedIn);
-            assertEquals(playedIn.size(), 5);
+            assertEquals(5, playedIn.size());
             for (int j = playedIn.size() - 1; j >=0  ; j--) {
                 Player p = playedIn.get(j);
                 assertEquals(p,
@@ -619,7 +636,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates use of OrderColumn with ElementCollection of basic
      * elements
      */
-    public void testElementCollectionBasic() {
+    @Test
+    void elementCollectionBasic() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
@@ -661,7 +679,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
     /*
      * Validates use of OrderColumn with ElementCollection of Embeddables
      */
-    public void testElementCollectionEmbeddables() {
+    @Test
+    void elementCollectionEmbeddables() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         Game game = new Game();
 
@@ -707,7 +726,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * simply means the order column is omitted from the sql. Having the
      * appropriate field mapping will enforce that.
      */
-    public void testOrderColumnInsertable() {
+    @Test
+    void orderColumnInsertable() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         // Create a collection using secondary entities
@@ -727,7 +747,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * simply means the order column is omitted from the sql. Having the
      * appropriate field mapping will enforce that.
      */
-    public void testOrderColumnUpdateable() {
+    @Test
+    void orderColumnUpdateable() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -745,7 +766,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates the use of the OrderColumn with o2o, o2m, m2m relationships
      * and collection table - with and without join tables.
      */
-    public void testOrderColumnTable() {
+    @Test
+    void orderColumnTable() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -824,7 +846,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates the use of order column (via INDEX) in the predicate of a
      * JPQL query.
      */
-    public void testOrderColumnPredicateQuery() {
+    @Test
+    void orderColumnPredicateQuery() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 
@@ -861,7 +884,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
      * Validates the use of order column (via INDEX) in the projection of
      * a JPQL query.
      */
-    public void testOrderColumnProjectionQuery() {
+    @Test
+    void orderColumnProjectionQuery() {
 
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
 

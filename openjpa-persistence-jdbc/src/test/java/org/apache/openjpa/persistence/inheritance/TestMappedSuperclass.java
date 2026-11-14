@@ -25,6 +25,8 @@ import org.apache.openjpa.persistence.inheritance.entity.MappedSuper;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassC;
 import org.apache.openjpa.persistence.inheritance.entity.SubclassD;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test verifies basic Mapped Superclass functionality as dictated by
@@ -33,8 +35,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * OpenJPA JIRA: {@link http://issues.apache.org/jira/browse/OPENJPA-1061}
  *
  */
-public class TestMappedSuperclass extends SingleEMFTestCase {
-    @Override
+class TestMappedSuperclass extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         setUp(BaseClass.class, SubclassC.class, MappedSuper.class,
                 SubclassD.class);
@@ -50,7 +52,8 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * hierarchy.  This test variant inserts new entities into the persistence
      * context by calling EntityManager.persist() on the new entity object.
      */
-    public void testMappedSuperclassContract001() {
+    @Test
+    void mappedSuperclassContract001() {
         EntityManager em = emf.createEntityManager();
 
         // Create two entities, SubclassC and SubclassD, with the same
@@ -82,7 +85,8 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
      * hierarchy.  This test variant inserts new entities into the persistence
      * context by calling EntityManager.merge() on the new entity object.
      */
-    public void testMappedSuperclassContract002() {
+    @Test
+    void mappedSuperclassContract002() {
         EntityManager em = emf.createEntityManager();
 
         // Create two entities, SubclassC and SubclassD, with the same

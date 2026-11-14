@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,6 +30,8 @@ import org.apache.openjpa.persistence.jdbc.common.apps.
 import org.apache.openjpa.persistence.jdbc.common.apps.
         UnidirectionalOneToOneOwner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -40,9 +45,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  * @author Pinaki Poddar
  */
-public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
+class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
 	private static boolean USE_TXN = true;
-    @Override
+
+    @BeforeEach
     public void setUp() {
         setUp(CLEAR_TABLES,
         	  UnidirectionalOneToOneOwned.class,
@@ -60,48 +66,52 @@ public class TestProjectionQueryWithIdenticalResult extends SingleEMFTestCase {
         em.close();
     }
 
-	public void testDuplicateResultInProjection1() {
+    @Test
+    void duplicateResultInProjection1() {
         String jpql = "SELECT p.owned, p FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
-            assertTrue(row[0] instanceof UnidirectionalOneToOneOwned);
-            assertTrue(row[1] instanceof UnidirectionalOneToOneOwner);
-            assertTrue(((UnidirectionalOneToOneOwner)row[1]).getOwned() ==
+            assertInstanceOf(UnidirectionalOneToOneOwned.class, row[0]);
+            assertInstanceOf(UnidirectionalOneToOneOwner.class, row[1]);
+            assertSame(((UnidirectionalOneToOneOwner)row[1]).getOwned(),
                 row[0]);
 		}
 	}
 
-	public void testDuplicateResultInProjection2() {
+    @Test
+    void duplicateResultInProjection2() {
         String jpql = "SELECT p, p.owned FROM UnidirectionalOneToOneOwner p";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
-            assertTrue(row[1] instanceof UnidirectionalOneToOneOwned);
-            assertTrue(row[0] instanceof UnidirectionalOneToOneOwner);
-            assertTrue(((UnidirectionalOneToOneOwner)row[0]).getOwned() ==
+            assertInstanceOf(UnidirectionalOneToOneOwned.class, row[1]);
+            assertInstanceOf(UnidirectionalOneToOneOwner.class, row[0]);
+            assertSame(((UnidirectionalOneToOneOwner)row[0]).getOwned(),
                 row[1]);
 		}
 	}
 
-	public void testDuplicateResultInProjection3() {
+    @Test
+    void duplicateResultInProjection3() {
         String jpql = "SELECT p, q FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
-            assertTrue(row[0] instanceof UnidirectionalOneToOneOwner);
-            assertTrue(row[1] instanceof UnidirectionalOneToOneOwned);
-            assertTrue(((UnidirectionalOneToOneOwner)row[0]).getOwned() ==
+            assertInstanceOf(UnidirectionalOneToOneOwner.class, row[0]);
+            assertInstanceOf(UnidirectionalOneToOneOwned.class, row[1]);
+            assertSame(((UnidirectionalOneToOneOwner)row[0]).getOwned(),
                 row[1]);
 		}
 	}
 
-	public void testDuplicateResultInProjection4() {
+    @Test
+    void duplicateResultInProjection4() {
         String jpql = "SELECT q, p FROM UnidirectionalOneToOneOwner p, " +
                       "UnidirectionalOneToOneOwned q WHERE p.owned = q";
 		List<Object[]> result = executeQuery(jpql, USE_TXN);
 		for (Object[] row : result) {
-            assertTrue(row[0] instanceof UnidirectionalOneToOneOwned);
-            assertTrue(row[1] instanceof UnidirectionalOneToOneOwner);
-            assertTrue(((UnidirectionalOneToOneOwner)row[1]).getOwned()==
+            assertInstanceOf(UnidirectionalOneToOneOwned.class, row[0]);
+            assertInstanceOf(UnidirectionalOneToOneOwner.class, row[1]);
+            assertSame(((UnidirectionalOneToOneOwner)row[1]).getOwned(),
                 row[0]);
 		}
 	}

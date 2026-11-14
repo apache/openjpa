@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jpql.version;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -25,6 +27,8 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Verifies that the version field is returned when part of a join statement.
@@ -32,21 +36,22 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestJoinVersionField extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp(){
         setUp(CLEAR_TABLES, Author.class,Document.class);
         createTestData();
     }
 
-    public void testGetDocuments(){
+    @Test
+    void getDocuments(){
         EntityManager em = emf.createEntityManager();
         String str = "SELECT doc FROM Document doc JOIN doc.author auth";
         TypedQuery<Document> query = em.createQuery(str, Document.class);
         List<Document> documentList =  query.getResultList();
 
         for (Document doc : documentList) {
-            assertEquals("Author version field should have a value of 1.",
-                1, doc.getAuthor().getVersion());
+            assertEquals(1,
+                doc.getAuthor().getVersion(), "Author version field should have a value of 1.");
         }
 
         em.close();
@@ -56,14 +61,15 @@ public class TestJoinVersionField extends SingleEMFTestCase {
      * Prior to OPENJPA-2343, the version field in the Author entity is returned
      * as null.
      */
-    public void testGetDocumentsByExplicitAttributeSelection(){
+    @Test
+    void getDocumentsByExplicitAttributeSelection(){
         EntityManager em = emf.createEntityManager();
         String str = "SELECT doc.id, auth.id, auth.version FROM Document doc JOIN doc.author auth";
         Query query = em.createQuery(str);
         List<Object[]> objectList = query.getResultList();
 
         for (Object[] objects : objectList) {
-            assertEquals("Author version field should have a value of 1.",1,objects[2]);
+            assertEquals(1,objects[2],"Author version field should have a value of 1.");
         }
     }
 

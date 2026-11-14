@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -26,8 +29,8 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestAssocOverrides  extends SQLListenerTestCase {
     public int numEmployees = 2;
@@ -42,7 +45,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public int peId = 1;
     public int pId = 1;
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Address.class, ContactInfo.class,
             EmergencyContactInfo.class, Employee.class, JobInfo.class,
@@ -53,7 +56,8 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     /**
      * Test AssociationOverrides on field
      */
-    public void testAssocOverride1() {
+    @Test
+    void assocOverride1() {
         sql.clear();
         createObj1();
         findObj1();
@@ -66,7 +70,8 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     /**
      * Test AssociationOverrides on entity (MappedSuperclass)
      */
-    public void testAssocOverride2() {
+    @Test
+    void assocOverride2() {
         sql.clear();
         createObj2();
         findObj2();
@@ -229,7 +234,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
     public void findObj2() {
         EntityManager em = emf.createEntityManager();
         PartTimeEmployee p = em.find(PartTimeEmployee.class, 1);
-        Assert.assertEquals(p.getHourlyWage(), (float)100, 0.001f);
+        assertEquals(p.getHourlyWage(), (float)100, 0.001f);
         em.close();
     }
 
@@ -241,7 +246,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         String jpql = "select p from PartTimeEmployee p";
         Query q = em.createQuery(jpql);
         List<PartTimeEmployee> ps = q.getResultList();
-        Assert.assertEquals(ps.size(), numEmployees);
+        assertEquals(ps.size(), numEmployees);
         tran.commit();
         em.close();
     }

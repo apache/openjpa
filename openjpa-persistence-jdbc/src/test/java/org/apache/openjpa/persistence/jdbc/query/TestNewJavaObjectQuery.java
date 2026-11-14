@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -26,6 +29,8 @@ import org.apache.openjpa.persistence.jdbc.query.domain.DtaSrc;
 import org.apache.openjpa.persistence.jdbc.query.domain.DtaSrcField;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests "openjpa.jdbc.DriverDataSource=dbcp" option.
@@ -34,8 +39,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-2153">OPENJPA-2153</A>
  *
  */
-public class TestNewJavaObjectQuery extends SingleEMFTestCase {
-    @Override
+class TestNewJavaObjectQuery extends SingleEMFTestCase {
+    @BeforeEach
     public void setUp() {
         super.setUp(CLEAR_TABLES, Game.class,
                 DtaSrc.class, DtaSrcField.class,
@@ -57,7 +62,8 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
 //		em.getTransaction().commit();
 //	}
 
-    public void testNewJavaObjectQueryResultList() {
+    @Test
+    void newJavaObjectQueryResultList() {
         String jpql = "SELECT new org.apache.openjpa.persistence.jdbc.query.model.GameBean(g) FROM Game g";
         EntityManager em = emf.createEntityManager();
 
@@ -66,7 +72,8 @@ public class TestNewJavaObjectQuery extends SingleEMFTestCase {
         assertEquals(0, names.size());
     }
 
-    public void testNewJavaObjectNamedQueryResultList() {
+    @Test
+    void newJavaObjectNamedQueryResultList() {
         EntityManager em = emf.createEntityManager();
 
         List<?> names = em.createNamedQuery("getDataSourceFieldById").getResultList();

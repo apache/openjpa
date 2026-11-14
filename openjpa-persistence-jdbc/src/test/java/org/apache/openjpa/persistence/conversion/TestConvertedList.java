@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.conversion;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
@@ -27,32 +29,36 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.ConverterValueHandler;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A converter whose attribute type is the collection itself maps the whole
  * collection to a single column. Before OPENJPA-3017 the attribute was left
  * out of the mapping altogether and its contents were lost without an error.
  */
-public class TestConvertedList extends SingleEMFTestCase {
+class TestConvertedList extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(ConvertedListEntity.class, DROP_TABLES);
     }
 
-    public void testTheAttributeIsMappedToOneColumn() {
+    @Test
+    void theAttributeIsMappedToOneColumn() {
         ClassMapping cm = ((JDBCConfiguration) emf.getConfiguration())
             .getMappingRepositoryInstance()
             .getMapping(ConvertedListEntity.class, null, true);
         FieldMapping fm = (FieldMapping) cm.getField("items");
-        assertNotNull("the converted attribute must be mapped", fm);
-        assertEquals("the whole collection is one column value",
-            1, fm.getColumns().length);
-        assertTrue("the converter must map the value as a whole, got "
-            + fm.getHandler(), fm.getHandler() instanceof ConverterValueHandler);
+        assertNotNull(fm, "the converted attribute must be mapped");
+        assertEquals(1,
+            fm.getColumns().length, "the whole collection is one column value");
+        assertInstanceOf(ConverterValueHandler.class, fm.getHandler(), "the converter must map the value as a whole, got "
+            + fm.getHandler());
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();
@@ -70,7 +76,8 @@ public class TestConvertedList extends SingleEMFTestCase {
         }
     }
 
-    public void testTheListIsLoadedEagerly() {
+    @Test
+    void theListIsLoadedEagerly() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();
@@ -85,13 +92,14 @@ public class TestConvertedList extends SingleEMFTestCase {
             detached = em.find(ConvertedListEntity.class, 1L);
         }
         List<Item> items = detached.getItems();
-        assertNotNull("a converted attribute is basic and so eager", items);
+        assertNotNull(items, "a converted attribute is basic and so eager");
         assertEquals(2, items.size());
         assertEquals("one", items.get(0).getName());
         assertEquals("two", items.get(1).getName());
     }
 
-    public void testAnExplicitLazyFetchIsHonoured() {
+    @Test
+    void anExplicitLazyFetchIsHonoured() {
         try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             ConvertedListEntity e = new ConvertedListEntity();
@@ -103,8 +111,8 @@ public class TestConvertedList extends SingleEMFTestCase {
         try (EntityManager em = emf.createEntityManager()) {
             ConvertedListEntity found = em.find(ConvertedListEntity.class, 1L);
             assertTrue(emf.getPersistenceUnitUtil().isLoaded(found, "items"));
-            assertFalse("fetch = LAZY must keep the attribute out of the fetch",
-                emf.getPersistenceUnitUtil().isLoaded(found, "lazyItems"));
+            assertFalse(emf.getPersistenceUnitUtil().isLoaded(found, "lazyItems"),
+                "fetch = LAZY must keep the attribute out of the fetch");
             assertEquals(1, found.getLazyItems().size());
             assertEquals("one", found.getLazyItems().get(0).getName());
         }

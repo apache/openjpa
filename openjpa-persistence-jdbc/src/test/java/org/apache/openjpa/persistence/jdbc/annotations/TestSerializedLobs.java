@@ -18,6 +18,10 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,23 +35,26 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for serialized, clob, and lob types.
  *
  * @author Steve Kim
  */
-public class TestSerializedLobs extends SingleEMFTestCase {
+class TestSerializedLobs extends SingleEMFTestCase {
 
     private static final Date DATE = new Date();
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, Flat1.class, CLEAR_TABLES);
     }
 
     // Serialized fields not being read properly
-    public void testSerialized() {
+    @Test
+    void serialized() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         AnnoTest1 pc1 = new AnnoTest1(1);
@@ -67,7 +74,8 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testBlob()
+    @Test
+    void blob()
         throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -114,7 +122,8 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testClob()
+    @Test
+    void clob()
         throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -137,7 +146,8 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNullableClob() throws Exception {
+    @Test
+    void nullableClob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -153,7 +163,8 @@ public class TestSerializedLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testNullableBlob() throws Exception {
+    @Test
+    void nullableBlob() throws Exception {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 

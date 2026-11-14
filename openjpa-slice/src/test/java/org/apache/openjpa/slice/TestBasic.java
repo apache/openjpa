@@ -18,16 +18,25 @@
  */
 package org.apache.openjpa.slice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**
  * Tests basic create, read, update and delete operations.
@@ -35,7 +44,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
  * @author Pinaki Poddar
  *
  */
-public class TestBasic extends SliceTestCase {
+class TestBasic extends SliceTestCase {
     /**
      * Specify persistence unit name as System property <code>-Dunit</code> or
      * use the default value as <code>"slice"</code>.
@@ -46,7 +55,7 @@ public class TestBasic extends SliceTestCase {
     }
 
 
-    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp(PObject.class, Person.class, Address.class, Country.class,
         	CLEAR_TABLES);
@@ -80,7 +89,8 @@ public class TestBasic extends SliceTestCase {
     /**
      * Delete a single object by EntityManager.remove()
      */
-    public void testDelete() {
+    @Test
+    void delete() {
         int N = 10;
         createIndependentObjects(N);
         EntityManager em = emf.createEntityManager();
@@ -98,7 +108,8 @@ public class TestBasic extends SliceTestCase {
     /**
      * Delete in bulk by query.
      */
-    public void testBulkDelete() {
+    @Test
+    void bulkDelete() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         int c = count(PObject.class);
@@ -113,7 +124,8 @@ public class TestBasic extends SliceTestCase {
     /**
      * Store and find the same object.
      */
-    public void testFind() {
+    @Test
+    void find() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
 
@@ -129,7 +141,8 @@ public class TestBasic extends SliceTestCase {
     /**
      * Store and find the same object via reference.
      */
-    public void testReference() {
+    @Test
+    void reference() {
         PObject pc = createIndependentObject();
         int value = pc.getValue();
 
@@ -152,7 +165,8 @@ public class TestBasic extends SliceTestCase {
     }
 
 
-    public void testPersistIndependentObjects() {
+    @Test
+    void persistIndependentObjects() {
         int before = count(PObject.class);
         EntityManager em = emf.createEntityManager();
         int N = 2;
@@ -165,7 +179,8 @@ public class TestBasic extends SliceTestCase {
         assertEquals(before + N, after);
     }
 
-    public void testPersistConnectedObjectGraph() {
+    @Test
+    void persistConnectedObjectGraph() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Person p1 = new Person("A");
@@ -214,7 +229,8 @@ public class TestBasic extends SliceTestCase {
      * Merge only works if the distribution policy assigns the correct slice
      * from which the instance was fetched.
      */
-    public void testMerge() {
+    @Test
+    void merge() {
         PObject pc = createIndependentObjects(1).get(0);
         int value = pc.getValue();
         pc.setValue(value + 1);
@@ -231,7 +247,8 @@ public class TestBasic extends SliceTestCase {
         assertEquals(value + 1, pc2.getValue());
     }
 
-    public void testPersistReplicatedObjects() {
+    @Test
+    void persistReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] names = {"USA", "India", "China"};
@@ -256,7 +273,8 @@ public class TestBasic extends SliceTestCase {
      * Disable this test temporarily as we undergo changes in internal slice
      * information structure.
      */
-    public void testUpdateReplicatedObjects() {
+    @Test
+    void updateReplicatedObjects() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         String[] names = {"USA", "India", "China"};
@@ -288,7 +306,7 @@ public class TestBasic extends SliceTestCase {
             Query query = em.createQuery(jpql).setParameter("name", "India");
             query.setHint(SlicePersistence.HINT_TARGET, hint);
             india = (Country)query.getSingleResult();
-            assertEquals(india.getPopulation(), 1201);
+            assertEquals(1201, india.getPopulation());
             assertTrue(SlicePersistence.isReplicated(india));
             assertTrue(SlicePersistence.getSlice(india).indexOf("One") != -1);
             assertTrue(SlicePersistence.getSlice(india).indexOf("Two") != -1);
@@ -296,7 +314,8 @@ public class TestBasic extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
-    public void testQuerySingleObject() {
+    @Test
+    void querySingleObject() {
     	PObject pc = createIndependentObject();
     	long pid = pc.getId();
         int value = pc.getValue();
@@ -312,13 +331,15 @@ public class TestBasic extends SliceTestCase {
         assertEquals(value, pc2.getValue());
     }
 
-    public void testGetConnection() {
+    @Test
+    void getConnection() {
         OpenJPAEntityManager em = emf.createEntityManager();
         Object con = em.getConnection();
-        assertTrue(con instanceof Connection);
+        assertInstanceOf(Connection.class, con);
     }
 
-    public void testDynamicSlice() {
+    @Test
+    void dynamicSlice() {
         DistributedConfiguration conf = (DistributedConfiguration)emf.getConfiguration();
         conf.setDistributionPolicyInstance(new DistributionPolicy() {
             @Override

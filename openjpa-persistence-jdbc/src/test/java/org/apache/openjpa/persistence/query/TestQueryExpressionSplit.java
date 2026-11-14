@@ -30,18 +30,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.openjpa.kernel.Filters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TestQueryExpressionSplit extends BaseQueryTest {
-
-    /**
-     * Creates a new instance of TestQueryExpressionSplit
-     */
-
-    public TestQueryExpressionSplit(String test) {
-        super(test);
-    }
-
-    public void testSimple() {
+class TestQueryExpressionSplit extends BaseQueryTest {
+    @Test
+    void simple() {
         assertEquals(new String[]{ "foo() bar(boo)" },
             Filters.splitExpressions("foo() bar(boo)", ',', 3));
         assertEquals(new String[]{ "foo() bar(boo)", "biz()", "baz(boo)" },
@@ -49,21 +43,24 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
                 ',', 3));
     }
 
-    public void testCommaInString() {
+    @Test
+    void commaInString() {
         assertEquals(new String[]{ "foo \"bar(),biz)\"" },
             Filters.splitExpressions("foo \"bar(),biz)\"", ',', 3));
         assertEquals(new String[]{ "foo 'bar(),\"biz)'", "boo" },
             Filters.splitExpressions("foo 'bar(),\"biz)', boo", ',', 3));
     }
 
-    public void testCommaInFunction() {
+    @Test
+    void commaInFunction() {
         assertEquals(new String[]{ "(foo(bar, biz))",
             "boo(biz, baz('xxx,yyy'))" },
             Filters.splitExpressions("(foo(bar, biz)), "
                 + "boo(biz, baz('xxx,yyy'))", ',', 3));
     }
 
-    public void testEscapedString() {
+    @Test
+    void escapedString() {
         assertEquals(new String[]{ "foo \"bar\\\", biz(\"",
             "\"baz\\\", boo\"" },
             Filters.splitExpressions("foo \"bar\\\", biz(\", "
@@ -72,6 +69,6 @@ public class TestQueryExpressionSplit extends BaseQueryTest {
 
     private void assertEquals(String[] ans, List test) {
         List l = Arrays.asList(ans);
-        assertEquals(l + " != " + test, l, test);
+        Assertions.assertEquals(l, test, l + " != " + test);
     }
 }

@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.cascade.mx1;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests cascade persist/all on ManyToOne: persist B with cascade, remove both,
@@ -30,9 +36,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * - cascadeAllMX1Test2 (CascadeType.ALL)
  * - persistMX1Test2 (CascadeType.PERSIST)
  */
-public class TestCascadePersistManyToOne extends SingleEMFTestCase {
+class TestCascadePersistManyToOne extends SingleEMFTestCase {
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp("openjpa.RuntimeUnenhancedClasses", "supported",
             CascadeMx1A.class,
@@ -49,7 +55,8 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
      * 4. Re-persist B, flush
      * 5. Verify B is managed and b.getA1() != null
      */
-    public void testCascadeAllRePersistedRemovedEntity() {
+    @Test
+    void cascadeAllRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -59,7 +66,7 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
         em.flush();
 
         CascadeMx1A newA1 = b1.getA1Info();
-        assertNotNull("A should have been cascade-persisted", newA1);
+        assertNotNull(newA1, "A should have been cascade-persisted");
 
         // Remove A first, then B
         em.remove(newA1);
@@ -68,17 +75,17 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
 
         // Verify B is removed
         CascadeMx1BCascadeAll foundB = em.find(CascadeMx1BCascadeAll.class, "2");
-        assertNull("B should be removed from database", foundB);
+        assertNull(foundB, "B should be removed from database");
 
         // Re-persist the removed B (which still has reference to A)
         em.persist(b1);
         em.flush();
 
         // Verify B is managed and A reference is still set
-        assertTrue("B should be managed after re-persist",
-            em.contains(b1));
-        assertNotNull("B's A reference should not be null after re-persist",
-            b1.getA1());
+        assertTrue(em.contains(b1),
+            "B should be managed after re-persist");
+        assertNotNull(b1.getA1(),
+            "B's A reference should not be null after re-persist");
 
         em.getTransaction().commit();
         em.close();
@@ -92,7 +99,8 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
      * 4. Re-persist B, flush
      * 5. Verify B is managed and b.getA1() != null
      */
-    public void testPersistCascadeRePersistedRemovedEntity() {
+    @Test
+    void persistCascadeRePersistedRemovedEntity() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
@@ -103,7 +111,7 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
         em.flush();
 
         CascadeMx1A newA1 = b1.getA1Info();
-        assertNotNull("A should have been cascade-persisted", newA1);
+        assertNotNull(newA1, "A should have been cascade-persisted");
 
         // Remove A, then find and remove B
         em.remove(newA1);
@@ -115,17 +123,17 @@ public class TestCascadePersistManyToOne extends SingleEMFTestCase {
         // Verify B is removed
         CascadeMx1BCascadePersist foundB =
             em.find(CascadeMx1BCascadePersist.class, "2");
-        assertNull("B should be removed from database", foundB);
+        assertNull(foundB, "B should be removed from database");
 
         // Re-persist the removed B (which still has reference to A)
         em.persist(b1);
         em.flush();
 
         // Verify B is managed and A reference is still set
-        assertTrue("B should be managed after re-persist",
-            em.contains(b1));
-        assertNotNull("B's A reference should not be null after re-persist",
-            b1.getA1());
+        assertTrue(em.contains(b1),
+            "B should be managed after re-persist");
+        assertNotNull(b1.getA1(),
+            "B's A reference should not be null after re-persist");
 
         em.getTransaction().commit();
         em.close();

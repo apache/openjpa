@@ -18,6 +18,11 @@
  */
 package org.apache.openjpa.persistence.jpql.joins;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,15 +33,17 @@ import org.apache.openjpa.persistence.common.apps.Course;
 import org.apache.openjpa.persistence.common.apps.Department;
 import org.apache.openjpa.persistence.common.apps.Student;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestEJBJoins extends AbstractTestCase {
 
-    public TestEJBJoins(String name) {
-        super(name, "jpqlclausescactusapp");
+    public TestEJBJoins() {
+        super("jpqlclausescactusapp");
     }
 
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         deleteAll(Course.class);
         deleteAll(Student.class);
         deleteAll(Department.class);
@@ -71,7 +78,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testInnerJoin() {
+    @Test
+    void innerJoin() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct o.name from Student o JOIN " +
             "o.course d WHERE d.name" +
@@ -88,7 +96,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testOuterJoin() {
+    @Test
+    void outerJoin() {
         EntityManager em = currentEntityManager();
         String query = "SELECT distinct s.name FROM Student " +
             "s LEFT JOIN s.department d";
@@ -102,7 +111,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testFetchJoin1() {
+    @Test
+    void fetchJoin1() {
         EntityManager em = currentEntityManager();
         String query = "SELECT s FROM Student s JOIN FETCH s.name";
 
@@ -114,7 +124,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testFetchJoin2() {
+    @Test
+    void fetchJoin2() {
         EntityManager em = currentEntityManager();
         String query = "SELECT s " +
             "FROM Student s " +
@@ -132,7 +143,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testLeftOuterJoin() {
+    @Test
+    void leftOuterJoin() {
         EntityManager em = currentEntityManager();
 
         String ljoin = "SELECT DISTINCT s.name FROM Student s " +
@@ -149,7 +161,8 @@ public class TestEJBJoins extends AbstractTestCase {
         endEm(em);
     }
 
-    public void testInnerJoinFetch() {
+    @Test
+    void innerJoinFetch() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT s FROM Student " +
@@ -164,7 +177,8 @@ public class TestEJBJoins extends AbstractTestCase {
         em.close();
     }
 
-    public void testLeftJoinFetch() {
+    @Test
+    void leftJoinFetch() {
         EntityManager em = currentEntityManager();
 
         String query = "SELECT s FROM Student " +

@@ -18,15 +18,18 @@
  */
 package org.apache.openjpa.conf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.openjpa.conf.CacheMarshaller.ValidationPolicy;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestCacheMarshaller
-    extends SingleEMFTestCase {
+class TestCacheMarshaller extends SingleEMFTestCase {
 
     private CacheMarshaller cm;
 
-    @Override
+    @BeforeEach
     public void setUp() {
         setUp(new Object[] { "openjpa.CacheMarshallers",
             "default(Id=" + getClass().getName() + ", ValidationPolicy="
@@ -42,15 +45,18 @@ public class TestCacheMarshaller
             getClass().getName());
     }
 
-    public void testCacheMarshallerType() {
+    @Test
+    void cacheMarshallerType() {
         assertEquals(CacheMarshallerImpl.class, cm.getClass());
     }
 
-    public void testConfiguration() {
+    @Test
+    void configuration() {
         assertEquals(getClass().getName(), cm.getId());
     }
 
-    public void testValidation() {
+    @Test
+    void validation() {
         ValidationPolicy vp = ((CacheMarshallerImpl) cm).getValidationPolicy();
         assertEquals(OpenJPAVersionAndConfigurationTypeValidationPolicy.class,
             vp.getClass());
@@ -64,13 +70,15 @@ public class TestCacheMarshaller
         assertEquals(this, vp.getValidData(cached));
     }
 
-    public void testRoundTrip() {
+    @Test
+    void roundTrip() {
         Object o = "foo";
         cm.store(o);
         assertEquals(o, cm.load());
     }
 
-    public void testendConfiguration() {
+    @Test
+    void testendConfiguration() {
         ((CacheMarshallerImpl)cm).setInputURL(null);
         ((CacheMarshallerImpl)cm)
             .setInputResource(getClass().getName() + ".ser");

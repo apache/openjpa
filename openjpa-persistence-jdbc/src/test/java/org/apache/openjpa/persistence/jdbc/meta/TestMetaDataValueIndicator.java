@@ -27,6 +27,9 @@
  */
 package org.apache.openjpa.persistence.jdbc.meta;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
@@ -35,25 +38,19 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiE;
 import org.apache.openjpa.persistence.jdbc.common.apps.MultiF;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
-public class TestMetaDataValueIndicator
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
+class TestMetaDataValueIndicator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
     private OpenJPAEntityManager pm;
 
     private ClassMapping eMapping;
     private ClassMapping fMapping;
 
-    public TestMetaDataValueIndicator(String str) {
-        super(str);
-    }
-
-    /** Creates a new instance of TestMetaDataValueIndicator */
-    public TestMetaDataValueIndicator() {
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         // ### I hate that we have to do this
         Class c = MultiE.class;
         c = MultiF.class;
@@ -70,23 +67,25 @@ public class TestMetaDataValueIndicator
             pm.getClassLoader(), true);
     }
 
-    @Override
+    @AfterEach
     public void tearDown()
-    throws Exception {
+        throws Exception {
         if (pm.getTransaction().isActive())
             pm.getTransaction().rollback();
         pm.close();
         super.tearDown();
     }
 
-    public void testMetaData() {
+    @Test
+    void metaData() {
         assertEquals(ValueMapDiscriminatorStrategy.class,
                 eMapping.getDiscriminator().getStrategy().getClass());
         assertEquals(SuperclassDiscriminatorStrategy.class,
                 fMapping.getDiscriminator().getStrategy().getClass());
     }
 
-    public void testOperations() {
+    @Test
+    void operations() {
        deleteAll(MultiE.class);
 
         pm = (OpenJPAEntityManager)currentEntityManager();
