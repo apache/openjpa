@@ -105,7 +105,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     // that we can re-load them for each new broker
     private transient Collection<String> _pcClassNames = null;
     private transient Collection<ClassLoader> _pcClassLoaders = null;
-    private transient boolean _persistentTypesLoaded = false;
+    private transient volatile boolean _persistentTypesLoaded = false;
 
     // lifecycle listeners to pass to each broker
     private transient Map<Object, Class<?>[]> _lifecycleListeners = null;
@@ -260,51 +260,68 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
 
     /**
      * Load the configured persistent classes list. Performed automatically
-     * whenever a broker is created.
+     * whenever a broker is created, and by the factory level metadata access
+     * that needs the runtime subclasses of unenhanced types.
      */
     public void loadPersistentTypes(ClassLoader envLoader) {
         // if we've loaded the persistent types and the class name list
-        // is empty, then we can simply return. Note that there is a
-        // potential threading scenario in which _persistentTypesLoaded is
-        // false when read, but the work to populate _pcClassNames has
-        // already been done. This is ok; _pcClassNames can tolerate
-        // concurrent access, so the worst case is that the list is
-        // persistent type data is processed multiple times, which this
-        // algorithm takes into account.
-        if (_persistentTypesLoaded && _pcClassNames.isEmpty())
+        // is empty, then we can simply return.
+        if (_persistentTypesLoaded && _pcClassNames.isEmpty()) {
             return;
+        }
 
-        // cache persistent type names if not already
         ClassLoader loader = _conf.getClassResolverInstance().
             getClassLoader(getClass(), envLoader);
-        Collection<Class<?>> toRedefine = new ArrayList<>();
         if (!_persistentTypesLoaded) {
-            Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
-                loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
-            if (clss.isEmpty())
-                _pcClassNames = Collections.emptyList();
-            else {
-                Collection<String> c = new ArrayList<>(clss.size());
-                for (Class<?> cls : clss) {
-                    c.add(cls.getName());
-                    if (needsSub(cls))
-                        toRedefine.add(cls);
-                }
-                getPcClassLoaders().add(loader);
-                _pcClassNames = c;
-            }
-            _persistentTypesLoaded = true;
-        } else {
-            // reload with this loader
-            if (getPcClassLoaders().add(loader)) {
-                for (String clsName : _pcClassNames) {
-                    try {
-                        Class<?> cls = Class.forName(clsName, true, loader);
-                        if (needsSub(cls))
-                            toRedefine.add(cls);
-                    } catch (Throwable t) {
-                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
+            // the first load prepares the unenhanced types; callers racing
+            // for it (the first brokers, the metamodel) must not prepare
+            // them twice
+            lock();
+            try {
+                if (!_persistentTypesLoaded) {
+                    Collection<Class<?>> toRedefine = new ArrayList<>();
+                    Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
+                        loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
+                    if (clss.isEmpty()) {
+                        _pcClassNames = Collections.emptyList();
+                    } else {
+                        Collection<String> c = new ArrayList<>(clss.size());
+                        for (Class<?> cls : clss) {
+                            c.add(cls.getName());
+                            if (needsSub(cls)) {
+                                toRedefine.add(cls);
+                            }
+                        }
+                        getPcClassLoaders().add(loader);
+                        _pcClassNames = c;
                     }
+                    try {
+                        // get the ManagedClassSubclasser into the loop
+                        ManagedClassSubclasser.prepareUnenhancedClasses(_conf, toRedefine, envLoader);
+                    } finally {
+                        // published only now, so that a caller that skips
+                        // the lock never sees the types half prepared
+                        _persistentTypesLoaded = true;
+                    }
+                    return;
+                }
+            } finally {
+                unlock();
+            }
+        }
+
+        // reload with this loader. _pcClassNames can tolerate concurrent
+        // access and only the caller that adds the loader prepares the types
+        Collection<Class<?>> toRedefine = new ArrayList<>();
+        if (getPcClassLoaders().add(loader)) {
+            for (String clsName : _pcClassNames) {
+                try {
+                    Class<?> cls = Class.forName(clsName, true, loader);
+                    if (needsSub(cls)) {
+                        toRedefine.add(cls);
+                    }
+                } catch (Throwable t) {
+                    _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
                 }
             }
         }

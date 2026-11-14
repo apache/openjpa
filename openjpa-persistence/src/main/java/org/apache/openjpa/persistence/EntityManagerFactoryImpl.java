@@ -47,7 +47,8 @@ import jakarta.persistence.spi.LoadState;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -70,6 +71,7 @@ import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -97,6 +99,7 @@ public class EntityManagerFactoryImpl
     // internal lock: must stay serializable, this factory is serialized as-is
     private final ReentrantLock _namedQueriesLock = new ReentrantLock();
     private volatile boolean _namedQueriesInitialized;
+    private transient volatile boolean _persistentTypesPrepared;
     private transient Map<String, Object> properties;
     private transient Map<String, Object> emEmptyPropsProperties;
 
@@ -466,12 +469,34 @@ public class EntityManagerFactoryImpl
                 "EntityManagerFactory is closed.");
         }
         if (_metaModel == null) {
+            preparePersistentTypes();
             MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
             mdr.setResolve(MetaDataModes.MODE_MAPPING_INIT, true);
             _metaModel = new MetamodelImpl(mdr);
         }
         return _metaModel;
+    }
+
+    /**
+     * Prepare the persistent types the way the first broker of the factory
+     * does, so that metadata can be handed out before the first
+     * EntityManager: the runtime subclasses of unenhanced types only exist,
+     * and are only registered in the PCRegistry, once they were prepared.
+     * The broker factory prepares the types only once. A closed factory
+     * prepares nothing.
+     */
+    private void preparePersistentTypes() {
+        if (_persistentTypesPrepared || _factory.isClosed()) {
+            return;
+        }
+        if (getConfiguration().getRuntimeUnenhancedClassesConstant() != RuntimeUnenhancedClassesModes.SUPPORTED) {
+            return;
+        }
+        if (_factory.getInnermostDelegate() instanceof AbstractBrokerFactory factory) {
+            factory.loadPersistentTypes(Thread.currentThread().getContextClassLoader());
+        }
+        _persistentTypesPrepared = true;
     }
 
     @Override
@@ -761,7 +786,13 @@ public class EntityManagerFactoryImpl
      */
     @Override
     public Object getIdentifier(Object entity) {
-        if (!ImplHelper.isManageable(entity)) {
+        boolean manageable = ImplHelper.isManageable(entity);
+        if (!manageable && entity != null) {
+            // an unenhanced type is only manageable once it was prepared
+            preparePersistentTypes();
+            manageable = ImplHelper.isManageable(entity);
+        }
+        if (!manageable) {
             throw new IllegalArgumentException(_loc.get("invalid_entity_argument",
                     "getIdentifier", entity == null ? "null" : Exceptions.toString(entity)).getMessage());
         }
