@@ -2201,6 +2201,8 @@
                         <exclude>scripts/domain-class.list</exclude>
                         <exclude>**/**/reference_schema.orig_xml</exclude>
                         <exclude>**/dependency-reduced-pom.xml</exclude>
+                        <!-- ATR email templates, sent as email bodies without a license header -->
+                        <exclude>dev-tools/atr/*-template.txt</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -1,0 +1,59 @@
+Hello {{COMMITTEE}},
+
+I'd like to call a vote on releasing the following artifacts as
+Apache {{PROJECT_NAME}} {{VERSION}}. This vote is being conducted using a
+Beta version of the Apache Trusted Releases (ATR) platform.
+Please report any bugs or issues to the ASF Tooling team.
+
+The page of the release candidate from ATR revision {{REVISION}},
+which includes the downloads, can be found at:
+
+  {{REVIEW_URL}}
+
+The file manifest for ATR revision {{REVISION}}, including file digests,
+can be found at:
+
+  {{MANIFEST_URL}}
+
+The release artifacts are signed with one or more OpenPGP keys from:
+
+  {{KEYS_FILE}}
+{{COMMIT_PARAGRAPH}}{{FIRST_ROUND_THREAD}}
+The release was made from the git tag {{VERSION}}:
+
+  https://github.com/apache/openjpa/tree/{{VERSION}}
+
+The Nexus staging repository is here:
+
+  https://repository.apache.org/content/repositories/orgapacheopenjpa-[REPO_NUM]
+
+To use it in a Maven build, set the OpenJPA version to {{VERSION}} and add
+that URL as a repository to your settings.xml or pom.xml.
+
+The release notes are in RELEASE-NOTES.html in the binary archive. The
+list of JIRA issues fixed in this release is here:
+
+  https://issues.apache.org/jira/projects/OPENJPA/versions/[JIRA_VERSION_ID]
+
+The source release is the one to vote on; the binary archives are
+convenience binaries. Please verify both.
+
+"How to vote" is described here:
+https://github.com/apache/openjpa/blob/master/RELEASING.md#verifying-a-release-candidate
+When voting, please list the actions taken to verify the release.
+
+Please review the release candidate and vote accordingly.
+
+[ ] +1 Release this package
+[ ] +0 Abstain
+[ ] -1 Do not release this package (please provide specific comments)
+
+{{VOTE_INSTRUCTIONS}}
+
+The vote is open for {{DURATION}} hours. Only votes from the OpenJPA PMC are
+binding, but everyone is welcome to vote. The vote passes with at least three
+binding +1 votes and more binding +1 than -1 votes.
+
+{{RELEASE_CHECKLIST}}
+Thanks,
+{{YOUR_FULL_NAME}} ({{YOUR_ASF_ID}})

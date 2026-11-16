@@ -25,3 +25,5 @@
 scripts/domain-class.list
 **/**/reference_schema.orig_xml
 **/dependency-reduced-pom.xml
+# ATR email templates, sent as the body of the vote and announce emails (no license header)
+dev-tools/atr/*-template.txt

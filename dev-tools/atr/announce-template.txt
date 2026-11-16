@@ -1,0 +1,33 @@
+The Apache {{COMMITTEE}} project team is pleased to announce the release of
+Apache {{PROJECT_NAME}} {{VERSION}}.
+
+Apache OpenJPA is an implementation of the Jakarta Persistence API. It can
+be used as a stand-alone POJO persistence layer or integrated into any
+Jakarta EE compliant container and many other lightweight frameworks. You
+can read more about Apache OpenJPA on the project website:
+
+  {{HOMEPAGE}}
+
+Downloads of source and binary distributions are listed on our download
+page:
+
+  {{DOWNLOAD_PAGE}}
+
+They are also available from the Apache download area:
+
+  {{DOWNLOAD_URL}}
+
+The artifacts are available in Maven Central at the following coordinates:
+
+  groupId: org.apache.openjpa
+  artifactId: openjpa (or openjpa-all, openjpa-<module>)
+  version: {{VERSION}}
+
+The release notes, with the full list of changes, are here [1]. Please let
+us know [2] if you encounter any problems.
+
+On behalf of the Apache {{COMMITTEE}} project team,
+{{YOUR_FULL_NAME}} ({{YOUR_ASF_ID}})
+
+[1] https://openjpa.apache.org/builds/{{VERSION}}/apache-openjpa/RELEASE-NOTES.html
+[2] {{BUG_DATABASE}}
