@@ -1,5 +1,5 @@
-Apache OpenJPA 3.2.0
-Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+Apache OpenJPA 4.2.0
+Licensed under Apache License 2.0 - https://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
 Content
@@ -11,25 +11,19 @@ Content
    * Documentation
    * Getting Involved
    * Included Changes
-     * Sub-tasks
-     * Bugs
-     * Improvements
-     * New Features
-     * Test
 
 
 Overview
 --------
-   The Apache OpenJPA community is proud to release a SNAPSHOT distribution of
-   OpenJPA 3.2.0. This distribution is based on the final JSR 317 Java
-   Persistence API, Version 2.02 specification, while remaining backwards
-   compatible with prior releases based on the Java Persistence API
-   (JPA 1.0, 2.0, 2.1) part of Java Community Process JSR-220
-   (Enterprise JavaBeans 3.0).
+   This is the release of Apache OpenJPA 4.2.0. This distribution implements
+   the Jakarta Persistence 3.2 specification.
+
+   RELEASE-NOTES.html describes the changes of this release in more detail,
+   including the upgrade notes for users of OpenJPA 4.1.x.
 
    Additional information on the OpenJPA project may be found at the project
    web site:
-      http://openjpa.apache.org
+      https://openjpa.apache.org
 
 
 License
@@ -41,7 +35,7 @@ License
    "License"); you may not use this file except in compliance with the
    License. You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+   https://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -49,34 +43,30 @@ License
    License for the specific language governing permissions and limitations
    under the License.
 
-   The license may also be found in LICENSE.txt included in each assembly.
+   The license may also be found in the LICENSE file included in each
+   assembly.
 
 
 Notices
 -------
-   Copyright 2006,2021 The Apache Software Foundation.
+   Copyright 2006-2026 The Apache Software Foundation.
    Apache, the Apache feather logo and OpenJPA are trademarks of
    The Apache Software Foundation.
 
    This product includes software developed at
-   The Apache Software Foundation (http://www.apache.org/).
+   The Apache Software Foundation (https://www.apache.org/).
 
-   OpenJPA includes the persistence and orm schemas from the JPA specifications.
-   Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
-   OpenJPA elects to include this software in this distribution under the
-   CDDL license.  You can obtain a copy of the License at:
-       https://glassfish.dev.java.net/public/CDDL+GPL.html
-   The source code is available at:
-       http://java.net/projects/glassfish
+   OpenJPA includes the persistence and orm schemas from the JPA and
+   Jakarta Persistence specifications, see the NOTICE file.
 
-   The complete list of notices can be found in NOTICE.txt included in each
-   assembly.
+   The complete list of notices can be found in the NOTICE file included in
+   each assembly.
 
 
 Prerequisites
 -------------
-   OpenJPA requires Java SE 8 or higher and a relational
-   database of some sort.
+   OpenJPA requires Java 17 or higher and a relational database of some
+   sort.
 
 
 Documentation
@@ -84,12 +74,12 @@ Documentation
    If you have questions about OpenJPA, a good source of information is the
    online product manual. You can find the manual for the current release as
    well as older releases of OpenJPA at
-       http://openjpa.apache.org/documentation.html
+       https://openjpa.apache.org/documentation.html
 
    If you can't find what you are looking for in the manual or would like more
-   clarification, please post to the OpenJPA development mailing list.
+   clarification, please post to the OpenJPA users mailing list.
    Information on all of the OpenJPA mailing lists may be found here:
-       http://openjpa.apache.org/mailing-lists.html
+       https://openjpa.apache.org/mailing-lists.html
 
 
 Getting Involved
@@ -106,82 +96,197 @@ Getting Involved
 
    How do I contribute?
         * To discuss Apache OpenJPA topics check out the mailing lists.
-        * Informal discussion also occurs on the #openjpa IRC channel on
-          freenode.net.
         * Bugs and other issues can be posted on the issue tracker at
           https://issues.apache.org/jira/browse/OPENJPA
+        * Pull requests are welcome at https://github.com/apache/openjpa
         * Our homepage https://openjpa.apache.org contains more information
 
 
-Included Changes in OpenJPA 3.2.0
+Included Changes in OpenJPA 4.2.0
 ---------------------------------
 
 Sub-task
 
-    [OPENJPA-1594] - Tests not handling new QueryTimeOut and LockTimeOut exceptions correctly
+    [OPENJPA-89] - Bulk delete fails to delete owned many-to-many relationship (entry remains in join table)
+    [OPENJPA-254] - Bulk update did not work on an entity that is mapped to multiple tables
+    [OPENJPA-2946] - Java Compiler Compiler Warnings need to be addressed
+    [OPENJPA-2950] - Broadened auto-flush before every query hurts perf
+    [OPENJPA-2951] - Full context flush after in-memory bulk update/delete
+    [OPENJPA-2952] - Transient object wrongly assumed detached in flush check
+    [OPENJPA-2953] - Embedded converter override leaks to shared embeddable meta
+    [OPENJPA-2954] - Unsafe publication of cached AttributeConverter instance
+    [OPENJPA-2955] - extractSchemaGenObjects mutates caller's properties map
+    [OPENJPA-2956] - In-memory ID(), set ops and nullPrecedence unimplemented
+    [OPENJPA-2957] - hasEmbeddableAnnotation relies on annotation simple name
+    [OPENJPA-2958] - Direct access to ImplHelper._unenhancedInstanceMap
+    [OPENJPA-2959] - dropExcludedTypeTables drops user tables with raw SQL
+    [OPENJPA-2960] - NULLS FIRST/LAST string rewrite breaks on commas, triplicated
+    [OPENJPA-2961] - TREAT discriminator filter excludes subclasses of target
+    [OPENJPA-2962] - Schema-gen methods leak a Broker just to get classloader
+    [OPENJPA-2963] - Static _droppedTables shared across concurrent EMFs
+    [OPENJPA-2964] - Range ignored in executeSetOperatorQuery
+    [OPENJPA-2965] - Bulk delete no longer cleans dependent/collection rows
+    [OPENJPA-2966] - Long cast uses decimalTypeName instead of bigint
+    [OPENJPA-2967] - VersionVal NPEs on surrogate or missing version
+    [OPENJPA-2968] - IdClass paths swallow exceptions and rely on field order
+    [OPENJPA-2969] - Instant.now() precision loss on DB round-trip
+    [OPENJPA-2970] - Null named parameter falls through to positional lookup
+    [OPENJPA-2971] - storeCharsAsNumbers default flip breaks existing schemas
+    [OPENJPA-2973] - Converter instantiated reflectively, skips CDI and nulls
+    [OPENJPA-2974] - String cache mode properties no longer converted to enum
+    [OPENJPA-2975] - treat() join overloads silently cast without narrowing
+    [OPENJPA-2976] - version 3.1 persistence.xml validated against 3.0 XSD
+    [OPENJPA-2977] - convert() mutates caller config, ignores mappingFiles
+    [OPENJPA-2978] - Typos, stray semicolon, and validate() masking unsupported
+    [OPENJPA-2979] - getReference(entity) fails on composite ids
+    [OPENJPA-2980] - addNamedQuery relabels criteria query as JPQL
+    [OPENJPA-2981] - Dead access-type annotation helper methods
+    [OPENJPA-2983] - Locale-sensitive toUpperCase on temporal field name
+    [OPENJPA-2984] - Dropped non-Serializable IdClass warning
+    [OPENJPA-2985] - Mandatory JPA 3.2 methods throw UnsupportedOperationException
+    [OPENJPA-2986] - setTimeout(null) cannot clear a previously set query timeout
+    [OPENJPA-2987] - Externalized-parameter tests reduced to no-op assertions
+    [OPENJPA-2988] - LOCAL TIME test query is a tautology matching all rows
+    [OPENJPA-2989] - Results always materialized, lazy ResultList behavior lost
+    [OPENJPA-2990] - Bulk delete no longer cleans join-table rows
+    [OPENJPA-2991] - Deeply nested multiselect extension now rejected
+    [OPENJPA-2992] - Non-entity classes in persistence.xml silently skipped
+    [OPENJPA-2993] - Renamed getaXxx accessors drop JavaBeans naming coverage
+    [OPENJPA-2994] - Map-key column default KEY0 to entityCs_KEY breaks upgrades
+    [OPENJPA-2995] - assertSQL now ignores identifier delimiters suite-wide
+    [OPENJPA-2996] - testNotLoadedLazy duplicates eager check, lazy path untested
+    [OPENJPA-2998] - MariaDB branch accepts either message without naming versions
+    [OPENJPA-2999] - Leftover [2024] bracket and stale CDDL sentence vs EFSL 1.1
+    [OPENJPA-3005] - Use jakarta.persistence.PersistenceUnitTransactionType internally instead of the deprecated SPI enum
+    [OPENJPA-3029] - Derby: EXTRACT is not supported
+    [OPENJPA-3030] - Derby: LEFT and RIGHT are not supported
+    [OPENJPA-3031] - Derby: CAST(? AS VARCHAR) without a length
+    [OPENJPA-3032] - StoredProcedureQuery tests fail on Derby and SQL Server
+    [OPENJPA-3033] - Derby: basic type, generator and numeric result type tests fail
+    [OPENJPA-3034] - Tests failing on several databases: sequence generator, timestamp, scalar expressions, mixed access
+    [OPENJPA-3035] - MySQL: numeric operations return Long where Integer is expected
+    [OPENJPA-3036] - MySQL: bulk UPDATE with a subquery on the same table
+    [OPENJPA-3037] - MySQL: EXTRACT(WEEK) returns a different week
+    [OPENJPA-3038] - MySQL: mapping, order column and map key tests fail
+    [OPENJPA-3039] - Derby: JPQL comparison of two parameters fails
+    [OPENJPA-3040] - Criteria parameter used only in the select list is not registered
+    [OPENJPA-3041] - H2: EXTRACT(SECOND) drops fractional seconds
+    [OPENJPA-3042] - In-memory EXTRACT(WEEK) returns the day of the week
+    [OPENJPA-3044] - JPQL does not accept a sign in front of a path, e.g. SELECT -n.intA
+    [OPENJPA-3046] - Criteria parameter used only in a join ON condition is not registered
+    [OPENJPA-3047] - Bulk UPDATE of a column in a joined superclass or a secondary table fails on Derby and H2
+    [OPENJPA-3048] - JDBC escape date literal is not converted when a query is evaluated in memory
+    [OPENJPA-3049] - JPQL arithmetic ranks BigDecimal above Double, unlike the numeric promotion of the specification
+    [OPENJPA-3066] - setParameter(Parameter, Calendar, TemporalType) ignores the TemporalType
+    [OPENJPA-3067] - EXTRACT(WEEK) is not supported on Derby
 
 Bug
 
-    [OPENJPA-1303] - Reserved words are not mapped correctly in table definition
-    [OPENJPA-2182] - DB dictionaries do not properly process reserved words for column names
-    [OPENJPA-2648] - hsqldb @Id long create table as interger instead of bigint
-    [OPENJPA-2731] - Problems with Boolean Representation with Postgres
-    [OPENJPA-2788] - Anonymous parameters are not being picked when adding via CriteriaBuilder
-    [OPENJPA-2789] - JDBC connection not closed when running named query in explicitly opened connection
-    [OPENJPA-2795] - generate foreign key indexes for Oracle
-    [OPENJPA-2814] - Memory Leak in ForeignKey class
-    [OPENJPA-2821] - Subclassing enhancer must use AsmAdapter
-    [OPENJPA-2828] - org.apache.openjpa.kernel.conf.Specification.equals() : returns true even if different
-    [OPENJPA-2829] - javax script execution does not ignore empty lines
-    [OPENJPA-2830] - jakarta.persistence.sql-load-script-source does not support ";" in strings
-    [OPENJPA-2832] - DROP COLUMN does not use delimiters and always add double quotes
-    [OPENJPA-2834] - Performance issue while deploying in Wildfly EAP with OpenJPA-3.1.1
-    [OPENJPA-2842] - openjpa.Log=log4j vs log4j2 - reintroduce log4j support and add explicit log4j2 support
-    [OPENJPA-2843] - try to get rid of com.ibm dependency
-    [OPENJPA-2846] - Enhancement does not work with JDK 16
-    [OPENJPA-2849] - select(max) etc of LocalDate, LocalDateTime etc leads to ClassCastException
-    [OPENJPA-2850] - [MSSQL] BLOB column type is not supported
-    [OPENJPA-2851] - argument CURRENT_DATE cannot handle java.time.LocalDateTime entity fields
-    [OPENJPA-2854] - fix OffsetTime handling for PostgreSQL
-    [OPENJPA-2855] - primary keys do no respect naming rules
-    [OPENJPA-2856] - [MariaDB] improve TIME handling
-    [OPENJPA-2857] - [MariaDB] locking in some cases gets handled via sqlState 70100
-    [OPENJPA-2858] - update dbcp2 to 2.8.0
-    [OPENJPA-2859] - [HSQLDB] HSQLDictionary wrongly maps double to NUMERIC without precision
-    [OPENJPA-2860] - [Postgres] use setQueryTimeout for PostgreSQL >= 10
-    [OPENJPA-2861] - select sum(CASE x WHEN x THEN 1 ELSE 0 ) returns String instead of Long.
-    [OPENJPA-2862] - select SUM doesn't return spec defined types
-    [OPENJPA-2863] - java.time.LocalDateTime in Oracle gets rounded to just 3 digits
-    [OPENJPA-2864] - respect the Columns precision when persisting a java.sql.Timestamp value
-    [OPENJPA-2865] - [Oracle] use native java.time JDBC features
-    [OPENJPA-2866] - [Oracle] add GenerationType#IDENTITY support for Oracle
-    [OPENJPA-2871] - upgrade to xbean-4.20 to remove transitive ASM dependency
-
-New Feature
-
-    [OPENJPA-2816] - Add HerdDB DBDictionary
+    [OPENJPA-18] - bulk update to Entity with secondary table mapping produces BAD SQL
+    [OPENJPA-26] - JPQL parser failed to handle unary operations in arithmetic comparisons, eg. where -(e.salary+10) > -10
+    [OPENJPA-221] - DerbyDictionary doesn't describe a working mapping for char fields.
+    [OPENJPA-223] - columnNames field of @Index annotation is ignored
+    [OPENJPA-603] - Schema Tool discards the size of decimal column
+    [OPENJPA-1145] - Reserved keywords in the DBDictionary isn't being used for table names
+    [OPENJPA-1698] - SchemaAction=deleteTableContents throws error if table doesn't exist
+    [OPENJPA-2185] - Exception when @SequenceGenerator is used with DerbyDB
+    [OPENJPA-2186] - Sequences are not removed in DerbyDB
+    [OPENJPA-2364] - Slices: Bulk JPQL Deletes/Updates ignoring Target plugins and query hints.
+    [OPENJPA-2496] - Sequence Objects not working in MS SQL 2012
+    [OPENJPA-2590] - PersistenceUnitUtil#getIdentifier should return id's value
+    [OPENJPA-2837] - HerdDBDictionary does not work with 'native' SchemaFactory (LazySchemaFactory) - set useSchemaName=false by default
+    [OPENJPA-2844] - Unable to call getProperties on EnitityManagerFactory before createEntityManager is called.
+    [OPENJPA-2847] - CriteriaUpdate/CriteriaDelete are not implemented
+    [OPENJPA-2879] - Regression in Column.isCompatible
+    [OPENJPA-2880] - NPE in StoredProcedureQueryImpl
+    [OPENJPA-2888] - commons-dbcp2 bundle version defined in karaf features repository is not aligned with the actual version used by openjpa
+    [OPENJPA-2929] - Filling inverse FK columns is broken for compound keys
+    [OPENJPA-2931] - Comparing objects with composite keys through criteria API doesn't work in joins
+    [OPENJPA-2935] - Timestamp + coalesce + orderBy + Postgres makes Postgres syntax errors
+    [OPENJPA-2937] - UUID Generator
+    [OPENJPA-2938] - Certain combination of ConnectionProperties can lead to NPE
+    [OPENJPA-2939] - Fix metamodel generation and XML/Json conversion when entity has an UUID property
+    [OPENJPA-2942] - Java8TimeTypesTest is broken at CI (H2)
+    [OPENJPA-2943] - MySQLDictionary.decorate() is out of date with MySQL Driver Changes
+    [OPENJPA-2944] - Inconsistent column type conversion when using AttributeConverter
+    [OPENJPA-3001] - MySQL TCK: char field insert truncated on CHAR column
+    [OPENJPA-3002] - Column names specified at @Index annotation silently ignored
+    [OPENJPA-3006] - EntityManagerFactory.getProperties() is not usable as configuration input
+    [OPENJPA-3008] - H2 test profile loses committed data when H2 closes the database between EntityManagerFactories
+    [OPENJPA-3009] - JPQL LIKE with an escaped wildcard matches only on Derby
+    [OPENJPA-3010] - Bulk delete and map key tests assert Derby-shaped SQL and fail on MySQL
+    [OPENJPA-3012] - memory leak in Serialization
+    [OPENJPA-3014] - A named @SequenceGenerator fails where the database has no sequences
+    [OPENJPA-3016] - Criteria tests fail on MariaDB and exhaust the connection pool; TestPessimisticLocks fails on PostgreSQL
+    [OPENJPA-3017] - @Convert on a collection attribute is ignored and the attribute is silently not persisted
+    [OPENJPA-3018] - Size appended to a JSON or JSONB column definition on PostgreSQL, MySQL and MariaDB
+    [OPENJPA-3019] - In-place change to an element of a collection converted as a whole is not written
+    [OPENJPA-3020] - @Lob with an AttributeConverter uses the attribute type instead of the converter database type
+    [OPENJPA-3021] - A converted attribute value is replaced by a bean proxy that loses state without a setter
+    [OPENJPA-3022] - Loading a field of an instance with unflushed changes stores those changes in the data cache
+    [OPENJPA-3023] - The data cache shares the value of a converted attribute between persistence contexts
+    [OPENJPA-3024] - An element removed from a collection with orphanRemoval and cascade remove is not deleted
+    [OPENJPA-3025] - orphan-removal in an XML mapping is lost when the relation also cascades remove
+    [OPENJPA-3026] - Build fails under Windows
+    [OPENJPA-3043] - A parameter used twice with another parameter in between is bound at the wrong position from the query cache
+    [OPENJPA-3050] - In-memory arithmetic treats NULL as 0
+    [OPENJPA-3051] - H2: a BigDecimal column is created with scale 0
+    [OPENJPA-3052] - Documentation need to be improved
+    [OPENJPA-3054] - OSGi/Karaf packaging is broken after the switch to the Jakarta namespace
+    [OPENJPA-3055] - EXTRACT(SECOND) lost the fraction (all MySQL and MariaDB jobs)
+    [OPENJPA-3056] - Bulk DELETE with a subquery on the target table fails on MariaDB before 11.1 (error 1093)
+    [OPENJPA-3057] - Slice target hint and QueryTargetPolicy are ignored by bulk UPDATE and native bulk statements
+    [OPENJPA-3058] - H2: a BigInteger column is created as BIGINT
+    [OPENJPA-3059] - It is impossible to specify bind address for TCPRemoteCommitProvider
+    [OPENJPA-3060] - MariaDB: StoreCharsAsNumbers still defaults to true
+    [OPENJPA-3061] - MariaDB: writing a Reader into a CLOB fails with ArrayIndexOutOfBoundsException
+    [OPENJPA-3062] - MySQL and MariaDB: a decimal column without a precision rounds values to integers
+    [OPENJPA-3063] - HSQLDB: LOB type of converted attributes, decimal scale, CASE padding and EXTRACT of a parameter fail
+    [OPENJPA-3064] - SQL Server: decimal scale, EXTRACT(SECOND/WEEK), current local time and shared test tables fail
+    [OPENJPA-3065] - Enhancer runs into ConcurrentModificationException if run in Maven with -C
+    [OPENJPA-3070] - String values written as SQL literals do not always reach the database unchanged
+    [OPENJPA-3073] - Attribute of a non-Serializable type converted only by an autoApply converter is silently left out of the mapping
+    [OPENJPA-3075] - DerbyDictionary does not know WINDOW and other words Derby reserves
+    [OPENJPA-3076] - Delimiting of reserved words is a JVM-wide setting, so the dictionary configured last decides it for all persistence units
+    [OPENJPA-3077] - 'test-dynamic-enhancer' profile is broken
+    [OPENJPA-3079] - Default index name contains the delimiters of a delimited column name
+    [OPENJPA-3081] - EntityManagerFactory.getMetamodel() fails for unenhanced entities until the first EntityManager is created
 
 Improvement
 
-    [OPENJPA-84] - Escape sql reserved words in column names
-    [OPENJPA-2665] - refactore code to use more Java7 features.
-    [OPENJPA-2765] - Fix documentation of JPA spec compliance
-    [OPENJPA-2820] - Track when a DBIdentifier is already delimited in order to save memory allocations and cpu
-    [OPENJPA-2822] - enhancer can rely on at least java8
-    [OPENJPA-2823] - treat jakarta.* as spec class in enhancer
-    [OPENJPA-2852] - Maven Plugin should be marked thread safe
-    [OPENJPA-2853] - [MSSQL Server] support sendTimeAsDatetime handling
-    [OPENJPA-2867] - generate list of reserved Words via unit test
-    [OPENJPA-2868] - update reserved column names list for various of our DBDictionaries
-    [OPENJPA-2870] - update specification-version to 2.2
+    [OPENJPA-897] - OpenJPA Documentaion should provide better navigation
+    [OPENJPA-1817] - JPQL doens't support ORDER BY UPPER(fieldname)
+    [OPENJPA-2219] - warn if a "class" listed in persistence unit is an enum and ignore it in mappings
+    [OPENJPA-2940] - Implement Jakarta Persistence 3.2
+    [OPENJPA-2941] - H2 should be upgraded to v2
+    [OPENJPA-3007] - Junit6 should be used for tests
+    [OPENJPA-3011] - Run the MySQL, MariaDB and PostgreSQL profiles on a schedule in CI
+    [OPENJPA-3013] - Collect the deserialization candidate loaders without a MultiClassLoader
+    [OPENJPA-3015] - Mail the dev list when a GitHub Actions run fails
+    [OPENJPA-3053] - Set rule to automatically drop merged branches
+    [OPENJPA-3071] - Resolve type names of remote commit events through the metadata repository
+    [OPENJPA-3072] - TCPRemoteCommitProvider: only accept connections from the configured peers and limit receiving connections
+    [OPENJPA-3074] - Share the common code of MySQLDictionary and MariaDBDictionary in a superclass and add the MySQL 8 reserved words
 
 Task
 
-    [OPENJPA-2819] - Add simple GitHub Actions validation for Pull Requests
-    [OPENJPA-2824] - When @OpenJPASupport (junit5 extension) is used, ensure to not do auto enhancement more than once
-    [OPENJPA-2831] - Import commons-collections4 classes instead of the dependency in openjpa-lib
-    [OPENJPA-2833] - Upgrade to ASM 9
-    [OPENJPA-2835] - update to xbean-asm9 for Java16 support
-    [OPENJPA-2838] - Add a JUL LogFactory
-    [OPENJPA-2840] - Enable a light SPI for asm support in kernel module
+    [OPENJPA-3003] - Dependencies should be up-to-date
+    [OPENJPA-3027] - Test the scheduled Databases job against supported database versions
+    [OPENJPA-3068] - Update RELEASE-NOTES.html for 4.2.0
+    [OPENJPA-3069] - Fix license headers, NOTICE and RAT exclusions for the ATR release checks
+    [OPENJPA-3082] - Document the release process, including Apache Trusted Releases (ATR)
+    [OPENJPA-3083] - Build the aggregated javadoc for the binary distribution and the website
+    [OPENJPA-3084] - Update CHANGES.txt and the release notes for 4.2.0
 
+Test
+
+    [OPENJPA-3045] - TestPessimisticLocks fails on PostgreSQL because a query with OFFSET has no ORDER BY
+
+Epic
+
+    [OPENJPA-2945] - Multiple issues found due to Jakarta Persistence 3.2 implementation need to be addressed
+    [OPENJPA-3028] - Jakarta Persistence 3.2 TCK failures on Derby, MySQL and SQL Server
+
+Question
+
+    [OPENJPA-1346] - ClassNotFoundException in org.apache.openjpa.datacache.Caches.addTypesByName
