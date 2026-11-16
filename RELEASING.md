@@ -211,22 +211,20 @@ reactor, where no source release exists.
 
 > **Choose your path first: ATR or SVN, not both.** Steps marked **ATR** and **SVN** are alternatives.
 
-For the first release of a new minor line (for example `4.2.0`), create its maintenance branch first, named
-like the existing ones (`3.2.x`, `2.4.x`), and move `master` to the next minor version:
+Each release is made on a release branch `rel/x.y.z`, created from `master` (or, for a patch release of an
+older line, from the maintenance branch or the tag it is based on). `master` stays open for other changes while
+the vote runs. Changes for the release, such as the release notes, go into the release branch by pull request.
+After the release the branch is merged back into `master` and deleted; the tag `x.y.z` stays.
 
 ```bash
 git checkout master && git pull --rebase
-git checkout -b x.y.x
-git push origin x.y.x
-git checkout master
-mvn versions:set -DnewVersion=x.<y+1>.0-SNAPSHOT -DgenerateBackupPoms=false
-git commit -am "Set the version to x.<y+1>.0-SNAPSHOT" && git push origin master
+git checkout -b rel/x.y.z
+git push -u origin rel/x.y.z
 ```
 
-TODO: check that `versions:set` updates every module (the root `pom.xml` does not configure
-`versions-maven-plugin`). Make sure the next version exists in JIRA. Then release from the `x.y.x` branch.
+Make sure the next version exists in JIRA.
 
-1. Check out the branch to be released (`master` or a maintenance branch) with no local changes:
+1. Check out the release branch `rel/x.y.z` with no local changes:
 
    ```bash
    git pull --rebase
@@ -241,7 +239,8 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
    ```
 
    This asks for the release version, the tag (the plain version, e.g. `4.2.0`) and the next development
-   version, builds with `clean install -DskipTests`, and creates two `[maven-release-plugin]` commits and the
+   version (the version `master` gets when the release branch is merged back: `x.<y+1>.0-SNAPSHOT` for a
+   release from `master`, for example `4.3.0-SNAPSHOT` after `4.2.0`), builds with `clean install -DskipTests`, and creates two `[maven-release-plugin]` commits and the
    tag **in your local repository only** (`pushChanges` is `false`). If it fails, run `mvn release:clean`,
    fix the problem and start again.
 
@@ -265,7 +264,7 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
    Then push the release commits and the tag:
 
    ```bash
-   git push origin <branch>
+   git push origin rel/x.y.z
    git push origin x.y.z
    ```
 
@@ -491,7 +490,18 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
    svn rm https://dist.apache.org/repos/dist/release/openjpa/<old-version> -m "Remove Apache OpenJPA <old-version>"
    ```
 
-10. If the release was made from a maintenance branch, bring the changes that also belong on `master` over to `master`.
+10. Merge the release branch into `master` with a merge commit (not squashed, so that the tag is part of the
+    history of `master`), then delete it:
+
+    ```bash
+    git checkout master && git pull --rebase
+    git merge --no-ff rel/x.y.z -m "Merge the release branch of x.y.z"
+    git push origin master
+    git push --delete origin rel/x.y.z
+    ```
+
+    Resolve conflicts in the `pom.xml` files in favour of the next development version. For a patch release of
+    an older line, bring only the changes that also belong on `master` over to `master`.
 
 ### If the vote fails
 
@@ -509,7 +519,7 @@ This covers a vote that ran its full time and failed, and a vote that the releas
      `svn rm https://dist.apache.org/repos/dist/dev/openjpa/x.y.z -m "Remove failed release candidate"`.
 2. Drop the staging repository in Nexus.
 3. Delete the tag (`git push --delete origin x.y.z`, `git tag -d x.y.z`) and revert the two
-   `[maven-release-plugin]` commits, or reset the branch if they were not pushed yet.
+   `[maven-release-plugin]` commits on `rel/x.y.z`, or reset the branch if they were not pushed yet.
 4. Fix the problem and start again with [Setting up a vote](#setting-up-a-vote).
 
 ## Local pre-checks before uploading to ATR
@@ -590,14 +600,13 @@ say what you checked. A typical review:
 
 ## Older release documentation
 
-This file replaces the release documentation that is spread over the website and
-`openjpa-project/RELEASE_STEPS.adoc`. The following pages of https://openjpa.apache.org
-(sources in `content/` of https://github.com/apache/openjpa-site) describe older processes (SVN tags, the
-Apache CMS, MD5 checksums, Java 6) and are superseded by this file:
+This file replaces the release documentation of the website and the former `openjpa-project/RELEASE_STEPS.adoc`.
+The following pages of https://openjpa.apache.org (sources in `content/` of https://github.com/apache/openjpa-site)
+described older processes (SVN tags, the Apache CMS, MD5 checksums, Java 6). They now point to this file:
 
 | Page | Status |
 |---|---|
-| [release-management.md](https://openjpa.apache.org/release-management.html) | superseded; index of the pages below |
+| [release-management.md](https://openjpa.apache.org/release-management.html) | links to this file; keeps the guidelines for release managers |
 | [release-setup.md](https://openjpa.apache.org/release-setup.html) | superseded by [Preparation](#preparation) |
 | [apache-nexus-release-process-_1.2.x-2.1.x_.md](https://openjpa.apache.org/apache-nexus-release-process-_1.2.x-2.1.x_.html) | superseded by [Setting up a vote](#setting-up-a-vote) and [After the vote](#after-the-vote) |
 | [update-release-text-files.md](https://openjpa.apache.org/update-release-text-files.html) | superseded by [Preparation](#preparation) (release notes) |
@@ -606,5 +615,3 @@ Apache CMS, MD5 checksums, Java 6) and are superseded by this file:
 | [recovering-from-a-vetoed-release.md](https://openjpa.apache.org/recovering-from-a-vetoed-release.html) | superseded by [If the vote fails](#if-the-vote-fails) |
 | [openjpa-release-policy.md](https://openjpa.apache.org/openjpa-release-policy.html) | still valid (version numbering and compatibility) |
 
-After the 4.2.0 release, replace these pages on the website with a link to this file and remove
-`openjpa-project/RELEASE_STEPS.adoc`.
