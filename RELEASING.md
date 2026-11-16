@@ -98,9 +98,8 @@ Before you start:
 - The copyright year in `NOTICE` and `openjpa-project/NOTICE` (`Copyright 2006-YYYY The Apache Software
   Foundation`) includes the current year.
 - The text files that the archives ship are up to date. The assemblies include `README.txt` and `CHANGES.txt`
-  of `openjpa-project` (`openjpa-project/src/assembly/components/notice.xml`); `openjpa-project/CHANGES.txt`
-  still describes 3.2.0. TODO: either update `CHANGES.txt` and `README.txt` for each release, or remove them
-  from the assembly and point to `RELEASE-NOTES.html`.
+  of `openjpa-project` (`openjpa-project/src/assembly/components/notice.xml`): update both for the release
+  (version, date, main changes), next to `openjpa-project/RELEASE-NOTES.html`.
 - `mvn clean install` passes on the branch to be released, and the latest CI runs are green.
 
 ## Using Apache Trusted Releases (ATR)
@@ -447,10 +446,12 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
    - `content/documentation.md` on `main`: add the manual, javadoc and release notes of the new version.
    - The `builds` branch holds the published manual, javadoc and release notes per version
      (`x.y.z/apache-openjpa/docs/`, `x.y.z/apidocs/`, `x.y.z/apache-openjpa/RELEASE-NOTES.html`) and has a
-     helper script, `add_docs.sh`. TODO: `add_docs.sh` expects `docs/docbook` (the layout of 4.1.1) and
-     `docs/javadoc` in the binary archive. Since the manual is built from AsciiDoc the archive has `docs/html`,
-     `docs/multihtml` and `docs/manual.pdf`, and it has no javadoc (4.1.1 had none either), so the script and the
-     way the javadoc is built for the website need an update.
+     helper script: `./add_docs.sh x.y.z apache-openjpa-x.y.z-binary.zip [javadoc directory or jar]`. It handles
+     both the DocBook layout of the archives up to 4.1.x and the AsciiDoc layout from 4.2.0, which it copies to
+     `x.y.z/apache-openjpa/docs/multihtml/manual.html` (multiple pages), `docs/html/manual.html` (single page) and
+     `docs/manual.pdf`; link these in `content/documentation.md`. The binary archive has no javadoc unless the
+     aggregated javadoc existed when it was packaged, so pass it as the third parameter. TODO: document the command
+     that builds the aggregated javadoc at the release tag.
 
 8. Wait until the files are on https://downloads.apache.org/openjpa/x.y.z/ and the artifacts on Maven Central,
    then announce the release from your `@apache.org` address to announce@apache.org,
@@ -588,4 +589,5 @@ Apache CMS, MD5 checksums, Java 6) and are superseded by this file:
 | [recovering-from-a-vetoed-release.md](https://openjpa.apache.org/recovering-from-a-vetoed-release.html) | superseded by [If the vote fails](#if-the-vote-fails) |
 | [openjpa-release-policy.md](https://openjpa.apache.org/openjpa-release-policy.html) | still valid (version numbering and compatibility) |
 
-TODO: replace these pages on the website with a link to this file, and remove `openjpa-project/RELEASE_STEPS.adoc`.
+After the 4.2.0 release, replace these pages on the website with a link to this file and remove
+`openjpa-project/RELEASE_STEPS.adoc`.
