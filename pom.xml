@@ -35,7 +35,7 @@
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of Jakarta JPA 4.2</description>
 
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.2.0</version>
 
     <properties>
         <java.class.version>17</java.class.version>
@@ -171,7 +171,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/openjpa.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf/openjpa.git</url>
-        <tag>HEAD</tag>
+        <tag>4.2.0</tag>
     </scm>
 
     <modules>
@@ -2105,7 +2105,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <checkstyleRules>
                                 <module name="Checker">
-                                    <module name="NewlineAtEndOfFile"/>
+                                    <module name="NewlineAtEndOfFile" />
                                     <module name="LineLength">
                                         <property name="max" value="150" />
                                     </module>
