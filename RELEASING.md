@@ -449,9 +449,26 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
      helper script: `./add_docs.sh x.y.z apache-openjpa-x.y.z-binary.zip [javadoc directory or jar]`. It handles
      both the DocBook layout of the archives up to 4.1.x and the AsciiDoc layout from 4.2.0, which it copies to
      `x.y.z/apache-openjpa/docs/multihtml/manual.html` (multiple pages), `docs/html/manual.html` (single page) and
-     `docs/manual.pdf`; link these in `content/documentation.md`. The binary archive has no javadoc unless the
-     aggregated javadoc existed when it was packaged, so pass it as the third parameter. TODO: document the command
-     that builds the aggregated javadoc at the release tag.
+     `docs/manual.pdf`; link these in `content/documentation.md`. The script takes the javadoc from `docs/javadoc`
+     of the binary archive. `release:perform` puts it there: with `-Dbuilddocs` the site of the root project is
+     built, its javadoc report writes the aggregated javadoc to `target/site/apidocs`, and `openjpa-project` copies
+     that directory to `docs/javadoc` of `apache-openjpa-x.y.z-binary.zip`. The aggregate leaves out the modules
+     that skip javadoc (`openjpa-examples`, `openjpa-integration`, `openjpa-persistence-locking` and the packaging
+     modules) and `openjpa-maven-plugin`.
+
+     If the binary archive has no `docs/javadoc`, build the javadoc at the release tag and pass it as the third
+     parameter:
+
+     ```bash
+     git checkout x.y.z
+     mvn -DskipTests -Dbuilddocs package     # target/site/apidocs, and the binary archive with docs/javadoc
+     ./add_docs.sh x.y.z apache-openjpa-x.y.z-binary.zip <openjpa checkout>/target/site/apidocs
+     ```
+
+     `mvn -DskipTests install` followed by `mvn javadoc:aggregate` builds the same javadoc into
+     `target/reports/apidocs`. The `install` is needed there because `javadoc:aggregate` compiles the whole reactor
+     again, and the OpenBooks example generates its metamodel with the `openjpa-all` jar of the same version from
+     the local repository.
 
 8. Wait until the files are on https://downloads.apache.org/openjpa/x.y.z/ and the artifacts on Maven Central,
    then announce the release from your `@apache.org` address to announce@apache.org,
