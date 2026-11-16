@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>4.2.0-SNAPSHOT</version>
+        <version>4.2.0</version>
     </parent>
 
     <artifactId>openjpa-kernel</artifactId>
@@ -143,9 +143,7 @@
                                 <!-- fork=true avoids Ant's in-process SecurityManager install,
                                      which is unsupported on JDK 24+. failonerror surfaces
                                      generator issues instead of silently producing no output. -->
-                                <java classname="org.apache.openjpa.util.ProxyManagerImpl"
-                                      classpathref="maven.runtime.classpath"
-                                      fork="true" failonerror="true">
+                                <java classname="org.apache.openjpa.util.ProxyManagerImpl" classpathref="maven.runtime.classpath" fork="true" failonerror="true">
                                     <arg line="-utils 5" />
                                 </java>
                             </target>
