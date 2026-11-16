@@ -155,6 +155,9 @@
 		<javac fork="true" srcdir="${src.dir}" destdir="${classes.dir}" debug="true" includeAntRuntime="false" >
 			<classpath refid="compile.classpath" />
 			<include name="openbook/domain/*.java"/>
+			<!-- name the processor, javac 23+ no longer runs processors found on the classpath -->
+			<compilerarg value="-processor" />
+			<compilerarg value="org.apache.openjpa.persistence.meta.AnnotationProcessor6" />
 			<compilerarg value="-Aopenjpa.metamodel=true" />
 			<compilerarg value="-Aopenjpa.log=TRACE" />
 			<compilerarg value="-s"/>

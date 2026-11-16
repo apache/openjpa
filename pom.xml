@@ -96,8 +96,6 @@
         <kubernetes-client.version>8.0.0</kubernetes-client.version>
         <slf4j.version>2.0.20</slf4j.version>
 
-        <javadoc.additionalparam />
-
         <xbean.version>5.0.0</xbean.version>
         <karaf.version>4.4.12</karaf.version>
         <bval.version>3.1.0</bval.version>
@@ -214,33 +212,6 @@
                 <!--turn on sources.jar generation -->
                 <createSource>verify</createSource>
                 <createSources>true</createSources>
-            </properties>
-        </profile>
-
-        <!--
-            Generate the documentation using the YDoc UML generation plugin.
-            Assumes you have the YDoc libraries locally, as well as a valid
-            YDoc license file. Example usage for building the docs:
-
-            mvn process-classes -Pydoc-profile,javadoc-profile -Dydoc.home=${HOME}/.m2/privaterepos/ydoc/ydoc-2.2_04-jdk1.5 -Dydoc.license=${HOME}/.m2/privaterepos/ydoc/ydoc.license
-        -->
-        <profile>
-            <id>ydoc-profile</id>
-            <properties>
-                <javadoc.additionalparam>
-                    -generic
-                    -umlautogen
-                    -tag param
-                    -tag return
-                    -tag see
-                    -ytag y.uml
-                    -license ${ydoc.license}
-                    -filter ydoc.filters.ExcludeFilter
-                    -filterpath ${ydoc.home}/lib/ydoc.jar
-                    -doclet ydoc.doclets.YStandard
-                    -docletpath ${ydoc.home}/lib/ydoc.jar${path.separator}${ydoc.home}/lib/class2svg.jar${path.separator}${ydoc.home}/resources
-                    ${ydoc.params}
-                </javadoc.additionalparam>
             </properties>
         </profile>
 
@@ -1908,9 +1879,12 @@
                         <release>${java.class.version}</release>
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <doclint>none</doclint>
-                        <additionalJOption>
-                            ${javadoc.additionalparam}
-                        </additionalJOption>
+                        <links>
+                            <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
+                            <link>https://jakarta.ee/specifications/persistence/${jakarta.persistence.level}/apidocs/</link>
+                        </links>
+                        <!-- only used by the aggregate goals, the modules that skip javadoc are left out as well -->
+                        <skippedModules>openjpa-maven-plugin</skippedModules>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -2225,14 +2199,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <!--
+                    builds the aggregated javadoc into target/site/apidocs when the site is built with -Dbuilddocs;
+                    openjpa-project copies it into docs/javadoc of the binary archive. Keep it in line with the
+                    configuration in pluginManagement, which javadoc:aggregate uses.
+                -->
                 <configuration>
-                    <show>package</show>
                     <quiet>true</quiet>
                     <release>${java.class.version}</release>
                     <links>
                         <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
                         <link>https://jakarta.ee/specifications/persistence/${jakarta.persistence.level}/apidocs/</link>
                     </links>
+                    <skippedModules>openjpa-maven-plugin</skippedModules>
                 </configuration>
                 <reportSets>
                     <reportSet>
