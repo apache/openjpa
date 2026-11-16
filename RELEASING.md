@@ -294,9 +294,10 @@ TODO: check that `versions:set` updates every module (the root `pom.xml` does no
 
    The same files are also in `target/checkout/target/` and `target/checkout/openjpa-project/target/site/downloads/`.
 
-   TODO: decide whether `apache-openjpa-x.y.z-source.zip` (the source assembly of `openjpa-project`, which
-   contains `.rat-excludes` since OPENJPA-3069) should replace `openjpa-parent-x.y.z-source-release.zip` in `dist`.
-   Both pass the [local pre-checks](#local-pre-checks-before-uploading-to-atr); stage only one source archive.
+   The source archive in `dist` is `openjpa-parent-x.y.z-source-release.zip`, as for every release since 2.4.0
+   except 3.2.1 and 3.2.2 (see https://archive.apache.org/dist/openjpa/). It is the ASF source release built by the
+   `apache-release` profile, and it contains `.rat-excludes`, `LICENSE` and `NOTICE` at the top. Do not stage
+   `apache-openjpa-x.y.z-source.zip` in addition; it stays on Maven Central only.
 
 6. Run the [local pre-checks](#local-pre-checks-before-uploading-to-atr) on the candidate, then stage it.
 
