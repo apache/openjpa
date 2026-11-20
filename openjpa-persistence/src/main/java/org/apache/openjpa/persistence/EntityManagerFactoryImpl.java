@@ -903,6 +903,7 @@ public class EntityManagerFactoryImpl
     		// to OpenJPAPersistenceUtil#toPC
     		if (result != null
     				&& !(result instanceof PersistenceCapable)
+    				&& ImplHelper.isManagedType(getConfiguration(), result.getClass())
     				&& em.contains(result)) {
     			try {
     				Object id = getPersistenceUnitUtil().getIdentifier(result);

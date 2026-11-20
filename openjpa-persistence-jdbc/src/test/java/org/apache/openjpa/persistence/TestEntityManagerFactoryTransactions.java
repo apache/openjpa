@@ -22,7 +22,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.persistence.EntityManager;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,6 +89,30 @@ public class TestEntityManagerFactoryTransactions {
 		} catch (Throwable t) {
 			assertTrue(t.getMessage().startsWith("some-exception"));
 		}
+	}
+
+    /**
+     * OPENJPA-3090: callInTransaction must return results that are not
+     * entities, such as scalar values and collections.
+     */
+    @Test
+    void callInTransactionNonEntityResult() {
+		String name = emf.callInTransaction(em -> {
+			em.persist(new Country(33, "France"));
+			return "France";
+		});
+		assertEquals("France", name);
+
+		Long count = emf.callInTransaction(em ->
+			em.createQuery("select count(c) from Country c where c.id = 33", Long.class).getSingleResult());
+		assertEquals(1L, count);
+
+		List<Country> countries = emf.callInTransaction(em ->
+			em.createQuery("select c from Country c where c.id = 33", Country.class).getResultList());
+		assertEquals(1, countries.size());
+		assertEquals("France", countries.get(0).getName());
+
+		assertNull(emf.callInTransaction(em -> null));
 	}
 
 }
