@@ -466,12 +466,24 @@ public class RelationFieldStrategy
             // mapping does not know of (a schema not created by OpenJPA), so
             // record the related object too when it is deleted in the same
             // flush: the row referencing it is then deleted first.
-            Object lastRelPc = sm.fetchObjectField(field.getIndex());
-            if( lastRelPc == null) {
-            	lastRelPc = sm.fetchInitialField(field.getIndex());
+            // If the field is not loaded but the id of the related object
+            // was read with our row, do not load the field: the related
+            // object can only be deleted in this flush if it is managed.
+            // A new instance cached under that id is not the object our row
+            // references (it replaces a deleted one), so load the field then.
+            OpenJPAStateManager rel = null;
+            Object relOid = sm.getIntermediate(field.getIndex());
+            if (relOid != null) {
+                rel = RelationStrategies.getStateManager(store.getContext().
+                    findCached(relOid, null), store.getContext());
             }
-            OpenJPAStateManager rel = RelationStrategies.getStateManager
-                (lastRelPc, store.getContext());
+            if (relOid == null || (rel != null && rel.isNew() && !rel.isDeleted())) {
+                Object lastRelPc = sm.fetchObjectField(field.getIndex());
+                if (lastRelPc == null) {
+                    lastRelPc = sm.fetchInitialField(field.getIndex());
+                }
+                rel = RelationStrategies.getStateManager(lastRelPc, store.getContext());
+            }
             if (rel != null) {
                 ForeignKey fk = field.getForeignKey((ClassMapping)
                     rel.getMetaData());
