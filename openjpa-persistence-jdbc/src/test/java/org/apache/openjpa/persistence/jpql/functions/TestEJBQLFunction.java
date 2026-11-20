@@ -1813,6 +1813,38 @@ public class TestEJBQLFunction extends AbstractTestCase {
     }
 
     /**
+     * OPENJPA-3091: a set operation whose operands use a constructor
+     * expression yields instances of the constructed class (JPA 3.2 section
+     * 4.2.1), also when the constructor is one of several selections.
+     */
+    @Test
+    void setOperatorConstructorResults() {
+        EntityManager em = currentEntityManager();
+
+        String dto = NameAndAge.class.getName();
+        String constructed = "SELECT NEW " + dto + "(a.name, a.age) FROM CompUser a WHERE a.age > 30"
+            + " UNION SELECT NEW " + dto + "(a.name, a.age) FROM CompUser a WHERE a.name = 'Ugo'";
+        List<Object> expected = sorted(List.of("Seetha 36", expectedShannonName + " 36", "Ugo 19"));
+        String mixed = "SELECT NEW " + dto + "(a.name, a.age), a.age FROM CompUser a WHERE a.age > 30"
+            + " UNION SELECT NEW " + dto + "(a.name, a.age), a.age FROM CompUser a WHERE a.name = 'Ugo'";
+        List<Object> expectedMixed = sorted(List.of("Seetha 36 36", expectedShannonName + " 36 36", "Ugo 19 19"));
+        for (int run = 1; run <= 2; run++) {
+            assertEquals(expected, constructed(em.createQuery(constructed).getResultList()), "run " + run);
+            assertEquals(expected, constructed(em.createQuery(constructed, NameAndAge.class).getResultList()),
+                "run " + run);
+            List<Object> rows = new ArrayList<>();
+            for (Object[] row : em.createQuery(mixed, Object[].class).getResultList()) {
+                assertEquals(2, row.length);
+                assertInstanceOf(NameAndAge.class, row[0]);
+                rows.add(row[0] + " " + row[1]);
+            }
+            assertEquals(expectedMixed, sorted(rows), "run " + run);
+        }
+
+        endEm(em);
+    }
+
+    /**
      * A UNION of name and age for "age &gt; 30" (Seetha, Shannon) and
      * "name = 'Ugo'", i.e. 3 rows, using the given identification variable.
      */
@@ -1821,6 +1853,15 @@ public class TestEJBQLFunction extends AbstractTestCase {
             + " WHERE " + var + ".age > 30"
             + " UNION SELECT " + var + ".name, " + var + ".age FROM CompUser " + var
             + " WHERE " + var + ".name = 'Ugo'";
+    }
+
+    private static List<Object> constructed(List<?> results) {
+        List<Object> result = new ArrayList<>();
+        for (Object o : results) {
+            assertInstanceOf(NameAndAge.class, o);
+            result.add(o.toString());
+        }
+        return sorted(result);
     }
 
     private static List<Object> nameAndAge(List<Object[]> rows) {
