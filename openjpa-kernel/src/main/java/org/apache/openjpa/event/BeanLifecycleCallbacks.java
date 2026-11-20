@@ -23,73 +23,80 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.cdi.InjectionManager;
+import org.apache.openjpa.cdi.CDIUnawareInjectionManager;
 
 /**
  * Performs a callback method on a cached bean instance.
  *
  * @author Steve Kim
  */
-public class BeanLifecycleCallbacks
+public class BeanLifecycleCallbacks<T>
     extends MethodLifecycleCallbacks {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (BeanLifecycleCallbacks.class);
-
-    private transient Object _listener;
-
+    private final Class<T> listenerClass;
+    
+    private InjectionManager<T> injectorManager;
+    
     /**
      * Constructor. Make the callback on an instance of the given type.
      *
      * @param arg whether another argument is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg,
-        Class<?> type) {
-        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class,
-            type } : new Class[]{ type }), arg);
+    public BeanLifecycleCallbacks(Class<T> cls, String method, boolean arg, Class<?> type) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg);
     }
 
     /**
      * Constructor. Make the callback on an instance of the given type.
      */
-    public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg) {
+    public BeanLifecycleCallbacks(Class<T> cls, Method method, boolean arg) {
         super(method, arg);
-        _listener = newListener(cls);
+        injectorManager = getInjectionManager(cls);
+        listenerClass = cls;
     }
 
-    private Object newListener(Class<?> cls) {
-        try {
-            return J2DoPrivHelper.newInstance(cls);
-        } catch (Throwable t) {
-            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
-        }
+    private T getListener() {
+    	return injectorManager.createInstance(listenerClass);
     }
 
     @Override
     public void makeCallback(Object obj, Object rel, int eventType) throws Exception {
         Method callback = getCallbackMethod();
-        if (!callback.canAccess(_listener))
+        Object listener = getListener();
+        if (!callback.canAccess(listener))
             callback.setAccessible(true);
         if (requiresArgument())
-            callback.invoke(_listener, new Object[]{ obj, rel });
+            callback.invoke(listener, new Object[]{ obj, rel });
         else
-            callback.invoke(_listener, new Object[]{ obj });
+            callback.invoke(listener, new Object[]{ obj });
+    	injectorManager.dispose();
     }
 
     @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         super.readExternal(in);
-        Class<?> cls = (Class<?>) in.readObject();
-        _listener = newListener(cls);
     }
 
     @Override
     public void writeExternal(ObjectOutput out)
         throws IOException {
         super.writeExternal(out);
-        out.writeObject(_listener.getClass());
+        out.writeObject(listenerClass);
     }
+    
+    @SuppressWarnings("unchecked")
+	private InjectionManager<T> getInjectionManager(Class<T> cls) {
+    	/*
+    	 * We must instantiate the manager by reflection, so we do not need a CDI impl on final product
+    	 */
+    	final String CDI_INJECTION_MANAGER = "org.apache.openjpa.cdi.CDIInjectionManager";
+    	try {
+    		return (InjectionManager<T>) Class.forName(CDI_INJECTION_MANAGER).getDeclaredConstructor().newInstance();
+    	} catch (Throwable t) {
+    		return new CDIUnawareInjectionManager<T>();
+    	}
+    }
+    
 }
