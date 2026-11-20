@@ -109,7 +109,7 @@ public class QueryExpressions implements Serializable {
      * Whether this is an aggregate results.
      */
     public boolean isAggregate() {
-        if (projections.length == 0)
+        if (projections.length == 0 || setOperationType != SET_OP_NONE)
             return false;
         if (_aggregate == null)
             _aggregate = (AggregateExpressionVisitor.isAggregate(projections))
