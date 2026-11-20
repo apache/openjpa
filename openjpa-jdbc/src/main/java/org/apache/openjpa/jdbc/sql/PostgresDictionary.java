@@ -153,6 +153,9 @@ public class PostgresDictionary extends DBDictionary {
         storeCharsAsNumbers = false;
         requiresAliasForSubselect = true;
         allowsAliasInBulkClause = false;
+        // DELETE FROM TABLE t0 WHERE t0.COL = ? and
+        // UPDATE TABLE t0 SET COL = ? WHERE t0.COL = ?
+        allowsTargetAliasInBulkClause = true;
 
         // single-quote escape will result in SELECT CURVAL('mysequence')
         lastGeneratedKeyQuery = "SELECT CURRVAL(''{1}_{0}_seq'')";

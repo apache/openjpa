@@ -99,6 +99,9 @@ public class DerbyDictionary
         storeCharsAsNumbers = false;
 
         allowsAliasInBulkClause = false;
+        // DELETE FROM TABLE t0 WHERE t0.COL = ? and
+        // UPDATE TABLE t0 SET COL = ? WHERE t0.COL = ?
+        allowsTargetAliasInBulkClause = true;
         supportsDeferredConstraints = false;
         supportsParameterInSelect = false;
         supportsSelectForUpdate = true;
