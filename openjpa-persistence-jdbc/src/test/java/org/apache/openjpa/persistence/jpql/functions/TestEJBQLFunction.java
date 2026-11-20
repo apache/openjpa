@@ -25,6 +25,8 @@ import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +35,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SybaseDictionary;
+import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
@@ -1590,8 +1593,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
     /**
      * A UNION ALL of "age &gt; 25" (Seetha, Shannon, Famzy) and "age &gt; 30"
      * (Seetha, Shannon), i.e. 5 rows, using the given identification
-     * variable. Every execution below needs its own JPQL string, see
-     * {@link #setOperatorRange()}.
+     * variable.
      */
     private String unionAllQuery(String var) {
         return "SELECT " + var + ".name FROM CompUser " + var
@@ -1657,9 +1659,9 @@ public class TestEJBQLFunction extends AbstractTestCase {
      * is unspecified.
      * <p>
      * Every execution uses its own JPQL string (the identification variable
-     * differs) because re-executing the very same set operation string is
-     * broken by the prepared query SQL cache - an unrelated, pre-existing
-     * defect that has nothing to do with the range.
+     * differs), so that each one is compiled and executed afresh. Executing
+     * the same set operation string again is tested by
+     * {@link #setOperatorRepeatedExecution()}.
      */
     @Test
     void setOperatorRange() {
@@ -1718,6 +1720,127 @@ public class TestEJBQLFunction extends AbstractTestCase {
             .getResultList().size());
 
         endEm(em);
+    }
+
+    /**
+     * OPENJPA-3091: the result of a set operation has the shape of its first
+     * operand. A single projection yields its values, not Object[] rows, both
+     * without and with a result type, and UNION ALL keeps its duplicates.
+     */
+    @Test
+    void setOperatorScalarResults() {
+        EntityManager em = currentEntityManager();
+
+        List<Object> union = sorted(List.of("Seetha", expectedShannonName, "Ugo"));
+        assertEquals(union, sorted(em.createQuery(unionQuery("a1")).getResultList()));
+        assertEquals(union, sorted(em.createQuery(unionQuery("a2"), String.class).getResultList()));
+
+        List<Object> unionAll = sorted(List.of("Seetha", expectedShannonName, "Famzy",
+            "Seetha", expectedShannonName));
+        assertEquals(unionAll, sorted(em.createQuery(unionAllQuery("b1")).getResultList()));
+        assertEquals(unionAll, sorted(em.createQuery(unionAllQuery("b2"), String.class).getResultList()));
+
+        List<Object> intersect = sorted(List.of("Seetha", expectedShannonName));
+        assertEquals(intersect, sorted(em.createQuery(intersectQuery("c1")).getResultList()));
+        assertEquals(intersect, sorted(em.createQuery(intersectQuery("c2"), String.class).getResultList()));
+
+        List<Object> except = sorted(List.of("Famzy", "Shade"));
+        assertEquals(except, sorted(em.createQuery(exceptQuery("d1")).getResultList()));
+        assertEquals(except, sorted(em.createQuery(exceptQuery("d2"), String.class).getResultList()));
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-3091: a set operation with more than one projection yields
+     * Object[] rows, also with Object[] as the result type, and a set
+     * operation over aggregates yields a row for each operand rather than
+     * a single result.
+     */
+    @Test
+    void setOperatorMultiColumnAndAggregateResults() {
+        EntityManager em = currentEntityManager();
+
+        assertEquals(sorted(List.of("Seetha 36", expectedShannonName + " 36", "Ugo 19")),
+            sorted(nameAndAge(em.createQuery(nameAndAgeUnionQuery("a"), Object[].class).getResultList())));
+
+        String counts = "SELECT COUNT(a) FROM CompUser a WHERE a.age > 30"
+            + " UNION ALL SELECT COUNT(a) FROM CompUser a WHERE a.age > 25";
+        assertEquals(sorted(List.of(2L, 3L)), sorted(em.createQuery(counts).getResultList()));
+        assertEquals(sorted(List.of(2L, 3L)), sorted(em.createQuery(counts, Long.class).getResultList()));
+
+        endEm(em);
+    }
+
+    /**
+     * OPENJPA-3091: executing the same set operation string again must give
+     * the same result. The prepared query SQL cache re-executes a cached
+     * query as a single select, so set operations are not cached.
+     */
+    @Test
+    void setOperatorRepeatedExecution() {
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
+
+        String names = unionQuery("u");
+        String rows = nameAndAgeUnionQuery("u");
+        String entities = entityUnionQuery("u");
+        List<Object> expectedNames = sorted(List.of("Seetha", expectedShannonName, "Ugo"));
+        List<Object> expectedRows = sorted(List.of("Seetha 36", expectedShannonName + " 36", "Ugo 19"));
+        for (int run = 1; run <= 2; run++) {
+            assertEquals(expectedNames, sorted(em.createQuery(names).getResultList()), "run " + run);
+            assertEquals(expectedNames, sorted(em.createQuery(names, String.class).getResultList()),
+                "run " + run);
+            assertEquals(expectedRows,
+                sorted(nameAndAge(em.createQuery(rows, Object[].class).getResultList())), "run " + run);
+            List<Object> entityNames = new ArrayList<>();
+            for (CompUser user : em.createQuery(entities, CompUser.class).getResultList()) {
+                entityNames.add(user.getName());
+            }
+            assertEquals(expectedNames, sorted(entityNames), "run " + run);
+        }
+
+        PreparedQueryCache cache = em.getConfiguration().getQuerySQLCacheInstance();
+        assertNotNull(cache, "the prepared query SQL cache is in use");
+        String single = "SELECT u.name FROM CompUser u WHERE u.age > 30";
+        em.createQuery(single).getResultList();
+        em.createQuery(single).getResultList();
+        assertNotNull(cache.get(single), "a query without a set operation is cached");
+        assertNull(cache.get(names));
+        assertNull(cache.get(rows));
+        assertNull(cache.get(entities));
+
+        endEm(em);
+    }
+
+    /**
+     * A UNION of name and age for "age &gt; 30" (Seetha, Shannon) and
+     * "name = 'Ugo'", i.e. 3 rows, using the given identification variable.
+     */
+    private String nameAndAgeUnionQuery(String var) {
+        return "SELECT " + var + ".name, " + var + ".age FROM CompUser " + var
+            + " WHERE " + var + ".age > 30"
+            + " UNION SELECT " + var + ".name, " + var + ".age FROM CompUser " + var
+            + " WHERE " + var + ".name = 'Ugo'";
+    }
+
+    private static List<Object> nameAndAge(List<Object[]> rows) {
+        List<Object> result = new ArrayList<>();
+        for (Object[] row : rows) {
+            assertEquals(2, row.length);
+            result.add(row[0] + " " + row[1]);
+        }
+        return result;
+    }
+
+    /**
+     * The given results in a defined order, since a set operation does not
+     * define one. The elements themselves are kept, so that a comparison
+     * with expected values also checks their type.
+     */
+    private static List<Object> sorted(List<?> results) {
+        List<Object> result = new ArrayList<>(results);
+        result.sort(Comparator.comparing(String::valueOf));
+        return result;
     }
 
     @Test
