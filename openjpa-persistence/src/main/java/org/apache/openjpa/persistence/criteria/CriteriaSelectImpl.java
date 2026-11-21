@@ -77,6 +77,8 @@ public class CriteriaSelectImpl<T> implements CriteriaSelect<T> {
         exps.operation =
             org.apache.openjpa.kernel.QueryOperations.OP_SELECT;
 
+        exps.useResultOfFirstSetOperand();
+
         QueryExpressions leftExps = exps.setOperands[0];
         exps.accessPath = leftExps.accessPath;
         exps.parameterTypes = collectParameters();

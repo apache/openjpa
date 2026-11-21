@@ -106,6 +106,28 @@ public class QueryExpressions implements Serializable {
     }
 
     /**
+     * Gives this set operation the result of its first (leftmost) operand:
+     * its projections, aliases and clauses, and its result class and shape,
+     * which reflect a constructor expression (JPA 3.2 section 4.2.1).
+     * Without these, the set operation looks like a query for candidate
+     * instances: typed queries get the wrong projection type, single-column
+     * results are not unwrapped from Object[] and constructed results are not
+     * packed. Duplicates are handled by the SQL set operator (UNION vs
+     * UNION ALL), not by in-memory distinct processing.
+     */
+    public void useResultOfFirstSetOperand() {
+        QueryExpressions first = setOperands[0];
+        while (first.setOperationType != SET_OP_NONE)
+            first = first.setOperands[0];
+        projections = first.projections;
+        projectionAliases = first.projectionAliases;
+        projectionClauses = first.projectionClauses;
+        resultClass = first.resultClass;
+        shape = first.shape;
+        distinct = DISTINCT_FALSE;
+    }
+
+    /**
      * Whether this is an aggregate results.
      */
     public boolean isAggregate() {

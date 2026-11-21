@@ -372,23 +372,7 @@ public class JPQLExpressionBuilder
             evalOperand(right)
         };
 
-        // The result of a set operation has the shape of its first operand.
-        // Without this, the compound looks like a candidate-instance query:
-        // typed queries get the wrong projection type and single-column
-        // results are not unwrapped from Object[].
-        QueryExpressions first = exps.setOperands[0];
-        while (first.setOperationType != QueryExpressions.SET_OP_NONE)
-            first = first.setOperands[0];
-        exps.projections = first.projections;
-        exps.projectionAliases = first.projectionAliases;
-        exps.projectionClauses = first.projectionClauses;
-        // a constructor expression in the first operand (JPA 3.2 section
-        // 4.2.1) determines the result class and how rows are packed
-        exps.resultClass = first.resultClass;
-        exps.shape = first.shape;
-        // duplicates are handled by the SQL set operator (UNION vs UNION ALL),
-        // not by in-memory distinct processing
-        exps.distinct = QueryExpressions.DISTINCT_FALSE;
+        exps.useResultOfFirstSetOperand();
 
         if (parameterTypes != null)
             exps.parameterTypes = parameterTypes;
