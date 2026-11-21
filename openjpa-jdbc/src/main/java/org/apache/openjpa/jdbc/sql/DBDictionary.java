@@ -276,6 +276,16 @@ public class DBDictionary
     public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
     /**
+     * Whether the table of a bulk update or delete may be given an alias
+     * that the WHERE clause uses, with the columns of the SET clause written
+     * without it, as in
+     * <code>UPDATE TABLE t0 SET COL = ? WHERE t0.ID = ?</code>. A database
+     * that does not allow {@link #allowsAliasInBulkClause aliases in bulk
+     * statements} can then still run a bulk statement whose WHERE clause
+     * only reads the table of the statement without a subquery.
+     */
+    public boolean allowsTargetAliasInBulkClause = false;
+    /**
      * Whether a subquery in the WHERE clause of a bulk update or delete may
      * read the table that the statement changes. When false, the statement
      * matches the primary keys of the affected rows in a derived table
@@ -2744,10 +2754,12 @@ public class DBDictionary
         // like DELETE FROM TABLE WHERE EXISTS
         // (SELECT 1 FROM TABLE t0 WHERE t0.ID = TABLE.ID); also, some
         // databases do not allow aliases in delete statements, which
-        // also causes us to use a subselect
+        // also causes us to use a subselect, unless they allow the alias
+        // of the target table and the WHERE clause has no subquery
         Collection<String> selectedTables = getSelectTableAliases(sel);
-        if (selectedTables.size() == 1 && supportsSubselect
-            && allowsAliasInBulkClause) {
+        boolean aliasTarget = allowsAliasInBulkClause
+            || (allowsTargetAliasInBulkClause && sel.getSubselects().isEmpty());
+        if (selectedTables.size() == 1 && supportsSubselect && aliasTarget) {
             SQLBuffer from;
             if (sel.getFromSelect() != null)
                 from = getFromSelect(sel, false);
