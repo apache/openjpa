@@ -893,17 +893,14 @@ class TestEntityManagerFactoryTCK extends SingleEMFTestCase {
     }
 
     /**
-     * The rows of a set operation are packed as single-element object arrays
-     * rather than as the projected value itself; returns those values, sorted,
-     * so that the result of a union can be compared.
+     * Returns the values of a set operation over a single projection, sorted,
+     * so that the result of a union can be compared. The values must be the
+     * projected values themselves, not rows (OPENJPA-3092).
      */
-    private static List<Object> selected(List<?> rows) {
-        List<Object> values = new ArrayList<>();
-        for (Object row : rows) {
-            values.add(((Object[]) row)[0]);
-        }
-        values.sort(Comparator.comparing(Object::toString));
-        return values;
+    private static List<Object> selected(List<?> values) {
+        List<Object> sorted = new ArrayList<>(values);
+        sorted.sort(Comparator.comparing(Object::toString));
+        return sorted;
     }
 
     private void seedCriteriaData() {
