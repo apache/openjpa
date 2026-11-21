@@ -24,7 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-@EntityListeners(value = ListenerImpl.class)
+@EntityListeners(value = {ListenerImpl.class, CDIListener.class})
 public class EntityListenerEntity implements ListenerTestEntity {
     @Id @GeneratedValue
     private long id;

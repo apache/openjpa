@@ -299,6 +299,12 @@
                     <artifactId>derbytools</artifactId>
                     <scope>test</scope>
                 </dependency>
+                <dependency>
+                    <groupId>org.apache.openwebbeans</groupId>
+                    <artifactId>openwebbeans-junit5</artifactId>
+                    <version>4.1.1</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <properties>
                 <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>

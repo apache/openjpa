@@ -23,10 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
@@ -40,16 +36,10 @@ public class CDIInjectionManager<T> implements InjectionManager<T>{
 	
 	final Map<T, InjectionTarget<T>> targets = Collections.synchronizedMap(new HashMap<>());
 	
-	public CDIInjectionManager() throws NamingException {
-		// Try to retrieve BeanManager from JNDI context
-		Context ctx = new InitialContext();
-		try {
-			beanManager = (BeanManager) ctx.lookup("java:comp/BeanManager");
-		} catch (NamingException ex) {
-			beanManager = (BeanManager) ctx.lookup("java:comp/env/BeanManager");
-		}
+	public CDIInjectionManager(BeanManager beanManager) {
+		this.beanManager = beanManager;
 	}
-
+	
 	@Override
 	public T createInstance(final Class<T> cls) {
 		// based on DeltaSpike BeanProvider#injectFields

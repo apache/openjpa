@@ -24,7 +24,7 @@ import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 
 import org.apache.openjpa.cdi.InjectionManager;
-import org.apache.openjpa.cdi.CDIUnawareInjectionManager;
+import org.apache.openjpa.cdi.CDIInjectionService;
 
 /**
  * Performs a callback method on a cached bean instance.
@@ -52,7 +52,7 @@ public class BeanLifecycleCallbacks<T>
      */
     public BeanLifecycleCallbacks(Class<T> cls, Method method, boolean arg) {
         super(method, arg);
-        injectorManager = getInjectionManager(cls);
+        injectorManager = CDIInjectionService.getInjectionManager(cls);
         listenerClass = cls;
     }
 
@@ -84,19 +84,6 @@ public class BeanLifecycleCallbacks<T>
         throws IOException {
         super.writeExternal(out);
         out.writeObject(listenerClass);
-    }
-    
-    @SuppressWarnings("unchecked")
-	private InjectionManager<T> getInjectionManager(Class<T> cls) {
-    	/*
-    	 * We must instantiate the manager by reflection, so we do not need a CDI impl on final product
-    	 */
-    	final String CDI_INJECTION_MANAGER = "org.apache.openjpa.cdi.CDIInjectionManager";
-    	try {
-    		return (InjectionManager<T>) Class.forName(CDI_INJECTION_MANAGER).getDeclaredConstructor().newInstance();
-    	} catch (Throwable t) {
-    		return new CDIUnawareInjectionManager<T>();
-    	}
     }
     
 }
