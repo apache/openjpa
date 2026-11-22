@@ -72,6 +72,13 @@ class TestRedefineLoadedUnenhancedClass {
         cmd.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
         cmd.add("-Djdk.attach.allowAttachSelf=true");
         cmd.add("-XX:+EnableDynamicAgentLoading");
+        // the database of the build and the location of derby.log are passed to the test JVM as system properties
+        for (String name : System.getProperties().stringPropertyNames()) {
+            if (name.startsWith("openjpa.Connection") || name.equals("openjpa.jdbc.DBDictionary")
+                || name.startsWith("derby.")) {
+                cmd.add("-D" + name + "=" + System.getProperty(name));
+            }
+        }
         cmd.add("-cp");
         cmd.add(System.getProperty("java.class.path"));
         cmd.add(Main.class.getName());
@@ -126,9 +133,21 @@ class TestRedefineLoadedUnenhancedClass {
             pui.setExcludeUnlistedClasses(true);
 
             Map<String, Object> props = new HashMap<>();
-            props.put("openjpa.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
-            props.put("openjpa.ConnectionURL", "jdbc:derby:memory:openjpa-redefine-loaded;create=true");
-            props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+            // use the database of the build, or an in-memory Derby database when run without it
+            for (String name : System.getProperties().stringPropertyNames()) {
+                if (name.startsWith("openjpa.Connection") || name.equals("openjpa.jdbc.DBDictionary")) {
+                    String value = System.getProperty(name);
+                    if (!value.isEmpty() && !value.startsWith("${")) {
+                        props.put(name, value);
+                    }
+                }
+            }
+            if (!props.containsKey("openjpa.ConnectionURL")) {
+                props.put("openjpa.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
+                props.put("openjpa.ConnectionURL", "jdbc:derby:memory:openjpa-redefine-loaded;create=true");
+            }
+            // the database of the build is shared with other tests and kept between runs
+            props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(SchemaAction='add,deleteTableContents')");
             props.put("openjpa.RuntimeUnenhancedClasses", "supported");
             props.put("openjpa.DynamicEnhancementAgent", "false");
             props.put("openjpa.Log", "DefaultLevel=WARN, Enhance=INFO");
