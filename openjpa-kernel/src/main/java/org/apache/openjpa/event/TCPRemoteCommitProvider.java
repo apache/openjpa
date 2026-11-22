@@ -311,7 +311,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
             for (String host : toks) {
                 HostAddress newAddress = new HostAddress(host);
-                if (newAddress._port == _port && localAddresses.contains(newAddress._address)) {
+                if (newAddress._addrPort == _port && localAddresses.contains(newAddress._address)) {
                     // This string matches the hostname for for ourselves, we
                     // don't actually need to send ourselves messages.
                     if (log.isTraceEnabled()) {
@@ -955,7 +955,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
     protected class HostAddress {
 
         protected InetAddress _address;
-        protected int _port;
+        protected int _addrPort;
         protected long _timeLastError; // millis
         protected boolean _isAvailable; // is peer thought to be up
         protected int _infosIssued = 0; // limit log entries
@@ -970,10 +970,10 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
             int colon = host.indexOf(':');
             if (colon != -1) {
                 _address = InetAddress.getByName(host.substring(0, colon));
-                _port = Integer.parseInt(host.substring(colon + 1));
+                _addrPort = Integer.parseInt(host.substring(colon + 1));
             } else {
                 _address = InetAddress.getByName(host);
-                _port = DEFAULT_PORT;
+                _addrPort = DEFAULT_PORT;
             }
             GenericObjectPoolConfig<Socket> cfg = new GenericObjectPoolConfig<>();
             cfg.setMaxTotal(_maxTotal);
@@ -997,7 +997,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         }
 
         public int getPort() {
-            return _port;
+            return _addrPort;
         }
 
         public void close() {
@@ -1100,7 +1100,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         protected class SocketPoolableObjectFactory extends BasePooledObjectFactory<Socket> {
             @Override
             public Socket create() throws Exception {
-                Socket s = new Socket(_address, _port);
+                Socket s = new Socket(_address, _addrPort, _bindAddress, _port);
                 if (log.isTraceEnabled()) {
                     log.trace(s_loc.get("tcp-open-connection", toString(), "" + s.getLocalPort()));
                 }
@@ -1128,7 +1128,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         public int hashCode() {
             int hash = 7;
             hash = 37 * hash + Objects.hashCode(this._address);
-            hash = 37 * hash + this._port;
+            hash = 37 * hash + this._addrPort;
             return hash;
         }
 
@@ -1144,7 +1144,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
                 return false;
             }
             final HostAddress other = (HostAddress) obj;
-            if (this._port != other._port) {
+            if (this._addrPort != other._addrPort) {
                 return false;
             }
             return Objects.equals(this._address, other._address);
@@ -1152,7 +1152,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
 
         @Override
         public String toString() {
-            return _address.getHostAddress() + ":" + _port;
+            return _address.getHostAddress() + ":" + _addrPort;
         }
     }
 
