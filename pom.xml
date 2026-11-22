@@ -114,7 +114,7 @@
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
         <jakarta.enterprise.cdi-api.version>4.1.0</jakarta.enterprise.cdi-api.version>
-
+		<owb.jupiter.version>4.1.1</owb.jupiter.version>
     </properties>
 
     <licenses>
@@ -302,7 +302,6 @@
                 <dependency>
                     <groupId>org.apache.openwebbeans</groupId>
                     <artifactId>openwebbeans-junit5</artifactId>
-                    <version>4.1.1</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -1839,6 +1838,12 @@
                 <artifactId>annotations</artifactId>
                 <version>3.0.1</version>
             </dependency>
+            <dependency>
+		        <groupId>org.apache.openwebbeans</groupId>
+		        <artifactId>openwebbeans-junit5</artifactId>
+		        <version>${owb.jupiter.version}</version>
+		        <scope>test</scope>
+	        </dependency>
         </dependencies>
     </dependencyManagement>
 

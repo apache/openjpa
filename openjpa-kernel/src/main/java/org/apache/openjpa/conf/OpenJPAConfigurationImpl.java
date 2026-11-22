@@ -2405,6 +2405,5 @@ public class OpenJPAConfigurationImpl
     public void setTypesWithoutEnhancement(Collection<Class<?>> value) {
         typesWithoutEnhancement.set(value.toArray(new Class[value.size()]));
     }
-    
 }
 

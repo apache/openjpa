@@ -172,7 +172,6 @@
         <dependency>
         <groupId>org.apache.openwebbeans</groupId>
         <artifactId>openwebbeans-junit5</artifactId>
-        <version>4.1.1</version>
         <scope>test</scope>
         </dependency>
     </dependencies>
