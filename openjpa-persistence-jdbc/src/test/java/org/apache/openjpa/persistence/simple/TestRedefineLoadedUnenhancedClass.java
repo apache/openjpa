@@ -67,15 +67,15 @@ class TestRedefineLoadedUnenhancedClass {
     @Test
     void redefineClassLoadedBeforeEntityManagerFactory() throws IOException, InterruptedException {
         assumeTrue(ModuleLayer.boot().findModule("jdk.attach").isPresent());
+        assumeTrue(Main.inMemoryDatabase() != null, "neither Derby nor H2 is on the class path");
 
         List<String> cmd = new ArrayList<>();
         cmd.add(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java");
         cmd.add("-Djdk.attach.allowAttachSelf=true");
         cmd.add("-XX:+EnableDynamicAgentLoading");
-        // the database of the build and the location of derby.log are passed to the test JVM as system properties
+        // the build passes the location of derby.log to the test JVM as a system property
         for (String name : System.getProperties().stringPropertyNames()) {
-            if (name.startsWith("openjpa.Connection") || name.equals("openjpa.jdbc.DBDictionary")
-                || name.startsWith("derby.")) {
+            if (name.startsWith("derby.")) {
                 cmd.add("-D" + name + "=" + System.getProperty(name));
             }
         }
@@ -98,6 +98,31 @@ class TestRedefineLoadedUnenhancedClass {
      */
     public static class Main {
         static final String SUCCESS = "loaded entity class redefined";
+
+        /**
+         * Returns the driver class and URL of an in-memory database of the
+         * embedded database on the class path (Derby or H2), or null if there
+         * is none.
+         */
+        static String[] inMemoryDatabase() {
+            if (isPresent("org.apache.derby.jdbc.EmbeddedDriver")) {
+                return new String[] { "org.apache.derby.jdbc.EmbeddedDriver",
+                    "jdbc:derby:memory:openjpa-redefine-loaded;create=true" };
+            }
+            if (isPresent("org.h2.Driver")) {
+                return new String[] { "org.h2.Driver", "jdbc:h2:mem:openjpa-redefine-loaded;DB_CLOSE_DELAY=-1" };
+            }
+            return null;
+        }
+
+        private static boolean isPresent(String className) {
+            try {
+                Class.forName(className, false, Main.class.getClassLoader());
+                return true;
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
+        }
 
         public static void main(String[] args) throws Exception {
             // load the entity class before the persistence unit is created
@@ -132,22 +157,13 @@ class TestRedefineLoadedUnenhancedClass {
             pui.addManagedClassName(cls.getName());
             pui.setExcludeUnlistedClasses(true);
 
+            // The embedded database of the build is a file that the test JVM may have open already, and an
+            // embedded database can only be opened by one JVM, so use a private in-memory database.
+            String[] database = inMemoryDatabase();
             Map<String, Object> props = new HashMap<>();
-            // use the database of the build, or an in-memory Derby database when run without it
-            for (String name : System.getProperties().stringPropertyNames()) {
-                if (name.startsWith("openjpa.Connection") || name.equals("openjpa.jdbc.DBDictionary")) {
-                    String value = System.getProperty(name);
-                    if (!value.isEmpty() && !value.startsWith("${")) {
-                        props.put(name, value);
-                    }
-                }
-            }
-            if (!props.containsKey("openjpa.ConnectionURL")) {
-                props.put("openjpa.ConnectionDriverName", "org.apache.derby.jdbc.EmbeddedDriver");
-                props.put("openjpa.ConnectionURL", "jdbc:derby:memory:openjpa-redefine-loaded;create=true");
-            }
-            // the database of the build is shared with other tests and kept between runs
-            props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(SchemaAction='add,deleteTableContents')");
+            props.put("openjpa.ConnectionDriverName", database[0]);
+            props.put("openjpa.ConnectionURL", database[1]);
+            props.put("openjpa.jdbc.SynchronizeMappings", "buildSchema");
             props.put("openjpa.RuntimeUnenhancedClasses", "supported");
             props.put("openjpa.DynamicEnhancementAgent", "false");
             props.put("openjpa.Log", "DefaultLevel=WARN, Enhance=INFO");
