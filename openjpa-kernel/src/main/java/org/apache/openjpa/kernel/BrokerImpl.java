@@ -4724,6 +4724,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         _pending = null;
         _loader = null;
         _transEventManager = null;
+        _conf.getMetaDataRepositoryInstance().getCdiInjectionService().dispose();
         _lifeEventManager = null;
 
         OpenJPASavepoint save;

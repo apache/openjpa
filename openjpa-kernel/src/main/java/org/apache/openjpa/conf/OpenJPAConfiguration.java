@@ -2138,5 +2138,6 @@ public interface OpenJPAConfiguration
      * @since 3.1.1
      */
     void setTypesWithoutEnhancement(Collection<Class<?>> typesWithoutEnhancement);
+    
 }
 

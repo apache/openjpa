@@ -28,12 +28,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Version;
 
 @Entity
-@EntityListeners(CDIListener.class)
+@EntityListeners({CDIListener.class, CDICacheableListener.class, NonCDIListener.class})
 public class CDIListenedEntity {
+	
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private Integer value = null;
+    
+    private Integer cdiLoadedValue = null;
+    
+    private Integer cdiRandomInstanceValue = null;
+    
+    private Integer nonCDIRandomLoadedValue = null;
+    
+    private Integer nonCDIStaticLoadedValue = null;
+    
+    private Integer cacheableCDIListenerId = null;
     
     @Version
     private Integer version;
@@ -53,7 +64,39 @@ public class CDIListenedEntity {
     public void setValue(Integer value) {
         this.value = value;
     }
+    
+	public Integer getCdiLoadedValue() {
+		return cdiLoadedValue;
+	}
 
+	public void setCdiLoadedValue(Integer cdiLoadedValue) {
+		this.cdiLoadedValue = cdiLoadedValue;
+	}
+
+	public Integer getCdiRandomInstanceValue() {
+		return cdiRandomInstanceValue;
+	}
+
+	public void setCdiRandomInstanceValue(Integer cdiRandomInstanceValue) {
+		this.cdiRandomInstanceValue = cdiRandomInstanceValue;
+	}
+
+	public Integer getNonCDIRandomLoadedValue() {
+		return nonCDIRandomLoadedValue;
+	}
+
+	public void setNonCDIRandomLoadedValue(Integer nonCDIRandomLoadedValue) {
+		this.nonCDIRandomLoadedValue = nonCDIRandomLoadedValue;
+	}
+
+	public Integer getNonCDIStaticLoadedValue() {
+		return nonCDIStaticLoadedValue;
+	}
+
+	public void setNonCDIStaticLoadedValue(Integer nonCDIStaticLoadedValue) {
+		this.nonCDIStaticLoadedValue = nonCDIStaticLoadedValue;
+	}
+    
 	public Integer getVersion() {
 		return version;
 	}
@@ -61,5 +104,13 @@ public class CDIListenedEntity {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
-    
+
+	public void setCacheableCDIListenerId(int code) {
+		this.cacheableCDIListenerId = code;
+	}
+	
+	public Integer getCacheableCDIListenerId() {
+		return cacheableCDIListenerId;
+	}
+
 }

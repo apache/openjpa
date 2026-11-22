@@ -1059,8 +1059,7 @@ public class AnnotationPersistenceMetaDataParser
                     MetaDataParsers.validateMethodsForSameCallback(cls,
                             callbacks[e], m, tag, conf, repos.getLog());
                     if (listener) {
-                        callbacks[e].add(new BeanLifecycleCallbacks(cls, m,
-                                false));
+                        callbacks[e].add(new BeanLifecycleCallbacks(cls, m, false, repos.getCdiInjectionService()));
                     }
                     else {
                         callbacks[e].add(new MethodLifecycleCallbacks(m,

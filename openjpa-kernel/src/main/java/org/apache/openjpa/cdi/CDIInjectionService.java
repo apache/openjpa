@@ -18,14 +18,28 @@
  */
 package org.apache.openjpa.cdi;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
 
 public class CDIInjectionService {
 	
-	private static boolean cdiCtxAvailable = true;
+	private boolean cdiCtxAvailable = true;
+	
+	private Map<Class<?>, InjectionManager<?>> injectors = Collections.synchronizedMap(new HashMap<>());
+	
+	public CDIInjectionService() {
+	}
 
-	public static <T> InjectionManager<T> getInjectionManager(Class<T> cls) {
+	@SuppressWarnings("unchecked")
+	public <T> InjectionManager<T> getInjectionManager(Class<T> cls) {
+		return (InjectionManager<T>) injectors.computeIfAbsent(cls, (clazz) -> buildInjectionManager(clazz));
+	}
+	
+	private <T> InjectionManager<T> buildInjectionManager(Class<T> cls) {
 		BeanManager beanManager = null;
 		if (cdiCtxAvailable) {
 			try {
@@ -39,6 +53,13 @@ public class CDIInjectionService {
 		} else {
 			return new CDIUnawareInjectionManager<T>(cls);
 		}
+	}
+	
+	public void dispose() {
+		for (InjectionManager<?> injector: injectors.values()) {
+			injector.dispose();
+		}
+		injectors.clear();
 	}
 
 }

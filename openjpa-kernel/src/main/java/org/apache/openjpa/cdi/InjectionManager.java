@@ -20,7 +20,7 @@ package org.apache.openjpa.cdi;
 
 public interface InjectionManager<T> {
 	
-	T createInstance(Class<T> cls);
+	T getInstance();
 	
 	default boolean isCacheable() {
 		return true;

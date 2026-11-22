@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -30,17 +31,27 @@ public class CDIListener {
 	@Inject @QualifiedCDI
 	private Integer random;
 	
+	@Inject @QualifiedCDI
+	private Instance<Integer> randomInstance;
+	
 	@PrePersist
-	public void prePersist(CDIListenedEntity entity) {
-		if (bean != null) {
-			bean.call();
+	public void prePersist(Object entity) {
+		if (entity instanceof CDIListenedEntity cle) {
+			if (bean != null) {
+				bean.call();
+			}
+			preUpdate(cle);
 		}
-		preUpdate(entity);
 	}
 	
 	@PreUpdate
-	public void preUpdate(CDIListenedEntity entity) {
-		entity.setValue(random);
+	public void preUpdate(Object entity) {
+		if (entity instanceof CDIListenedEntity cle) {
+			cle.setValue(random);
+			if (randomInstance != null) {
+				cle.setCdiRandomInstanceValue(randomInstance.get());
+			}
+		}
 	}
 
 }

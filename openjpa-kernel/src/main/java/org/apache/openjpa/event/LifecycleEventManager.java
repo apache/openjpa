@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.cdi.CDIInjectionService;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
@@ -653,4 +654,5 @@ public class LifecycleEventManager
 			return types;
 		}
 	}
+
 }

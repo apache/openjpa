@@ -31,6 +31,7 @@ import org.apache.openjpa.util.UserException;
 import java.util.Set;
 
 import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanContainer;
@@ -65,11 +66,11 @@ public class CDIInjectionManager<T> implements InjectionManager<T>{
 	}
 	
 	@Override
-	public T createInstance(final Class<T> cls) {
+	public T getInstance() {
 		if (cachedInstance == null) {
 			// based on DeltaSpike BeanProvider#injectFields
 			// added map to allow disposing afterwards as expected by JPA API
-			final AnnotatedType<T> type = beanManager.createAnnotatedType(cls);
+			final AnnotatedType<T> type = beanManager.createAnnotatedType(listenerClass);
 			final InjectionTarget<T> target = beanManager.getInjectionTargetFactory(type).createInjectionTarget(null);
 			creationalContext = beanManager.createCreationalContext(null);
 			final T instance = target.produce(creationalContext);
@@ -129,6 +130,9 @@ public class CDIInjectionManager<T> implements InjectionManager<T>{
 		if (depth <= 0) {
 			return container.isNormalScope(bean.getScope());
 		} else {
+			if (bean.getTypes().contains(Instance.class)) {
+				return true;
+			}
 			if (!container.isNormalScope(bean.getScope())) {
 				return false;
 			}

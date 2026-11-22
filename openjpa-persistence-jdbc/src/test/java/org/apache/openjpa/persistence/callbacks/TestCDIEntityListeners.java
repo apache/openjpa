@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openwebbeans.junit5.Cdi;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,11 @@ public class TestCDIEntityListeners extends SingleEMFTestCase {
     public void setUp() {
         setUp(CLEAR_TABLES);
         CDIBean.reset();
+    }
+    
+    @AfterEach
+    public void after() {
+    	CDIBean.reset();
     }
 
     @Override
@@ -66,6 +72,10 @@ public class TestCDIEntityListeners extends SingleEMFTestCase {
             em.getTransaction().commit();
             assertNotNull(e0.getValue());
             assertNotEquals(e0.getValue(), e1.getValue());
+            assertNotEquals(e0.getCdiRandomInstanceValue(), e1.getCdiRandomInstanceValue());
+            assertEquals(e0.getNonCDIStaticLoadedValue(), e1.getNonCDIStaticLoadedValue());
+            assertNotEquals(e0.getNonCDIRandomLoadedValue(), e1.getNonCDIRandomLoadedValue());
+            assertEquals(e0.getCacheableCDIListenerId(), e1.getCacheableCDIListenerId());
         }
     }
     

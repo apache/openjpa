@@ -43,21 +43,21 @@ public class BeanLifecycleCallbacks<T>
      *
      * @param arg whether another argument is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class<T> cls, String method, boolean arg, Class<?> type) {
-        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg);
+    public BeanLifecycleCallbacks(Class<T> cls, String method, boolean arg, Class<?> type, CDIInjectionService injectionService) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, injectionService);
     }
 
     /**
      * Constructor. Make the callback on an instance of the given type.
      */
-    public BeanLifecycleCallbacks(Class<T> cls, Method method, boolean arg) {
+    public BeanLifecycleCallbacks(Class<T> cls, Method method, boolean arg, CDIInjectionService injectionService) {
         super(method, arg);
-        injectorManager = CDIInjectionService.getInjectionManager(cls);
+        injectorManager = injectionService.getInjectionManager(cls);
         listenerClass = cls;
     }
 
     private T getListener() {
-    	return injectorManager.createInstance(listenerClass);
+    	return injectorManager.getInstance();
     }
 
     @Override

@@ -28,16 +28,21 @@ public class CDIUnawareInjectionManager<T> implements InjectionManager<T>{
 
     private T _listener;
     
+    private Class<T> listenerClass;
+    
     public CDIUnawareInjectionManager(Class<T> cls) {
-        try {
-            _listener = J2DoPrivHelper.newInstance(cls);
-        } catch (Throwable t) {
-            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
-        }
+    	listenerClass = cls;
 	}
 
 	@Override
-	public T createInstance(Class<T> cls) {
+	public T getInstance() {
+		if (_listener == null) {
+	        try {
+	            _listener = J2DoPrivHelper.newInstance(listenerClass);
+	        } catch (Throwable t) {
+	            throw new UserException(_loc.get("bean-constructor", listenerClass.getName()), t);
+	        }
+		}
 		return _listener;
 	}
 
