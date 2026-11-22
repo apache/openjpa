@@ -35,9 +35,9 @@ public class CDIInjectionService {
 			}
 		}
 		if (beanManager != null) {
-			return new CDIInjectionManager<T>(beanManager);
+			return new CDIInjectionManager<T>(beanManager, cls);
 		} else {
-			return new CDIUnawareInjectionManager<T>();
+			return new CDIUnawareInjectionManager<T>(cls);
 		}
 	}
 

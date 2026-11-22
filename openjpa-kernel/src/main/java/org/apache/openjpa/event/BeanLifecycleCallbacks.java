@@ -70,7 +70,9 @@ public class BeanLifecycleCallbacks<T>
             callback.invoke(listener, new Object[]{ obj, rel });
         else
             callback.invoke(listener, new Object[]{ obj });
-    	injectorManager.dispose();
+        if (!injectorManager.isCacheable()) {
+        	injectorManager.dispose();
+        }
     }
 
     @Override

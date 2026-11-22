@@ -22,6 +22,10 @@ public interface InjectionManager<T> {
 	
 	T createInstance(Class<T> cls);
 	
+	default boolean isCacheable() {
+		return true;
+	}
+	
 	default void dispose() {};
 
 }

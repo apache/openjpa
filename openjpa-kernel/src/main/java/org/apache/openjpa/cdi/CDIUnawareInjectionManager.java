@@ -27,16 +27,17 @@ public class CDIUnawareInjectionManager<T> implements InjectionManager<T>{
     private static final Localizer _loc = Localizer.forPackage(CDIUnawareInjectionManager.class);
 
     private T _listener;
+    
+    public CDIUnawareInjectionManager(Class<T> cls) {
+        try {
+            _listener = J2DoPrivHelper.newInstance(cls);
+        } catch (Throwable t) {
+            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
+        }
+	}
 
 	@Override
 	public T createInstance(Class<T> cls) {
-		if (_listener == null) {
-	        try {
-	            _listener = J2DoPrivHelper.newInstance(cls);
-	        } catch (Throwable t) {
-	            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
-	        }
-		}
 		return _listener;
 	}
 
