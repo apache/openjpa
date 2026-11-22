@@ -1100,7 +1100,7 @@ public class TCPRemoteCommitProvider extends AbstractRemoteCommitProvider {
         protected class SocketPoolableObjectFactory extends BasePooledObjectFactory<Socket> {
             @Override
             public Socket create() throws Exception {
-                Socket s = new Socket(_address, _addrPort, _bindAddress, _port);
+                Socket s = new Socket(_address, _addrPort, _bindAddress, 0); // system will pick up free local port
                 if (log.isTraceEnabled()) {
                     log.trace(s_loc.get("tcp-open-connection", toString(), "" + s.getLocalPort()));
                 }
