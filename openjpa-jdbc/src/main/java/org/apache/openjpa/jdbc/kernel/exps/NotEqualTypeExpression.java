@@ -100,11 +100,10 @@ class NotEqualTypeExpression
                     return;
                 }
 
-                String op;
-                if (sub != sel.getTablePerClassMeta())
+                String op = "<>";
+                if (sel.getTablePerClassMeta() != null && sub != sel.getTablePerClassMeta()) {
                     op = "=";
-                else
-                    op = "<>";
+                }
 
                ctx.store.getDBDictionary().comparison(buf, op,
                     new FilterValueImpl(sel, ctx, bstate.state1, val1),

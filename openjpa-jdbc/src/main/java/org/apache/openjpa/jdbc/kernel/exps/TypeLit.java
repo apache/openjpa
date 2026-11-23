@@ -105,8 +105,19 @@ public class TypeLit
         lstate.disc = lstate.mapping.getDiscriminator();
         lstate.discValue = lstate.disc != null ? lstate.disc.getValue() :
             null;
+    }
+
+    /**
+     * Selects the primary key of the entity of a projected type literal,
+     * which puts its table in the FROM clause. A type literal in a condition
+     * adds no table.
+     */
+    @Override
+    public void select(Select sel, ExpContext ctx, ExpState state,
+        boolean pks) {
         sel.select(((ClassMapping) getMetaData()).getPrimaryKeyColumns(),
-            lstate.joins);
+            state.joins);
+        super.select(sel, ctx, state, pks);
     }
 
     @Override
