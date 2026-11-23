@@ -2225,7 +2225,8 @@ public class XMLPersistenceMetaDataParser
         LifecycleCallbacks adapter;
         if (_listener != null)
             adapter = new BeanLifecycleCallbacks(_listener,
-                attrs.getValue("method-name"), false, type, getRepository().getCdiInjectionService());
+                attrs.getValue("method-name"), false, type, 
+                getRepository().getConfiguration().getEntityListenerFactory());
         else
             adapter = new MethodLifecycleCallbacks(_cls,
                 attrs.getValue("method-name"), false);

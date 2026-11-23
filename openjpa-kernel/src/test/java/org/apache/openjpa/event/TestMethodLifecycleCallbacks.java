@@ -20,7 +20,6 @@ package org.apache.openjpa.event;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.apache.openjpa.cdi.CDIInjectionService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -64,7 +63,7 @@ class TestMethodLifecycleCallbacks {
     void findMethodWithInterfaceParamWhenSearchingForObject() {
         // BeanLifecycleCallbacks passes type=Object.class for default listeners
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
-            ListenerWithInterfaceParam.class, "prePersist", false, Object.class, new CDIInjectionService());
+            ListenerWithInterfaceParam.class, "prePersist", false, Object.class);
         assertNotNull(cb.getCallbackMethod());
         assertEquals("prePersist", cb.getCallbackMethod().getName());
     }
@@ -75,7 +74,7 @@ class TestMethodLifecycleCallbacks {
     @Test
     void findMethodWithObjectParam() {
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
-            ListenerWithInterfaceParam.class, "postPersist", false, Object.class, new CDIInjectionService());
+            ListenerWithInterfaceParam.class, "postPersist", false, Object.class);
         assertNotNull(cb.getCallbackMethod());
         assertEquals("postPersist", cb.getCallbackMethod().getName());
     }
@@ -87,7 +86,7 @@ class TestMethodLifecycleCallbacks {
     @Test
     void findMethodWithObjectParamWhenSearchingForSpecificType() {
         BeanLifecycleCallbacks cb = new BeanLifecycleCallbacks(
-            ListenerWithInterfaceParam.class, "postPersist", false, String.class, new CDIInjectionService());
+            ListenerWithInterfaceParam.class, "postPersist", false, String.class);
         assertNotNull(cb.getCallbackMethod());
         assertEquals("postPersist", cb.getCallbackMethod().getName());
     }

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.callbacks;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
 public class CDICacheableListener {
 	

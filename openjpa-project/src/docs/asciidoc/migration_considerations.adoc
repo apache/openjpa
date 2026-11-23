@@ -23,7 +23,7 @@
 [[migration_considerations]]
 = Migration Considerations
 
-[[jpa_4.2]]
+[[jpa_4.3]]
 == OpenJPA 4.3.0
 
 [[jpa_4.3_entity_listeners]]

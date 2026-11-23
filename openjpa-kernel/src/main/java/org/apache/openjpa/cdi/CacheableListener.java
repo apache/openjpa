@@ -18,14 +18,11 @@
  */
 package org.apache.openjpa.cdi;
 
-public interface InjectionManager<T> {
-	
-	T getInstance();
-	
-	default boolean isCacheable() {
+public record CacheableListener<T>(T listener) implements EntityListenerWrapper<T>{
+
+	@Override
+	public boolean cacheable() {
 		return true;
 	}
-	
-	default void dispose() {};
 
 }

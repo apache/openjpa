@@ -33,7 +33,7 @@ public class CDIBean {
 	@QualifiedCDI
 	@Dependent
 	public Integer getRandom() {
-		return RandomGenerator.getDefault().nextInt(1000);
+		return new Object().hashCode();
 	}
 	
 	public void call() {

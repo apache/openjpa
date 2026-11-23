@@ -18,32 +18,22 @@
  */
 package org.apache.openjpa.cdi;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.UserException;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 
-public class CDIUnawareInjectionManager<T> implements InjectionManager<T>{
+public record CDIEntityListenerWrapper<T>(T listener, InjectionTarget<T> target, CreationalContext<T> context, boolean cacheable) 
+	implements EntityListenerWrapper<T> {
 	
-    private static final Localizer _loc = Localizer.forPackage(CDIUnawareInjectionManager.class);
-
-    private T _listener;
-    
-    private Class<T> listenerClass;
-    
-    public CDIUnawareInjectionManager(Class<T> cls) {
-    	listenerClass = cls;
-	}
-
 	@Override
-	public T getInstance() {
-		if (_listener == null) {
-	        try {
-	            _listener = J2DoPrivHelper.newInstance(listenerClass);
-	        } catch (Throwable t) {
-	            throw new UserException(_loc.get("bean-constructor", listenerClass.getName()), t);
-	        }
+	public void dispose() {
+		try {
+			target().preDestroy(listener());
+			target().dispose(listener());
+		} finally {
+			if (context != null) {
+				context.release();
+			}
 		}
-		return _listener;
 	}
-
+	
 }

@@ -57,7 +57,7 @@ public class TestCDIEntityListeners extends SingleEMFTestCase {
     }
 
     @Test
-    void entityListeners() {
+    void cacheableAndNonCacheableEntityListeners() {
     	assertNotNull(bean);
         try (EntityManager em = emf.createEntityManager()){
             em.getTransaction().begin();
@@ -79,4 +79,30 @@ public class TestCDIEntityListeners extends SingleEMFTestCase {
         }
     }
     
+    @Test
+    void checkEntityListenerFactorySurvivesClosing() {
+    	assertNotNull(bean);
+        try (EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            CDIListenedEntity e0 = new CDIListenedEntity();
+            CDIListenedEntity e1 = new CDIListenedEntity();
+            
+            em.persist(e0);
+            assertEquals(1, CDIBean.getCount());
+            em.persist(e1);
+            assertEquals(2, CDIBean.getCount());
+            em.getTransaction().commit();
+        }
+        try (EntityManager em = emf.createEntityManager()){
+            em.getTransaction().begin();
+            CDIListenedEntity e0 = new CDIListenedEntity();
+            CDIListenedEntity e1 = new CDIListenedEntity();
+            
+            em.persist(e0);
+            assertEquals(3, CDIBean.getCount());
+            em.persist(e1);
+            assertEquals(4, CDIBean.getCount());
+            em.getTransaction().commit();
+        }
+    }
 }

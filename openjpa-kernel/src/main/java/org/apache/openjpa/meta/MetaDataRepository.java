@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.openjpa.cdi.CDIInjectionService;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -171,9 +170,6 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // we should skip these types for the enhancement
     private Collection<Class<?>> _typesWithoutEnhancement;
     
-    // Adds scoped CDIInjectionService
-    private transient CDIInjectionService cdiInjectionService;
-
     // Map of entity attribute type -> auto-apply converter class
     // Populated by scanning @Converter(autoApply=true) classes
     private final Map<Class<?>, Class<?>> _autoApplyConverters =
@@ -2698,16 +2694,4 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return _autoApplyConverters;
     }
     
-    /**
-     * Returns the CDI injection service used to configure entity listeners.
-     * 
-     * @return
-     * @since 4.3.0
-     */
-    public CDIInjectionService getCdiInjectionService() {
-    	if (cdiInjectionService == null) {
-    		cdiInjectionService = new CDIInjectionService();
-    	}
-		return cdiInjectionService;
-	}
 }

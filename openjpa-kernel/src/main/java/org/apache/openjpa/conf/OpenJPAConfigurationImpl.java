@@ -28,6 +28,8 @@ import java.util.Set;
 
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
+import org.apache.openjpa.cdi.EntityListenerFactory;
+import org.apache.openjpa.cdi.EntityListenerFactoryImpl;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
@@ -196,6 +198,8 @@ public class OpenJPAConfigurationImpl
     public StringValue dropScriptTarget;
     public StringValue loadScriptSource;
     public BooleanValue specCompliantSchemaGeneration;
+    
+    public PluginValue entityListenerFactoryPlugin;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -376,7 +380,7 @@ public class OpenJPAConfigurationImpl
         metaFactoryPlugin = addPlugin("MetaDataFactory", false);
 
         metaRepositoryPlugin = addValue(new MetaDataRepositoryValue());
-
+        
         connectionFactory = addObject("ConnectionFactory");
         connectionFactory.setInstantiatingGetter("getConnectionFactory");
 
@@ -689,6 +693,12 @@ public class OpenJPAConfigurationImpl
         useTcclForSelectNew = addBoolean("UseTCCLinSelectNew");
         useTcclForSelectNew.setDefault("false");
         useTcclForSelectNew.set(false);
+        
+        entityListenerFactoryPlugin = addPlugin("EntityListenerFactory", true);
+        aliases = new String[] {"default", EntityListenerFactoryImpl.class.getName(), };
+        entityListenerFactoryPlugin.setAliases(aliases);
+        entityListenerFactoryPlugin.setDefault("default");
+        entityListenerFactoryPlugin.setClassName(EntityListenerFactoryImpl.class.getName());
 
         typesWithoutEnhancement = new ClassListValue();
 
@@ -1190,7 +1200,7 @@ public class OpenJPAConfigurationImpl
         return (MetaDataRepository) metaRepositoryPlugin.instantiate(
             MetaDataRepository.class, this);
     }
-
+    
     @Override
     public void setConnectionUserName(String connectionUserName) {
         this.connectionUserName.setString(connectionUserName);
@@ -2248,6 +2258,15 @@ public class OpenJPAConfigurationImpl
     @Override
     public void setAuditor(String auditor) {
     	auditorPlugin.setString(auditor);
+    }
+    
+    @Override
+    public EntityListenerFactory getEntityListenerFactory() {
+    	EntityListenerFactory fac = (EntityListenerFactory) entityListenerFactoryPlugin.get();
+    	if (fac == null) {
+    		fac = (EntityListenerFactory) entityListenerFactoryPlugin.instantiate(EntityListenerFactory.class, this, true);
+    	}
+    	return fac;
     }
 
     @Override

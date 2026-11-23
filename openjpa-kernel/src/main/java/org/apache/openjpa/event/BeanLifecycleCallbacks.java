@@ -23,55 +23,64 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 
-import org.apache.openjpa.cdi.InjectionManager;
-import org.apache.openjpa.cdi.CDIInjectionService;
+import org.apache.openjpa.cdi.EntityListenerCachedFactory;
+import org.apache.openjpa.cdi.EntityListenerFactory;
+import org.apache.openjpa.cdi.EntityListenerWrapper;
 
 /**
- * Performs a callback method on a cached bean instance.
+ * Performs a callback method on a entity listener factory provided bean instance.
  *
  * @author Steve Kim
  */
-public class BeanLifecycleCallbacks<T>
+public class BeanLifecycleCallbacks
     extends MethodLifecycleCallbacks {
 
-    private final Class<T> listenerClass;
+    private final Class<?> listenerClass;
     
-    private InjectionManager<T> injectorManager;
+    private final EntityListenerFactory factory;
     
     /**
      * Constructor. Make the callback on an instance of the given type.
      *
      * @param arg whether another argument is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class<T> cls, String method, boolean arg, Class<?> type, CDIInjectionService injectionService) {
-        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, injectionService);
+    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg, Class<?> type) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, null);
+    }
+
+    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg, Class<?> type, EntityListenerFactory factory) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, factory);
     }
 
     /**
      * Constructor. Make the callback on an instance of the given type.
      */
-    public BeanLifecycleCallbacks(Class<T> cls, Method method, boolean arg, CDIInjectionService injectionService) {
-        super(method, arg);
-        injectorManager = injectionService.getInjectionManager(cls);
-        listenerClass = cls;
+    public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg) {
+        this(cls, method, arg, null);
+    }
+    
+    public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg, EntityListenerFactory factory) {
+    	super(method, arg);
+    	listenerClass = cls;
+    	this.factory = factory != null ? factory : new EntityListenerCachedFactory();
     }
 
-    private T getListener() {
-    	return injectorManager.getInstance();
+    private EntityListenerWrapper<?> getListenerWrapper() {
+    	return factory.getWrapper(listenerClass);
     }
 
     @Override
     public void makeCallback(Object obj, Object rel, int eventType) throws Exception {
         Method callback = getCallbackMethod();
-        Object listener = getListener();
-        if (!callback.canAccess(listener))
+        EntityListenerWrapper<?> wrapper = getListenerWrapper();
+        if (!callback.canAccess(wrapper.listener()))
             callback.setAccessible(true);
         if (requiresArgument())
-            callback.invoke(listener, new Object[]{ obj, rel });
+            callback.invoke(wrapper.listener(), new Object[]{ obj, rel });
         else
-            callback.invoke(listener, new Object[]{ obj });
-        if (!injectorManager.isCacheable()) {
-        	injectorManager.dispose();
+            callback.invoke(wrapper.listener(), new Object[]{ obj });
+        if (!wrapper.cacheable()) {
+        	wrapper.dispose();
         }
     }
 
