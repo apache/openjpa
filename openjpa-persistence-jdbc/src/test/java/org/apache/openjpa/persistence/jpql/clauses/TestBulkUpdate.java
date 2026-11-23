@@ -47,7 +47,6 @@ public class TestBulkUpdate extends AbstractTestCase {
             simpleBulkUpdate(i);
     }
 
-    @Test
     void simpleBulkUpdate(int num) {
         deleteAll(Entity1.class);
 
