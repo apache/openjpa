@@ -55,34 +55,47 @@ public class ClassRedefiner {
             return;
 
         Instrumentation inst = null;
+        ClassFileTransformer t = null;
         try {
             inst = InstrumentationFactory.getInstrumentation(log);
+
+            Class<?>[] array = classes.keySet().toArray(new Class[classes.size()]);
             log.trace(_loc.get("retransform-types", classes.keySet()));
 
-            // Use redefineClasses instead of retransformClasses to
-            // bypass any registered ClassFileTransformers (e.g.
-            // PCClassFileTransformer) that might produce incompatible
-            // bytecode for classes with non-standard field types.
-            java.lang.instrument.ClassDefinition[] defs =
-                new java.lang.instrument.ClassDefinition[classes.size()];
-            int i = 0;
-            for (Map.Entry<Class<?>, byte[]> entry : classes.entrySet()) {
-                defs[i++] = new java.lang.instrument.ClassDefinition(
-                    entry.getKey(), entry.getValue());
-            }
-            inst.redefineClasses(defs);
+            // Retransform with a temporary transformer that returns the
+            // redefined bytecode, instead of calling redefineClasses. The JVM
+            // passes the bytes of a redefinition to every registered
+            // transformer, including a PCClassFileTransformer registered by the
+            // agent or a container, which would add the PersistenceCapable
+            // interface to the already loaded class. A retransformation only
+            // calls the retransformation capable transformers.
+            t = new ClassFileTransformer() {
+                @Override
+                public byte[] transform(ClassLoader loader, String clsName,
+                    Class<?> classBeingRedefined, ProtectionDomain pd,
+                    byte[] classfileBuffer) {
+                    return classes.get(classBeingRedefined);
+                }
+            };
+
+            inst.addTransformer(t, true);
+            inst.retransformClasses(array);
         } catch (UnsupportedOperationException e) {
             throw new InternalException(e);
         } catch (Throwable e) {
-            // redefineClasses may fail with VerifyError (an Error,
+            // retransformClasses may fail with VerifyError (an Error,
             // not Exception) when the enhanced bytecode references
             // types not visible to the class's loader, or when the
             // redefined schema doesn't match. Fall back to
             // subclass-based enhancement which is already set up
             // by ManagedClassSubclasser.
             if (log.isInfoEnabled())
-                log.info("redefineClasses failed (" + e
+                log.info("retransformClasses failed (" + e
                     + "), falling back to subclass enhancement");
+        } finally {
+            if (inst != null && t != null) {
+                inst.removeTransformer(t);
+            }
         }
     }
 
