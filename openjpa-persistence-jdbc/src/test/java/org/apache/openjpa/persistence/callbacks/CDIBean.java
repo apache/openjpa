@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.callbacks;
 
-import java.util.random.RandomGenerator;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;

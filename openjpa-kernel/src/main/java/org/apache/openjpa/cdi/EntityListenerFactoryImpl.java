@@ -103,22 +103,42 @@ public class EntityListenerFactoryImpl implements EntityListenerFactory {
 		final AnnotatedType<T> type = beanManager.createAnnotatedType(cls);
 		final InjectionTarget<T> target = beanManager.getInjectionTargetFactory(type).createInjectionTarget(null);
 		final CreationalContext<T> creationalContext = beanManager.createCreationalContext(null);
-		final T instance = target.produce(creationalContext);
-		target.inject(instance, creationalContext);
-		target.postConstruct(instance);
-		boolean cacheable = isCacheable(target);
-		final EntityListenerWrapper<T> wrapper = new CDIEntityListenerWrapper<>(instance, target, creationalContext, cacheable);
-		return wrapper;
+		T instance = null;
+		try {
+			instance = target.produce(creationalContext);
+			target.inject(instance, creationalContext);
+			target.postConstruct(instance);
+			boolean cacheable = isCacheable(target);
+			final EntityListenerWrapper<T> wrapper = new CDIEntityListenerWrapper<>(instance, target, creationalContext, cacheable);
+			return wrapper;
+		} catch (Throwable t) {
+			try {
+				if (instance != null) {
+					target.dispose(instance);
+				}
+			} finally {
+				if (creationalContext != null) {
+					creationalContext.release();
+				}
+			}
+			throw new UserException(_loc.get("cdi-bean-constructor", cls.getName(), t));
+		}
 	}
 
 	private BeanManager lookupBeanManager() {
 		String[] jndiNames = {"java:comp/BeanManager", "java:comp/env/BeanManager"};
-		for (String jndi: jndiNames) {
-			try {
-				Context ctx = new InitialContext();
-				return (BeanManager) ctx.lookup(jndi);
-			} catch (NamingException ex) {
+		Context ctx;
+		try {
+			ctx = new InitialContext();
+			for (String jndi: jndiNames) {
+				try {
+					return (BeanManager) ctx.lookup(jndi);
+				} catch (NamingException ex) {
+					// swallow
+				}
 			}
+		} catch (NamingException ex) {
+			// swallow
 		}
 		return null;
 	}
@@ -133,16 +153,15 @@ public class EntityListenerFactoryImpl implements EntityListenerFactory {
 	}
 	
 	private boolean isCacheable(InjectionPoint ip, int depth) {
-		BeanContainer container = CDI.current().getBeanContainer();
-		Annotation[] qualifiers = ip.getQualifiers().toArray(new Annotation[0]);
-		Bean<?> bean = container.resolve(container.getBeans(ip.getType(), qualifiers));
+		Set<Bean<?>> candidateBeans = beanManager.getBeans(ip.getType(), ip.getQualifiers().toArray(new Annotation[0]));
+		Bean<?> bean = beanManager.resolve(candidateBeans);
 		if (depth <= 0) {
-			return container.isNormalScope(bean.getScope());
+			return beanManager.isNormalScope(bean.getScope());
 		} else {
 			if (bean.getTypes().contains(Instance.class)) {
 				return true;
 			}
-			if (!container.isNormalScope(bean.getScope())) {
+			if (!beanManager.isNormalScope(bean.getScope())) {
 				return false;
 			}
 			for (InjectionPoint iip: bean.getInjectionPoints()) {
