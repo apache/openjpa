@@ -2266,8 +2266,9 @@ public class SelectImpl
         else
             i = sel.getAlias(table, key); // find in myself
         boolean otherContext = ctx != null && ctx != ctx();
-        if (i == null && otherContext)
+        if (i == null && otherContext) {
             i = sel.getSubqueryRootAlias(table, key, ctx);
+        }
         if (i != null)
             return i;
 
@@ -2286,8 +2287,9 @@ public class SelectImpl
      * a subquery is aliased under the candidate alias of that subquery as path.
      */
     private Integer getSubqueryRootAlias(Table table, Object key, Context ctx) {
-        if (ctx.subquery == null || key instanceof Key)
+        if (ctx.subquery == null || key instanceof Key) {
             return null;
+        }
         return getAlias(table, new Key(ctx.subquery.getCandidateAlias(), key));
     }
 
