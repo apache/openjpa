@@ -2733,15 +2733,9 @@ public class DBDictionary
     protected SQLBuffer toBulkOperation(ClassMapping mapping, Select sel,
         JDBCStore store, Object[] params, Map updateParams) {
         SQLBuffer sql = new SQLBuffer(this);
+        boolean deleteTarget = updateParams == null && requiresTargetForDelete;
         if (updateParams == null) {
-          if (requiresTargetForDelete) {
-            sql.append("DELETE ");
-            SQLBuffer deleteTargets = getDeleteTargets(sel);
-            sql.append(deleteTargets);
-            sql.append(" FROM ");
-          } else {
-            sql.append("DELETE FROM ");
-          }
+            sql.append(deleteTarget ? "DELETE " : "DELETE FROM ");
         }
         else
             sql.append("UPDATE ");
@@ -2760,6 +2754,9 @@ public class DBDictionary
         boolean aliasTarget = allowsAliasInBulkClause
             || (allowsTargetAliasInBulkClause && sel.getSubselects().isEmpty());
         if (selectedTables.size() == 1 && supportsSubselect && aliasTarget) {
+            if (deleteTarget) {
+                sql.append(getDeleteTargets(mapping, sel)).append(" FROM ");
+            }
             SQLBuffer from;
             if (sel.getFromSelect() != null)
                 from = getFromSelect(sel, false);
@@ -2785,6 +2782,9 @@ public class DBDictionary
 
         Table table = mapping.getTable();
         String tableName = getFullName(table, false);
+        if (deleteTarget) {
+            sql.append(tableName).append(" FROM ");
+        }
 
         // only use a  subselect if the where is not empty; otherwise
         // an unqualified delete or update will work
@@ -2812,9 +2812,13 @@ public class DBDictionary
             sel.select(pks[0]);
             sql.append(tableName);
             appendUpdates(sel, store, sql, params, updateParams, false);
-            sql.append(" WHERE ").
-                append(pks[0]).append(" IN (").
-                append(sel.toSelect(false, null)).append(")");
+            sql.append(" WHERE ").append(pks[0]).append(" IN (");
+            if (allowsBulkTargetInSubselect) {
+                sql.append(sel.toSelect(false, null)).append(")");
+            } else {
+                sql.append("SELECT * FROM (").append(sel.toSelect(false, null))
+                    .append(") ").append(Select.FROM_SELECT_ALIAS).append(")");
+            }
         } else {
             sel.clearSelects();
             sel.setDistinct(false);
@@ -2878,6 +2882,22 @@ public class DBDictionary
 
     protected Collection<String> getSelectTableAliases(Select sel) {
         return sel.getTableAliases();
+    }
+
+    /**
+     * Return the target of a DELETE that requires one: the alias of the table
+     * of the given mapping, whose identifier the select reads, without the
+     * tables it joins.
+     */
+    protected SQLBuffer getDeleteTargets(ClassMapping mapping, Select sel) {
+        List<String> ids = sel.getIdentifierAliases();
+        for (String id : ids) {
+            int dot = id.indexOf('.');
+            if (dot > 0) {
+                return new SQLBuffer(this).append(id.substring(0, dot));
+            }
+        }
+        return getDeleteTargets(sel);
     }
 
     protected SQLBuffer getDeleteTargets(Select sel) {

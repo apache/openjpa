@@ -168,7 +168,8 @@ class TestBulkSingleTableRange extends SQLListenerTestCase {
     }
 
     /**
-     * A condition on another table still needs the subquery.
+     * A condition on another table needs the subquery, or on MySQL and
+     * MariaDB a join that deletes only from the table of the lines.
      */
     @Test
     void deleteLinesByOrderStatus() {
@@ -183,11 +184,111 @@ class TestBulkSingleTableRange extends SQLListenerTestCase {
             em.getTransaction().commit();
             assertEquals(2, count, "deleted lines");
         }
-        if (!getDBDictionary().allowsAliasInBulkClause) {
-            assertTrue(bulkStatement("DELETE", "BRG_LINE").contains("SELECT"),
+        assertDeletesOnlyLines();
+        assertEquals("1,2,5,6,7,8", ids("BulkRangeLine"), "remaining lines");
+        assertEquals("1,2,3,4", ids("BulkRangeOrder"), "remaining orders");
+    }
+
+    /**
+     * A delete with a join and a subquery on the table of the entity.
+     */
+    @Test
+    void deleteLinesByOrderStatusAndSubquery() {
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            int count = em.createQuery("DELETE FROM BulkRangeLine l"
+                + " WHERE l.order.status = :status AND l.quantity >"
+                + " (SELECT MIN(m.quantity) FROM BulkRangeLine m)")
+                .setParameter("status", "NEW")
+                .executeUpdate();
+            em.getTransaction().commit();
+            assertEquals(6, count, "deleted lines");
+        }
+        assertDeletesOnlyLines();
+        assertEquals("1,2", ids("BulkRangeLine"), "remaining lines");
+        assertEquals("1,2,3,4", ids("BulkRangeOrder"), "remaining orders");
+    }
+
+    /**
+     * A delete with a join on a database that requires a delete target but
+     * only allows the alias of the target table in a bulk statement.
+     */
+    @Test
+    void deleteLinesByOrderStatusWithTargetAliasOnly() {
+        DBDictionary dict = getDBDictionary();
+        if (!dict.requiresTargetForDelete) {
+            return;
+        }
+        boolean alias = dict.allowsAliasInBulkClause;
+        boolean targetAlias = dict.allowsTargetAliasInBulkClause;
+        dict.allowsAliasInBulkClause = false;
+        dict.allowsTargetAliasInBulkClause = true;
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            int count = em.createQuery("DELETE FROM BulkRangeLine l"
+                + " WHERE l.order.status = :status AND l.quantity > :quantity")
+                .setParameter("status", "NEW")
+                .setParameter("quantity", 2)
+                .executeUpdate();
+            em.getTransaction().commit();
+            assertEquals(4, count, "deleted lines");
+        } finally {
+            dict.allowsAliasInBulkClause = alias;
+            dict.allowsTargetAliasInBulkClause = targetAlias;
+        }
+        String statement = bulkStatement("DELETE", "BRG_LINE");
+        assertTrue(statement.startsWith("DELETE t0 FROM BRG_LINE t0 "),
+            "delete target is not only the table of the lines: " + statement);
+        assertEquals("1,2,3,4", ids("BulkRangeLine"), "remaining lines");
+        assertEquals("1,2,3,4", ids("BulkRangeOrder"), "remaining orders");
+    }
+
+    /**
+     * A delete with a join on a database that requires a delete target but
+     * allows no alias in a bulk statement uses a subquery.
+     */
+    @Test
+    void deleteLinesByOrderStatusWithoutAlias() {
+        DBDictionary dict = getDBDictionary();
+        if (!dict.requiresTargetForDelete) {
+            return;
+        }
+        boolean alias = dict.allowsAliasInBulkClause;
+        dict.allowsAliasInBulkClause = false;
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            int count = em.createQuery("DELETE FROM BulkRangeLine l"
+                + " WHERE l.order.status = :status AND l.quantity < :quantity")
+                .setParameter("status", "NEW")
+                .setParameter("quantity", 3)
+                .executeUpdate();
+            em.getTransaction().commit();
+            assertEquals(4, count, "deleted lines");
+        } finally {
+            dict.allowsAliasInBulkClause = alias;
+        }
+        String statement = bulkStatement("DELETE", "BRG_LINE");
+        assertTrue(statement.startsWith("DELETE BRG_LINE FROM BRG_LINE WHERE "),
+            "delete target is not only the table of the lines: " + statement);
+        assertEquals("5,6,7,8", ids("BulkRangeLine"), "remaining lines");
+        assertEquals("1,2,3,4", ids("BulkRangeOrder"), "remaining orders");
+    }
+
+    /**
+     * Asserts that the delete of lines that joins the orders names only the
+     * table of the lines where the database requires a delete target.
+     */
+    private void assertDeletesOnlyLines() {
+        DBDictionary dict = getDBDictionary();
+        String statement = bulkStatement("DELETE", "BRG_LINE");
+        if (!dict.allowsAliasInBulkClause) {
+            assertTrue(statement.contains("SELECT"),
                 "delete with a join is not done with a subquery");
         }
-        assertEquals("1,2,5,6,7,8", ids("BulkRangeLine"), "remaining lines");
+        if (dict.requiresTargetForDelete) {
+            assertTrue(statement.startsWith("DELETE t0 FROM BRG_LINE t0 "),
+                "delete target is not only the table of the lines: " + statement);
+        }
     }
 
     /**
