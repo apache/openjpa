@@ -169,7 +169,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // we should skip these types for the enhancement
     private Collection<Class<?>> _typesWithoutEnhancement;
-    
+
     // Map of entity attribute type -> auto-apply converter class
     // Populated by scanning @Converter(autoApply=true) classes
     private final Map<Class<?>, Class<?>> _autoApplyConverters =
@@ -2693,5 +2693,4 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public Map<Class<?>, Class<?>> getAutoApplyConverters() {
         return _autoApplyConverters;
     }
-    
 }

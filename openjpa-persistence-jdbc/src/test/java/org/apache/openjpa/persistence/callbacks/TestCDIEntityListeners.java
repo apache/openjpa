@@ -21,9 +21,6 @@ package org.apache.openjpa.persistence.callbacks;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.util.UUID;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openwebbeans.junit5.Cdi;

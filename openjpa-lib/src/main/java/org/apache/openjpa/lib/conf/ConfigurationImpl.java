@@ -131,7 +131,8 @@ public class ConfigurationImpl
     //Ant task needs to defer the resource loading
     //until the classpath setting is loaded properly
     private boolean _deferResourceLoading = false;
-    
+
+
     /**
      * Default constructor. Attempts to load default properties through
      * system's configured {@link ProductDerivation}s.
@@ -164,7 +165,7 @@ public class ConfigurationImpl
         logFactoryPlugin.setDefault(aliases[0]);
         logFactoryPlugin.setString(aliases[0]);
         logFactoryPlugin.setInstantiatingGetter("getLogFactory");
-        
+
         id = addString("Id");
 
         if (loadGlobals)
