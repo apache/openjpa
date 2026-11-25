@@ -56,7 +56,7 @@ public class EntityListenerCDIFactory implements EntityListenerFactory {
 			try {
 				beanManager = CDI.current().getBeanManager();
 			} catch (IllegalStateException ex) {
-				beanManager = null;
+				throw new IllegalStateException(_loc.get("cdi-not-available").getMessage());
 			}
 		}
 	}

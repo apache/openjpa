@@ -33,6 +33,8 @@ the created listeners, entity listeners in which all @NormalScoped injection poi
 In the remaining cases, the listener will be created and disposed for each lifecycle callback cycle.
 Non-CDI injected entity listeners will keep previous behavior and will be cached at startup of the container.
 
+If you want to keep previous behaviour also in CDI enviroments, set ``openjpa.EntityListenerFactory`` property to ``stateless``. 
+
 [[jpa_4.2]]
 == OpenJPA 4.2.0
 

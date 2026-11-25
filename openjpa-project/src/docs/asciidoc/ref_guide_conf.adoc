@@ -780,7 +780,9 @@ See the reference guide for more information <<ref_guide_pc_enhance_dynamic>>
 
 *Resource adaptor config property:* ``EntityListenerFactory``
 
-*Default:* ``default``
+*Default:* ``cdi``
+
+*Possible values:* ``cdi``, ``stateless``
 
 *Description:* A plugin string (see <<ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/cdi/EntityListenerFactory.html[
 org.apache.openjpa.cdi.EntityListenerFactory] type to use at runtime.

@@ -22,6 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.apache.openjpa.cdi.EntityListenerCDIFactory;
+import org.apache.openjpa.cdi.EntityListenerFactory;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openwebbeans.junit5.Cdi;
 import org.junit.jupiter.api.AfterEach;
@@ -101,5 +105,16 @@ public class TestCDIEntityListeners extends SingleEMFTestCase {
             assertEquals(4, CDIBean.getCount());
             em.getTransaction().commit();
         }
+    }
+    
+    @Test
+    void checkEntityListenerCacheInstantializationOnce() {
+    	EntityListenerFactory elf = null;
+    	try (EntityManager em = emf.createEntityManager()) {
+    		elf = getEmf().getConfiguration().getEntityListenerFactory();
+    	}
+    	try (EntityManager em = emf.createEntityManager()) {
+    		assertEquals(elf, getEmf().getConfiguration().getEntityListenerFactory());
+    	}
     }
 }

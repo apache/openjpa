@@ -199,7 +199,7 @@ public class OpenJPAConfigurationImpl
     public StringValue loadScriptSource;
     public BooleanValue specCompliantSchemaGeneration;
     
-    public PluginValue entityListenerFactoryPlugin;
+    public EntityListenerFactoryValue entityListenerFactoryPlugin;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -694,6 +694,7 @@ public class OpenJPAConfigurationImpl
         useTcclForSelectNew.setDefault("false");
         useTcclForSelectNew.set(false);
         
+        addPlugin("EntityListenerFactory", true);
         entityListenerFactoryPlugin = new EntityListenerFactoryValue();
 
         typesWithoutEnhancement = new ClassListValue();
@@ -2260,6 +2261,7 @@ public class OpenJPAConfigurationImpl
     public EntityListenerFactory getEntityListenerFactory() {
     	EntityListenerFactory fac = (EntityListenerFactory) entityListenerFactoryPlugin.get();
     	if (fac == null) {
+    		entityListenerFactoryPlugin.setConfiguration(this);
     		fac = (EntityListenerFactory) entityListenerFactoryPlugin.instantiate(EntityListenerFactory.class, this, false);
     	}
     	return fac;

@@ -57,7 +57,6 @@ public class TestNoCDIEntityListeners extends SingleEMFTestCase {
             
             UUID id = entity.getId();
             assertNotNull(id);
-            
         }
     }
     

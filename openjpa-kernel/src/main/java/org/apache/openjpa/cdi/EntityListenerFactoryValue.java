@@ -18,41 +18,73 @@
  */
 package org.apache.openjpa.cdi;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.Localizer;
 
-public class EntityListenerFactoryValue extends PluginValue {
+public class EntityListenerFactoryValue extends PluginValue implements Configurable {
+	
+	private static final Localizer _loc = Localizer.forPackage(EntityListenerFactoryValue.class);
 	
 	private static final String KEY = "EntityListenerFactory";
 	
-	private static final String DEFAULT_ALIAS = "default";
+	private static final String STATELESS_ALIAS = "stateless";
+	
+	private static final String CDI_ALIAS = "cdi";
+	
+	private static final String CDI_FACTORY_CLASSNAME = "org.apache.openjpa.cdi.EntityListenerCDIFactory";
+
+	private Configuration _conf;
+	
+	private Log _log;
 
 	public EntityListenerFactoryValue() {
-		super(KEY, false);
+		super(KEY, true);
 		String[] aliases = new String[] {
-				DEFAULT_ALIAS, EntityListenerCachedFactory.class.getName()
+				STATELESS_ALIAS, EntityListenerCachedFactory.class.getName(),
+				CDI_ALIAS, CDI_FACTORY_CLASSNAME
 		};
 		setAliases(aliases);
-		setDefault(aliases[0]);
+		setDefault(CDI_ALIAS);
 	}
 	
 	@Override
 	public Object instantiate(Class<?> type, Configuration c, boolean fatal) {
-		if (isBeanManagerAPIAvailable()) {
-			setClassName("org.apache.openjpa.cdi.EntityListenerCDIFactory");
-		} else {
+		Object instance = null;
+		try {
+			instance = super.instantiate(type, c, true);
+		} catch (Throwable t) {
+			if (_log.isTraceEnabled()) {
+				_log.trace(_loc.get("cdi-not-available"));
+			}
 			setClassName(EntityListenerCachedFactory.class.getName());
+			instance = super.instantiate(type, c, true);
 		}
-		return super.instantiate(type, c, fatal);
+		return instance;
 	}
 
-	private boolean isBeanManagerAPIAvailable() {
-		try {
-			// false avoids running static initializers just to check existence
-			Class.forName("jakarta.enterprise.inject.spi.BeanManager", false, EntityListenerCDIFactory.class.getClassLoader());
-			return true;
-		} catch (ClassNotFoundException | LinkageError e) {
-			return false;
+	@Override
+	public void setConfiguration(Configuration conf) {
+		if (conf instanceof OpenJPAConfiguration c) {
+			_conf = c;
+			Value value = _conf.getValue(KEY);
+			if (value != null) {
+				setString(value.getString());
+			}
+			_log = c.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 		}
 	}
+
+	@Override
+	public void startConfiguration() {
+	}
+
+	@Override
+	public void endConfiguration() {
+	}
+	
 }
