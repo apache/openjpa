@@ -170,9 +170,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-        <groupId>org.apache.openwebbeans</groupId>
-        <artifactId>openwebbeans-junit5</artifactId>
-        <scope>test</scope>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+	        <groupId>org.apache.openwebbeans</groupId>
+	        <artifactId>openwebbeans-junit5</artifactId>
+	        <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -18,8 +18,8 @@
  */
 package org.apache.openjpa.cdi;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -27,9 +27,9 @@ import org.apache.openjpa.util.UserException;
 
 public class EntityListenerCachedFactory implements EntityListenerFactory {
 
-	private static final Localizer _loc = Localizer.forPackage(EntityListenerFactoryImpl.class);
+	private static final Localizer _loc = Localizer.forPackage(EntityListenerCachedFactory.class);
 	
-	private Map<Class<?>, EntityListenerWrapper<?>> cache = new HashMap<>();
+	private Map<Class<?>, EntityListenerWrapper<?>> cache = new ConcurrentHashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@Override

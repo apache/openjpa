@@ -73,14 +73,17 @@ public class BeanLifecycleCallbacks
     public void makeCallback(Object obj, Object rel, int eventType) throws Exception {
         Method callback = getCallbackMethod();
         EntityListenerWrapper<?> wrapper = getListenerWrapper();
-        if (!callback.canAccess(wrapper.listener()))
-            callback.setAccessible(true);
-        if (requiresArgument())
-            callback.invoke(wrapper.listener(), new Object[]{ obj, rel });
-        else
-            callback.invoke(wrapper.listener(), new Object[]{ obj });
-        if (!wrapper.cacheable()) {
-        	wrapper.dispose();
+        try {
+	        if (!callback.canAccess(wrapper.listener()))
+	            callback.setAccessible(true);
+	        if (requiresArgument())
+	            callback.invoke(wrapper.listener(), new Object[]{ obj, rel });
+	        else
+	            callback.invoke(wrapper.listener(), new Object[]{ obj });
+        } finally {
+	        if (!wrapper.cacheable()) {
+	        	wrapper.dispose();
+	        }
         }
     }
 

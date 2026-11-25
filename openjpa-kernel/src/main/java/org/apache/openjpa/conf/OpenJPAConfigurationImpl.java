@@ -29,7 +29,7 @@ import java.util.Set;
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.cdi.EntityListenerFactory;
-import org.apache.openjpa.cdi.EntityListenerFactoryImpl;
+import org.apache.openjpa.cdi.EntityListenerFactoryValue;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
@@ -694,11 +694,7 @@ public class OpenJPAConfigurationImpl
         useTcclForSelectNew.setDefault("false");
         useTcclForSelectNew.set(false);
         
-        entityListenerFactoryPlugin = addPlugin("EntityListenerFactory", true);
-        aliases = new String[] {"default", EntityListenerFactoryImpl.class.getName(), };
-        entityListenerFactoryPlugin.setAliases(aliases);
-        entityListenerFactoryPlugin.setDefault("default");
-        entityListenerFactoryPlugin.setClassName(EntityListenerFactoryImpl.class.getName());
+        entityListenerFactoryPlugin = new EntityListenerFactoryValue();
 
         typesWithoutEnhancement = new ClassListValue();
 
@@ -2264,7 +2260,7 @@ public class OpenJPAConfigurationImpl
     public EntityListenerFactory getEntityListenerFactory() {
     	EntityListenerFactory fac = (EntityListenerFactory) entityListenerFactoryPlugin.get();
     	if (fac == null) {
-    		fac = (EntityListenerFactory) entityListenerFactoryPlugin.instantiate(EntityListenerFactory.class, this, true);
+    		fac = (EntityListenerFactory) entityListenerFactoryPlugin.instantiate(EntityListenerFactory.class, this, false);
     	}
     	return fac;
     }

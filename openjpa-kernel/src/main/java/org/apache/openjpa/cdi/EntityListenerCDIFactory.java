@@ -19,9 +19,9 @@
 package org.apache.openjpa.cdi;
 
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -40,17 +40,17 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.InjectionTarget;
 
-public class EntityListenerFactoryImpl implements EntityListenerFactory {
+public class EntityListenerCDIFactory implements EntityListenerFactory {
 	
-	private static final Localizer _loc = Localizer.forPackage(EntityListenerFactoryImpl.class);
+	private static final Localizer _loc = Localizer.forPackage(EntityListenerCDIFactory.class);
 	
 	private static final int NORMAL_BEAN_CHECK_DEPTH = 2;
 
 	private BeanManager beanManager;
 	
-	private Map<Class<?>, EntityListenerWrapper<?>> cache = new HashMap<>();
+	private Map<Class<?>, EntityListenerWrapper<?>> cache = new ConcurrentHashMap<>();
 	
-	public EntityListenerFactoryImpl() {
+	public EntityListenerCDIFactory() {
 		beanManager = lookupBeanManager();
 		if (beanManager == null) {
 			try {
@@ -69,7 +69,7 @@ public class EntityListenerFactoryImpl implements EntityListenerFactory {
 		} else {
 			EntityListenerWrapper<T> wrapper = createWrapper(beanManager, listenerClass);
 			if (wrapper.cacheable()) {
-				cache.put(listenerClass, wrapper);
+				cache.putIfAbsent(listenerClass, wrapper);
 			}
 			return wrapper;
 		}

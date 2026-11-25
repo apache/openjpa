@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.cdi;
 
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
 
 public class EntityListenerFactoryValue extends PluginValue {
@@ -29,10 +30,29 @@ public class EntityListenerFactoryValue extends PluginValue {
 	public EntityListenerFactoryValue() {
 		super(KEY, false);
 		String[] aliases = new String[] {
-				DEFAULT_ALIAS, EntityListenerFactoryImpl.class.getName()
+				DEFAULT_ALIAS, EntityListenerCachedFactory.class.getName()
 		};
 		setAliases(aliases);
 		setDefault(aliases[0]);
 	}
 	
+	@Override
+	public Object instantiate(Class<?> type, Configuration c, boolean fatal) {
+		if (isBeanManagerAPIAvailable()) {
+			setClassName("org.apache.openjpa.cdi.EntityListenerCDIFactory");
+		} else {
+			setClassName(EntityListenerCachedFactory.class.getName());
+		}
+		return super.instantiate(type, c, fatal);
+	}
+
+	private boolean isBeanManagerAPIAvailable() {
+		try {
+			// false avoids running static initializers just to check existence
+			Class.forName("jakarta.enterprise.inject.spi.BeanManager", false, EntityListenerCDIFactory.class.getClassLoader());
+			return true;
+		} catch (ClassNotFoundException | LinkageError e) {
+			return false;
+		}
+	}
 }
