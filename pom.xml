@@ -38,8 +38,9 @@
     <version>4.3.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>17</java.class.version>
-        <java.testclass.version>17</java.testclass.version>
+        <javaVersion>17</javaVersion>
+        <java.class.version>${javaVersion}</java.class.version>
+        <java.testclass.version>${javaVersion}</java.testclass.version>
 
         <doclint>none</doclint>
 
@@ -113,7 +114,7 @@
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
-
+        <spotless-maven-plugin.version>3.10.4</spotless-maven-plugin.version>
     </properties>
 
     <licenses>
@@ -2063,6 +2064,22 @@
                     <artifactId>openjpa-maven-plugin</artifactId>
                     <version>${project.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless-maven-plugin.version}</version>
+                    <configuration>
+                        <java>
+                            <eclipse>
+                                <version>${eclipse-jdt-formatter.version}</version>
+                                <file>${project.rootDirectory}/dev-tools/formatter.xml</file>
+                            </eclipse>
+                            <shortenFullyQualifiedTypes />
+                            <importOrder />
+                            <removeUnusedImports />
+                        </java>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -2132,6 +2149,10 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
@@ -2143,10 +2164,10 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.3.9,)</version>
+                                    <version>[3.10.0,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>[11,)</version>
+                                    <version>[${javaVersion},)</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
