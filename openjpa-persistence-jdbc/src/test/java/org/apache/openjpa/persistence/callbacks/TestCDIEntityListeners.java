@@ -22,10 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.apache.openjpa.cdi.EntityListenerCDIFactory;
 import org.apache.openjpa.cdi.EntityListenerFactory;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openwebbeans.junit5.Cdi;
 import org.junit.jupiter.api.AfterEach;
