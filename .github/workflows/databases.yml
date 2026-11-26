@@ -91,9 +91,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -128,9 +126,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -165,9 +161,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -200,9 +194,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -232,9 +224,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -269,9 +259,7 @@ jobs:
           distribution: 'zulu'
           java-version: 21
       - name: Setup Maven
-        uses: batmahdi/setup-maven@v3
-        with:
-          maven-version: '3.10.2'
+        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
