@@ -413,10 +413,13 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 if ((broker != null) && (!broker.isClosed()))
                     broker.close();
             }
-
-            if(_conf.metaDataRepositoryAvailable()) {
+            
+            if (_conf.isEntityListenerFactoryAvailable()) {
             	// Clean up entity listeners from this BrokerFactory
             	_conf.getEntityListenerFactory().dispose();
+            }
+            
+            if (_conf.metaDataRepositoryAvailable()) {
                 // remove metadata repository from listener list
                 PCRegistry.removeRegisterClassListener
                     (_conf.getMetaDataRepositoryInstance());

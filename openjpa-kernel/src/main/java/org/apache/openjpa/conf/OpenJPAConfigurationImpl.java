@@ -2258,6 +2258,11 @@ public class OpenJPAConfigurationImpl
     }
     
     @Override
+    public boolean isEntityListenerFactoryAvailable() {
+    	return entityListenerFactoryPlugin.get() != null;
+    }
+    
+    @Override
     public EntityListenerFactory getEntityListenerFactory() {
     	EntityListenerFactory fac = (EntityListenerFactory) entityListenerFactoryPlugin.get();
     	if (fac == null) {

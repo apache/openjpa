@@ -2148,5 +2148,12 @@ public interface OpenJPAConfiguration
 	 */
 	EntityListenerFactory getEntityListenerFactory();
 	
+	/**
+	 * Indicates if the entity listener factory is available
+	 * 
+	 * @return true, if a entity listener factory was initialized
+	 */
+	boolean isEntityListenerFactoryAvailable();
+	
 }
 
