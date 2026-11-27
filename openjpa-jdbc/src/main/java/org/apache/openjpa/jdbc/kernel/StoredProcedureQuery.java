@@ -174,6 +174,11 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             boolean resetAutoCommit = false;
             try {
                 DBDictionary dict = _store.getDBDictionary();
+                // inside a transaction, run the procedure on the connection of the datastore
+                // transaction, as native and bulk updates do, so that commit and rollback apply to it
+                if (_store.getContext().isActive()) {
+                    _store.getContext().beginStore();
+                }
                 conn = _store.getConnection();
 
                 // PostgreSQL requires auto-commit off for procedures

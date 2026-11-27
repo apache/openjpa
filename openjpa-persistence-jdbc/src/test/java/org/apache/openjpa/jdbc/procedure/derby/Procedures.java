@@ -21,6 +21,8 @@ package org.apache.openjpa.jdbc.procedure.derby;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -45,6 +47,17 @@ public final class Procedures {
 
     public static void inout(int[] p) {
         p[0] = p[0] * 2;
+    }
+
+    /**
+     * Deletes the marked rows of SPQ_TX_ROW through the connection of the caller
+     * and returns their number.
+     */
+    public static void deleteMarked(long[] deleted) throws SQLException {
+        try (Connection c = DriverManager.getConnection("jdbc:default:connection");
+             Statement s = c.createStatement()) {
+            deleted[0] = s.executeUpdate("DELETE FROM SPQ_TX_ROW WHERE MARKED = 1");
+        }
     }
 
     public static void mapping(ResultSet[] r0, ResultSet[] r1) {
