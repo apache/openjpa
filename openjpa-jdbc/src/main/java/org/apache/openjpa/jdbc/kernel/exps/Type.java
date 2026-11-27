@@ -48,9 +48,13 @@ class Type
             _disc = ((ClassMapping) getMetaData()).getDiscriminator();
     }
 
+    /**
+     * Joins into the related entity of a single-valued path, whose table
+     * holds the discriminator.
+     */
     @Override
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
-        return initializeValue(sel, ctx, flags);
+        return initializeValue(sel, ctx, flags | JOIN_REL);
     }
 
     @Override
@@ -59,16 +63,23 @@ class Type
         Object type = null;
         if (_disc != null && _disc.getColumns().length > 0) {
             type = res.getObject(_disc.getColumns()[0], null, state.joins);
+            if (type == null) {
+                return null;
+            }
             ClassMapping sup = (ClassMapping) getMetaData();
+            if (type.equals(_disc.getValue())) {
+                return sup.getDescribedType();
+            }
             ClassMapping[] subs = sup.getMappedPCSubclassMappings();
             for (ClassMapping sub : subs) {
-                if (sub.getDiscriminator().getValue().equals(type))
+                if (type.equals(sub.getDiscriminator().getValue())) {
                     return sub.getDescribedType();
+                }
             }
         }
         else
             type = getValue().load(ctx, state, res);
-        return type.getClass();
+        return (type == null) ? null : type.getClass();
     }
 
     @Override

@@ -27,7 +27,8 @@ import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.Entity2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TestBulkUpdate extends AbstractTestCase {
 
@@ -41,13 +42,8 @@ public class TestBulkUpdate extends AbstractTestCase {
         deleteAll(Entity2.class);
     }
 
-    @Test
-    void simpleBulkUpdate() {
-        for (int i = 1; i < 5; i++)
-            simpleBulkUpdate(i);
-    }
-
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 3, 4 })
     void simpleBulkUpdate(int num) {
         deleteAll(Entity1.class);
 
