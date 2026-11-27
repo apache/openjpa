@@ -26,9 +26,13 @@ import jakarta.persistence.ParameterMode;
 import jakarta.persistence.StoredProcedureQuery;
 
 import org.apache.openjpa.jdbc.procedure.derby.Procedures;
+import org.apache.openjpa.jdbc.sql.AbstractMySQLDictionary;
+import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
-import org.apache.openjpa.persistence.test.DatabasePlatform;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,27 +40,63 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests that the changes of a stored procedure executed in an optimistic
  * transaction are committed and rolled back with that transaction
- * (OPENJPA-3100). The procedure has an OUT parameter, which made the
- * connection it ran on leave auto-commit mode.
+ * (OPENJPA-3100). The procedure deletes rows and returns their number in an
+ * OUT parameter, which made the connection it ran on leave auto-commit mode.
  */
-@DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 class TestStoredProcedureTransaction extends SingleEMFTestCase {
+
+    private static final String PROCEDURE = "SPQ_DELETE_MARKED";
 
     @Override
     protected boolean isSupported(DBDictionary dict) {
-        return dict instanceof DerbyDictionary;
+        return createProcedureSQL(dict) != null;
     }
 
     @BeforeEach
     public void setUp() throws Exception {
         setUp("openjpa.Optimistic", "true");
-        exec("DROP PROCEDURE SPQ_DELETE_MARKED", true);
-        exec("CREATE PROCEDURE SPQ_DELETE_MARKED(OUT DELETED BIGINT) "
-            + "PARAMETER STYLE JAVA LANGUAGE JAVA MODIFIES SQL DATA EXTERNAL NAME "
-            + "'" + Procedures.class.getName() + ".deleteMarked'", false);
+        DBDictionary dict = getDBDictionary();
+        exec("DROP PROCEDURE " + PROCEDURE, true);
         exec("DROP TABLE SPQ_TX_ROW", true);
         exec("CREATE TABLE SPQ_TX_ROW (ID INTEGER NOT NULL PRIMARY KEY, MARKED SMALLINT NOT NULL)", false);
-        exec("INSERT INTO SPQ_TX_ROW VALUES (1, 1), (2, 1), (3, 0)", false);
+        exec(createProcedureSQL(dict), false);
+        exec("INSERT INTO SPQ_TX_ROW (ID, MARKED) VALUES (1, 1)", false);
+        exec("INSERT INTO SPQ_TX_ROW (ID, MARKED) VALUES (2, 1)", false);
+        exec("INSERT INTO SPQ_TX_ROW (ID, MARKED) VALUES (3, 0)", false);
+    }
+
+    /**
+     * Returns the statement that creates the procedure on the given database,
+     * or null if the test does not support the database.
+     */
+    private static String createProcedureSQL(DBDictionary dict) {
+        String delete = "DELETE FROM SPQ_TX_ROW WHERE MARKED = 1";
+        if (dict instanceof DerbyDictionary) {
+            return "CREATE PROCEDURE " + PROCEDURE + "(OUT DELETED BIGINT) "
+                + "PARAMETER STYLE JAVA LANGUAGE JAVA MODIFIES SQL DATA EXTERNAL NAME "
+                + "'" + Procedures.class.getName() + ".deleteMarked'";
+        }
+        if (dict instanceof PostgresDictionary) {
+            return "CREATE PROCEDURE " + PROCEDURE + "(OUT DELETED BIGINT) LANGUAGE plpgsql AS $$ BEGIN "
+                + delete + "; GET DIAGNOSTICS DELETED = ROW_COUNT; END $$";
+        }
+        if (dict instanceof AbstractMySQLDictionary) {
+            return "CREATE PROCEDURE " + PROCEDURE + "(OUT DELETED BIGINT) BEGIN "
+                + delete + "; SET DELETED = ROW_COUNT(); END";
+        }
+        if (dict instanceof AbstractSQLServerDictionary) {
+            return "CREATE PROCEDURE " + PROCEDURE + " @DELETED BIGINT OUTPUT AS BEGIN SET NOCOUNT ON; "
+                + delete + "; SET @DELETED = @@ROWCOUNT; END";
+        }
+        if (dict instanceof OracleDictionary) {
+            return "CREATE OR REPLACE PROCEDURE " + PROCEDURE + "(DELETED OUT NUMBER) AS BEGIN "
+                + delete + "; DELETED := SQL%ROWCOUNT; END;";
+        }
+        if (dict instanceof HSQLDictionary) {
+            return "CREATE PROCEDURE " + PROCEDURE + "(OUT DELETED BIGINT) MODIFIES SQL DATA BEGIN ATOMIC "
+                + delete + "; GET DIAGNOSTICS DELETED = ROW_COUNT; END";
+        }
+        return null;
     }
 
     @Test
@@ -82,7 +122,7 @@ class TestStoredProcedureTransaction extends SingleEMFTestCase {
     }
 
     private long deleteMarked(EntityManager em) {
-        StoredProcedureQuery proc = em.createStoredProcedureQuery("SPQ_DELETE_MARKED");
+        StoredProcedureQuery proc = em.createStoredProcedureQuery(PROCEDURE);
         proc.registerStoredProcedureParameter(1, Long.class, ParameterMode.OUT);
         proc.execute();
         return ((Number) proc.getOutputParameterValue(1)).longValue();
