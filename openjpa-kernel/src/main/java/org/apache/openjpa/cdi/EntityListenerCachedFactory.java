@@ -21,11 +21,13 @@ package org.apache.openjpa.cdi;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.openjpa.lib.conf.GenericConfigurable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.UserException;
 
-public class EntityListenerCachedFactory implements EntityListenerFactory {
+public class EntityListenerCachedFactory implements EntityListenerFactory, GenericConfigurable {
 
 	private static final Localizer _loc = Localizer.forPackage(EntityListenerCachedFactory.class);
 	
@@ -44,6 +46,12 @@ public class EntityListenerCachedFactory implements EntityListenerFactory {
 		} catch (Throwable t) {
 			throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
 		}
+	}
+
+	@Override
+	public void setInto(Options opts) {
+		// drops any invalid configurations when CDI is not available in runtime
+		opts.clear();
 	}
 
 }
