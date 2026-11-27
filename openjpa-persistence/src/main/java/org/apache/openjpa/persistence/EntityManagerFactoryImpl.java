@@ -72,7 +72,6 @@ import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a

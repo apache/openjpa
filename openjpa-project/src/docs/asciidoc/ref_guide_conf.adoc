@@ -771,6 +771,23 @@ The agent is loaded through the Attach API of the `jdk.attach` module, which req
 
 See the reference guide for more information <<ref_guide_pc_enhance_dynamic>>
 
+[[openjpa.EntityListenerFactory]]
+===== openjpa.EntityListenerFactory
+
+*Property name:* ``openjpa.EntityListenerFactory``
+
+*Configuration API:* link:../../apidocs/org/apache/openjpa/conf/OpenJPAConfiguration.html#getEntityListenerFactory()[org.apache.openjpa.conf.OpenJPAConfiguration.getEntityListenerFactory]
+
+*Resource adaptor config property:* ``EntityListenerFactory``
+
+*Default:* ``stateless``
+
+*Possible values:* ``stateless``, ``cdi``
+
+*Description:* A plugin string (see <<ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/cdi/EntityListenerFactory.html[
+org.apache.openjpa.cdi.EntityListenerFactory] type to use at runtime.
+See <<jpa_overview_entity_listeners_cdi>> for details.
+
 [[openjpa.FetchBatchSize]]
 ===== openjpa.FetchBatchSize
 (((large result sets , FetchBatchSize)))

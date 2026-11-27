@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.openjpa.audit.Auditor;
+import org.apache.openjpa.cdi.EntityListenerFactory;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
@@ -715,7 +716,7 @@ public interface OpenJPAConfiguration
      * @since 0.3.0
      */
     void setMetaDataRepository(MetaDataRepository mdRepos);
-
+    
     /**
      * The user name for the data store connection.
      */
@@ -2138,5 +2139,21 @@ public interface OpenJPAConfiguration
      * @since 3.1.1
      */
     void setTypesWithoutEnhancement(Collection<Class<?>> typesWithoutEnhancement);
+
+	/**
+	 * Returns the entity listener factory of this configuration
+	 * 
+	 * @return
+	 * @since 4.3.0
+	 */
+	EntityListenerFactory getEntityListenerFactory();
+	
+	/**
+	 * Indicates if the entity listener factory is available
+	 * 
+	 * @return true, if a entity listener factory was initialized
+	 */
+	boolean isEntityListenerFactoryAvailable();
+	
 }
 

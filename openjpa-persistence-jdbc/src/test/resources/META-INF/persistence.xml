@@ -112,6 +112,14 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="cdi-listener-pu">
+        <class>org.apache.openjpa.persistence.callbacks.CDIListenedEntity</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="msclistener-pu">
         <class>org.apache.openjpa.persistence.callbacks.MSCListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.EntityListenerMappedSuperClass</class>

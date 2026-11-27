@@ -23,73 +23,81 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.cdi.EntityListenerCachedFactory;
+import org.apache.openjpa.cdi.EntityListenerFactory;
+import org.apache.openjpa.cdi.EntityListenerWrapper;
 
 /**
- * Performs a callback method on a cached bean instance.
+ * Performs a callback method on a entity listener factory provided bean instance.
  *
  * @author Steve Kim
  */
 public class BeanLifecycleCallbacks
     extends MethodLifecycleCallbacks {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (BeanLifecycleCallbacks.class);
-
-    private transient Object _listener;
-
+    private final Class<?> listenerClass;
+    
+    private final EntityListenerFactory factory;
+    
     /**
      * Constructor. Make the callback on an instance of the given type.
      *
      * @param arg whether another argument is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg,
-        Class<?> type) {
-        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class,
-            type } : new Class[]{ type }), arg);
+    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg, Class<?> type) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, null);
+    }
+
+    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg, Class<?> type, EntityListenerFactory factory) {
+        this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class, type } : new Class[]{ type }), arg, factory);
     }
 
     /**
      * Constructor. Make the callback on an instance of the given type.
      */
     public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg) {
-        super(method, arg);
-        _listener = newListener(cls);
+        this(cls, method, arg, null);
+    }
+    
+    public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg, EntityListenerFactory factory) {
+    	super(method, arg);
+    	listenerClass = cls;
+    	this.factory = factory != null ? factory : new EntityListenerCachedFactory();
     }
 
-    private Object newListener(Class<?> cls) {
-        try {
-            return J2DoPrivHelper.newInstance(cls);
-        } catch (Throwable t) {
-            throw new UserException(_loc.get("bean-constructor", cls.getName()), t);
-        }
+    private EntityListenerWrapper<?> getListenerWrapper() {
+    	return factory.getWrapper(listenerClass);
     }
 
     @Override
     public void makeCallback(Object obj, Object rel, int eventType) throws Exception {
         Method callback = getCallbackMethod();
-        if (!callback.canAccess(_listener))
-            callback.setAccessible(true);
-        if (requiresArgument())
-            callback.invoke(_listener, new Object[]{ obj, rel });
-        else
-            callback.invoke(_listener, new Object[]{ obj });
+        EntityListenerWrapper<?> wrapper = getListenerWrapper();
+        try {
+	        if (!callback.canAccess(wrapper.listener()))
+	            callback.setAccessible(true);
+	        if (requiresArgument())
+	            callback.invoke(wrapper.listener(), new Object[]{ obj, rel });
+	        else
+	            callback.invoke(wrapper.listener(), new Object[]{ obj });
+        } finally {
+	        if (!wrapper.cacheable()) {
+	        	wrapper.dispose();
+	        }
+        }
     }
 
     @Override
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         super.readExternal(in);
-        Class<?> cls = (Class<?>) in.readObject();
-        _listener = newListener(cls);
     }
 
     @Override
     public void writeExternal(ObjectOutput out)
         throws IOException {
         super.writeExternal(out);
-        out.writeObject(_listener.getClass());
+        out.writeObject(listenerClass);
     }
+    
 }

@@ -33,12 +33,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import jakarta.transaction.Status;
-import jakarta.transaction.Synchronization;
-import jakarta.transaction.Transaction;
-import jakarta.transaction.TransactionManager;
-
-import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -59,6 +53,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.lib.util.collections.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.collections.MapBackedSet;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.MetaDataModes;
@@ -68,6 +63,11 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
+
+import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 
 /**
  * Abstract implementation of the {@link BrokerFactory}
@@ -116,7 +116,7 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
     // key under which this instance can be stored in the broker pool
     // and later identified
     private Object _poolKey;
-
+    
     /**
      * Return an internal factory pool key for the given configuration.
      *
@@ -413,8 +413,13 @@ public abstract class AbstractBrokerFactory implements BrokerFactory {
                 if ((broker != null) && (!broker.isClosed()))
                     broker.close();
             }
-
-            if(_conf.metaDataRepositoryAvailable()) {
+            
+            if (_conf.isEntityListenerFactoryAvailable()) {
+            	// Clean up entity listeners from this BrokerFactory
+            	_conf.getEntityListenerFactory().dispose();
+            }
+            
+            if (_conf.metaDataRepositoryAvailable()) {
                 // remove metadata repository from listener list
                 PCRegistry.removeRegisterClassListener
                     (_conf.getMetaDataRepositoryInstance());

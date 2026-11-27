@@ -653,4 +653,5 @@ public class LifecycleEventManager
 			return types;
 		}
 	}
+
 }
