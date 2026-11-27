@@ -101,22 +101,22 @@ class TestStoredProcedureTransaction extends SingleEMFTestCase {
 
     @Test
     void changesAreCommittedWithTheTransaction() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        assertEquals(2L, deleteMarked(em));
-        em.getTransaction().commit();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            assertEquals(2L, deleteMarked(em));
+            em.getTransaction().commit();
+        }
 
         assertEquals(1, countRows());
     }
 
     @Test
     void changesAreRolledBackWithTheTransaction() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        assertEquals(2L, deleteMarked(em));
-        em.getTransaction().rollback();
-        em.close();
+        try (EntityManager em = emf.createEntityManager()) {
+            em.getTransaction().begin();
+            assertEquals(2L, deleteMarked(em));
+            em.getTransaction().rollback();
+        }
 
         assertEquals(3, countRows());
     }
@@ -129,30 +129,26 @@ class TestStoredProcedureTransaction extends SingleEMFTestCase {
     }
 
     private int countRows() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return ((Number) em.createNativeQuery("SELECT COUNT(*) FROM SPQ_TX_ROW").getSingleResult()).intValue();
-        } finally {
-            em.close();
         }
     }
 
     private void exec(String sql, boolean ignoreExceptions) throws Exception {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        try {
-            em.createNativeQuery(sql).executeUpdate();
-            tx.commit();
-        } catch (Exception e) { // DROP of an object that does not exist
-            if (tx.isActive()) {
-                tx.rollback();
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
+            try {
+                em.createNativeQuery(sql).executeUpdate();
+                tx.commit();
+            } catch (Exception e) { // DROP of an object that does not exist
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+                if (!ignoreExceptions) {
+                    throw e;
+                }
             }
-            if (!ignoreExceptions) {
-                throw e;
-            }
-        } finally {
-            em.close();
         }
     }
 }
