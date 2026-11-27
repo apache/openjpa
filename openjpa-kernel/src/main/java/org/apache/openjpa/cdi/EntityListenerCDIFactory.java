@@ -50,6 +50,8 @@ public class EntityListenerCDIFactory implements EntityListenerFactory {
 	
 	private Map<Class<?>, EntityListenerWrapper<?>> cache = new ConcurrentHashMap<>();
 	
+	private boolean checkCacheability = true;
+	
 	public EntityListenerCDIFactory() {
 		beanManager = lookupBeanManager();
 		if (beanManager == null) {
@@ -82,7 +84,15 @@ public class EntityListenerCDIFactory implements EntityListenerFactory {
 		});
 		cache.clear();
 	}
-		
+	
+	public boolean isCheckCacheability() {
+		return checkCacheability;
+	}
+
+	public void setCheckCacheability(boolean checkCacheability) {
+		this.checkCacheability = checkCacheability;
+	}
+
 	private <T> EntityListenerWrapper<T> createWrapper(BeanManager bm, Class<T> cls) {
 		return bm == null ? createNonContextualWrapper(cls) : createContextualWrapper(bm, cls); 
 	}
@@ -107,7 +117,7 @@ public class EntityListenerCDIFactory implements EntityListenerFactory {
 			instance = target.produce(creationalContext);
 			target.inject(instance, creationalContext);
 			target.postConstruct(instance);
-			boolean cacheable = isCacheable(target);
+			boolean cacheable = checkCacheability ? isCacheable(target) : true;
 			final EntityListenerWrapper<T> wrapper = new CDIEntityListenerWrapper<>(instance, target, creationalContext, cacheable);
 			return wrapper;
 		} catch (Throwable t) {
