@@ -49,7 +49,7 @@ public class EntityListenerFactoryValue extends PluginValue implements Configura
 				CDI_ALIAS, CDI_FACTORY_CLASSNAME
 		};
 		setAliases(aliases);
-		setDefault(CDI_ALIAS);
+		setDefault(STATELESS_ALIAS);
 	}
 	
 	@Override

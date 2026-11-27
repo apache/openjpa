@@ -28,12 +28,11 @@
 
 [[jpa_4.3_entity_listeners]]
 ==== Entity listeners
-As required by Jakarta API 3.2, entity listeners will receive CDI injection when available in runtime. As the specification does not clarifies how to cache
-the created listeners, entity listeners in which all @NormalScoped injection points will be cached, as will be cached beans where injection points are Instance<T> beans.
+As required by Jakarta API 3.2, entity listeners will receive CDI injection when available in runtime and property ``openjpa.EntityListenerFactory`` is set to ``cdi``.
+
+ As the specification does not clarifies how to cache the created listeners, entity listeners in which all @NormalScoped injection points will be cached, as will be cached beans where injection points are Instance<T> beans.
 In the remaining cases, the listener will be created and disposed for each lifecycle callback cycle.
 Non-CDI injected entity listeners will keep previous behavior and will be cached at startup of the container.
-
-If you want to keep previous behaviour also in CDI enviroments, set ``openjpa.EntityListenerFactory`` property to ``stateless``. 
 
 [[jpa_4.2]]
 == OpenJPA 4.2.0

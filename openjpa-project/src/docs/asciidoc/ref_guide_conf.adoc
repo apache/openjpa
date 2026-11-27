@@ -780,13 +780,13 @@ See the reference guide for more information <<ref_guide_pc_enhance_dynamic>>
 
 *Resource adaptor config property:* ``EntityListenerFactory``
 
-*Default:* ``cdi``
+*Default:* ``stateless``
 
-*Possible values:* ``cdi``, ``stateless``
+*Possible values:* ``stateless``, ``cdi``
 
 *Description:* A plugin string (see <<ref_guide_conf_plugins>>) describing the link:../../apidocs/org/apache/openjpa/cdi/EntityListenerFactory.html[
 org.apache.openjpa.cdi.EntityListenerFactory] type to use at runtime.
-See <<ref_guide_runtime_broker_extension>> on for details.
+See <<jpa_overview_entity_listeners_cdi>> for details.
 
 [[openjpa.FetchBatchSize]]
 ===== openjpa.FetchBatchSize

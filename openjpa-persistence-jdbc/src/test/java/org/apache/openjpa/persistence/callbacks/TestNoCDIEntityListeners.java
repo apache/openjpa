@@ -34,7 +34,7 @@ public class TestNoCDIEntityListeners extends SingleEMFTestCase {
 	
     @BeforeEach
     public void setUp() {
-        setUp(CLEAR_TABLES);
+        setUp(CLEAR_TABLES, "openjpa.EntityListenerFactory", "cdi");
         CDIBean.reset();
     }
 

@@ -32,14 +32,14 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 
 @Cdi(disableDiscovery = true, classes = CDIBean.class)
-public class TestDisabledCDIEntityListeners extends SingleEMFTestCase {
+public class TestDefaultCDIEnvironmentEntityListeners extends SingleEMFTestCase {
 	
 	@Inject
 	private CDIBean bean;
 
     @BeforeEach
     public void setUp() {
-        setUp(CLEAR_TABLES, "openjpa.EntityListenerFactory", "stateless");
+        setUp(CLEAR_TABLES);
         CDIBean.reset();
     }
     

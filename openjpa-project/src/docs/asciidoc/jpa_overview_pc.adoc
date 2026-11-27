@@ -600,6 +600,8 @@ Entity listeners, when called in CDI managed environments, may have contextual b
 OpenJPA implements that keeping a cache of entity listeners that have ``@NormalScoped`` CDI beans or, when applicable, when the injected fields are ``Instance<?>``s.
 ``EntityListener``'s with non-``@NormalScoped`` injected beans are created and disposed for each lifecycle call, so library clients should consider the corresponding performance penalty when designing their listeners.
 
+Due backwards compatibility, these feature is *not* enabled by default. Please add property ``openjpa.EntityListenerFactory`` with value ``cdi`` to activate it.
+
 
 [[jpa_overview_pc_conclusion]]
 ==== Conclusions
