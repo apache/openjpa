@@ -690,13 +690,24 @@ public class PCPath extends CandidatePath implements JDBCPath {
         pstate.joins.setJoinContext(null);
 
         if (_actions == null) {
-            String subqAlias = findSubqAlias(sel);
-            pstate.joins = pstate.joins.setSubselect(subqAlias);
-            pstate.joins.setCorrelatedVariable(_schemaAlias);
+            correlateWithSubquery(sel, pstate);
             checkObjectPathInheritanceTypeJoined(pstate);
+        } else if (fromParentRootInSubselect && !isCorrelatedPath) {
+            correlateWithSubquery(sel, pstate);
         }
 
         return pstate;
+    }
+
+    /**
+     * Correlate the given path state with the enclosing subquery which
+     * declares the schema alias of this path, if any, so that this path uses
+     * the alias of the root of that subquery.
+     */
+    private void correlateWithSubquery(Select sel, PathExpState pstate) {
+        String subqAlias = findSubqAlias(sel);
+        pstate.joins = pstate.joins.setSubselect(subqAlias);
+        pstate.joins.setCorrelatedVariable(_schemaAlias);
     }
 
     private String findSubqAlias(Select sel) {

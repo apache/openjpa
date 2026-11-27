@@ -2265,16 +2265,32 @@ public class SelectImpl
             i = sel.findAlias(table, key);  // find in parent and in myself
         else
             i = sel.getAlias(table, key); // find in myself
+        boolean otherContext = ctx != null && ctx != ctx();
+        if (i == null && otherContext) {
+            i = sel.getSubqueryRootAlias(table, key, ctx);
+        }
         if (i != null)
             return i;
 
         if (create) { // create here
             i = sel.createAlias(table, key);
-        } else if (ctx != null && ctx != ctx()) { // create in other select
+        } else if (otherContext) { // create in other select
             i = ((SelectImpl)ctx.getSelect()).createAlias(table, key);
         }
 
         return i;
+    }
+
+    /**
+     * Return the alias of the root of the subquery of the given context for
+     * the given table, when the given key has no path, else null. The root of
+     * a subquery is aliased under the candidate alias of that subquery as path.
+     */
+    private Integer getSubqueryRootAlias(Table table, Object key, Context ctx) {
+        if (ctx.subquery == null || key instanceof Key) {
+            return null;
+        }
+        return getAlias(table, new Key(ctx.subquery.getCandidateAlias(), key));
     }
 
     private boolean isPathInThisContext(PathJoins pj) {
