@@ -90,8 +90,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -125,8 +123,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -160,8 +156,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -193,8 +187,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -223,8 +215,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:
@@ -258,8 +248,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 21
-      - name: Setup Maven
-        run: bash .github/scripts/setup-maven.sh 3.10.2
       - name: 'Cache Maven packages'
         uses: actions/cache@v6.1.0
         with:

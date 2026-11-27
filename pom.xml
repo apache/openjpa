@@ -114,7 +114,7 @@
         <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
         <jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
-        <spotless-maven-plugin.version>3.10.4</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>3.12.0</spotless-maven-plugin.version>
     </properties>
 
     <licenses>
@@ -2065,18 +2065,54 @@
                     <version>${project.version}</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <configuration>
+                        <failsOnError>true</failsOnError>
+                        <consoleOutput>true</consoleOutput>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <excludeGeneratedSources>true</excludeGeneratedSources>
+                        <excludes>**/*_.java</excludes>
+                        <logViolationsToConsole>true</logViolationsToConsole>
+                        <checkstyleRules>
+                            <module name="Checker">
+                                <module name="TreeWalker">
+                                    <module name="RegexpSinglelineJava">
+                                        <property name="format" value="System\.(out|err)\.print(ln)?\(" />
+                                        <property name="ignoreComments" value="true" />
+                                    </module>
+                                    <module name="SuppressionCommentFilter">
+                                        <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS" />
+                                        <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
+                                    </module>
+                                    <module name="NeedBraces"/>
+                                </module>
+
+                                <!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
+                                <module name="SuppressionFilter">
+                                    <property name="file" value="${checkstyle.suppressions.location}" />
+                                    <property name="optional" value="true" />
+                                </module>
+                            </module>
+                        </checkstyleRules>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>com.diffplug.spotless</groupId>
                     <artifactId>spotless-maven-plugin</artifactId>
                     <version>${spotless-maven-plugin.version}</version>
                     <configuration>
                         <java>
-                            <eclipse>
-                                <version>${eclipse-jdt-formatter.version}</version>
-                                <file>${project.rootDirectory}/dev-tools/formatter.xml</file>
-                            </eclipse>
                             <shortenFullyQualifiedTypes />
                             <importOrder />
                             <removeUnusedImports />
+                            <cleanthat>
+                                <sourceJdk>${javaVersion}</sourceJdk>
+                                <includeDraft>false</includeDraft>
+                            </cleanthat>
+                            <palantirJavaFormat />
+                            <trimTrailingWhitespace />
+                            <endWithNewline />
                         </java>
                     </configuration>
                 </plugin>
@@ -2113,38 +2149,6 @@
                         <goals>
                             <goal>checkstyle</goal>
                         </goals>
-                        <configuration>
-                            <failsOnError>true</failsOnError>
-                            <consoleOutput>true</consoleOutput>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <excludeGeneratedSources>true</excludeGeneratedSources>
-                            <excludes>**/*_.java</excludes>
-                            <logViolationsToConsole>true</logViolationsToConsole>
-                            <checkstyleRules>
-                                <module name="Checker">
-                                    <module name="NewlineAtEndOfFile" />
-                                    <module name="LineLength">
-                                        <property name="max" value="150" />
-                                    </module>
-                                    <module name="TreeWalker">
-                                        <module name="RegexpSinglelineJava">
-                                            <property name="format" value="System\.(out|err)\.print(ln)?\(" />
-                                            <property name="ignoreComments" value="true" />
-                                        </module>
-                                        <module name="SuppressionCommentFilter">
-                                            <property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS" />
-                                            <property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
-                                        </module>
-                                    </module>
-
-                                    <!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
-                                    <module name="SuppressionFilter">
-                                        <property name="file" value="${checkstyle.suppressions.location}" />
-                                        <property name="optional" value="true" />
-                                    </module>
-                                </module>
-                            </checkstyleRules>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -2164,7 +2168,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[3.10.0,)</version>
+                                    <version>[3.3.9,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[${javaVersion},)</version>
