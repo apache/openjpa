@@ -200,6 +200,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue specCompliantSchemaGeneration;
     
     public EntityListenerFactoryValue entityListenerFactoryPlugin;
+    public ObjectValue beanManager;
 
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -2270,6 +2271,18 @@ public class OpenJPAConfigurationImpl
     		fac = (EntityListenerFactory) entityListenerFactoryPlugin.instantiate(EntityListenerFactory.class, this, false);
     	}
     	return fac;
+    }
+
+    @Override
+    public Object getBeanManagerInstance() {
+        return beanManager == null ? null : beanManager.get();
+    }
+
+    @Override
+    public void setBeanManager(Object beanManager) {
+        if (this.beanManager != null) {
+            this.beanManager.set(beanManager);
+        }
     }
 
     @Override

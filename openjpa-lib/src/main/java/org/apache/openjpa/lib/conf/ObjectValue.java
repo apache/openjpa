@@ -68,7 +68,8 @@ public class ObjectValue extends Value {
         if (!derived) assertChangeable();
         Object oldValue = _value;
         _value = obj;
-        if (!derived && !Objects.equals(obj, oldValue)) {
+        // compare on the old value, so a newly set object is not called
+        if (!derived && !Objects.equals(oldValue, obj)) {
             objectChanged();
             valueChanged();
         }

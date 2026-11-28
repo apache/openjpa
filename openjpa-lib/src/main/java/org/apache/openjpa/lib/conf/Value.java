@@ -407,7 +407,10 @@ public abstract class Value implements Cloneable {
     }
 
     boolean isDefault(Object val) {
-    	return val != null && val.toString().equals(getDefault());
+        // no call on the given object without a default, it may be a container
+        // proxy that must not be used before the first real call
+        String def = getDefault();
+        return val != null && def != null && def.equals(val.toString());
     }
 
     /**

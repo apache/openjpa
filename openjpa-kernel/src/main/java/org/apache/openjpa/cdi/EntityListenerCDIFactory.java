@@ -27,6 +27,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.conf.Configurable;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
@@ -40,7 +43,7 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.InjectionTarget;
 
-public class EntityListenerCDIFactory implements EntityListenerFactory {
+public class EntityListenerCDIFactory implements EntityListenerFactory, Configurable {
 	
 	private static final Localizer _loc = Localizer.forPackage(EntityListenerCDIFactory.class);
 	
@@ -51,8 +54,36 @@ public class EntityListenerCDIFactory implements EntityListenerFactory {
 	private Map<Class<?>, EntityListenerWrapper<?>> cache = new ConcurrentHashMap<>();
 	
 	private boolean checkCacheability = true;
-	
-	public EntityListenerCDIFactory() {
+
+	private Object passedBeanManager;
+
+	@Override
+	public void setConfiguration(Configuration conf) {
+		if (conf instanceof OpenJPAConfiguration c) {
+			passedBeanManager = c.getBeanManagerInstance();
+		}
+	}
+
+	@Override
+	public void startConfiguration() {
+	}
+
+	/**
+	 * Resolves the BeanManager. The one passed under jakarta.persistence.bean.manager
+	 * is used when set. It is not called here, as a container may pass a proxy that
+	 * resolves the real BeanManager on first use. Otherwise it is looked up in JNDI
+	 * and then from {@link CDI#current()}.
+	 */
+	@Override
+	public void endConfiguration() {
+		if (passedBeanManager != null) {
+			if (!(passedBeanManager instanceof BeanManager bm)) {
+				throw new IllegalStateException(_loc.get("bean-manager-invalid",
+					passedBeanManager.getClass().getName()).getMessage());
+			}
+			beanManager = bm;
+			return;
+		}
 		beanManager = lookupBeanManager();
 		if (beanManager == null) {
 			try {

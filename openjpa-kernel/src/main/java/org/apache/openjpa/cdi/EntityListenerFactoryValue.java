@@ -39,8 +39,6 @@ public class EntityListenerFactoryValue extends PluginValue implements Configura
 	private static final String CDI_FACTORY_CLASSNAME = "org.apache.openjpa.cdi.EntityListenerCDIFactory";
 
 	private Configuration _conf;
-	
-	private Log _log;
 
 	public EntityListenerFactoryValue() {
 		super(KEY, true);
@@ -58,8 +56,14 @@ public class EntityListenerFactoryValue extends PluginValue implements Configura
 		try {
 			instance = super.instantiate(type, c, true);
 		} catch (Throwable t) {
-			if (_log.isTraceEnabled()) {
-				_log.trace(_loc.get("cdi-not-available"));
+			// the log is taken now, the log factory may be set after this value was configured
+			Log log = c.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+			// a BeanManager passed by the container means CDI is expected, so say why it is not used
+			if (c instanceof OpenJPAConfiguration oc && oc.getBeanManagerInstance() != null) {
+				log.warn(_loc.get("cdi-passed-bean-manager-not-used", t.getMessage()));
+			}
+			if (log.isTraceEnabled()) {
+				log.trace(_loc.get("cdi-not-available"), t);
 			}
 			setClassName(EntityListenerCachedFactory.class.getName());
 			instance = super.instantiate(type, c, true);
@@ -75,7 +79,6 @@ public class EntityListenerFactoryValue extends PluginValue implements Configura
 			if (value != null) {
 				setString(value.getString());
 			}
-			_log = c.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 		}
 	}
 

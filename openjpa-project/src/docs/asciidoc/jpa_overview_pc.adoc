@@ -604,6 +604,11 @@ If you want to avoid the analysis of cacheability when using CDI enabled factory
 
 Due backwards compatibility, these feature is *not* enabled by default. Please add property ``openjpa.EntityListenerFactory`` with value ``cdi`` to activate it.
 
+The ``BeanManager`` used for the injection is the one passed in the properties map of ``createContainerEntityManagerFactory`` or ``createEntityManagerFactory`` under the key ``jakarta.persistence.bean.manager``.
+The object is only used once the first entity listener is created, so a container may pass a proxy that resolves the real ``BeanManager`` later.
+If the property is not set, OpenJPA looks up the ``BeanManager`` in JNDI under ``java:comp/BeanManager`` and ``java:comp/env/BeanManager`` and then uses ``CDI.current()``.
+If the passed object is not a ``BeanManager``, OpenJPA logs a warning and creates the entity listeners without injection.
+
 
 [[jpa_overview_pc_conclusion]]
 ==== Conclusions
