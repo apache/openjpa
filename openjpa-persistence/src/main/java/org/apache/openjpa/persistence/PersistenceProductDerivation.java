@@ -212,6 +212,10 @@ public class PersistenceProductDerivation
 
         configureBeanValidation(conf);
 
+        // BeanManager passed by the container, kept as plain object as the CDI API is optional
+        conf.beanManager = conf.addObject(JPAProperties.BEAN_MANAGER);
+        conf.beanManager.setInstantiatingGetter("getBeanManagerInstance");
+
         conf.dataCacheMode = conf.addString(JPAProperties.CACHE_MODE);
         conf.dataCacheMode.setDefault(DataCacheMode.UNSPECIFIED.toString());
         conf.dataCacheMode.set(DataCacheMode.UNSPECIFIED.toString());

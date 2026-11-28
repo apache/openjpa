@@ -2154,6 +2154,24 @@ public interface OpenJPAConfiguration
 	 * @return true, if a entity listener factory was initialized
 	 */
 	boolean isEntityListenerFactoryAvailable();
-	
+
+    /**
+     * The CDI BeanManager passed by the container or application under the key
+     * <code>jakarta.persistence.bean.manager</code>. It is kept as passed and only
+     * used when the CDI entity listener factory creates the first listener.
+     * Defaults to <code>null</code>.
+     *
+     * @since 4.3.0
+     */
+    Object getBeanManagerInstance();
+
+    /**
+     * Set the container or application provided CDI BeanManager instance.
+     * If not set, defaults to <code>null</code>.
+     *
+     * @since 4.3.0
+     */
+    void setBeanManager(Object beanManager);
+
 }
 

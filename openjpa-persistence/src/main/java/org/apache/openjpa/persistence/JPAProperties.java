@@ -76,6 +76,8 @@ public class JPAProperties {
     public static final String VALIDATE_PRE_UPDATE  = PREFIX + "validation.group.pre-update";
     public static final String VALIDATE_GROUP_DEFAULT = "jakarta.validation.groups.Default";
 
+    public static final String BEAN_MANAGER         = PREFIX + "bean.manager";
+
     private static Map<String,String> _names = new HashMap<>();
 
     /**
